@@ -31,7 +31,7 @@
 2、安卓APP  
 3、信呼服务端(即时通信，计划任务使用)  
 4、REIM即时通信PC客户端  
-5、以上下载地址：http://www.rockoa.com/view_donw.html  
+5、以上下载地址：http://www.rockoa.com/view_down.html  
 
 
 
