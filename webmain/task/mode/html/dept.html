@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="yes" />
+<link rel="stylesheet" type="text/css" href="webmain/css/css.css">
+<title>请选择</title>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/js.js"></script>
+<script type="text/javascript" src="web/res/js/jquery-changeuser.js"></script>
+
+<script>
+function initbody(){
+	var changetype = js.request('changetype');
+	if(changetype=='')changetype='user';
+	$('#showview').chnageuser({
+		'titlebool':false,
+		'showview':'showview',
+		'changetype':changetype,
+		'oncancel':function(){
+			js.backla();
+		},
+		'onselect':function(sna,sid){
+			var evst=js.request('event');
+			if(evst!='')js.sendevent('changeuser', evst, {name:sna,nameid:sid});
+			js.backla();
+		}
+	});
+}
+</script>
+</head>
+<body>
+<div id="showview" style="height:100%;overflow:hidden"></div>	
+</body>
+</html>
