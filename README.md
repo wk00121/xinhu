@@ -40,13 +40,13 @@
 2、或许您觉得此系统是辣鸡，欢迎提意见和您的想法给我们，或者发邮件给我们：admin@rockoa.com。  
 
 ### 声明感谢  
-系统有用到一些开源的项目，特别感谢他们否提供奉献，不分先后顺序。    
+系统有用到一些开源的项目，特别感谢他们提供奉献，不分先后顺序。    
 1、PHP后端语言：http://www.php.net/   
 2、MySql数据库：https://www.mysql.com/    
 3、Bootstrap后台样式组件：http://v3.bootcss.com/components/  
 4、字体图标：http://www.bootcss.com/p/font-awesome/  
 5、Jquery框架：http://jquery.com/  
-6、PHPMailer邮件组件：https://github.com/PHPMailer/PHPMailer  
+6、PHPMailer邮件发送组件：https://github.com/PHPMailer/PHPMailer  
 7、kindeditor富文本编辑器：http://kindeditor.net/  
 8、pdfjs预览pdf：http://mozilla.github.io/pdf.js/  
 9、weui手机端框架：https://weui.io/0.4.x/#/  
@@ -56,3 +56,4 @@
 13、workerman服务端phpsocket框架：http://www.workerman.net/  
 14、nwjs的PC客户端框架：https://nwjs.io/  
 15、iconfont图标库：http://www.iconfont.cn/   
+16、腾讯地图：http://map.qq.com/   
