@@ -38,3 +38,21 @@
 ### 信呼声明 
 1、没有一款系统是100%安全，信呼也是如此，任何暴露在公网中的系统，都有数据泄露的风险，一旦您决定将信呼部署在公网环境中，请仔细评估可能由此带来的风险，并尽可能的加强安全措施。  
 2、或许您觉得此系统是辣鸡，欢迎提意见和您的想法给我们，或者发邮件给我们：admin@rockoa.com。  
+
+### 声明感谢  
+系统有用到一些开源的项目，特别感谢他们否提供奉献，不分先后顺序。    
+1、PHP后端语言：http://www.php.net/   
+2、MySql数据库：https://www.mysql.com/    
+3、Bootstrap后台样式组件：http://v3.bootcss.com/components/  
+4、字体图标：http://www.bootcss.com/p/font-awesome/  
+5、Jquey框架：http://jquery.com/  
+6、PHPMailer邮件组件：https://github.com/PHPMailer/PHPMailer  
+7、kindeditor富文本编辑器：http://kindeditor.net/  
+8、pdfjs预览pdf：http://mozilla.github.io/pdf.js/  
+9、weui手机端框架：https://weui.io/0.4.x/#/  
+10、phpqrcode生成二维码：http://phpqrcode.sourceforge.net/    
+11、JPush极光推送：https://www.jiguang.cn/  
+12、小米推送：https://dev.mi.com/console/appservice/push.html  
+13、workerman服务端phpsocket框架：http://www.workerman.net/  
+14、nwjs的PC客户端框架：https://nwjs.io/  
+15、iconfont图标库：http://www.iconfont.cn/   
