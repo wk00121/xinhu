@@ -45,7 +45,7 @@
 2、MySql数据库：https://www.mysql.com/    
 3、Bootstrap后台样式组件：http://v3.bootcss.com/components/  
 4、字体图标：http://www.bootcss.com/p/font-awesome/  
-5、Jquey框架：http://jquery.com/  
+5、Jquery框架：http://jquery.com/  
 6、PHPMailer邮件组件：https://github.com/PHPMailer/PHPMailer  
 7、kindeditor富文本编辑器：http://kindeditor.net/  
 8、pdfjs预览pdf：http://mozilla.github.io/pdf.js/  
