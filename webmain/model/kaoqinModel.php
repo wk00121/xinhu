@@ -531,7 +531,9 @@ class kaoqinClassModel extends Model
 		return $s;
 	}
 	
-	
+	/**
+	*	获取默人对月份所有考勤状态{'2017-01-17':[{name:'上班','state':'正常'}]}
+	*/
 	public function getanay($uid, $month, $dt='')
 	{
 		$month	= substr($month, 0, 7);
@@ -547,13 +549,7 @@ class kaoqinClassModel extends Model
 		$barr 	= array();
 		foreach($rows as $k=>$rs){
 			if(!isset($barr[$rs['dt']]))$barr[$rs['dt']]=array();
-			$miaocn	= '';
-			if($rs['emiao']>0){
-				$stssa = explode(':', $dtobj->sjdate($rs['emiao'],'H:i:s'));
-				if($stssa[0]>0)$miaocn=''.$stssa[0].'时';
-				$miaocn.=''.$stssa[1].'分'.$stssa[2].'秒';
-			}
-			$rs['miaocn']		= $miaocn;
+			
 			$barr[$rs['dt']][] 	= $rs;
 		}
 		return $barr;
@@ -677,7 +673,7 @@ class kaoqinClassModel extends Model
 	}
 	
 	/**
-	*	获取某个人考勤状态
+	*	获取某个人某一天考勤状态[{stat}]
 	*/
 	public function getsbanay($uid, $dt)
 	{
@@ -722,14 +718,28 @@ class kaoqinClassModel extends Model
 		$s 	 	= $rs['state'];
 		$state 	= $rs['state'];
 		$iswork = $rs['iswork'];
-		if($state != '正常' && $iswork==1)$s='<font color=red>'.$s.'</font>';
+		
+		$miaocn	= '';
+		if($rs['emiao']>0){
+			$stssa = explode(':', $this->dtobj->sjdate($rs['emiao'],'H:i:s'));
+			if($stssa[0]>0)$miaocn=''.$stssa[0].'时';
+			$miaocn.=''.$stssa[1].'分'.$stssa[2].'秒';
+		}
+		$rs['miaocn'] = $miaocn;
+		
 		if($iswork==0 && $state == '未打卡')$s='休息日';
 		if(!isempt($rs['miaocn'])){
 			$s.='['.$rs['miaocn'].']';
 		}
 		if(!isempt($rs['time']))$s.='('.substr($rs['time'],11).')';
 		
-		if(!isempt($rs['states']))$s	= $rs['states'];
+		if(!isempt($rs['states'])){
+			$state = '正常';
+			$s	= $rs['states'];
+		}
+		
+		if($state != '正常' && $iswork==1)$s='<font color=red>'.$s.'</font>';
+		if($s=='休息日')$s='<font color=#888888>'.$s.'</font>';
 		
 		return $s;
 	}

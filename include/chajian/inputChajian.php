@@ -154,8 +154,8 @@ class inputChajian extends Chajian
 			$str.= '<input value="0" type="hidden" name="'.$a['fieldss'].$leox.'">';
 		}
 		if($type=='changeusercheck'||$type=='changeuser'||$type=='changedept'||$type=='changedeptusercheck'){
-			$_vals  = explode(',', $val);$_vals0 = $_vals[0];
-			$_vals1 = isset($_vals[1]) ? $_vals[0] : '';
+			$_vals  = explode('|', $val);$_vals0 = $_vals[0];
+			$_vals1 = isset($_vals[1]) ? $_vals[1] : '';
 			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$data.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
 			$str   .= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\')" class="webbtn">选择</a></td></tr></table>';
 		}

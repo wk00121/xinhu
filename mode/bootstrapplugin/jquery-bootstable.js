@@ -69,7 +69,7 @@
 		};
 		this._create	= function(){
 			var a	= can.columns;
-			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,dlen=this.data.length;
+			var s 	= '',i,len=a.length,val,s1,s2='',cols,s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,dlen=this.data.length;
 			s+='<table id="tablemain_'+rand+'" class="table table-striped table-bordered table-hover" style="margin:0px">';
 			if(!can.hideHeaders){
 				s+='<thead><tr><th width="40"></th>';
@@ -77,9 +77,11 @@
 				for(i=0;i<len;i++){
 					hs = '';
 					attr = '';
+					cols = a[i].colspan;
 					if(can.sort == a[i].dataIndex)hs='style="color:#3399FF"';
 					if(a[i].width)attr+=' width="'+a[i].width+'"';
 					if(a[i].tooltip)attr+=' title="'+a[i].tooltip+'"';
+					if(cols && cols>1)attr+=' colspan="'+cols+'"';
 					s+='<th nowrap '+attr+'><div '+hs+' align="'+a[i].align+'" lfields="'+a[i].dataIndex+'">';
 					if(can.celleditor&&a[i].editor)s+='<i class="icon-pencil"></i>&nbsp;';
 					s+=a[i].text;
@@ -92,6 +94,7 @@
 						}
 					}
 					s+='</div></th>';
+					if(cols>1)i=i+cols-1;
 				}
 				s+='</tr></thead>';
 			}
@@ -411,23 +414,32 @@
 				}
 			});
 		};
-		this.exceldown = function(bt){
+		this.exceldown = function(bt, lxs){
 			if(this.bool)return;
 			var excelfields='',excelheader='',i,a=can.columns;
-			var das = this._loaddata(1, true);
+			var np	= (lxs==2) ? this.page : 1;
+			var das = this._loaddata(np, true);
 			das.limit = 10000;
-			das.execldown 	= 'true';if(!bt)bt=nowtabs.name;
-			das.exceltitle	= jm.encrypt(bt);
-			this.bool = true;
-			js.msg('wait', '下载处理中...');
+			das.execldown 	= 'true';
+			if(!bt)bt=nowtabs.name;
+			das.exceltitle	= bt;
 			for(i=0;i<a.length;i++){
 				if(!a[i].notexcel){
 					excelfields+=','+a[i].dataIndex+'';
 					excelheader+=','+a[i].text+'';
 				}
 			}
-			das.excelfields = jm.encrypt(excelfields.substr(1));
-			das.excelheader = jm.encrypt(excelheader.substr(1));
+			das.excelfields = excelfields.substr(1);
+			das.excelheader = excelheader.substr(1);
+			if(lxs==1)return das;
+			if(lxs==2){
+				das.limit	= can.pageSize;
+			}
+			das.exceltitle  = jm.encrypt(das.exceltitle);
+			das.excelfields = jm.encrypt(das.excelfields);
+			das.excelheader = jm.encrypt(das.excelheader);
+			this.bool = true;
+			js.msg('wait', '导出处理中...');
 			$.ajax({
 				url:can.url,type:'POST',data:das,dataType:'json',
 				success:function(a1){
@@ -439,6 +451,9 @@
 					me.bool = false;
 				}
 			});
+		};
+		this.exceldownnow = function(bt){
+			this.exceldown(bt,2);
 		};
 		this.setparams = function(cans, relo){
 			if(!cans)cans={};
@@ -684,12 +699,20 @@
 			o2= $(o1);
 			oi= parseFloat(o2.attr('oi'));
 			oj= parseFloat(o2.attr('oj'));
-			d =this.getData(oi);
+			d = this.getData(oi);
 			num=can.modenum;if(num=='')num=this.tablename;
 			mid = d.id;if(d.modenum)num=d.modenum;
 			modename=can.modename;if(d.modename)modename=d.modename;
 			new optmenuclass(o1,num,mid,this,modename,oi,can.columns[oj]);
 		};
+		
+		
+		this.geturlparams=function(bt,ocans){
+			var cshu = this.exceldown(bt, 1),i;
+			cshu.tablename_abc = jm.uncrypt(cshu.tablename_abc);
+			cshu = js.apply(cshu,ocans);
+			return [can.url, cshu];
+		}
 	};
 	
 	/**
@@ -699,6 +722,7 @@
 		3、getcheckdata();//获取复选框选中的数据数组[]
 		4、insert({name:''});//表格中插入一行
 		5、setparams({key:''},true);//设置参数并搜索
+		6、geturlparams();获取当前Url地址参数,订阅时用到的
 	*/
 	
 	

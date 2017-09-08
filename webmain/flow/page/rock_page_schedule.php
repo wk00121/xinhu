@@ -17,7 +17,6 @@ $(document).ready(function(){
 		reload:function(){
 			a.reload();
 		},
-		//新增编辑窗口
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
@@ -51,14 +50,34 @@ $(document).ready(function(){
 			a.setparams(d,true);
 		},
 		//导出
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1,lx,lx1,e){
+			if(!this.daochuobj)this.daochuobj=$.rockmenu({
+				width:120,top:35,donghua:false,data:[],
+				itemsclick:function(d, i){
+					c.daonchuclick(d);
+				}
+			});
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			this.daochuobj.setData(d);
+			var lef = $(o1).offset();
+			this.daochuobj.showAt(lef.left, lef.top+35);
 		},
-		//对应控制器返回rul
+		daonchuclick:function(d){
+			if(d.lx==0)a.exceldown();
+			if(d.lx==1)a.exceldownnow();
+			if(d.lx==2)this.subscribelist();
+		},
+		subscribelist:function(){
+			js.subscribe({
+				title:'日程('+nowtabs.name+')',
+				cont:'日程('+nowtabs.name+')的列表的',
+				explain:'订阅[日程]的列表',
+				objtable:a
+			});
+		},
 		getacturl:function(act){
 			return js.getajaxurl(act,'mode_schedule|input','flow',{'modeid':modeid});
 		},
-		//查看切换
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
@@ -226,6 +245,8 @@ c.setcolumns('status',{
 			if(d.lx==2)c.setfieldslist();
 		}
 	});
+	
+	
 });
 </script>
 <!--SCRIPTend-->
@@ -246,7 +267,7 @@ c.setcolumns('status',{
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

@@ -40,13 +40,10 @@ defined('HOST') or die ('not access');
 //初始化
 homeobject.kqdk_init=function(){
 	$('#dabtn{rand}').click(function(){
-		adddaka(this);
+		adddakas(this);
 	});
 	this.timeshowcishu = 0;
-	function adddaka(o){
-		var dacs = {};
-		o.disabled = true;o.value='打卡中...';
-		if(typeof(nwjs)=='object')dacs = nwjs.getipmac();
+	function adddaka(o,dacs){
 		js.ajax('api.php?m=kaoqin&a=adddkjl',dacs, function(d){
 			if(d.code==200){
 				js.alert('打卡成功：'+d.data+'');
@@ -59,6 +56,15 @@ homeobject.kqdk_init=function(){
 				o.value='重试打卡';
 			}
 		},'get,json');
+	}
+	function adddakas(o){
+		o.disabled = true;o.value='打卡中...';
+		js.cliendsend('getipmac',{},function(ret){
+			adddaka(o,{ip:ret.ip,mac:ret.mac});
+		},function(){
+			adddaka(o,{});
+			return true;
+		});
 	}
 }
 

@@ -1,5 +1,55 @@
 ﻿var objcont,tabs_title,tabsarr={},nowtabs,opentabs=[],menutabs,menuarr,admintype='0';
 var viewwidth,viewheight,optmenudatas=[];
+
+js.initbtn = function(obj){
+	var o = $("[click]"),i,o1,cl;
+	for(i=0; i<o.length; i++){
+		o1	= $(o[i]);
+		cl	= o1.attr('clickadd');
+		if(cl!='true'){
+			o1.click(function(eo){
+				var cls = $(this).attr('click');
+				if(typeof(cls)=='string'){
+					cls=cls.split(',');
+					obj[cls[0]](this, cls[1], cls[2], eo);
+				}
+				return false;
+			});
+		}
+	}
+	o.attr('clickadd','true');
+}
+
+js.initedit = function(id,can){
+	var cans = js.apply({
+		resizeType : 0,
+		allowPreviewEmoticons : false,
+		allowImageUpload : true,
+		formatUploadUrl:false,
+		uploadJson:'mode/kindeditor/kindeditor_upload.php',
+		allowFileManager:true,
+		items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist', '|','image', 'link','unlink','|','source','clearhtml','fullscreen'],
+		blur:function(){
+			
+		}
+	},can);
+	
+	var editorobj = KindEditor.create('#'+id+'', cans);	
+	return editorobj;
+}
+
+js.setwhere	= function(mid,call){
+	if(!call)call='';
+	var url =js.getajaxurl('@setwhere','where','flow',{modeid:mid,callback:call});
+	js.tanbody('setwherewin','设置条件',500,330,{
+		html:'<div style="height:320px;overflow:hidden"><iframe src="" name="winiframese" width="100%" height="100%" frameborder="0"></iframe></div>',
+		bbar:'none'
+	});
+	winiframese.location.href=url;
+}
+
 function publicstore(mo,dos,oans){
 	if(!mo)mo='index';
 	if(!dos)dos='';
@@ -92,6 +142,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.oi 	= oi;
 	this.obj 	= o1;
 	this.columns= cola;
+	this.optmenudatas= {};
 	var me 		= this;
 	this._init=function(){
 		if(typeof(optmenuobj)=='object')optmenuobj.remove();
@@ -104,7 +155,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		});
 		var da = [{name:'详情',lx:998,nbo:false},{name:'详情(新窗口)',lx:998,nbo:true}];
 		var off=$(this.obj).offset();
-		var subdata = optmenudatas[''+this.modenum+'_'+this.id+''];
+		var subdata = this.optmenudatas[''+this.modenum+'_'+this.id+''];
 		if(!subdata){
 			da.push({name:'<img src="images/loadings.gif" align="absmiddle"> 加载菜单中...',lx:999});
 			this.loadoptnum();
@@ -222,7 +273,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		js.msg('wait','处理中...');
 		js.ajax(js.getajaxurl('yyoptmenu','flowopt','flow'),d,function(ret){
 			if(ret.code==200){
-				optmenudatas[''+d.modenum+'_'+d.mid+'']=false;
+				me.optmenudatas[''+d.modenum+'_'+d.mid+'']=false;
 				me.tableobj.reload();
 				js.msg('success','处理成功');
 			}else{
@@ -233,7 +284,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.loadoptnum=function(){
 		js.ajax(js.getajaxurl('getoptnum','flowopt','flow'),{num:this.modenum,mid:this.id,bfrom:'hou'},function(ret){
 			if(ret.code == 200){
-				optmenudatas[''+me.modenum+'_'+me.id+''] = ret.data;
+				me.optmenudatas[''+me.modenum+'_'+me.id+''] = ret.data;
 				me._init();
 			}else{
 				js.msg('msg',ret.msg);
@@ -402,4 +453,73 @@ function highsearchclass(options){
 		return d;
 	};
 	this.init();
+}
+
+/**
+*	订阅
+*/
+function classubscribe(options){
+	var me 		= this;
+	var cans 	= js.apply({'oncallback':function(){},title:'','params':{},objtable:false}, options);
+	for(var a in cans)this[a]=cans[a];
+	this._init 	= function(){
+		if(!this.objtable){
+			js.msg('msg','没指定一个表格无法设置订阅');
+			return;
+		}
+		var cyrl = this.objtable.geturlparams(),cstr='',i,vsts,ostrs='';
+		var cyrls = cyrl[1];
+		cyrls.loadci=1;
+		for(i in cyrls){
+			vsts = cyrls[i];
+			if(vsts || vsts=='0')cstr+='&'+i+'='+vsts+'';
+		}
+		cstr  = cstr.substr(1);
+		
+		for(i in this.params){
+			vsts = this.params[i];
+			if(vsts || vsts=='0')ostrs+='&'+i+'='+vsts+'';
+		}
+		if(ostrs!='')ostrs=ostrs.substr(1);
+		var h = $.bootsform({
+			title:'订阅',height:500,width:500,tablename:'subscribe',isedit:0,
+			params:{int_filestype:'status',otherfields:'optid={adminid},optname={admin},optdt={now}'},
+			submitfields:'title,cont,explain,suburl,suburlpost',
+			url:publicmodeurl('subscribe','publicsave'),beforesaveaction:'savebefore',
+			items:[{
+				labelText:'订阅名称',name:'title',required:true,value:this.title
+			},{
+				labelText:'订阅提醒内容',name:'cont',value:this.cont,type:'textarea',required:true,height:60
+			},{
+				labelText:'订阅参数',name:'suburlpost',type:'hidden',height:60,value:cstr
+			},{
+				labelText:'订阅地址',name:'suburl',type:'hidden',height:50,value:jm.base64encode(cyrl[0])
+			},{
+				labelText:'订阅参数',blankText:'根据参数获取数据如：key=关键词&month={month}，乱写会导致预想不到的后果。',name:'suburlposts',type:'textarea',height:60,value:ostrs
+			},{
+				labelText:'说明',name:'explain',type:'textarea',height:50,value:this.explain
+			},{
+				name:'status',labelBox:'启用',type:'checkbox',checked:true
+			}],
+			success:function(){
+				js.confirm('订阅成功，是否直接到我的订阅管理下添加订阅运行时间？',function(jg){
+					if(jg=='yes')addtabs({url:'flow,page,subscribe,atype=my',name:'我订阅管理',num:'rssglmy','icons':'cog'});
+				});
+				me.oncallback();
+			},
+			submitcheck:function(d){
+				var str = d.suburlpost;
+				if(!isempt(d.suburlposts))str+='&'+d.suburlposts+'';
+				str 	= jm.base64encode(str);
+				return {'suburlpost':str};
+			}
+		});
+		
+		h.isValid();
+	};
+	this._init();
+}
+
+js.subscribe=function(csns){
+	return new classubscribe(csns);
 }

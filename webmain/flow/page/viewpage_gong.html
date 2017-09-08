@@ -75,7 +75,8 @@ function submittoupiao(o1){
 		if(s=='ok'){
 			js.setmsg('投票成功','green');
 			js.alert('投票成功','', function(){
-				location.reload();
+				var url = location.href+'&rnd='+Math.random()+'';
+				js.location(url);
 			});
 		}else{
 			js.setmsg(s);

@@ -28,7 +28,7 @@ final class rockClass
 
 	public function __construct()
 	{		
-		$this->ip		= isset($_SERVER['REMOTE_ADDR'])	? $_SERVER['REMOTE_ADDR']	: '' ;
+		$this->ip		= $this->getclientip();
 		$this->host		= isset($_SERVER['HTTP_HOST'])		? $_SERVER['HTTP_HOST']		: '' ;
 		$this->url		= '';
 		$this->isqywx	= false;
@@ -42,6 +42,20 @@ final class rockClass
 		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
 		$this->lvlarab	= array();
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
+	}
+	
+	//获取IP
+	public function getclientip()
+	{
+		$ip = 'unknow';
+		if(isset($_SERVER['HTTP_CLIENT_IP'])){
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		}else if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else if(isset($_SERVER['REMOTE_ADDR'])){
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
 	}
 	
 	public function initRock()
@@ -97,6 +111,7 @@ final class rockClass
 		return $this->jmuncode($val, $lx, $name);
 	}
 	
+	//get和post参数处理$lx=1:rockjm，6:basejm, 3:判断是否rockjm
 	public function jmuncode($s, $lx=0, $na)
 	{
 		$jmbo = false;
@@ -109,8 +124,9 @@ final class rockClass
 				if($jmbo)$s = $this->jm->uncrypt($s);
 			}
 		}
-		if(substr($s, 0, 7)=='basejm_'){
-			$s = $this->jm->base64decode(substr($s,7));
+		if(substr($s, 0, 7)=='basejm_' || $lx==5){
+			$s = str_replace('basejm_', '', $s);
+			$s = $this->jm->base64decode($s);
 		}
 		$s=str_replace("'", '&#39', $s);
 		if($lx==2)$s=str_replace(array('{','}'), array('[H1]','[H2]'), $s);

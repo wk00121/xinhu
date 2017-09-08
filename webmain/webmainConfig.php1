@@ -30,7 +30,7 @@ return array(
 	'highpass'	=> '',				//超级管理员密码，可用于登录任何帐号
 	'asynkey'	=> 'asynkey23sss',	//这是异步任务key
 	'openkey'	=> 'openkey23se',	//对外接口openkey
-	'asynsend'	=> false,	//是否异步发送提醒消息，为true需开启服务端
+	'asynsend'	=> '0',	//是否异步发送提醒消息，0同步，1自己服务端异步，2官网VIP用户异步
 	'install'	=> true,	//已安装，不要去掉啊
 	'sqllog'	=> false,	//是否记录sql日志保存upload/sqllog下
 );

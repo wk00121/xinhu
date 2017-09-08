@@ -121,7 +121,8 @@ class htmlChajian extends Chajian{
 	public function execltable($title, $headArr, $rows, $lx='')
 	{
 		if($lx=='')$lx='xls';
-		$sty 	= 'style="white-space:nowrap;border:.5pt solid #000000;font-size:12px;"';
+		$borst  = '.5pt';
+		$sty 	= 'style="white-space:nowrap;border:'.$borst.' solid #000000;font-size:12px;"';
 		$s 		= '<html><head><meta charset="utf-8"><title>'.$title.'</title></head><body>';
 		$s 	   .= '<table border="0" style="border-collapse:collapse;">';
 		$hlen 	= 1;

@@ -249,17 +249,16 @@ class kaoqinClassAction extends Action
 	{
 		$dtobj = c('date');
 		$ustie = '';
+		$iswordk = array('否','是');
+		$kq 	= m('kaoqin');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['status'] 	= $rs['iswork'];
 			$rows[$k]['week']	 	= $dtobj->cnweek($rs['dt']);
-			$miaocn	= '';
-			if($rs['emiao']>0){
-				$stssa = explode(':', $dtobj->sjdate($rs['emiao'],'H:i:s'));
-				if($stssa[0]>0)$miaocn=''.$stssa[0].'时';
-				$miaocn.=''.$stssa[1].'分'.$stssa[2].'秒';
-			}
-			$rows[$k]['miaocn'] = $miaocn;
 			$keys= ''.$rs['dt'].''.$rs['uid'].'';
+			$rows[$k]['iswork'] = arrvalue($iswordk, $rs['iswork']);
+			
+			$rows[$k]['state']	= $kq->getkqstate($rs);
+
 			if($ustie!='' && $ustie==$keys){
 				$rows[$k]['deptname'] 	= '';
 				$rows[$k]['name'] 		= '';
@@ -279,6 +278,44 @@ class kaoqinClassAction extends Action
 		if($atype=='my')$whe=' and id='.$this->adminid.'';
 		m('kaoqin')->kqanayall($dt, $whe);
 		echo 'ok';
+	}
+	
+	//考勤分析总表
+	public function kqanayallbeforeshow($table)
+	{
+		$this->month	= substr($this->post('dt1',date('Y-m')),0,7);
+		$key	= $this->post('key');
+		$iskq	= $this->post('iskq','1');
+		$s 		= m('admin')->monthuwhere($this->month, 'b.');
+		if($iskq=='1')$s.=" and b.`iskq`=$iskq";
+		if(!isempt($key))$s.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%')";
+		$fields = 'b.name,b.deptname,b.ranking';
+		$table  = '`[Q]userinfo` b';
+		return array('where'=>$s,'table'=>$table, 'fields'=>$fields);
+	}
+	public function kqanayallaftershow($table, $rows)
+	{
+		$barr 	= array();
+		$kq 	= m('kaoqin');
+		$dtobj 	= c('date');
+		
+		$barr[] = array(
+			'dt1_0' => '上班',
+			'dt1_1' => '下班',
+			'dt2_0' => '上班',
+			'dt2_1' => '下班',
+		);
+		
+		foreach($rows as $k=>&$rs){
+			$rs['dt1_0'] = '正常';
+			$rs['dt1_1'] = '正常';
+			
+			$rs['dt2_0'] = '未打卡';
+			$rs['dt2_1'] = '未打卡';
+			
+			$barr[] = $rs;
+		}
+		return array('rows'=>$barr);
 	}
 	
 	
@@ -329,7 +366,7 @@ class kaoqinClassAction extends Action
 	//考勤统计
 	public function kqtotalbeforeshow($table)
 	{
-		$dt1			= $this->post('dt1', date('Y-m'));
+		$dt1			= $this->post('month', date('Y-m'));
 		$iskq			= $this->post('iskq','1');
 		$this->months 	= $dt1;
 		$key	= $this->post('key');
@@ -353,11 +390,65 @@ class kaoqinClassAction extends Action
 	public function kqtotalaftershow($table, $rows)
 	{
 		$zta 	= m('flow:userinfo');
+		$pnum	= $this->post('pnum');
+		$colalls= array();
 		foreach($rows as $k=>$rs){
 			if($rs['state']==5)$rows[$k]['ishui']=1;
 			$rows[$k]['state'] = $zta->getuserstate($rs['state']);
 		}
-		return m('kaoqin')->alltotalrows($this->months, $rows);
+		$kqobj 	= m('kaoqin');
+		$barr 	= $kqobj->alltotalrows($this->months, $rows);
+		$rows 	= $barr['rows'];
+		$darr 	= array();
+		//读取表头
+		if($pnum=='all'){
+			$dt 	= $this->months.'-01';
+			//获取每天考勤几个状态
+			$sbarr	= $kqobj->getsbarr($this->adminid, $dt);
+			$lenz 	= count($sbarr); //每天考勤几个状态
+			$touar 	= array();
+			
+			$max 	= $kqobj->dtobj->getmaxdt($this->months);
+			for($i=1;$i<=$max;$i++){
+				$xq = $kqobj->dtobj->cnweek($this->months.'-'.$i.'');
+				for($j=0;$j<$lenz;$j++){
+					$dataIndex = 'dt'.$i.'_'.$j.'';
+					$colalls[] = array(
+						'text' => ''.$i.'('.$xq.')',
+						'dataIndex' => $dataIndex, //字段名
+						'colspan' => $lenz
+					);
+					$touar[$dataIndex] = $sbarr[$j]['name'];
+				}
+			}
+			
+			$darr[] = $touar;
+			
+			//读取人员考勤状态
+			foreach($rows as $k=>$rs){
+				$uid 	= $rs['id'];
+				$kqarr 	= $kqobj->getanay($uid, $this->months);
+				for($i=1;$i<=$max;$i++){
+					$oi = $i<10?'0'.$i.'':$i;
+					$dt = $this->months.'-'.$oi.'';
+					if(isset($kqarr[$dt]))foreach($kqarr[$dt] as $j=>$rs1){
+						$dataIndex = 'dt'.$i.'_'.$j.'';
+						$rs[$dataIndex] = $kqobj->getkqstate($rs1); //考勤状态
+					}
+				}
+				$darr[] = $rs;
+			}
+		}else{
+			$darr = $rows;
+		}
+		
+		
+		$barr['colalls'] = $colalls;
+		$barr['rows'] 	 = $darr;
+		
+		
+		
+		return $barr;
 	}
 	
 	

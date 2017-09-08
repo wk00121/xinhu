@@ -35,13 +35,30 @@ class Action extends mainAction
 		$this->rock->adminuser	= $user;
 	}
 	
+	//免登录验证，用于订阅报表的
+	private function loginsubscribe()
+	{
+		$subscribe_key 	= $this->post('subscribe_key');
+		$subscribe_post = $this->post('subscribe_post');
+		if(isempt($subscribe_key) || isempt($subscribe_post))return false;
+		$url	= $this->rock->nowurl();
+		$time 	= time(); $time1 = $time+1;
+		$keyarr	= array(md5($url.$time.$subscribe_post),md5($url.$time1.$subscribe_post));
+		if(!in_array($subscribe_key, $keyarr))return false;
+		$opkey 	= $this->option->getval('subscribe_key');
+		if(!in_array($opkey, $keyarr))return false;
+		$adminid 		= (int)$this->post('subscribe_adminid','0');
+		$this->setNowUser($adminid,'');
+		return true;
+	}
+	
 	protected function loginnot($ismo=false)
 	{
+		if($this->loginsubscribe())return;//免验证
 		$uid = (int)$this->getsession('adminid',0);
 		if($uid==0){
-			if(isajax()){
-				echo 'sorry! not login';
-			}else{
+			echo 'sorry! not login';
+			if(!isajax()){
 				$lurl = '?m=login';
 				if($this->rock->ismobile() || $ismo)$lurl='?d=we&m=login';
 				if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
@@ -69,8 +86,9 @@ class Action extends mainAction
 	
 	private function iszclogin()
 	{
+		if($this->loginsubscribe())return;//免验证
 		$token = $this->admintoken;
-		if($this->isempt($token))exit('sorry1');
+		if(isempt($token))exit('sorry1');
 		$lastt = date('Y-m-d H:i:s',time()-24*3600);
 		$rs = m('logintoken')->getone("`uid`='$this->adminid' and `token`='$token' and `online`=1 and `moddt`>='$lastt'",'`moddt`');
 		if(!$rs)$this->backmsg('登录失效，请重新登录');
@@ -427,11 +445,12 @@ class Action extends mainAction
 		$header = explode(',', $this->post('excelheader','',1));
 		$title	= $this->post('exceltitle','',1);
 		$rows	= $arr['rows'];
+		$exceltype	= $this->post('exceltype','xls'); //保存文件类型
 		$headArr	= array();
 		for($i=0; $i<count($fields); $i++){
 			$headArr[$fields[$i]] = $header[$i];
 		}
-		$url 		= c('html')->execltable($title, $headArr, $rows);
+		$url 		= c('html')->execltable($title, $headArr, $rows, $exceltype);
 		$this->returnjson(array(
 			'url'		=> $url, 
 			'totalCount'=> $arr['totalCount'],

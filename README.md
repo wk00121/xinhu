@@ -4,13 +4,13 @@
 邮箱：admin@rockoa.com  
 公司团队：信呼开发团队  
 官网网站：http://www.rockoa.com/  
-源码仅供学习二次开发使用，禁止原封不动出售(违者必究)  
+源码仅供学习二次开发使用，禁止用于商业用途出售等(违者必究)  
 版权：Copyright @ 2017 信呼开发团队  
-版本整理时间：2017-08-31 22:00:00  
-版本号：V1.5.6  
+版本整理时间：2017-09-08 22:00:00  
+版本号：V1.5.7  
 
 
-### V1.5.6更新说明
+### V1.5.7更新说明
 1、完善系统安全性。  
 2、更多升级日志详见：http://www.rockoa.com/view_core.html  
 
@@ -56,4 +56,5 @@
 13、workerman服务端phpsocket框架：http://www.workerman.net/  
 14、nwjs的PC客户端框架：https://nwjs.io/  
 15、iconfont图标库：http://www.iconfont.cn/   
-16、腾讯地图：http://map.qq.com/   
+16、腾讯地图：http://map.qq.com/  
+16、nodejs：https://nodejs.org/ 

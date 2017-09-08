@@ -91,6 +91,7 @@ var reim = {
 		if(lx=='notify')this.shownotify(a);
 		if(lx=='openchat')this.openchat(a.id,a.type);
 		if(lx=='getlogin')return {uid:adminid,uname:adminname,face:adminface};
+		if(lx=='getipmac')return nwjs.getipmac();
 	},
 	shownotify:function(d1){
 		var d = js.apply({icon:'images/logo.png','title':'系统提醒',url:''}, d1);

@@ -244,6 +244,7 @@ class emailClassModel extends Model
 			$uarr['optname'] 	= $this->adminname;
 			$uarr['status'] 	= 0;
 			$sid 	= m('email_cont')->insert($uarr);
+			
 			m('reim')->asynurl('asynrun','sendemail', array(
 				'id' 	=> $sid,
 				'stype' => 1

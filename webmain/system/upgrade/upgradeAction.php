@@ -129,8 +129,9 @@ class upgradeClassAction extends Action
 				$hurs[] = ''.P.'/flow/page/input_'.$num.'.html'; //PC录入模版
 				$hurs[] = ''.P.'/flow/page/view_'.$num.'_0.html'; //PC展示模版
 				$hurs[] = ''.P.'/flow/page/view_'.$num.'_1.html'; //手机展示模版
-				$hurs[] = ''.P.'/flow/page/viewpage_'.$num.'_0.html';
-				$hurs[] = ''.P.'/flow/page/viewpage_'.$num.'_1.html';
+				$hurs[] = ''.P.'/flow/page/viewpage_'.$num.'.html'; //子模版展示
+				$hurs[] = ''.P.'/flow/page/viewpage_'.$num.'_0.html';//子模版PC展示
+				$hurs[] = ''.P.'/flow/page/viewpage_'.$num.'_1.html';//子模版手机展示
 				$hurs[] = ''.P.'/flow/page/rock_page_'.$num.'.php'; //列表页面
 				$hurs[] = ''.P.'/model/flow/'.$num.'Model.php'; //模块接口文件
 			}

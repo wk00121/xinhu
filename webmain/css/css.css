@@ -19,6 +19,8 @@ h1{ font-size:18px}
 select,input,textarea,button,a{ font-size:14px;resize: none;outline:none}
 .touch{-webkit-overflow-scrolling:touch;overflow-scrolling:touch;}
 
+.wrap{word-wrap:break-word;word-break:break-all;white-space:normal;}
+
 a.zhu:link,a.zhu:visited{color:#1389D3;}
 
 a.hui:link,a.hui:visited{color:#888888;}

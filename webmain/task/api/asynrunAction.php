@@ -20,27 +20,28 @@ class asynrunClassAction extends apiAction
 	{
 		$runtime = $this->get('runtime');
 		$this->rock->debugs('hehe:'.time().','.$runtime.'','yibu');
+		echo 'lala'.time().'';
 	}
 	
 	//消息同步到微信企业会话
 	public function wxchattbAction()
 	{
 		$id   = (int)$this->get('id');
-		m('weixin:chat')->chattongbu($id);
+		return m('weixin:chat')->chattongbu($id);
 	}
 	
 	//消息同步到企业客服消息汇总
 	public function wxkefutbAction()
 	{
 		$id   = (int)$this->get('id');
-		m('weixin:kefu')->chattongbu($id);
+		return m('weixin:kefu')->chattongbu($id);
 	}
 	
 	//薪资发放通知给人员
 	public function salaryffAction()
 	{
 		$id    = (int)$this->get('id');
-		m('flow')->initflow('hrsalary', $id)->todouser();
+		return m('flow')->initflow('hrsalary', $id)->todouser();
 	}
 	
 	//下载微信发送的图片到服务器
@@ -48,7 +49,7 @@ class asynrunClassAction extends apiAction
 	{
 		$picurl = $this->rock->jm->uncrypt($this->get('picurl'));
 		$msgid  = $this->get('msgid');
-		m('reim')->downwximg($picurl, $msgid);
+		return m('reim')->downwximg($picurl, $msgid);
 	}
 	
 	//下载微信上媒体文件
@@ -57,7 +58,8 @@ class asynrunClassAction extends apiAction
 		$mediaid 	= $this->get('mediaid');
 		$msgid  	= $this->get('msgid');
 		$fileext  	= $this->get('fileext');
-		m('weixin:media')->downmedia($mediaid, $fileext, $msgid);
+		$barr = m('weixin:media')->downmedia($mediaid, $fileext, $msgid);
+		return $barr;
 	}
 	
 	//异步发送邮件
@@ -66,6 +68,7 @@ class asynrunClassAction extends apiAction
 		$id   	= (int)$this->get('id');
 		$msg 	= m('email')->sendemailcont($id);
 		if($msg!='ok')m('log')->addlogs('邮件', $msg , 2);
+		return $msg;
 	}
 	
 	//异步微信企业号发送提醒
@@ -76,6 +79,8 @@ class asynrunClassAction extends apiAction
 		$body	= $this->jm->base64decode($body);
 		$barr 	= m('weixin:index')->sendbody($body);
 		m('log')->todolog('微信提醒', $barr);
+		
+		return $barr;
 	}
 	
 	//异步企业微信发送提醒
@@ -87,6 +92,7 @@ class asynrunClassAction extends apiAction
 		$body	= $this->jm->base64decode($body);
 		$barr 	= m('weixinqy:index')->sendbody($body, $agentid);
 		m('log')->todolog('企业微信提醒', $barr);
+		return $barr;
 	}
 	
 	//企业微信异步获取头像
@@ -96,6 +102,7 @@ class asynrunClassAction extends apiAction
 		if($userid=='')return;
 		$barr 	= m('weixinqy:user')->anayface($userid);
 		m('log')->todolog('企业微信提醒', $barr);
+		return $barr;
 	}
 	
 	//钉钉异步提醒
@@ -106,6 +113,7 @@ class asynrunClassAction extends apiAction
 		$body	= $this->jm->base64decode($body);
 		$barr 	= m('dingding:index')->sendbody($body);
 		m('log')->todolog('钉钉提醒', $barr);
+		return $barr;
 	}
 	
 	//转pdf完成了设置
@@ -133,6 +141,17 @@ class asynrunClassAction extends apiAction
 		$tplnum 	= $this->get('tplnum');
 		$url 		= $this->jm->base64decode($this->get('url'));
 		$params 	= json_decode($this->jm->base64decode($this->get('params')), true);
-		c('xinhusms')->send($tomobile, $qiannum, $tplnum, $params, $url);
+		return c('xinhuapi')->send($tomobile, $qiannum, $tplnum, $params, $url);
+	}
+	
+	//订阅的
+	public function subscribeAction()
+	{
+		$id 		= $this->get('id');
+		$uid 		= $this->get('uid');
+		$receid 	= $this->get('receid');
+		$recename 	= $this->jm->base64decode($this->get('recename'));
+		$flow = m('flow')->initflow('subscribeinfo');
+		return $flow->subscribe($id, $uid, $receid, $recename);
 	}
 }

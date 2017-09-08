@@ -11,13 +11,12 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'gong',modename='通知公告',isflow=0,modeid='1',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"fengmian","name":"\u5c01\u9762\u56fe\u7247","fieldstype":"uploadimg","ispx":"0","isalign":"1","islb":"0"},{"fields":"typename","name":"\u7c7b\u578b\u540d\u79f0","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"content","name":"\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u53d1\u9001\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"url","name":"\u76f8\u5e94\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"zuozhe","name":"\u6765\u6e90","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"indate","name":"\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"fengmian","name":"\u5c01\u9762\u56fe\u7247","fieldstype":"uploadimg","ispx":"0","isalign":"1","islb":"0"},{"fields":"typename","name":"\u7c7b\u578b\u540d\u79f0","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"content","name":"\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u53d1\u9001\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"url","name":"\u76f8\u5e94\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"zuozhe","name":"\u6765\u6e90","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"indate","name":"\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"mintou","name":"\u81f3\u5c11\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"maxtou","name":"\u6700\u591a\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"startdt","name":"\u5f00\u59cb\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
 			a.reload();
 		},
-		//新增编辑窗口
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
@@ -51,14 +50,34 @@ $(document).ready(function(){
 			a.setparams(d,true);
 		},
 		//导出
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1,lx,lx1,e){
+			if(!this.daochuobj)this.daochuobj=$.rockmenu({
+				width:120,top:35,donghua:false,data:[],
+				itemsclick:function(d, i){
+					c.daonchuclick(d);
+				}
+			});
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			this.daochuobj.setData(d);
+			var lef = $(o1).offset();
+			this.daochuobj.showAt(lef.left, lef.top+35);
 		},
-		//对应控制器返回rul
+		daonchuclick:function(d){
+			if(d.lx==0)a.exceldown();
+			if(d.lx==1)a.exceldownnow();
+			if(d.lx==2)this.subscribelist();
+		},
+		subscribelist:function(){
+			js.subscribe({
+				title:'通知公告('+nowtabs.name+')',
+				cont:'通知公告('+nowtabs.name+')的列表的',
+				explain:'订阅[通知公告]的列表',
+				objtable:a
+			});
+		},
 		getacturl:function(act){
 			return js.getajaxurl(act,'mode_gong|input','flow',{'modeid':modeid});
 		},
-		//查看切换
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
@@ -211,6 +230,8 @@ $(document).ready(function(){
 			if(d.lx==2)c.setfieldslist();
 		}
 	});
+	
+	
 });
 </script>
 <!--SCRIPTend-->
@@ -231,7 +252,7 @@ $(document).ready(function(){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

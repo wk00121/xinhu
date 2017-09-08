@@ -13,23 +13,11 @@ $(document).ready(function(){
 		},{
 			text:'星期',dataIndex:'week'
 		},{
-			text:'是否工作日',dataIndex:'iswork',sortable:true,renderer:function(v){
-				return ['否','是'][v];
-			}
+			text:'是否工作日',dataIndex:'iswork',sortable:true
 		},{
 			text:'状态名称',dataIndex:'ztname'
 		},{
-			text:'状态值',dataIndex:'state',align:'left',renderer:function(v,d){
-				var s=''+v+'';
-				if(d.miaocn!='')s+='['+d.miaocn+']';
-				if(!isempt(d.time))s+='('+d.time.substr(11)+')';
-				if(!isempt(d.states)){
-					v='正常';
-					s=d.states;
-				}
-				if(v!='正常' && d.status=='1')s='<font color="red">'+s+'</font>';
-				return s;
-			}
+			text:'状态值',dataIndex:'state',align:'left'
 		}],
 		itemclick:function(){
 			get('xqkaoqb_{rand}').disabled=false;

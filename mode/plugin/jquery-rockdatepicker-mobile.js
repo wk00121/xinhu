@@ -1,5 +1,5 @@
 /**
-*	rockdatepicker 时间选择插件-移动
+*	rockdatepicker 时间选择插件-手机版本使用
 *	caratename：雨中磐石(rainrock)
 *	caratetime：2017-06-19 21:40:00
 *	email:admin@rockoa.com
@@ -86,7 +86,7 @@
 				
 				s+='	<td style="padding:5px" align="center">';
 				s+='		<div><input type="button" value="＋"  pickermobile="d1" style="'+inst+'"></div>';
-				s+='		<div><select id="pickermobile_input_day" style="width:100%;height:30px">'+this.selectoption(1,28,this.now.d)+'</select></div>';
+				s+='		<div><select id="pickermobile_input_day" style="width:100%;height:30px">'+this.selectoption(1,31,this.now.d)+'</select></div>';
 				s+='		<div><input type="button" value="－"  pickermobile="d2" style="'+inst+'"></div>';
 				s+='	</td>';
 				s+='	<td>日</td>';

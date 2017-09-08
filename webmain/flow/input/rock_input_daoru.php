@@ -26,7 +26,7 @@ $(document).ready(function(){
 		init:function(){
 			var vis = 'msgview_{rand}';
 			js.setmsg('初始化中...','', vis);
-			js.ajax(js.getajaxurl('initdaoru','{mode}','{dir}'),{'modenum':modenum},function(ret){
+			js.ajax(publicmodeurl(modenum,'initdaoru'),{'modenum':modenum},function(ret){
 				js.setmsg('','', vis);
 				c.initshow(ret);
 			},'get,json');
@@ -94,5 +94,5 @@ $(document).ready(function(){
 <div><textarea style="height:250px;" id="maincont_{rand}" class="form-control"></textarea></div>
 <div id="showview_{rand}"></div>
 <div style="padding:10px 0px"><a click="yulan" href="javascript:;">[预览]</a>&nbsp; &nbsp; <button class="btn btn-success" click="saveadd" type="button">确定导入</button>&nbsp; <span id="msgview_{rand}"></span></div>
-<div class="tishi">请严格按照规定格式添加，否则数据将错乱哦。</div>
+<div class="tishi">请严格按照规定格式添加，否则数据将错乱哦，导入的字段可到[流程模块→表单元素管理]下设置，更多可查看<a href="<?=URLY?>view_daoru.html" target="_blank">[帮助]</a>。</div>
 </div>

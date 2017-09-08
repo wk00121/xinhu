@@ -11,13 +11,12 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'officia',modename='发文单',isflow=1,modeid='19',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"zinum","name":"\u53d1\u6587\u5b57\u53f7","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"0"},{"fields":"num","name":"\u516c\u6587\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"titles","name":"\u526f\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitsame","name":"\u53d1\u6587\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"grade","name":"\u516c\u6587\u7b49\u7ea7","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"unitname","name":"\u63a5\u6536\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"miji","name":"\u516c\u6587\u5bc6\u7ea7","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"class","name":"\u516c\u6587\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"filecontid","name":"\u6b63\u6587\u6587\u4ef6","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"},{"fields":"content","name":"\u516c\u6587\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u9700\u67e5\u9605\u5bf9\u8c61","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"zinum","name":"\u53d1\u6587\u5b57\u53f7","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"0"},{"fields":"num","name":"\u516c\u6587\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"titles","name":"\u526f\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitsame","name":"\u53d1\u6587\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"grade","name":"\u516c\u6587\u7b49\u7ea7","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"class","name":"\u516c\u6587\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u63a5\u6536\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"miji","name":"\u516c\u6587\u5bc6\u7ea7","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"filecontid","name":"\u6b63\u6587\u6587\u4ef6","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"},{"fields":"content","name":"\u516c\u6587\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u9700\u67e5\u9605\u5bf9\u8c61","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
 			a.reload();
 		},
-		//新增编辑窗口
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
@@ -51,14 +50,34 @@ $(document).ready(function(){
 			a.setparams(d,true);
 		},
 		//导出
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1,lx,lx1,e){
+			if(!this.daochuobj)this.daochuobj=$.rockmenu({
+				width:120,top:35,donghua:false,data:[],
+				itemsclick:function(d, i){
+					c.daonchuclick(d);
+				}
+			});
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			this.daochuobj.setData(d);
+			var lef = $(o1).offset();
+			this.daochuobj.showAt(lef.left, lef.top+35);
 		},
-		//对应控制器返回rul
+		daonchuclick:function(d){
+			if(d.lx==0)a.exceldown();
+			if(d.lx==1)a.exceldownnow();
+			if(d.lx==2)this.subscribelist();
+		},
+		subscribelist:function(){
+			js.subscribe({
+				title:'发文单('+nowtabs.name+')',
+				cont:'发文单('+nowtabs.name+')的列表的',
+				explain:'订阅[发文单]的列表',
+				objtable:a
+			});
+		},
 		getacturl:function(act){
 			return js.getajaxurl(act,'mode_officia|input','flow',{'modeid':modeid});
 		},
-		//查看切换
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
@@ -175,7 +194,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('b2ZmaWNpYWw:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"公文编号",dataIndex:"num"},{text:"标题",dataIndex:"title"},{text:"发文单位",dataIndex:"unitsame"},{text:"公文等级",dataIndex:"grade"},{text:"接收单位",dataIndex:"unitname"},{text:"公文密级",dataIndex:"miji"},{text:"公文类型",dataIndex:"class"},{text:"需查阅对象",dataIndex:"recename"},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"公文编号",dataIndex:"num"},{text:"标题",dataIndex:"title"},{text:"发文单位",dataIndex:"unitsame"},{text:"公文等级",dataIndex:"grade"},{text:"接收单位",dataIndex:"unitname"},{text:"公文密级",dataIndex:"miji"},{text:"需查阅对象",dataIndex:"recename"},{text:"状态",dataIndex:"statustext"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -217,6 +236,8 @@ c.setcolumns('base_deptname',{
 			if(d.lx==2)c.setfieldslist();
 		}
 	});
+	
+	
 });
 </script>
 <!--SCRIPTend-->
@@ -237,7 +258,7 @@ c.setcolumns('base_deptname',{
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

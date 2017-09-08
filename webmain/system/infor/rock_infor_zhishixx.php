@@ -31,11 +31,13 @@ $(document).ready(function(){
 		},{
 			text:'分类',dataIndex:'typename'
 		},{
-			text:'添加时间',dataIndex:'adddt'
+			text:'添加时间',dataIndex:'adddt',sortable:true
 		},{
-			text:'操作时间',dataIndex:'optdt'
+			text:'操作时间',dataIndex:'optdt',sortable:true
 		},{
-			text:'操作人',dataIndex:'optname'
+			text:'操作人',dataIndex:'optname',sortable:true
+		},{
+			text:'排序',dataIndex:'sort',sortable:true
 		},{
 			text:'ID',dataIndex:'id'
 		},{

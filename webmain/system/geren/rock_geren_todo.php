@@ -34,7 +34,7 @@ $(document).ready(function(){
 			}
 		}],
 		itemclick:function(d,oi, o1){
-			if(d.status==0)c.yidchuls(d.id, true);
+			//if(d.status==0)c.yidchuls(d.id, true);
 		},
 		load:function(){
 			$('#guestbook_wd').html(''+a.getData('wdtotal'))

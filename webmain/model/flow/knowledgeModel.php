@@ -24,9 +24,9 @@ class flow_knowledgeClassModel extends flowModel
 		}
 		return array(
 			'where' => $where,
-			'order' => 'a.`optdt` desc',
+			'order' => 'a.`sort`,a.`optdt` desc',
 			'table'	=> '`[Q]'.$this->mtable.'` a left join `[Q]option` b on a.`typeid`=b.`id`',
-			'fields'=> 'a.id,a.title,a.adddt,a.optdt,a.optname,b.`name` as typename'
+			'fields'=> 'a.id,a.title,a.adddt,a.optdt,a.optname,b.`name` as typename,a.`sort`'
 		);
 	}
 }

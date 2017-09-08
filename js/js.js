@@ -338,7 +338,7 @@ js.getajaxurl=function(a,m,d,can){
 	var url	= ''+this.path+'.php?a='+a+'&m='+m+'&d='+d+'';
 	for(var c in can)url+='&'+c+'='+can[c]+'';
 	if(jga!='@')url+='&ajaxbool=true';	
-	url+='&rnd='+Math.random()+'';	
+	url+='&rnd='+parseInt(Math.random()*999999)+'';	
 	return url;
 }
 js.formatsize=function(size){
@@ -922,6 +922,6 @@ js.cliendsend=function(at, cans, fun,ferr){
 		if(bo=='object')v='base64'+jm.base64encode(v)+'';
 		url+='&'+i+'='+v+'';
 	}
-	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录PC客户端');},1000);
+	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录PC客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
 }

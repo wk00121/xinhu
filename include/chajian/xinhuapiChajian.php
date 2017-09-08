@@ -1,9 +1,9 @@
 <?php 
 /**
-*	连接官网发送短信
+*	连接官网API，短信发送
 */
 
-class xinhusmsChajian extends Chajian{
+class xinhuapiChajian extends Chajian{
 	
 	private $updatekey 	= '';
 	private $updatekeys = '';
@@ -13,7 +13,7 @@ class xinhusmsChajian extends Chajian{
 	protected function initChajian()
 	{
 		if(getconfig('systype')=='dev'){
-			$this->updatekeys = 'aHR0cDovLzEyNy4wLjAuMS9hcHAvcm9ja2FwaS8:';
+			$this->updatekeys  = 'aHR0cDovLzEyNy4wLjAuMS9hcHAvcm9ja2FwaS8:';
 		}else{
 			$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
 		}
@@ -86,6 +86,7 @@ class xinhusmsChajian extends Chajian{
 	{
 		$para['sys_tomobile'] = $tomobile;
 		$para['sys_tplnum']   = $tplnum;
+		
 		$para['sys_url']   	  = $this->rock->jm->base64encode($url); //详情的URL
 		foreach($params as $k=>$v)$para['can_'.$k.''] = $v;
 		
@@ -118,5 +119,29 @@ class xinhusmsChajian extends Chajian{
 		}
 		
 		return $this->send($tomobile, $qiannum, $tplnum, $params, $url, $addlog);
+	}
+	
+	/**
+	*	添加异步
+	*/
+	public function sendanay($m, $a,$can=array(), $runtime=0)
+	{
+		$runurl = m('base')->getasynurl($m, $a,$can, 1);
+		$barr 	= $this->sendanayurl($runurl, $runtime);
+		return $barr;
+	}
+	
+	public function sendanayurl($runurl, $runtime=0)
+	{
+		if(isempt($runurl))return returnerror('异步调用地址不能为空');
+		$para	= array(
+			'runurl' => $this->rock->jm->base64encode($runurl),
+			'runtime' => $runtime,
+		);
+		$barr 	= $this->postdata('anay','send', $para);
+		
+		if(!$barr['success'])m('log')->addlogs('调用官网异步', $barr['msg'],2);
+		
+		return $barr;
 	}
 }

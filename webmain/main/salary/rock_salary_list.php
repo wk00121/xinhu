@@ -7,8 +7,6 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:modenum,params:{'atype':atype},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:true,
 		columns:[{
-			text:'',dataIndex:'caozuo'
-		},{
 			text:'部门',dataIndex:'udeptname',sortable:true
 		},{
 			text:'人员',dataIndex:'uname',sortable:true
@@ -30,17 +28,22 @@ $(document).ready(function(){
 			text:'发放',dataIndex:'ispay',sortable:true
 		},{
 			text:'状态',dataIndex:'statustext'
+		},{
+			text:'',dataIndex:'caozuo'
 		}],
 		itemclick:function(){
 			btn(false);
 		},
 		beforeload:function(){
 			btn(true);
+		},
+		itemdblclick:function(){
+			c.view();
 		}
 	});
 	
 	function btn(bo){
-		get('xiang_{rand}').disabled = bo;
+		
 	}
 	
 	var c = {
@@ -84,6 +87,10 @@ $(document).ready(function(){
 			$('#state{rand}_'+lx+'').addClass('active');
 			a.setparams({isturn:lx});
 			this.search();
+		},
+		daoru:function(){
+			managelisthrsalary = a;
+			addtabs({num:'daoru'+modenum+'',url:'flow,input,daoru,modenum='+modenum+'',icons:'plus',name:'导入薪资核算'});
 		}
 	};
 	js.initbtn(c);
@@ -100,7 +107,7 @@ $(document).ready(function(){
 		<input class="form-control" style="width:180px" id="key_{rand}"  placeholder="部门/姓名/职位">
 	</td>
 	<td  style="padding-left:10px">
-		<div style="width:140px"  class="input-group">
+		<div style="width:120px"  class="input-group">
 			<input placeholder="月份" readonly class="form-control" id="dt2_{rand}" >
 			<span class="input-group-btn">
 				<button class="btn btn-default" click="clickdt,2" type="button"><i class="icon-calendar"></i></button>
@@ -122,7 +129,7 @@ $(document).ready(function(){
 	
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" id="xiang_{rand}" click="view" disabled type="button">详情</button> &nbsp; 
+		<button class="btn btn-default" click="daoru" type="button">导入</button> &nbsp; 
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
 	</td>
 	</tr>
@@ -131,4 +138,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">提示：薪资核算前，请先核算考勤状态哦</div>
+<div class="tishi">提示：薪资核算前，请先核算考勤状态哦，需要核算+已审核才能发放哦！</div>

@@ -7,9 +7,10 @@ class baseClassModel extends Model
 	/**
 	*	获取异步地址
 	*/
-	public function getasynurl($m, $a,$can=array())
+	public function getasynurl($m, $a,$can=array(), $lx=0)
 	{
-		$runurl		= getconfig('localurl', URL);
+		if($lx==0)$runurl		= getconfig('localurl', URL);
+		if($lx==1)$runurl		= getconfig('anayurl', URL); //使用异步通信地址
 		$key 	 	= getconfig('asynkey');
 		if($key!='')$key = md5(md5($key));
 		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$this->adminid.'&asynkey='.$key.'';
@@ -19,6 +20,7 @@ class baseClassModel extends Model
 	
 	/**
 	*	系统上变量替换
+	*	$lx = 0 加''，$lx=1不加
 	*/
 	public function strreplace($str, $uid=0, $lx=0)
 	{

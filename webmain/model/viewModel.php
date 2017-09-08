@@ -89,7 +89,6 @@ class viewClassModel extends Model
 		if($type== 0 && $count==0 && $this->isflow==1){
 			$rows[] = array('wherestr'=>$this->rock->jm->base64encode('uid={uid}'),'whereid'=>0);
 		}
-		$wheeobj 	= m('where');
 		foreach($rows as $k=>$rs){
 			$sw = $this->rock->jm->base64decode($rs['wherestr']);
 			if($sw=='{receid}'){
@@ -113,13 +112,14 @@ class viewClassModel extends Model
 				return ' and 1=1';
 			}
 			if(!isempt($sw)){
-				$sw 	= m('base')->strreplace($sw, $uid);
+				$sw 	= $this->whereobj->getstrwhere($sw, $uid, $ufid);
+				$sw 	= str_replace('{asqom}','', $sw);
 				$sw 	= '('.$sw.')';
 				$wehs[] = $sw;
 			}
 			$whereid = (int)$rs['whereid'];
 			if($whereid>0){
-				$sww = $wheeobj->getwherestr($whereid, $uid, $ufid, 1);
+				$sww = $this->whereobj->getwherestr($whereid, $uid, $ufid, 1);
 				if($sww!='')$wehs[] = '('.$sww.')';
 			}
 		}

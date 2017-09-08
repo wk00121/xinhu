@@ -557,7 +557,7 @@ class inputAction extends Action
 				'num'	=> 'grant',
 				'name'  => ''.$this->flow->modename.'授权查看',
 			);
-		}else if($this->loadci==1){
+		}else if($this->loadci==1 && $this->adminid>0){
 			$this->atypearr = m('where')->getmywhere($this->modeid, $this->adminid, $this->get('pnum'));
 		}
 		return $this->storebefore($table);
@@ -652,6 +652,7 @@ class inputAction extends Action
 		$allfields = $this->db->getallfields('[Q]'.$flow->mtable.'');
 		
 		$oi 	= 0;
+		$dorudat= array();
 		foreach($ldata as $k=>$rs){
 			
 			if(!isset($rs['uid']) && in_array('uid', $allfields))$rs['uid'] = $this->adminid;
@@ -668,14 +669,18 @@ class inputAction extends Action
 			
 			
 			$bo = $flow->insert($rs);
-			if($bo)$oi++;
+			if($bo){
+				$rs['id'] = $bo;
+				$dorudat[]= $rs;
+				$oi++;
+			}
 		}
 		
 		if($oi==0)return returnerror('导入数据为0条');
 		
 		//保存后判断
 		if(method_exists($flow,'flowdaoruafter')){
-			$flow->flowdaoruafter($oi, $ldata);
+			$flow->flowdaoruafter($dorudat);
 		}
 
 		return returnsuccess('成功导入'.$oi.'条数据');

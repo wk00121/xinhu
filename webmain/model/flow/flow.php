@@ -127,6 +127,7 @@ class flowModel extends Model
 		$this->cnamemodel	= m('flowcname');
 		$this->wheremodel	= m('where');
 		$this->adminmodel	= m('admin');
+		$this->remindmodel	= m('remind'); //单据提醒表
 		$this->option		= m('option');
 		$this->tfieldsarra();
 		$this->flowinit();
@@ -601,14 +602,17 @@ class flowModel extends Model
 				$_type = $fsva['fieldstype'];
 				$showinpus = 1;
 				if($_type=='hidden' || $_type=='fixed')$showinpus=2;
+				$_val  = arrvalue($this->rssust, $_sfes);
+				$cheo  = (substr($_type,0,6)=='change' && !isempt($fsva['data']));
+				if($cheo)$_val.='|'.arrvalue($this->rssust, $fsva['data']).''; //默认值
 				$checkfields[$_sfes] = array(
-					'inputstr' 	=> $inputobj->getfieldcontval($_sfes, $this->rock->arrvalue($this->rssust, $_sfes)),
+					'inputstr' 	=> $inputobj->getfieldcontval($_sfes, $_val),
 					'name' 		=> $fsva['name'],
 					'fieldstype'=> $_type,
 					'fieldsarr' => $fsva,
 					'showinpus' => $showinpus
 				);
-				if(substr($_type,0,6)=='change' && !isempt($fsva['data'])){
+				if($cheo){
 					$_sfes = $fsva['data'];
 					$checkfields[$_sfes] = array(
 						'inputstr' 	=> '',
@@ -1638,8 +1642,7 @@ class flowModel extends Model
 		$modename 	= arrvalue($params, 'modename', $this->modename);
 		$id 		= (int)arrvalue($params, 'id', $this->id);
 		$moders		= arrvalue($params, 'moders');
-		if(!is_array($moders))$moders = $this->moders;
-		
+		if(!is_array($moders))$moders = $this->moders;	
 		if($gname=='')$gname = $modename;
 		$reim	= m('reim');
 		$url 	= $this->getxiangurl($modenum, $id, 'p');
@@ -1648,6 +1651,10 @@ class flowModel extends Model
 		if($id==0){
 			$url = '';$wxurl = '';$emurl='';
 		}
+		$url 	= arrvalue($params, 'url', $url);	 //PC上URL
+		$wxurl 	= arrvalue($params, 'wxurl', $wxurl); //移动端URL
+		$emurl 	= arrvalue($params, 'emurl', $emurl); //邮件上URL
+		
 		$slx	= 0;
 		$pctx	= $moders['pctx'];
 		$mctx	= $moders['mctx'];
@@ -1749,7 +1756,7 @@ class flowModel extends Model
 		$this->billmodel->delete($this->mwhere);
 		$this->todosmodel->delete($this->mwhere);
 		$this->checksmodel->delete($this->mwhere);
-		m('remind')->delete($this->mwhere);
+		m('remind')->delete($this->mwhere); //单据提醒的
 		m('todo')->delete($this->mwhere);
 		$this->delete($this->id);
 		$this->flowdeletebill($sm);
@@ -1908,10 +1915,10 @@ class flowModel extends Model
 					}
 				}
 			}
-			
-			if($status==1 && $isreadbo){
-				$arr[] = array('name'=>'评论','lx'=>15,'nup'=>1,'issm'=>1,'optmenuid'=>-15);
-			}
+		}
+		
+		if($status != 5 && $isreadbo){
+			$arr[] = array('name'=>'评论','lx'=>15,'nup'=>1,'issm'=>1,'optmenuid'=>-15);
 		}
 		
 		//定时提醒设置

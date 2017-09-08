@@ -125,6 +125,7 @@ $(document).ready(function(){
 		}
 	};
 	upsho{rand}=function(lx,id,kes){
+		if(ISDEMO){js.msg('msg','演示系统不要操作');return;}
 		c.upshos(lx,id,kes);
 	}
 	downup{rand}=function(id,na){
@@ -133,6 +134,7 @@ $(document).ready(function(){
 	js.initbtn(c);
 	
 	upfetwontbu=function(lx, o){
+		if(ISDEMO){js.msg('msg','演示系统不要操作');return;}
 		if(!istongbu && lx!=3){
 			js.alert('请先升级系统到最新才能同步');
 			return;

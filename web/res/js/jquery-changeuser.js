@@ -369,7 +369,7 @@
 				var type='checkbox',ched='';
 				if(!this.checked)type='radio';
 				oldvel = ','+oldvel+',';
-				for(i=0;i<len;i++){
+				for(i=0;i<len && i<this.maxshow;i++){
 					ched='';
 					if(!isempt(a[i].value) && oldvel.indexOf(','+a[i].value+',')>-1)ched='checked';
 					s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+a[i].name+'" value="'+a[i].value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
@@ -400,11 +400,17 @@
 			},500);
 		};
 		this._searchkey = function(bo){
-			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],len,i;
+			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],len,i,oi=0;
 			a=this.data;
 			len=a.length;
 			var o = $('#selectlist_'+rand+'');
-			if(key!='')for(i=0;i<len;i++)if(a[i].name.indexOf(key)>-1 || a[i].name.indexOf(key)>-1)d.push(i);
+			if(key!='')for(i=0;i<len;i++){
+				if(a[i].name.indexOf(key)>-1 || a[i].value==key){
+					d.push(i);
+					oi++;
+					if(oi>this.maxshow)break;
+				}
+			}
 			len = d.length;
 			if(len==0){
 				o.find('div').show();
@@ -438,6 +444,7 @@
 		var defaultVal = {
 			'showview': '',
 			'title' : '请选择...',
+			'maxshow' : 200, //最多显示防止卡死浏览器
 			'data'	  : [], 'url' : '',
 			'checked' : false,
 			'idobj'	  : false, 'nameobj':false,

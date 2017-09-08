@@ -1024,7 +1024,15 @@ class reimClassModel extends Model
 	*/
 	public function asynurl($m, $a,$can=array(), $runtime=0)
 	{
+		$asyn   = (int)getconfig('asynsend','0');
 		$runurl	= m('base')->getasynurl($m, $a,$can);
+		
+		//用官网VIP异步
+		if($asyn==2){
+			$barr = c('xinhuapi')->sendanay($m, $a,$can, $runtime);
+			if($barr['success'])return true;
+		}
+		
 		return $this->pushserver('runurl', array(
 			'url' => $runurl,
 			'runtime' => $runtime

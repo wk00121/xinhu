@@ -3,7 +3,7 @@ class smsClassAction extends Action
 {
 	public function initAction()
 	{
-		$this->smsobj = c('xinhusms');
+		$this->smsobj = c('xinhuapi');
 	}
 	
 	public function gettotalAjax()

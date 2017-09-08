@@ -33,6 +33,9 @@ $(document).ready(function(){
 		},
 		beforeload:function(){
 			btn(true);
+		},
+		itemdblclick:function(){
+			c.view();
 		}
 	});
 	

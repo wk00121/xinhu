@@ -40,7 +40,7 @@ class flow_remindClassModel extends flowModel
 		if($dt=='')$dt = $this->rock->date;
 		$dt		= substr($dt, 0, 10);
 		$now 	= $this->rock->now;
-		$rows 	= $this->getall("`status`=1 and `startdt`<='$now' and (`enddt` is null or `enddt`>='$now')",'`modenum`,`table`,`mid`,`rate`,`rateval`,`explain`,`uid`,`receid`,`startdt`');
+		$rows 	= $this->getall("`status`=1 and `startdt`<='$now' and (`enddt` is null or `enddt`>='$now')");
 		$dtobj	= c('date');
 		$w 		= date('w', strtotime($dt));
 		if($w==0)$w = 7;
@@ -150,25 +150,41 @@ class flow_remindClassModel extends flowModel
 		$modrs 		= m('flow_set')->getall("`num` in ($modenums) and `status`=1");
 		foreach($modrs as $k=>$rs)$modearr[$rs['num']] = $rs;
 		
-		//单据通知设置ID
-		$flowtodoid = '';
+		
+		$flowtodoid = ''; //单据通知设置ID
+		$subscribid = array(); //订阅的
 		
 		foreach($sarr as $k=>$rs){
+			$mid 	= $rs['mid'];
+			
 			if($rs['modenum']=='flowtodo'){
-				$flowtodoid.=','.$rs['mid'].'';
+				$flowtodoid.=','.$mid.'';
 				continue;
 			}
 			$mrs	= arrvalue($modearr, $rs['modenum']);
 			if(!$mrs)continue;
 			$cont 	= $rs['explain'];
 			
-			$receid = $rs['uid'];
+			$receid 	= $rs['uid'];
+			$recename 	= $rs['optname'];
 			if(!isempt($rs['receid'])){
-				$receid  = 'u'.$receid.','.$rs['receid'].'';
+				$receid  	= 'u'.$receid.','.$rs['receid'].'';
+				$recename  .= ','.$rs['recename'].'';
+			}
+			
+			//订阅的
+			if($rs['modenum']=='subscribe'){
+				$subscribid[] = array(
+					'id'	=> $mid,
+					'uid'	=> $rs['uid'],
+					'receid'=> $receid,
+					'recename'=> $recename,
+				);
+				continue;
 			}
 			
 			$this->pushs($receid, $cont, $mrs['name'], array(
-				'id' 		=> $rs['mid'],
+				'id' 		=> $mid,
 				'modenum' 	=> $rs['modenum'],
 				'modename' 	=> $mrs['name'],
 				'moders'	=> $mrs
@@ -177,6 +193,28 @@ class flow_remindClassModel extends flowModel
 		
 		//单据通知提醒需要另外提醒
 		if($flowtodoid !='')$this->flowtodosettx(substr($flowtodoid, 1));
+		
+		//订阅的处理(建议用异步的)
+		if($subscribid){
+			if(getconfig('asynsend')){
+				print_r($subscribid);
+				$reim	= m('reim');
+				foreach($subscribid as $subo){
+					$reim->asynurl('asynrun','subscribe', array(
+						'recename' 	=> $this->rock->jm->base64encode($subo['recename']),
+						'receid' 	=> $subo['receid'],
+						'id' 		=> $subo['id'],
+						'uid'		=> $subo['uid']
+					));
+				}
+			}else{
+				//没有异步直接调用
+				$subflow = m('flow')->initflow('subscribeinfo');
+				foreach($subscribid as $subo){
+					$subflow->subscribe($subo['id'],$subo['uid'],$subo['receid'],$subo['recename']);
+				}
+			}
+		}
 		
 		return $sarr;
 	}

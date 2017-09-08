@@ -8,6 +8,10 @@ function initbodys(){
 		form('htid').value = '';
 	});
 	
+	c.onselectdata['custname']=function(){
+		form('htid').value = '';
+	}
+	
 	$(form('htid')).change(function(){
 		var val = this.value,txt='';
 		salechange(val);

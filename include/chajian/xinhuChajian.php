@@ -31,9 +31,9 @@ class xinhuChajian extends Chajian{
 	public function getdata($act, $can=array())
 	{
 		$url 	= $this->geturlstr($act, $can);
-		$cont 	= c('curl')->getfilecont($url);
-		$data  	= array('code'=>199,'msg'=>'你的服务器访问不到信呼官网'.URLY.'');
-		if($cont!=''){
+		$cont 	= c('curl')->getcurl($url);
+		$data  	= array('code'=>199,'msg'=>'出错'.URLY.',返回:'.htmlspecialchars($cont).'');
+		if($cont!='' && substr($cont,0,1)=='{'){
 			$data  	= json_decode($cont, true);
 		}
 		return $data;

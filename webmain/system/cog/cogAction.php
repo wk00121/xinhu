@@ -64,7 +64,7 @@ class cogClassAction extends Action
 		$arr['db_drive'] 	= getconfig('db_drive');
 		$arr['xinhukey'] 	= getconfig('xinhukey');
 		$arr['bcolorxiang'] = getconfig('bcolorxiang');
-		$arr['asynsend'] 	= getconfig('asynsend') ? '1' : '0';
+		$arr['asynsend'] 	= getconfig('asynsend');
 		$arr['sqllog'] 		= getconfig('sqllog') ? '1' : '0';
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
@@ -109,9 +109,9 @@ class cogClassAction extends Action
 		$arr['bcolorxiang'] = $this->post('bcolorxiang');
 		
 		$asynsend 		 	= $this->post('asynsend');
-		$arr['asynsend'] 	= $asynsend=='1';
+		$arr['asynsend'] 	= $asynsend;
 		
-		if($arr['asynsend'] && !m('reim')->asynurlbo())exit('没有开启服务端不能使用异步');
+		//if($arr['asynsend'] && !m('reim')->asynurlbo())exit('没有开启服务端不能使用异步');
 		
 		$arr['sqllog'] 	 = $this->post('sqllog')=='1';
 		$arr['debug'] 	 = $this->post('debug')=='1';
@@ -138,7 +138,7 @@ class cogClassAction extends Action
 		$smarr['asynkey']		= '这是异步任务key';
 		$smarr['openkey']		= '对外接口openkey';
 		$smarr['sqllog']		= '是否记录sql日志保存'.UPDIR.'/sqllog下';
-		$smarr['asynsend']		= '是否异步发送提醒消息，为true需开启服务端';
+		$smarr['asynsend']		= '是否异步发送提醒消息，0同步，1自己服务端异步，2官网VIP用户异步';
 		$smarr['install']		= '已安装，不要去掉啊';
 		$smarr['xinhukey']		= '信呼官网key，用于在线升级使用';
 		$smarr['bcolorxiang']	= '单据详情页面上默认展示线条的颜色';

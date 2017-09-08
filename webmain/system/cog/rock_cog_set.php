@@ -113,7 +113,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right">提醒消息发送方式：</td>
-			<td class="tdinput"><select id="asynsend_{rand}"  class="form-control"><option value="0">同步发送</option><option value="1">异步发送</option></select>
+			<td class="tdinput"><select id="asynsend_{rand}"  class="form-control"><option value="0">同步发送</option><option value="1">异步发送(自己服务端)</option><option value="2">异步发送(官网VIP专用)</option></select>
 			<font color="#888888">提醒消息发送微信消息提示发送，邮件提醒发送等。选择[异步发送]需安装服务端，异步发送能大大提高效率。</font></td>
 		</tr>
 		
