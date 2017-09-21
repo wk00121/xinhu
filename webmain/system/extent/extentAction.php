@@ -3,8 +3,11 @@ class extentClassAction extends Action
 {
 	public function beforeextentuser($table)
 	{
+		$key	= $this->post('key');
+		$where  = '';
+		if(!isempt($key))$where = m('admin')->getkeywhere($key);
 		return array(
-			'where' => 'and `status`=1 and `type`=0',
+			'where' => 'and `status`=1 and `type`=0 '.$where.'',
 			'fields'=> '`id`,`name`,`user`,`deptname`'
 		);
 	}

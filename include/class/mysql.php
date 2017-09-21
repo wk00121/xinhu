@@ -334,6 +334,9 @@ abstract class mysql{
 		return $where;
 	}
 
+	/**
+	*	以$kfied作为主键返回数组
+	*/
 	public function getarr($table, $where='', $fields='*', $kfied='id')
 	{
 		$sql	= $this->getsql(array(

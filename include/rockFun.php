@@ -4,7 +4,7 @@
 	* 联系QQ： 290802026											*
 	* 版  本： V2.0													*
 	* 开发者：雨中磐石工作室										*
-	* 邮  箱： admin@demo.rockoa.com.com/									*
+	* 邮  箱： admin@rockoa.com										*
 	* 网  址： http://www.rockoa.com/								*
 	* 说  明: 定义常用的方法										*
 	* 备  注: 未经允许不得商业出售，代码欢迎参考纠正				*
@@ -125,12 +125,24 @@ function contain($str,$a)
 }
 
 /**
+*	获取请求的头
+*	@return string/array
+*/
+function getheader($key='')
+{
+	$arr = array();
+	if(function_exists('getallheaders'))$arr = getallheaders();
+	if($key=='')return $arr;
+	return arrvalue($arr, $key);
+}
+
+/**
 *	是否ajax请求
 *	@return boolean
 */
 function isajax()
 {
-	if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH'])=='xmlhttprequest'){ 
+	if(strtolower(getheader('X-Requested-With'))=='xmlhttprequest'){ 
 		return true;
 	}else{ 
 		return false;

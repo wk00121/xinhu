@@ -8,7 +8,7 @@ class beifenClassAction extends Action
 		$myext		= $this->getsession('adminallmenuid');
 		if(getconfig('systype')=='demo')return '演示请勿操作';
 		if($myext!='-1')return '只有管理员才可以用';
-		$tables		= explode(',', 'daily,file,flow_log,flow_todos,flow_checks,im_history,im_mess,im_messzt,infor,infors,log,logintoken,meet,reads,sjoin,work,todo,flow_bill,flow_remind,goodm,goodss,goods,kqanay,kqdkjl,kqerr,kqout,kqinfo,location,official,schedule,project,userinfo,userinfos,userract,hrpositive,word,hrredund,hrsalary,customer,custsale,custract,custfina,assetm,book,bookborrow,carm,carms,carmang,carmrese,email_cont,emailm,emails,sealapl,vcard,tovoid,editrecord,wouser,dailyfx,knowtraim,knowtrais,fininfom,fininfos,hrtrsalary,hrtransfer,reward,offyuebd,repair,knowtiku,kqdisv,knowledge');
+		$tables		= explode(',', 'daily,file,flow_log,flow_todos,flow_checks,im_history,im_mess,im_messzt,infor,infors,log,logintoken,meet,reads,sjoin,work,todo,flow_bill,flow_remind,goodm,goodss,goods,kqanay,kqdkjl,kqerr,kqout,kqinfo,location,official,schedule,project,userinfo,userinfos,userract,hrpositive,word,hrredund,hrsalary,customer,custsale,custract,custfina,assetm,book,bookborrow,carm,carms,carmang,carmrese,email_cont,emailm,emails,sealapl,vcard,tovoid,editrecord,wouser,dailyfx,knowtraim,knowtrais,fininfom,fininfos,hrtrsalary,hrtransfer,reward,offyuebd,repair,knowtiku,kqdisv,knowledge,kqjcmd,kqjuser,kqjsn');
 		$alltabls 	= $this->db->getalltable();
 		foreach($tables as $tabs){
 			$_tabs 	= ''.PREFIX.''.$tabs.'';

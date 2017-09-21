@@ -40,7 +40,12 @@ class mode_custfinaClassAction extends inputAction{
 	
 	public function hetongdata()
 	{
-		$rows = m('crm')->getmyract($this->adminid, (int)$this->get('mid'));
+		$htid = 0;
+		$mid  = (int)$this->get('mid','0');
+		if($mid>0){
+			$htid = (int)$this->flow->getmou('htid', $mid); //当前记录也要显示合同ID
+		}
+		$rows = m('crm')->getmyract($this->adminid, $htid);
 		$arr  = array();
 		foreach($rows as $k=>$rs){
 			$arr[] = array(

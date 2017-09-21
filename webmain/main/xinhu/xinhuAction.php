@@ -24,16 +24,18 @@ class xinhuClassAction extends Action
 	
 	public function testsendAjax()
 	{
-		$obj = m('reim');
-		$bo  = $obj->sendpush($this->adminid, $this->adminid,array(
+		$barr  = m('reim')->sendpush($this->adminid, $this->adminid,array(
 			'cont' 	=> $this->jm->base64encode('测试内容:'.$this->now.''),
 			'type' 	=> 'user',
 			'optdt' => $this->now,
 			'messid' => 0
 		));
 		$msg 	= '';
-		if(!$bo)$msg='<font color=red>服务端推送地址不能使用</font>';
-		if($msg=='')$msg='服务端推送地址可以使用';
+		if($barr['code']==0){
+			$msg='服务端推送地址可以使用';
+		}else{
+			$msg='<font color=red>服务端推送地址不能使用：'.$barr['msg'].'</font>';
+		}
 		echo $msg;
 	}
 	

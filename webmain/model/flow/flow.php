@@ -997,7 +997,7 @@ class flowModel extends Model
 		$nowstep = $zongsetp  = -1;
 		$isend 	= 0;
 		$czt 	= $this->rs['status'];
-		
+		$coutye = 0; //判断是否需要前后审批处理
 		$rows  	= ($czt==1 || $czt==5)? array() : $this->getflowpipei($this->uid);
 		if($rows){
 			//读取flow_checks是否比审核状态(退回的)
@@ -1063,6 +1063,10 @@ class flowModel extends Model
 					if($checkshu == 0 && $nowshu>0)$ischeck = 1;
 				}
 				
+				if($ischeck==0 && $coutye==0){
+					if((int)arrvalue($rs,'coursetype','0')>0)$coutye = 1;
+				}
+				
 				$rs['ischeck'] 		= $ischeck;
 				$rs['islast'] 		= 0;
 				$rs['checkid'] 		= $checkid;
@@ -1086,6 +1090,25 @@ class flowModel extends Model
 				$this->flowarr[]= $rs;
 			}
 		}
+		
+		//前置后置审批的处理(比较麻烦，先不做了，怕有问题)
+		if($coutye==133){
+			$nsarr	= array();
+			$qzar	= $hzrr = array();
+			foreach($this->flowarr as $k=>$rs){
+				if($rs['ischeck'] == 1)continue;
+				$coursetype = $rs['coursetype'];
+				//前置审批
+				if($coursetype=='1'){
+					$qzar[$k] = $rs;
+				}
+				//后置
+				if($coursetype=='2'){
+					$hzrr[$k] = $rs;
+				}
+			}
+		}
+		
 		if($zongsetp>-1)$this->flowarr[$zongsetp]['islast']=1;
 		if($nowstep == -1){
 			$isend = 1;
@@ -1741,6 +1764,7 @@ class flowModel extends Model
 	*/
 	public function deletebill($sm='', $qxpd=true)
 	{
+		if(getconfig('systype')=='demo')return '演示请勿删除';
 		if($qxpd){
 			$is = $this->isdeleteqx();
 			if($is==0)return '无权删除';

@@ -13,11 +13,11 @@ class taskClassAction extends Action
 		if($url=='')exit('请先设置系统本地地址');
 		$mtask = m('task');
 		$mtask->createjson();
-		$bo 	= $mtask->starttask();
-		if($bo){
+		$barr 	= $mtask->starttask();
+		if($barr['code']==0){
 			echo 'ok';
 		}else{
-			echo '无法启动可能未开启服务端';
+			echo '无法启动可能未开启服务端:'.$barr['msg'].'';
 		}
 	}
 	

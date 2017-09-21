@@ -71,11 +71,11 @@ $(document).ready(function(){
 	<div>
 		<button click="beifen,0" class="btn btn-success" type="button">系统数据备份</button>
 	</div>
-	<div class="tishi">数据备份会备份到系统目录<?=UPDIR?>/data文件下，建议每天备份一次</div>
+	<div class="tishi">数据备份会备份到系统目录<?=UPDIR?>/data文件下，建议每天备份一次！</div>
 	
 	<div class="blank10"></div>
 	<div><button click="huifu" class="btn btn-info" type="button">系统数据恢复</button></div>
-	<div class="tishi">还原到初始数据，请谨慎使用</div>
+	<div class="tishi">恢复你备份过的数据！</div>
 	
 	
 	<div class="blank20"></div>
@@ -84,6 +84,6 @@ $(document).ready(function(){
 	
 	<div class="blank20"></div>
 	<div><button click="deluser" class="btn btn-danger" type="button">初始化部门和用户</button></div>
-	<div class="tishi">初始化部门和用户，将会删除你创建的用户和部门，请备份好数据谨慎使用！</div>
+	<div class="tishi">初始化部门和用户，将会删除你创建的用户和部门，为了防止误删只能使用一次，请备份好数据谨慎使用！</div>
 	
 </div>

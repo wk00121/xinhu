@@ -57,15 +57,13 @@ class Action extends mainAction
 		if($this->loginsubscribe())return;//免验证
 		$uid = (int)$this->getsession('adminid',0);
 		if($uid==0){
-			echo 'sorry! not login';
-			if(!isajax()){
-				$lurl = '?m=login';
-				if($this->rock->ismobile() || $ismo)$lurl='?d=we&m=login';
-				if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
-				$backurl   = $this->rock->jm->base64encode($this->rock->nowurl());
-				if($backurl!='' && M!='index')$lurl = $lurl.'&backurl='.$backurl.'';
-				$this->rock->location($lurl);
-			}
+			$lurl = '?m=login';
+			if($this->rock->ismobile() || $ismo)$lurl='?d=we&m=login';
+			if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
+			$backurl   = $this->rock->jm->base64encode($this->rock->nowurl());
+			if($backurl!='' && M!='index')$lurl = $lurl.'&backurl='.$backurl.'';
+			echo '没有登录，去<a href="'.$lurl.'">[登录]</a>';
+			if(!isajax())$this->rock->location($lurl);
 			exit();
 		}
 	}

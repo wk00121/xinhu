@@ -983,10 +983,6 @@ class reimClassModel extends Model
 		$contjson 	= '{'.substr($contjson,1).'}';
 		
 		return c('JPush')->push($title, arrvalue($conta,'cont'), $contjson, $alias);
-		//return $this->pushserver('runurl', array(
-		//	'url' => $runurl,
-		//	'runtime' => 0
-		//));
 	}
 	
 	/**
@@ -1033,10 +1029,27 @@ class reimClassModel extends Model
 			if($barr['success'])return true;
 		}
 		
-		return $this->pushserver('runurl', array(
+		$barr =  $this->pushserver('runurl', array(
 			'url' => $runurl,
 			'runtime' => $runtime
 		));
+		
+		return $barr['code']===0;
+	}
+	
+	/**
+	*	获取得到推送的端口号
+	*/
+	public function getpushhostport($str)
+	{
+		$host = ''; $port = 0;
+		$stra = explode('//', $str);
+		if(isset($stra[1])){
+			$strb 	= explode(':', str_replace('/','', $stra[1]));
+			$host	= $strb[0];
+			$port	= (int)arrvalue($strb, 1, '0');
+		}
+		return array('host'=>$host,'port'=>$port);
 	}
 
 	/**
@@ -1044,30 +1057,18 @@ class reimClassModel extends Model
 	*/
 	public function pushserver($atype, $cans=array())
 	{
-		$bsarr 	= array('msg'=>'notpushurl','code'=>2);
-		$bstt	= json_encode($bsarr);
 		if(isempt($this->serverpushurl))return false;
-		$ishttp	= substr($this->serverpushurl,0, 4)=='http';
-		
-		if($ishttp)$url 	= $this->serverpushurl.'?reimrecid='.$this->serverrecid.'';
-		
+
 		$carr['from'] 	= $this->serverrecid;
 		$carr['adminid']= $this->adminid;
 		$carr['atype'] 	= $atype;
 		foreach($cans as $k=>$v)$carr[$k]=$v;
 		$str 			= json_encode($carr);
 		
-		//http的
-		if($ishttp){
-			$sustr	= c('curl')->postcurl($url, $str);
-			return contain($sustr, '"msg":"ok"');
-		}else{
-			$spath 	= $this->serverpushurl;
-			$spath	= str_replace('\\','/', $spath);
-			$spath 	= $spath.'/Rock/push/'.$this->serverrecid.'_'.time().'_'.rand(100,999).'.txt';
-			$bo 	= @file_put_contents($spath, $str);
-			return $bo;
-		}
+		$posts			= $this->getpushhostport($this->serverpushurl);
+		$barr 			= c('socket')->udppush($str, $posts['host'], $posts['port']);
+
+		return $barr;
 	}
 	
 	/**

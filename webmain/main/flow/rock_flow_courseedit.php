@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -283,13 +283,20 @@ $(document).ready(function(){
 			<td class="tdinput" colspan="3"><textarea  name="explain" style="height:60px" class="form-control"></textarea></td>
 		</tr>
 		
+		<tr>
+			
+			<td  align="right" nowrap >审核人数：</td>
+			<td class="tdinput"><select class="form-control" name="checkshu"><option value="0">需全部审核</option><option value="1" selected>至少一人</option><option value="2">至少2人</option></select></td>
+			
+			<td  align="right" nowrap >审批方式：</td>
+			<td class="tdinput"><select class="form-control" name="coursetype"><option value="0">顺序审批</option><option value="1">前置审批(前面有审批后面出现就跳过)</option><option value="2">后置审批(如后面步骤有出现就跳过)</option></select></td>
+		</tr>
 		
 		<tr>
 			<td align="right">排序号：</td>
 			<td class="tdinput"><input name="sort" value="0" maxlength="3" type="number"  onfocus="js.focusval=this.value" onblur="js.number(this)" class="form-control"></td>
 			
-			<td  align="right" nowrap >审核人数：</td>
-			<td class="tdinput"><select class="form-control" name="checkshu"><option value="0">需全部审核</option><option value="1" selected>至少一人</option><option value="2">至少2人</option></select></td>
+			
 			
 			
 		</tr>

@@ -179,7 +179,7 @@ class adminClassModel extends Model
 		return $s;
 	}
 	
-	public function getpath($did, $sup)
+	public function getpath($did, $sup,$dids='')
 	{
 		$deptpath 	= $this->db->getpval('[Q]dept', 'pid', 'id', $did, '],[');
 		$deptallname= $this->db->getpval('[Q]dept', 'pid', 'name', $did, '/');
@@ -198,7 +198,20 @@ class adminClassModel extends Model
 			if($superpath!='')$superpath=substr($superpath,1);
 			if($supername!='')$supername=substr($supername,1);
 		}
-		$rows['deptpath'] 	= $this->rock->strformat('[?0]', $deptpath);
+		//部门路径
+		$deptpath	= $this->rock->strformat('[?0]', $deptpath);
+		if(!isempt($dids)){
+			$didsa = explode(',', $dids);
+			foreach($didsa as $dids1){
+				$desss 	= $this->db->getpval('[Q]dept', 'pid', 'id', $dids1, '],[');
+				$desssa	= explode(',', $this->rock->strformat('[?0]', $desss));
+				foreach($desssa as $desssa1){
+					if(!contain($deptpath, $desssa1))$deptpath.=','.$desssa1.'';
+				}
+			}
+		}
+		
+		$rows['deptpath'] 	= $deptpath; 
 		$rows['superpath'] 	= $superpath;
 		$rows['deptname'] 	= $deptname;
 		$rows['superman'] 	= $supername;
@@ -404,11 +417,11 @@ class adminClassModel extends Model
 	*/
 	public function updateinfo($where='')
 	{
-		$rows	= $this->db->getall("select id,name,deptid,superid,deptpath,superpath,deptname,deptallname,superman from `[Q]admin` a where id>0 $where order by `sort`");
+		$rows	= $this->db->getall("select id,name,deptid,superid,deptpath,superpath,deptname,deptallname,superman,deptids from `[Q]admin` a where id>0 $where order by `sort`");
 		$total	= $this->db->count;
 		$cl		= 0;
 		foreach($rows as $k=>$rs){
-			$nrs	= $this->getpath($rs['deptid'], $rs['superid']);
+			$nrs	= $this->getpath($rs['deptid'], $rs['superid'], $rs['deptids']);
 			if($nrs['deptpath'] != $rs['deptpath'] || $nrs['deptname'] != $rs['deptname'] || $nrs['superpath'] != $rs['superpath'] || $nrs['superman'] != $rs['superman'] || $nrs['deptallname'] != $rs['deptallname']){
 				$this->record($nrs, "`id`='".$rs['id']."'");
 				$cl++;
@@ -425,13 +438,15 @@ class adminClassModel extends Model
 	public function updateuserinfo($whe='')
 	{
 		$db 	= m('userinfo');
-		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,b.name as names,b.deptname as deptnames,b.ranking as rankings,b.num as nums,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,a.num,a.companyid from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
+		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,a.num,a.companyid,a.deptnames,a.rankings from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
 		foreach($rows as $k=>$rs){
 			$uparr = array(
 				'id' 		=> $rs['id'],
 				'name' 		=> $rs['name'],
 				'deptname' 	=> $rs['deptname'],
+				'deptnames' => $rs['deptnames'],
 				'ranking' 	=> $rs['ranking'],
+				'rankings' 	=> $rs['rankings'],
 				'sex' 		=> $rs['sex'],
 				'tel' 		=> $rs['tel'],
 				'mobile' 	=> $rs['mobile'],

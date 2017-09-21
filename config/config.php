@@ -7,9 +7,9 @@
 *	要修改配置文件在：webmain/webmainConfig.php
 */
 @session_start();
-if(!ini_get('date.timezone') )date_default_timezone_set('Asia/Shanghai');
+if(function_exists('date_default_timezone_set'))date_default_timezone_set('Asia/Shanghai'); //设置默认时区
 header('Content-Type:text/html;charset=utf-8');
-define('ROOT_PATH',str_replace('\\','/',dirname(dirname(__FILE__))));
+define('ROOT_PATH',str_replace('\\','/',dirname(dirname(__FILE__))));	//系统跟目录路径
 
 include_once(''.ROOT_PATH.'/include/rockFun.php');
 include_once(''.ROOT_PATH.'/include/Chajian.php');
@@ -74,4 +74,7 @@ define('QOM', $config['qom']);
 define('VERSION', $config['version']);
 define('HIGHPASS', $config['highpass']);
 define('SYSURL', ''.URL.PATH.'.php');
+
+$_confpath	= ''.ROOT_PATH.'/config/iplogs.php'; //这个用来限制IP访问的
+if(file_exists($_confpath))include_once($_confpath);
 $rock->initRock();

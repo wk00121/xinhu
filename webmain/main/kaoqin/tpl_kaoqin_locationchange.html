@@ -13,9 +13,10 @@ body, button, input, select, textarea {
 }
 
 </style>
-<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp"></script>
 <script>
-var callback = '<?=$callback?>';
+
+var callback = '<?=$callback?>'; //回调函数
 var init = function() {
     var center = new qq.maps.LatLng(<?=$location_x?>,<?=$location_y?>);
     map = new qq.maps.Map(document.getElementById('container'),{

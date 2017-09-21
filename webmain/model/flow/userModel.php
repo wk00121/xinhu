@@ -25,7 +25,7 @@ class flow_userClassModel extends flowModel
 			$where.= " and instr(`deptpath`,'[$detpid]')>0";
 		}
 		return array(
-			'fields'=> '`name`,`id`,`id` as uid,`face`,`sort`,`deptallname`,deptpath,`ranking`,`tel`,`mobile`,`email`,`user`,num,workdate,sex,deptname,superman,status,type,online,lastonline',
+			'fields'=> '`name`,`id`,`id` as uid,`face`,`sort`,`deptallname`,deptpath,`ranking`,`tel`,`mobile`,`email`,`user`,num,workdate,sex,deptname,deptnames,superman,status,type,online,lastonline',
 			'order' => 'sort',
 			'where' => $where
 		);

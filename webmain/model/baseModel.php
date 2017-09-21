@@ -59,7 +59,7 @@ class baseClassModel extends Model
 				if($lx==0)$val = "'$val'";
 				$str = str_replace('{'.$match.'}', $val, $str);
 			}
-			//是否日期加减
+			//是否日期加减{date+1},{second-20}
 			if(contain($match,'+') || contain($match,'-')){
 				$add = 1;
 				if(contain($match,'-'))$add=-1;

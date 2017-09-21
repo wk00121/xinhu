@@ -28,6 +28,14 @@ class kaoqinClassAction extends Action
 		return array('rows'=>$rows);
 	}*/
 	
+	public function kqdwbefore($table)
+	{
+		$key	= $this->post('key');
+		$where 	= '';
+		if(!isempt($key))$where=" and (`name` like '%$key%' or `address` like '%$key%')";
+		return $where;
+	}
+	
 	
 	//考勤信息
 	public function kqinfobeforeshow($table)

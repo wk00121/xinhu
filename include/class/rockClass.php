@@ -38,7 +38,7 @@ final class rockClass
 		$this->unarr	= explode(',','1,2');
 		$this->now		= $this->now();
 		$this->date		= date('Y-m-d');
-		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,outfile,select*from,select*,select%20,delete%20,drop%20,and%20');
+		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,outfile,eval(,phpinfo(),select*from,select*,select%20,delete%20,drop%20,and%20');
 		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
 		$this->lvlarab	= array();
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
@@ -531,9 +531,9 @@ URL：'.$_SERVER['QUERY_STRING'].'
 	public function debugs($str, $lxs='')
 	{
 		if(!DEBUG)return;
-		$msg 	= '['.$this->now.']:'.$str.'';
+		$msg 	= '['.$this->now.']:'.$this->nowurl().''.chr(10).''.$str.'';
 		$mkdir 	= ''.UPDIR.'/'.date('Y-m').'';
-		$this->createtxt(''.$mkdir.'/'.$lxs.''.time().'_'.rand(100,999).'.log', $msg);
+		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.rand(100,999).'.log', $msg);
 	}
 	
 	public function arrvalue($arr, $k, $dev='')

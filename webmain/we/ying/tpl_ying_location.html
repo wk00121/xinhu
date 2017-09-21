@@ -12,11 +12,12 @@
 <script type="text/javascript" src="js/jswx.js"></script>
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-rockupload.js"></script>
-<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp&libraries=convertor,geometry"></script>
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&libraries=convertor,geometry"></script>
 <style>
 
 </style>
 <script>
+//考勤信息
 var kqrs = <?=json_encode($kqrs);?>,kqors = <?=json_encode($kqors);?>,kqallrs=[],isgzh = <?=$isgzh?>;
 js.servernow = '<?=$rock->now?>';
 var infoWin,marker,circle;

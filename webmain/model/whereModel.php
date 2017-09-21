@@ -100,7 +100,7 @@ class whereClassModel extends Model
 			if($type=='dept'){
 				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.arrvalue($urs,'deptid','0').')';
 			}
-			$str = str_replace('{'.$match.'}', $rstr, $str);
+			$str = str_replace('{'.$match.'}', '( '.$rstr.' )', $str); //加上括号
 		}
 		return $str;
 	}

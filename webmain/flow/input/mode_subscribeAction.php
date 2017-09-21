@@ -4,12 +4,7 @@
 */ 
 class mode_subscribeClassAction extends inputAction{
 	
-	public function storeafter($table, $rows)
-	{
-		return array(
-			'isadd'    => false
-		);
-	}
+	
 	
 	protected function savebefore($table, $cans, $id, $addbo=true)
 	{

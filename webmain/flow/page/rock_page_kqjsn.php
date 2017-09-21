@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：subscribe.订阅管理，
+*	模块：kqjsn.考勤机设备，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.订阅管理]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.考勤机设备]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'subscribe',modename='订阅管理',isflow=0,modeid='67',atype = params.atype,pnum=params.pnum;
+	var modenum = 'kqjsn',modename='考勤机设备',isflow=0,modeid='70',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"optname","name":"\u8ba2\u9605\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"title","name":"\u8ba2\u9605\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"cont","name":"\u8ba2\u9605\u63d0\u9192\u5185\u5bb9","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8ba2\u9605\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"optdt","name":"\u8ba2\u9605\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"1"},{"fields":"recename","name":"\u540c\u65f6\u8ba2\u9605\u7ed9","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"ratecont","name":"\u8ba2\u9605\u63d0\u9192\u65f6\u95f4","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suburl","name":"\u8ba2\u9605\u5730\u5740","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"suburlpost","name":"\u8ba2\u9605\u5730\u5740post\u53c2\u6570","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"lastdt","name":"\u6700\u540e\u8fd0\u884c\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"shatename","name":"\u5171\u4eab\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"id","name":"ID","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"num","name":"\u8bbe\u5907\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"name","name":"\u8bbe\u5907\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"company","name":"\u516c\u53f8\u540d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"lastdt","name":"\u6700\u540e\u8bf7\u6c42\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"id","name":"ID","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"space","name":"sd\u5361\u5269\u4f59\u7a7a\u95f4","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"memory","name":"\u5269\u4f59\u5185\u5b58","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"usershu","name":"\u4eba\u5458\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"fingerprintshu","name":"\u6307\u7eb9\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"headpicshu","name":"\u5934\u50cf\u6570\u91cf","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"clockinshu","name":"\u6253\u5361\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"picshu","name":"\u73b0\u573a\u7167\u7247\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"romver","name":"\u7cfb\u7edf\u7248\u672c","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"appver","name":"\u5e94\u7528\u7248\u672c","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"model","name":"\u8bbe\u5907\u578b\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -69,14 +69,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'订阅管理('+nowtabs.name+')',
-				cont:'订阅管理('+nowtabs.name+')的列表的',
-				explain:'订阅[订阅管理]的列表',
+				title:'考勤机设备('+nowtabs.name+')',
+				cont:'考勤机设备('+nowtabs.name+')的列表的',
+				explain:'订阅[考勤机设备]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_subscribe|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_kqjsn|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -120,8 +120,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistsubscribe = a;
-			addtabs({num:'daorusubscribe',url:'flow,input,daoru,modenum=subscribe',icons:'plus',name:'导入订阅管理'});
+			window.managelistkqjsn = a;
+			addtabs({num:'daorukqjsn',url:'flow,input,daoru,modenum=kqjsn',icons:'plus',name:'导入考勤机设备'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -191,10 +191,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('c3Vic2NyaWJl'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('a3Fqc24:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"订阅人",dataIndex:"optname"},{text:"订阅标题",dataIndex:"title"},{text:"订阅提醒内容",dataIndex:"cont"},{text:"订阅说明",dataIndex:"explain"},{text:"订阅时间",dataIndex:"optdt",sortable:true},{text:"状态",dataIndex:"status"},{text:"同时订阅给",dataIndex:"recename"},{text:"订阅提醒时间",dataIndex:"ratecont"},{text:"最后运行时间",dataIndex:"lastdt",sortable:true},{text:"共享给",dataIndex:"shatename"},{text:"ID",dataIndex:"id"},{
+		columns:[{text:"设备号",dataIndex:"num"},{text:"设备名称",dataIndex:"name"},{text:"公司名",dataIndex:"company"},{text:"状态",dataIndex:"status",sortable:true},{text:"排序号",dataIndex:"sort",sortable:true},{text:"最后请求时间",dataIndex:"lastdt",sortable:true},{text:"ID",dataIndex:"id",sortable:true},{text:"sd卡剩余空间",dataIndex:"space",sortable:true},{text:"剩余内存",dataIndex:"memory",sortable:true},{text:"人员数",dataIndex:"usershu"},{text:"指纹数",dataIndex:"fingerprintshu",sortable:true},{text:"头像数量",dataIndex:"headpicshu",sortable:true},{text:"打卡数",dataIndex:"clockinshu",sortable:true},{text:"现场照片数",dataIndex:"picshu",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -211,59 +211,76 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-//设置单元格可编辑
-	bootparams.celleditor = true;
-	c.setcolumns('title',{
-		editor:true
-	});
-	c.setcolumns('explain',{
-		editor:true,
-		type:'textarea'
-	});
-	c.setcolumns('cont',{
-		editor:true,
-		type:'textarea'
-	});
+bootparams.celleditor = true;
+	bootparams.checked = true;
+	$('#tdright_{rand}').prepend(c.getbtnstr('选中设备操作 <i class="icon-angle-down"></i>','optbtn')+'&nbsp;');
 	
-	c.setcolumns('status',{
-		editor:true,
-		type:'checkbox',
-		editorafter:function(){
-			c.reload();
+	$('#btnoptbtn_{rand}').rockmenu({
+		width:170,top:35,donghua:false,
+		data:[{
+			name:'设置配置',lx:'config'
+		},{
+			name:'重启',lx:'reboot'
+		},{
+			name:'获取所有人员',lx:'getuser'
+		},{
+			name:'获取设备信息',lx:'getinfo'
+		},{
+			name:'设置广告图1',lx:'advert1'
+		},{
+			name:'设置广告图2',lx:'advert2'
+		},{
+			name:'设置广告图3',lx:'advert3'
+		}],
+		itemsclick:function(d, i){
+			c.sendcmd(0, d.lx);
 		}
 	});
 	
-	$('#tdright_{rand}').prepend(c.getbtnstr('运行订阅','dinghue','','disabled')+'&nbsp;&nbsp;');
-	c.dinghue=function(){
-		js.msg('wait','运行中...');
-		js.ajax(this.getacturl('yunsubscribe'),{id:a.changeid},function(ret){
-			if(ret.success){
-				js.msg('success', '运行成功');
-				a.reload();
-			}else{
+	c.sendcmd=function(id, type){
+		var ids = a.getchecked();
+		if(ids==''){js.msg('msg','没用复选框选中记录');return;}
+		js.ajax(js.getajaxurl('sendcmd','kaoqinj','main'),{ids:ids,'type':type},function(ret){
+			if(!ret.success){
 				js.msg('msg', ret.msg);
+			}else{
+				js.msg('success', ret.data);
 			}
-		},'get,json');
+		},'get,json',false,'发送中...,已发送');
 	}
-	bootparams.itemclick=function(){
-		get('btndinghue_{rand}').disabled=false;
-	}
-	bootparams.beforeload=function(){
-		get('btndinghue_{rand}').disabled=true;
-	}
-
-	$('#viewsubscribe_{rand}').after('<div class="tishi">未设置订阅提醒时间是不会生效哦，可在[操作]菜单上添加提醒设置，查看<a href="<?=URLY?>view_subscribe.html" target="_blank">[帮助]</a>。</div>');
 	
-	c.clickwin=function(){
-		js.confirm('订阅管理新增不是在这里的，请到各个列表页面下的[导出]按钮下点订阅，是否打开相关帮助说明？',function(jg){
-			if(jg=='yes')window.open('<?=URLY?>view_subscribe.html');
-		});
+	c.setcolumns('num',{
+		'renderer':function(v,d,i){
+			return ''+v+' <a onclick="show_{rand}('+i+')" href="javascript:;">管理</a>';
+		}
+	});
+	
+	show_{rand}=function(i){
+		var d = a.getData(i);
+		addtabs({num:'sngl'+d.id+'',name:'考勤机设备['+d.name+']管理',url:'main,kaoqinj,dept,snid='+d.id+''});
 	}
+	
+	c.setcolumns('sort',{
+		'editor':true
+	});
+	
+	c.setcolumns('name',{
+		'editor':true
+	});
+	
+	c.setcolumns('company',{
+		'editor':true
+	});
+	
+	c.setcolumns('status',{
+		'editor':true,
+		'type':'checkbox'
+	});
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewsubscribe_{rand}').bootstable(bootparams);
+	var a = $('#viewkqjsn_{rand}').bootstable(bootparams);
 	c.init();
 	var ddata = [{name:'高级搜索',lx:0}];
 	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
@@ -290,7 +307,7 @@ $(document).ready(function(){
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:#888888" value="0">停用</option><option style="color:green" value="1">启用</option></select></td>
+		
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -305,5 +322,5 @@ $(document).ready(function(){
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewsubscribe_{rand}"></div>
+<div id="viewkqjsn_{rand}"></div>
 <!--HTMLend-->

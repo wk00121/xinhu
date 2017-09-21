@@ -86,6 +86,7 @@ class xinhuapiChajian extends Chajian{
 	{
 		$para['sys_tomobile'] = $tomobile;
 		$para['sys_tplnum']   = $tplnum;
+		$para['sys_qiannum']  = $qiannum;
 		
 		$para['sys_url']   	  = $this->rock->jm->base64encode($url); //详情的URL
 		foreach($params as $k=>$v)$para['can_'.$k.''] = $v;
@@ -142,6 +143,71 @@ class xinhuapiChajian extends Chajian{
 		
 		if(!$barr['success'])m('log')->addlogs('调用官网异步', $barr['msg'],2);
 		
+		return $barr;
+	}
+	
+	/**
+	*	获取验证码(1分钟内只能获取一次)，有效期5分钟
+	*	$tomobile 接收手机号
+	*	$qiannum 签名编号
+	*	$tplnum 模版编号
+	*/
+	public function getvercode($tomobile, $tplnum='', $qiannum='')
+	{
+		if($tplnum=='')$tplnum = 'defyzm';
+		$otme 	= floatval($this->rock->cookie('sms_vertime',0));
+		if(isempt($tomobile))return returnerror('接收手机号不能为空');
+		
+		$jgtims = 60;//每次获取间隔秒数
+		$jgtime	= time()-$otme;
+		if($otme>0 && $jgtime<$jgtims)return returnerror('获取太频繁,请'.($jgtims-$jgtime).'秒后在试');
+
+		$code 	= rand(100000,999999);
+		$params['code'] = $code;
+		$barr 	= $this->send($tomobile, $qiannum, $tplnum, $params);
+		//$barr['success'] = $code;
+		if($barr['success']){
+			$this->rock->savecookie('sms_vercode,sms_vertime,sms_yztime', array(md5($tomobile.$code), time(),1), 1/24/12);
+		}
+		return $barr;
+	}
+	
+	/**
+	*	验证验证码是否正确,最多只能验证5次
+	*/
+	public function checkcode($tomobile, $code)
+	{
+		if(isempt($tomobile))return returnerror('手机号不能为空');
+		if(isempt($code))return returnerror('验证码不能为空');
+		$codes 	= md5($tomobile.$code);
+		$vercode= $this->rock->cookie('sms_vercode');
+		$yztime = (int)$this->rock->cookie('sms_yztime','1'); //验证次数
+		$otme 	= floatval($this->rock->cookie('sms_vertime',0));
+		if($otme<=0)return returnerror('未获取验证码');
+		$youxiaq= 5*60;//
+		if(time() - $otme > $youxiaq)return returnerror('验证码已过期');
+		$keys 	= 'sms_vercode,sms_vertime,sms_yztime';
+		if($vercode != $codes){
+			$yztime++;
+			$this->rock->savecookie('sms_yztime', $yztime, 1/24/12);
+			if($yztime>5)$this->rock->clearcookie($keys);
+			return returnerror('验证码错误');
+		}
+		$this->rock->clearcookie($keys); //正确就清除
+		return returnsuccess('ok');
+	}
+	
+	/**
+	*	发送计划任务(不能用)
+	*/
+	public function starttask()
+	{
+		$turl	= getconfig('anayurl', URL);
+		$url 	= ''.$turl.'task.php?m=runt&a=getlist';
+		
+		$barr 	= $this->postdata('anay','starttask', array(
+			'runurl' => $this->rock->jm->base64encode($url)
+		));
 		return $barr;
 	}
 }
