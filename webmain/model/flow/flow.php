@@ -2183,7 +2183,6 @@ class flowModel extends Model
 			}
 			$arr['fields'] = substr($fieldss, 1);
 		}
-		
 		$arr['where'] 	= $where;
 		return $arr;
 	}

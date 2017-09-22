@@ -13,6 +13,7 @@ class whereClassModel extends Model
 	*/
 	public function getstrwhere($str, $uid=0, $fid='')
 	{
+		if(isempt($str))return '';
 		if($uid==0)$uid = $this->adminid;
 		$dbs		= m('admin');
 		$sw1		= $this->rock->dbinstr('superid',$uid);
@@ -25,9 +26,11 @@ class whereClassModel extends Model
 		$str  = str_replace('[A]`uid`','`uid`', $str);
 		$str  = str_replace('[A]uid','`uid`', $str);
 		$barr = $this->rock->matcharr($str,2);
-		$itsha= array('status','uid','optid','optname','applydt','createdt');
+		$itsha= array('status','uid','optid','optname','applydt','createdt','createid');
+		$thar = array();
 		foreach($barr as $bsuid){
-			if(in_array($bsuid, $itsha)){
+			if(in_array($bsuid, $itsha) && !in_array($bsuid, $thar)){
+				$thar[] = $bsuid;
 				$str  = str_replace('`'.$bsuid.'`','{asqom}`'.$bsuid.'`', $str);
 			}
 		}
@@ -68,7 +71,6 @@ class whereClassModel extends Model
 			$rstr= c('date')->getweeklast($this->rock->date);
 			$str = str_replace('{weeklast}', $rstr, $str);
 		}
-		
 		$barr = $this->rock->matcharr($str);
 		foreach($barr as $match){
 			$rstr = $type = '';

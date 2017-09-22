@@ -129,8 +129,8 @@ abstract class mysql{
 		$this->nowerror	= false;
 		if(!$rsbool)$this->nowerror = true;
 		if(!$rsbool && DEBUG && $ebo){
-			$txt	= ''.D.'/'.M.'/'.A.',[错误SQL]：《'.$sql.'》----------原因：'.$this->error().'';
-			$this->rock->debug($txt,'mysql');
+			$txt	= '【错误SQL】'.chr(10).''.$sql.''.chr(10).''.chr(10).'【原因】'.chr(10).''.$this->error().''.chr(10).'';
+			$this->rock->debug($txt,'mysql_sqlerr');
 		}
 		return $rsbool;
 	}

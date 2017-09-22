@@ -132,7 +132,7 @@ final class rockClass
 		if($lx==2)$s=str_replace(array('{','}'), array('[H1]','[H2]'), $s);
 		$str = strtolower($s);
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){
-			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params');
+			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
 			$s = str_replace($v1,'', $str);
 		}
 	
@@ -141,9 +141,14 @@ final class rockClass
 	public function debug($txt, $lx)
 	{
 		if(!DEBUG)return;
-$txt	= ''.$txt.'
-URL：'.$_SERVER['QUERY_STRING'].'
-';
+		$txt	= ''.$txt.''.chr(10).'【URL】'.chr(10).''.$this->nowurl().'';
+		if($_POST){
+			$pstr = '';
+			foreach($_POST as $k=>$v)$pstr.=''.chr(10).'['.$k.']：'.$v.'';
+			$txt.=''.chr(10).''.chr(10).'【POST】'.$pstr.'';
+		}
+		$txt.=''.chr(10).''.chr(10).'【IP】'.chr(10).''.$this->ip.'';
+		$txt.=''.chr(10).''.chr(10).'【浏览器】'.chr(10).''.$this->HTTPweb.'';
 		$this->createtxt(''.UPDIR.'/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log', $txt);
 	}
 	

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50540
 File Encoding         : 65001
 
-Date: 2017-09-21 17:51:53
+Date: 2017-09-22 11:12:39
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -65,7 +65,7 @@ CREATE TABLE `xinhu_admin` (
 -- ----------------------------
 -- Records of xinhu_admin
 -- ----------------------------
-INSERT INTO `xinhu_admin` VALUES ('1', null, 'admin', '管理员', 'e10adc3949ba59abbe56e057f20f883e', '1884', '1', '1', '男', '0592-1234567', 'upload/face/1.jpg', '2', '开发部', '3', '财务部', '财务总监', '信呼开发团队/开发部', '5', '磐石', '项目主管', '0', '[1],[2],[3]', '[5]', null, '15800000123', '1', '2016-06-01', null, '2017-03-08 09:52:30', null, null, null, '0', 'guanliyuan', null, '1', '0', null);
+INSERT INTO `xinhu_admin` VALUES ('1', null, 'admin', '管理员', 'e10adc3949ba59abbe56e057f20f883e', '1886', '1', '1', '男', '0592-1234567', 'upload/face/1.jpg', '2', '开发部', '3', '财务部', '财务总监', '信呼开发团队/开发部', '5', '磐石', '项目主管', '0', '[1],[2],[3]', '[5]', null, '15800000123', '1', '2016-06-01', null, '2017-03-08 09:52:30', null, null, null, '0', 'guanliyuan', null, '1', '0', null);
 INSERT INTO `xinhu_admin` VALUES ('2', null, 'diaochan', '貂蝉', 'e10adc3949ba59abbe56e057f20f883e', '68', '1', '0', '女', '0592-123456', 'upload/face/2.jpg', '3', '财务部', null, null, null, '信呼开发团队/财务部', '5', '磐石', '财务总监', '0', '[1],[3]', '[5]', null, '15800000007', '1', '2016-08-09', null, null, null, null, null, '0', 'diaochan', null, '0', '0', null);
 INSERT INTO `xinhu_admin` VALUES ('3', null, 'xiaoqiao', '小乔', 'e10adc3949ba59abbe56e057f20f883e', '117', '1', '0', '女', null, 'upload/face/3.jpg', '3', '财务部', null, null, null, '信呼开发团队/财务部', '2', '貂蝉', '出纳', '0', '[1],[3]', '[5],[2]', null, '15800000001', '1', '2017-05-02', null, '2016-08-30 20:34:23', null, null, null, '0', 'xiaoqiao', null, '0', '0', null);
 INSERT INTO `xinhu_admin` VALUES ('4', null, 'daqiao', '大乔', 'e10adc3949ba59abbe56e057f20f883e', '180', '1', '0', '女', null, 'upload/face/4.jpg', '4', '行政人事部', null, null, null, '信呼开发团队/行政人事部', '5', '磐石', '人事主管', '0', '[1],[4]', '[5]', null, '15800000002', '1', '2017-07-01', null, '2016-10-20 22:27:51', null, null, null, '0', 'daqiao', null, '0', '0', null);
@@ -337,8 +337,8 @@ CREATE TABLE `xinhu_chargems` (
 -- ----------------------------
 -- Records of xinhu_chargems
 -- ----------------------------
-INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2017-09-21 17:51:44', null, '1');
-INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2017-09-21 17:51:44', null, '0');
+INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2017-09-22 11:12:32', null, '1');
+INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2017-09-22 11:12:32', null, '0');
 
 -- ----------------------------
 -- Table structure for `xinhu_company`
@@ -2724,9 +2724,9 @@ INSERT INTO `xinhu_flow_where` VALUES ('34', '7', 'downall', 'down', '下属全�
 INSERT INTO `xinhu_flow_where` VALUES ('35', '7', 'downty', 'down', '下属停用', 'YHVpZGAgaW4oe3N1cGVyfSkgYW5kIGBzdGF0dXNgPTA:', null, null, '10', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('36', '7', 'downstat', 'down', '下属标★', 'YHVpZGAgaW4oe3N1cGVyfSkgYW5kIGBpc3N0YXRgPTE:', null, null, '11', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('37', '7', 'mystat', null, '我标★客户', 'YHVpZGA9e3VpZH0gYW5kIGBpc3N0YXRgPTE:', null, null, '2', null, null, null, null, null, '1', '1', null, null);
-INSERT INTO `xinhu_flow_where` VALUES ('38', '7', 'distdfp', 'dist', '待分配客户', 'YGlkYCA!IDAgYW5kIChgdWlkYD17dWlkfSBvciBgZnppZGA9e3VpZH0gb3IgYGNyZWF0ZWlkYD17dWlkfSBvciBgdWlkYCBpbih7c3VwZXJ9KSkgYW5kIGB1aWRgPTA:', null, null, '31', null, null, null, null, null, '1', '1', null, null);
-INSERT INTO `xinhu_flow_where` VALUES ('39', '7', 'distyfp', 'dist', '已分配的', 'YGlkYCA!IDAgYW5kIChgdWlkYD17dWlkfSBvciBgZnppZGA9e3VpZH0gb3IgYGNyZWF0ZWlkYD17dWlkfSAgb3IgYHVpZGAgaW4oe3N1cGVyfSkpIGFuZCBgdWlkYD4w', null, null, '32', null, null, null, null, null, '1', '1', null, null);
-INSERT INTO `xinhu_flow_where` VALUES ('40', '7', 'distall', 'dist', '全部分配状态', 'YGlkYCA!IDAgYW5kIChgdWlkYD17dWlkfSBvciBgZnppZGA9e3VpZH0gb3IgYGNyZWF0ZWlkYD17dWlkfSAgb3IgYHVpZGAgaW4oe3N1cGVyfSkp', null, null, '33', null, null, null, null, null, '1', '1', null, null);
+INSERT INTO `xinhu_flow_where` VALUES ('38', '7', 'distdfp', 'dist', '待分配客户', 'KGB1aWRgPXt1aWR9IG9yIGBmemlkYD17dWlkfSBvciBgY3JlYXRlaWRgPXt1aWR9IG9yIGB1aWRgIGluKHtzdXBlcn0pKSBhbmQgYHVpZGA9MA::', null, null, '31', null, null, null, null, null, '1', '1', null, null);
+INSERT INTO `xinhu_flow_where` VALUES ('39', '7', 'distyfp', 'dist', '已分配的', 'KGB1aWRgPXt1aWR9IG9yIGBmemlkYD17dWlkfSBvciBgY3JlYXRlaWRgPXt1aWR9ICBvciBgdWlkYCBpbih7c3VwZXJ9KSkgYW5kIGB1aWRgPjA:', null, null, '32', null, null, null, null, null, '1', '1', null, null);
+INSERT INTO `xinhu_flow_where` VALUES ('40', '7', 'distall', 'dist', '全部分配状态', 'KGB1aWRgPXt1aWR9IG9yIGBmemlkYD17dWlkfSBvciBgY3JlYXRlaWRgPXt1aWR9ICBvciBgdWlkYCBpbih7c3VwZXJ9KSk:', null, null, '33', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('41', '7', 'mycj', null, '我创建', 'YGNyZWF0ZWlkYD17dWlkfQ::', null, null, '4', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('42', '7', 'all', 'all', '所有客户', 'MT0x', null, null, '50', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('43', '7', 'allty', 'all', '所有停用客户', 'YHN0YXR1c2A9MA::', null, null, '51', null, null, null, null, null, '1', '1', null, null);

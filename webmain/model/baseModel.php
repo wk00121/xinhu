@@ -50,7 +50,6 @@ class baseClassModel extends Model
 		$urs['deptname']	= arrvalue($urs,'deptname');
 		$urs['ranking']		= arrvalue($urs,'ranking');
 		$barr = $this->rock->matcharr($str);
-		
 		foreach($barr as $match){
 			$key 	= $match;
 			if(substr($key,0,4)=='urs.')$key  = substr($key,4);
