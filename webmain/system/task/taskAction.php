@@ -9,15 +9,27 @@ class taskClassAction extends Action
 	}
 	public function starttaskAjax()
 	{
-		$url 	= getconfig('localurl');
-		if($url=='')exit('请先设置系统本地地址');
-		$mtask = m('task');
-		$mtask->createjson();
-		$barr 	= $mtask->starttask();
-		if($barr['code']==0){
-			echo 'ok';
+		$lx		= (int)$this->get('lx','0');
+		m('task')->cleartask();
+		if($lx==0){
+			$url 	= getconfig('localurl');
+			if($url=='')return returnerror('请先设置系统本地地址');
+			$barr 	= m('task')->starttask();
+			if($barr['code']==0){
+				return returnsuccess('启动成功');
+			}else{
+				return returnsuccess('无法启动可能未开启服务端:'.$barr['msg'].'');
+			}
 		}else{
-			echo '无法启动可能未开启服务端:'.$barr['msg'].'';
+			if($lx==1){
+				$barr = c('xinhuapi')->starttask();
+				if($barr['success'])$barr['data'] = '已通过官网服务开启计划任务';
+			}
+			if($lx==2){
+				$barr = c('xinhuapi')->stoptask();
+				if($barr['success'])$barr['data'] = '已停止使用官网计划任务';
+			}
+			return $barr;
 		}
 	}
 	
@@ -57,7 +69,7 @@ php task.php runt,task';
 		echo '#信呼计划任务每5分钟运行一次<br>';
 		echo '*/5 * * * * '.ROOT_PATH.'/'.$spath.'</div>';
 		
-		echo '<br><br>三、<b>浏览器窗口运行</b><br>';
+		echo '<br><br>三、<b>浏览器窗口运行</b>，用于你的是虚拟主机没办法管理服务器时<br>';
 		echo '打开<a href="?m=task&a=queue&d=system" style="color:blue">[计划任务队列]</a> 来启用计划任务。<br>';
 	}
 	

@@ -1,4 +1,7 @@
 <?php
+/**
+*	考勤的model
+*/
 class kaoqinClassModel extends Model
 {
 	private $userarr 	= array();
@@ -17,18 +20,19 @@ class kaoqinClassModel extends Model
 		$now = $this->rock->now;
 		if($dkdt=='')$dkdt = $now;
 		if($ip=='')$ip=$this->rock->ip;
+		$xh  	= c('xinhu');
 		$kqa 	= $this->admindb->getusinfo($uid,'dkip,dkmac');
 		$mac	= strtolower($mac);
-		if(isempt($kqa['dkip']) && isempt($kqa['dkmac']))return '未设置打卡IP或MAC地址';
+		if(isempt($kqa['dkip']) && isempt($kqa['dkmac']))return '未设置打卡IP或MAC地址'.$xh->helpstr('kaoqin').'';
 		if(!isempt($kqa['dkip']) && $kqa['dkip']!='*'){
 			$ass 	= explode(',', $kqa['dkip']);
-			if(!in_array($ip, $ass))return '打卡电脑内网IP必须是：'.$kqa['dkip'].'';
+			if(!in_array($ip, $ass))return '打卡电脑IP必须是：'.$kqa['dkip'].'，当前IP是：'.$ip.''.$xh->helpstr('kaoqin').'';
 		}
 		if(!isempt($kqa['dkmac'])){
-			if($mac=='')return '无法获取MAC地址,请使用PC客户端';
+			if($mac=='')return '无法获取MAC地址,请使用REIM客户端，'.$xh->helpstr('client','下载').'';
 			$dkmac 	= str_replace('-',':',strtolower($kqa['dkmac']));
 			$ass 	= explode(',', $dkmac);
-			if(!in_array($mac, $ass))return '打卡电脑MAC地址必须是：'.$kqa['dkmac'].'';
+			if(!in_array($mac, $ass))return '打卡电脑MAC地址必须是：'.$kqa['dkmac'].'，当前MAC地址是：'.$mac.'';
 		}
 		$this->db->record('[Q]kqdkjl',array(
 			'dkdt' 	=> $dkdt,

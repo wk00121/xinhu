@@ -67,7 +67,7 @@ function initbody(){
 			im.reload('none');
 		},
 		ondownbefore:function(){
-			return im.index<3;
+			return (im.index==0 || im.index==1 || im.index==2);
 		},
 		ondrayrlend:function(lx){
 			if(lx<-100)im.changetab(im.index+1);
@@ -171,20 +171,29 @@ var im={
 		}
 	},
 	showagent:function(a){
-		var i,len=a.length;
-		$('#main_index1').html('');
-		for(i=0;i<len;i++)this.showagents(a[i]);
+		var i,len=a.length,d,oshow,typearr={},s,ois=0;
+		oshow = $('#main_index1');
+		oshow.html('');
+		for(i=0;i<len;i++){
+			d 	= a[i];
+			d.i = i;
+			if(!typearr[d.types])typearr[d.types]=[];
+			typearr[d.types].push(d);
+		}
+		for(ty in typearr){
+			ois++;
+			len = typearr[ty].length;
+			s = '<div class="agentp">'+ty+'</div><div id="agentshow_'+ois+'" style="background-color:white" class="weui_grids"></div>';
+			oshow.append(s);
+			for(i=0;i<len;i++){
+				this.showagents(typearr[ty][i], 'agentshow_'+ois+'');
+			}
+		}
 		this.changestotl('agentstotal_',1);
 	},
-	types:'',
-	showagentdiv:'',
-	showagents:function(d){
+	showagents:function(d,shows){
 		var s='';
 		var s1=d.stotal;if(s1==0)s1='';
-		if(d.types!=this.types){
-			this.showagentdiv = 'agentshow'+d.id+'';
-			$('#main_index1').append('<div class="agentp">'+d.types+'</div><div id="'+this.showagentdiv+'" style="background-color:white" class="weui_grids"></div>');
-		}
 		s='<a href="javascript:;" onclick="im.openagent('+d.id+')" class="weui_grid">';
 		s+='<div class="weui_grid_icon">';
 			s+='	<img src="'+d.face+'">';
@@ -193,12 +202,11 @@ var im={
 		s+='<p class="weui_grid_label">';
 		s+=' '+d.name+'';
 		s+='</p>';
-		if(d.totals>0)s+='<font class="yingshright"></font>';
 		s+='</a>';
 		agentarr[d.id]=d;
-		$('#'+this.showagentdiv+'').append(s);
-		this.types = d.types;
+		$('#'+shows+'').append(s);
 	},
+	
 	changestotl:function(jg,lx){
 		if(!jg)jg='histotal_';
 		var o=$("span[id^='"+jg+"']"),oi=0,i,len=o.length,v1;
@@ -236,7 +244,7 @@ var im={
 		var ops = d.optdt.substr(11,5);
 		if(d.optdt.indexOf(date)!=0)ops=d.optdt.substr(5,5);
 		ty	= d.type;
-		s='<a id="index_'+num+'" onclick="im.openguser(\''+ty+'\','+d.receid+')" class="weui_media_box weui_media_appmsg">';
+		s='<a id="index_'+num+'" onclick="im.clickitems(\''+ty+'\','+d.receid+', this)" class="weui_media_box weui_media_appmsg">';
 		s+='	<div class="weui_media_hd">';
 		s+='		<img class="weui_media_appmsg_thumb" src="'+d.face+'">';
 		s+='	</div>';
@@ -249,23 +257,11 @@ var im={
 		s+='	</div>';
 		s+='</a>';
 		o.append(s);
-		
-		$('#index_'+num+'').longpress({
-			onpress:function(){
-				im.clickitems(this.type,this.receid,this.ele);
-			},
-			type:ty,
-			receid:d.receid,
-			ondragend:function(isan){
-				if(!isan)im.openguser(this.type,this.receid);
-			}
-		});
-	
 	},
 	clickitems:function(ty,id, o){
 		var o1=$(o);
 		js.showmenu({
-			data:[{name:'打开会话',lx:0},{name:'删除此记录',lx:1}],
+			data:[{name:'打开',lx:0},{name:'删除此记录',lx:1}],
 			onclick:function(a){
 				var lx=a.lx;
 				if(lx==0){
@@ -283,7 +279,14 @@ var im={
 		js.location('?a=userinfo&d=we&uid='+id+'');
 	},
 	openguser:function(ty,id){
-		js.location('?m=chat&d=we&type='+ty+'&uid='+id+'');
+		var num = ''+ty+'_'+id+'';
+		$('#histotal_'+num+'').html('');
+		this.changestotl(false,0);
+		if(ty=='agent'){
+			this.openagent(id);
+		}else{
+			js.location('?m=chat&d=we&type='+ty+'&uid='+id+'');
+		}
 	},
 	loginout:function(){
 		js.wx.confirm('确定要退出系统吗？',function(lx){

@@ -9,9 +9,12 @@ class reimClassModel extends Model
 	public $wxchattb		= 0;//聊天是否同步到微信
 	public $wxcorpid		= '';//聊天是否同步到微信
 	
+	
+	
 	public function initModel()
 	{
 		$this->settable('im_mess');
+		$this->hisobj = m('im_history');
 		$this->inithost();
 	}
 	
@@ -144,6 +147,7 @@ class reimClassModel extends Model
 		if($slx==3)return false;
 		$gid	= $this->getgroupid($gname);
 		$gname	= $this->groupname;
+		$admdb  = m('admin');
 		$sarr	= array(
 			'gname'		=> $gname,
 			'optdt'		=> $this->rock->now,
@@ -154,17 +158,28 @@ class reimClassModel extends Model
 			'cont'		=> $this->rock->jm->base64encode($cont),
 			'url'		=> $url
 		);
-		$resid = $receid;
+		
+		if($title=='')$title = $gname;
+		
+		//保存到推送会话列表上历史记录上
+		if($gid>0){
+			$receids = $admdb->gjoins($receid);
+			if($receids!='all' &&
+				!isempt($receids)
+			)$this->addhistory($sarr['type'], $gid, $receids, $sarr['optdt'], $sarr['cont'], $this->adminid, $title);
+		}
+		
+		$resid  = $receid;
 		if($slx == 0 || $slx==1){
-			if($resid != 'all')$resid = m('admin')->getonline($resid);
+			if($resid != 'all')$resid = $admdb->getonline($resid);
 			if($resid != '')$this->sendpush($this->adminid, $resid, $sarr);//PC端
 		}
 		//推送到APP上
 		if($slx == 0 || $slx==2){
-			if($title=='')$title = $gname;
 			if($wxurl!='')$sarr['url'] = $wxurl;
 			$this->pushapp($receid, $title, $sarr, $slx);
 		}
+		
 	}
 	
 	
@@ -329,7 +344,7 @@ class reimClassModel extends Model
 		}else{
 			m('im_messzt')->delete("uid='$uid' and `gid`=$gid");
 		}
-		m('im_history')->update('stotal=0', "`type`='$type' and `uid`='$uid' and `receid`='$gid'");
+		$this->hisobj->update('stotal=0', "`type`='$type' and `uid`='$uid' and `receid`='$gid'");
 	}
 	
 	
@@ -346,8 +361,10 @@ class reimClassModel extends Model
 		$dbs 	= m('im_menu');
 		$mdbs 	= m('menu');
 		$barr	= $carr = array();
+		$mids 	= '0';
+		foreach($rows as $k=>$rs)$mids.=','.$rs['id'].'';
 		
-		$allmenu = $dbs->getall("1=1",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`','`sort`');
+		$allmenu = $dbs->getall("`mid` in($mids)",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`','`sort`');
 		$cmenu	 = array();
 		foreach($allmenu as $k=>$rs){
 			if($rs['pid']=='0'){
@@ -395,8 +412,17 @@ class reimClassModel extends Model
 			$rs['types']	= $types;
 			$carr[$types][] = $rs;
 		}
+		
+		//应用统计
+		$gcarr = array();
+		foreach($carr as $types=>$rows){
+			$ntypes = $types.'('.count($rows).')';
+			foreach($rows as $k=>$rs)$rows[$k]['types'] = $ntypes;
+			$gcarr[$ntypes] = $rows;
+		}
+		
 		$barr = array();
-		foreach($carr as $types=>$rs){
+		foreach($gcarr as $types=>$rs){
 			$barr = array_merge($barr, $rs);
 		}
 		return $barr;
@@ -432,8 +458,17 @@ class reimClassModel extends Model
 			$rs['types']	= $types;
 			$carr[$types][] = $rs;
 		}
+		
+		//应用统计
+		$gcarr = array();
+		foreach($carr as $types=>$rows){
+			$ntypes = $types.'('.count($rows).')';
+			foreach($rows as $k=>$rs)$rows[$k]['types'] = $ntypes;
+			$gcarr[$ntypes] = $rows;
+		}
+		
 		$barr = array();
-		foreach($carr as $types=>$rs){
+		foreach($gcarr as $types=>$rs){
 			$barr = array_merge($barr, $rs);
 		}
 		return array(
@@ -466,6 +501,7 @@ class reimClassModel extends Model
 				$face	= 'images/group.png';
 				$rows[$k]['gid'] = $rs['receid'];
 				$rson  	= $this->db->getone('[Q]im_group', $rs['receid'], 'name,face');
+				if(!isempt($rs['title']) && $rson)$rson['name'] = $rs['title'];
 			}
 			if($rson){
 				$name = $rson['name'];
@@ -495,10 +531,10 @@ class reimClassModel extends Model
 	/**
 	*	添加到历史记录,用户不显示历史记录让从新显示
 	*/
-	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0)
+	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='')
 	{
 		$uidsas = explode(',', $uids);
-		$db 	= m('im_history');
+		$db 	= $this->hisobj;
 		foreach($uidsas as $uid){
 			$where 	= "`type`='$type' and `receid`='$receid' and `uid`='$uid'";
 			$one 	= $db->getone($where);
@@ -506,6 +542,7 @@ class reimClassModel extends Model
 			$arr['optdt'] 	= $optdt;
 			$arr['cont'] 	= $cont;
 			$arr['sendid'] 	= $sendid;
+			$arr['title'] 	= $title;
 			if(!$one){
 				$arr['type'] 	= $type;
 				$arr['receid'] 	= $receid;
@@ -527,7 +564,7 @@ class reimClassModel extends Model
 		if($type=='all'){
 			$where  = "`uid`='$uid'"; 
 		}
-		m('im_history')->delete($where);
+		$this->hisobj->delete($where);
 	}
 	
 	/**
@@ -546,7 +583,7 @@ class reimClassModel extends Model
 		$arr['receinfor'] = $this->getreceinfor($type, $gid);
 		$arr['nowdt'] 	  = time();
 		if(isset($arr['rows']))$arr['rows'] = $this->replacefileid($arr['rows']);
-		m('im_history')->update('stotal=0',"`type`='$type' and `receid`='$gid' and `uid`='$uid'");
+		$this->hisobj->update('stotal=0',"`type`='$type' and `receid`='$gid' and `uid`='$uid'");
 		return $arr;
 	}
 	public function getreceinfor($type, $gid)
@@ -1022,7 +1059,7 @@ class reimClassModel extends Model
 	{
 		$asyn   = (int)getconfig('asynsend','0');
 		$runurl	= m('base')->getasynurl($m, $a,$can);
-		
+
 		//用官网VIP异步
 		if($asyn==2){
 			$barr = c('xinhuapi')->sendanay($m, $a,$can, $runtime);
@@ -1064,7 +1101,7 @@ class reimClassModel extends Model
 		$carr['atype'] 	= $atype;
 		foreach($cans as $k=>$v)$carr[$k]=$v;
 		$str 			= json_encode($carr);
-		
+		//echo 'abc ';return array('code'=>0);
 		$posts			= $this->getpushhostport($this->serverpushurl);
 		$barr 			= c('socket')->udppush($str, $posts['host'], $posts['port']);
 
@@ -1401,7 +1438,7 @@ class reimClassModel extends Model
 		$bowxqy	= $this->installwx(1);
 		if(!$bowx && !$bowxqy)return;
 		
-		$rows 	= $this->db->getall("select * from `[Q]im_history` where `optdt`>='$dt' and `stotal`>0 order by `uid`,`optdt` asc");
+		$rows 	= $this->db->getall("select * from `[Q]im_history` where `optdt`>='$dt' and `stotal`>0 and `type` in('user','group') order by `uid`,`optdt` asc");
 		
 		$uarrs 	= array();
 		$gusrra = array();

@@ -178,7 +178,8 @@ class kaoqinjClassAction extends Action
 		}
 		return array(
 			'fields'=>'id,name,deptname,ranking,status,face',
-			'where'=>$where
+			'where'=>$where,
+			'order'=> 'sort'
 		);
 	}
 	

@@ -352,6 +352,18 @@ class adminClassModel extends Model
 	}
 	
 	/**
+	*	获取人员信息
+	*/
+	public function getuserinfo($uids='0')
+	{
+		$uarr = $this->getall("`id` in(".$uids.") and `status`=1",'`id`,`name`,`face`','`sort`');
+		foreach($uarr as $k=>$rs){
+			$uarr[$k]['face'] = $this->getface($rs['face']);
+		}
+		return $uarr;
+	}
+	
+	/**
 	*	获取人员数据
 	*/
 	public function getuser($lx=0)

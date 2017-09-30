@@ -37,11 +37,12 @@ js.wx.prompt=function(tit,msg,fun,nr){
 	this.alert(msg,func,tit, 1);
 }
 js.apiurl = function(m,a,cans){
-	var url=''+apiurl+'api.php?m='+m+'&a='+a+'&adminid='+adminid+'';
+	var url=''+apiurl+'api.php?m='+m+'&a='+a+'';
 	var cfrom='mweb';
-	url+='&device='+device+'';
+	if(adminid)url+='&adminid='+adminid+'';
+	if(device)url+='&device='+device+'';
 	url+='&cfrom='+cfrom+'';
-	url+='&token='+token+'';
+	if(token)url+='&token='+token+'';
 	if(!cans)cans={};
 	for(var i in cans)url+='&'+i+'='+cans[i]+'';
 	return url;
@@ -228,7 +229,7 @@ js.jssdkcall  = function(bo){
 js.jssdkstate = 0;
 js.jssdkwixin = function(qxlist,afe){
 	if(!js.iswxbo())return js.jssdkcall(false);
-	var wxurl = 'http://res.wx.qq.com/open/js/jweixin-1.1.0.js';
+	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.1.0.js';
 	if(js.isqywx)wxurl = 'https://res.wx.qq.com/wwopen/js/jsapi/jweixin-1.0.0.js';
 	if(!afe)$.getScript(wxurl, function(){
 		js.jssdkwixin(qxlist, true);
@@ -261,7 +262,7 @@ js.jssdkwixin = function(qxlist,afe){
 */
 js.jssdkwxgzh = function(qxlist,afe){
 	if(!js.iswxbo())return js.jssdkcall(false);
-	var wxurl = 'http://res.wx.qq.com/open/js/jweixin-1.2.0.js';
+	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.2.0.js';
 	if(!afe)$.getScript(wxurl, function(){
 		js.jssdkwxgzh(qxlist, true);
 	});

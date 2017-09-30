@@ -56,6 +56,10 @@ class flow_userinfoClassModel extends flowModel
 		
 		if(isset($rs['companyid']) && $lx==1)$rs['companyid'] = m('company')->getmou('name',"`id`='".$rs['companyid']."'");
 		
+		if($this->rock->request('execldown')=='true' && isset($rs['idnum'])){
+			$rs['mobile'] = '&nbsp;'.$rs['idnum'];
+		}
+	
 		return $rs;
 	}
 	

@@ -25,9 +25,10 @@ $(document).ready(function(){
 		js.onunload();
 		bodyunload();
 	});
-	
+	var openfrom = js.request('openfrom',js.getoption('openfrom','', true));
+	js.setoption('openfrom', openfrom, true);
 	//移动端添加返回
-	if(ismobile==1 && history.length>1 && typeof(grouparr)=='undefined' && !get('header_title')){
+	if(ismobile==1 && history.length>1 && openfrom=='' && typeof(grouparr)=='undefined' && !get('header_title')){
 		var s = '<div onclick="js.back()" style="position:fixed;left:5px;top:40%;width:30px;height:30px; background:rgba(0,0,0,0.3);z-index:9;border-radius:50%;font-size:14px;color:white;text-align:center;line-height:30px">&lt;</div>';
 		$('body').append(s);
 	}
@@ -771,8 +772,8 @@ js.ajax = function(url,da,fun,type,efun, tsar){
 	if(dtyp)ajaxcan.dataType=dtyp;
 	$.ajax(ajaxcan);
 }
-js.setoption=function(k,v){
-	k=QOM+k;
+js.setoption=function(k,v,qzb){
+	if(!qzb)k=QOM+k;
 	try{
 		if(isempt(v)){
 			localStorage.removeItem(k);
@@ -784,9 +785,9 @@ js.setoption=function(k,v){
 	}
 	return true;
 }
-js.getoption=function(k,dev){
+js.getoption=function(k,dev, qzb){
 	var s = '';
-	k=QOM+k;
+	if(!qzb)k=QOM+k;
 	try{s = localStorage.getItem(k);}catch(e){s=js.cookie(k);}
 	if(s)s=unescape(s);
 	if(isempt(dev))dev='';

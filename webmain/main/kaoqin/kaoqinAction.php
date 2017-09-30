@@ -97,8 +97,8 @@ class kaoqinClassAction extends Action
 		if($this->post('atype')=='my'){
 			$kqm 	= m('kaoqin');
 			$jiafee = $kqm->getjiafee($uid, $month);
-			$str	= ''.$kqm->getqjsytimestr($uid).'，'.substr($month,0,7).'加班费('.$jiafee.'元)';
-			
+			$str	= ''.$kqm->getqjsytimestr($uid).'';
+			if($jiafee>0)$str.='，'.substr($month,0,7).'加班费('.$jiafee.'元)';
 		}
 		return array('rows'=>$rows,'totalstr'=> $str);
 	}

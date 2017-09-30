@@ -1,3 +1,36 @@
+function initbodys(){
+	hidetou();
+}
+
+//隐藏投票的
+function hidetou(){
+	$('#tablesub0').parent().parent().hide();
+	$('#subtitletou').hide();
+	c.fieldshide('startdt');
+	c.fieldshide('enddt');
+	c.fieldshide('maxtou');
+}
+
+//显示投票
+function showtou(){
+	$('#tablesub0').parent().parent().show();
+	$('#subtitletou').show();
+	c.fieldsshow('startdt');
+	c.fieldsshow('enddt');
+	c.fieldsshow('maxtou');
+}
+
+function oninputblur(fid,zb){
+	if(fid=='mintou'){
+		var val = form(fid).value;
+		if(val=='' || val=='0'){
+			hidetou();	
+		}else{
+			showtou();
+		}
+	}
+}
+
 function changesubmitbefore(){
 	if(!form('mintou'))return;
 	var min = form('mintou').value;

@@ -314,8 +314,22 @@ if($stype!=''){
 			}
 		?></ul></div>
 		</div>
+		<?php 
+			if($da['arr']['readunarr']){
+		?>
+		<div class="blank10"></div>
+		<div id="recordssswd">
+		<div class="stitle zhu"><span>未查阅人员</span> <a temp="clo" href="javascript:;" onclick="$('#recordssswd').remove();">×</a></div>
+		<div><ul class="ydullist"><?php
+			foreach($da['arr']['readunarr'] as $k=>$rs){
+				if($k>=30)break;//最多显示30人
+				echo '<li ><img src="'.$rs['face'].'" align="absmiddle"><br><span>'.$rs['name'].'</span></li>';
+			}
+		?></ul></div>
+		</div>	
 		
-		<?php }?>
+		
+		<?php }}?>
 	</div>
 
 </div>

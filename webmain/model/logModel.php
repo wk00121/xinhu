@@ -54,6 +54,9 @@ class logClassModel extends Model
 		$dbs->record($arr, $where);
 	}
 	
+	/**
+	*	获取已读人员
+	*/
 	public function getreadarr($table, $mid)
 	{
 		$rows = $this->db->getrows('[Q]reads',"`table`='$table' and `mid`='$mid' ",'optid,optdt,stotal','`id` desc');
@@ -86,6 +89,8 @@ class logClassModel extends Model
 		return $usarr;
 	}
 	
+
+	
 	public function getread($table, $uid=0)
 	{
 		if($uid==0)$uid=$this->adminid;
@@ -115,22 +120,24 @@ class logClassModel extends Model
 			$dt = substr($optdt,0,10);
 			$where.=" and `workdate`<='$dt'";
 		}
-		$uarr 	= $dbs->getall('`status`=1'.$where.'','`id`,`name`');
+		$uarr 	= $dbs->getall('`status`=1'.$where.'','`id`,`name`,`face`','`sort`');
 		
 		$receas	= explode(',', str_replace('u','', $receid));
 		$rows 	= $this->db->getall("SELECT `optid` FROM `[Q]reads` where `table`='$table' and `mid`='$mid' GROUP BY `optid`");
 		$ydarr	= array();
 		foreach($rows as $k=>$rs)$ydarr[] = $rs['optid'];
-		
+		$wduarr	= array(); //未读人员数组
 		foreach($uarr as $k=>$rs){
 			$uid 	= $rs['id'];
 			$name 	= $rs['name'];
+			$rs['face'] = $this->rock->repempt($rs['face'], 'images/noface.png');
 			if(in_array($uid, $ydarr)){
 				$ydshu++;
 				$ydname.=','.$name.'';
 			}else{
 				$wdshu++;
 				$wdname.=','.$name.'';
+				$wduarr[] = $rs;
 			}
 		}
 		if($ydname!='')$ydname = substr($ydname, 1);
@@ -141,6 +148,7 @@ class logClassModel extends Model
 			'wdshu'  => $wdshu,
 			'ydname' => $ydname,
 			'wdname' => $wdname,
+			'wduarr' => $wduarr
 		);
 	}
 }

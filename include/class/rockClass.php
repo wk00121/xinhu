@@ -44,6 +44,18 @@ final class rockClass
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
 	}
 	
+	/**
+	*	特殊字符过滤
+	*/
+	public function xssrepstr($str)
+	{
+		$xpd  = explode(',','(,), ,<,>,\\,.,*,&,%,$,^,!,@,#,-,+,:,;\'');
+		$xpds = array();
+		foreach($xpd as $xpd1)$xpds[]='';
+		$str = str_replace(',', '',$str);
+		return str_ireplace($xpd, $xpds, $str);
+	}
+	
 	//获取IP
 	public function getclientip()
 	{
@@ -68,8 +80,7 @@ final class rockClass
 	
 	public function iconvsql($str,$lx=0)
 	{
-		$str = strtolower($str);
-		$str = str_replace($this->lvlaraa,$this->lvlarab,$str);
+		$str = str_ireplace($this->lvlaraa,$this->lvlarab,$str);
 		$str = str_replace("\n",'', $str);
 		if($lx==1)$str = str_replace(array(' ',' ','	'),array('','',''),$str);
 		return $str;
@@ -310,11 +321,11 @@ final class rockClass
 	/**
 		全角半角转换
 	*/
-	public function replace($str,$type='ban')
+	public function replace($str,$quantoban=true)
 	{
 		$search=array('0','1','2','3','4','5','6','7','8','9',',','.','?','\'','(',')',';','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$replace=array('０','１','２','３','４','５','６','７','８','９','，','。','？','’','（','）','；','ａ','ｂ','ｃ','ｄ','ｅ','ｆ','ｇ','ｈ','ｉ','ｊ','ｋ','ｌ','ｍ','ｎ','ｏ','ｐ','ｑ','ｒ','ｓ','ｔ','ｕ','ｖ','ｗ','ｘ','ｙ','ｚ','Ａ','Ｂ','Ｃ','Ｄ','Ｅ','Ｆ','Ｇ','Ｈ','Ｉ','Ｊ','Ｋ','Ｌ','Ｍ','Ｎ','Ｏ','Ｐ','Ｑ','Ｒ','Ｓ','Ｔ','Ｕ','Ｖ','Ｗ','Ｚ','Ｙ','Ｚ');
-		if($type=='ban'){
+		if($quantoban){
 			$str=str_replace($replace,$search,$str);
 		}else{
 			$str=str_replace($search,$replace,$str);

@@ -18,9 +18,9 @@ class flow_vcardClassModel extends flowModel
 	//替换
 	public function flowrsreplace($rs, $lx=0)
 	{
-		if($lx==2){
-			if(!isempt($rs['mobile']))$rs['mobile']='<a href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
-			if(!isempt($rs['tel']))$rs['tel']='<a href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
+		if($lx==2 && $this->rock->ismobile()){
+			if(!isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
+			if(!isempt($rs['tel']))$rs['tel']='<a  onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
 		}
 		return $rs;
 	}

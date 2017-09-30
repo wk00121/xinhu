@@ -13,6 +13,7 @@ class minute5ClassAction extends runtAction
 		$this->enddtss	= date('Y-m-d H:i:s', $time3);
 		$this->scheduletodo();
 		$this->meettodo();
+		$this->todologs();
 		m('reim')->chatpushtowx($this->enddtss);
 		echo 'success';
 	}
@@ -55,5 +56,16 @@ class minute5ClassAction extends runtAction
 			}
 			if($nzt != -1)$db->update("`state`='$nzt'", $rs['id']);
 		}
+	}
+	
+	//错误日志通知给管理员提醒
+	private function todologs()
+	{
+		$opddt 	= date('Y-m-d H:i:s',time()-5*60);
+		$rows  	= $this->db->getall("select `type`,count(1)stotal from `[Q]log` where `level`=2 and `optdt`>'$opddt' group by `type`");
+		$str 	= '';
+		foreach($rows as $k=>$rs)$str.=''.$rs['type'].'('.$rs['stotal'].'条);';
+		
+		if($str!='')m('todo')->add(1,'错误日志', $str.'请到[系统→系统工具→日志查看]下查看。');
 	}
 }

@@ -62,8 +62,8 @@ class Action extends mainAction
 			if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
 			$backurl   = $this->rock->jm->base64encode($this->rock->nowurl());
 			if($backurl!='' && M!='index')$lurl = $lurl.'&backurl='.$backurl.'';
+			if(!isajax())$this->rock->location($lurl); //不是ajax跳转到登录页面
 			echo '没有登录，去<a href="'.$lurl.'">[登录]</a>';
-			if(!isajax())$this->rock->location($lurl);
 			exit();
 		}
 	}
@@ -193,7 +193,7 @@ class Action extends mainAction
 	public function publicstoreAjax()
 	{
 		$this->iszclogin();
-		$table			= $this->rock->iconvsql($this->request('tablename_abc','',1),1);
+		$table			= $this->rock->xssrepstr($this->rock->iconvsql($this->request('tablename_abc','',1),1));
 		$fields			= '*';
 		$group			= '';
 		$order			= $this->rock->iconvsql($this->request('defaultorder'));
@@ -271,7 +271,7 @@ class Action extends mainAction
 	
 	public function publictreestoreAjax()
 	{
-		$table	= $this->rock->iconvsql($this->rock->post('tablename_abc'),1);
+		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->rock->post('tablename_abc'),1));
 		$order	= $this->rock->iconvsql($this->rock->get('order'));
 		$fistid	= $this->rock->get('fistid','0');
 		$rows	= $this->publictreestore($fistid, $table, $order);
@@ -306,114 +306,127 @@ class Action extends mainAction
 	}
 	
 	/**
-		公共保存页面
+	*	验证签名
+	*/
+	public function checksignature($table)
+	{
+		$sign = $this->post('sys_signature');
+		$time = $this->post('sys_timeature');
+		$signs= md5($this->rock->nowurl().$table.$time.'_'.$this->adminid);
+		return ($sign==$signs);
+	}
+	
+	/**
+	*	公共保存页面
 	*/
 	public function publicsaveAjax()
 	{
 		$this->iszclogin();
 		$msg	= '';
 		$success= false;
-		$table	= $this->rock->iconvsql($this->post('tablename_postabc'),1);
+		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->post('tablename_postabc','',1),1));
 		$id		= (int)$this->post('id');
 		$oldrs  = false;
-		if($table !='' ){
-			$db		= m($table);
-			$where	= "`id`='$id'";
-			if($id==0)$where='';
-			$modenum 			= $this->post('sysmodenumabc');
-			$flow 				= null;
-			if($modenum!='')$flow = m('flow')->initflow($modenum);
-			$msgerrortpl 		= $this->post('msgerrortpl');
-			$aftersavea			= $this->post('aftersaveaction', 'publicaftersave');
-			$beforesavea		= $this->post('beforesaveaction', 'publicbeforesave');
-			$submditfi 			= $this->post('submitfields_postabc');
-			$editrecord			= $this->post('editrecord_postabc'); //是否保存修改记录
-			$fileid 			= $this->post('fileid', '0');
-			$isturn 			= (int)$this->post('isturn_postabc', '1');
-			$int_type 			= ','.$this->post('int_filestype').',';
-			$md5_type 			= ','.$this->post('md5_filestype').',';
-			if($submditfi !=''){
-				$fields	= explode(',', $submditfi);
-				$uaarr	= array();
-				foreach($fields as $field){
-					$val	= $this->post(''.$field.'');
-					$type	= $this->post(''.$field.'_fieldstype');
-					$boa	= true;
-					if($this->contain($int_type, ','.$field.',')){
-						$val = (int)$val;
-					}
-					if($this->contain($md5_type, ','.$field.',')){
-						if($val=='')$boa=false;
-						$val = md5($val);
-					}
-					if($boa)$uaarr[$field]=$val;
-				}
-				
-				$otherfields		= $this->post('otherfields');
-				$addotherfields		= $this->post('add_otherfields');
-				$editotherfields	= $this->post('edit_otherfields');
-				if($id == 0)$otherfields.=','.$addotherfields.'';
-				if($id > 0)$otherfields.=','.$editotherfields.'';
-				if($otherfields != ''){
-					$otherfields = str_replace(array('{now}','{date}','{admin}','{adminid}'),array($this->now,date('Y-m-d'),$this->adminname,$this->adminid),$otherfields);
-					$fiarsse = explode(',', $otherfields);
-					foreach($fiarsse as $ffes){
-						if($ffes!=''){
-							$ssare = explode('=', $ffes);
-							$lea	= substr($ssare[1],0,1);
-							if($lea == '['){
-								$uaarr[$ssare[0]]=$uaarr[substr($ssare[1],1,-1)];
-							}else{
-								$uaarr[$ssare[0]]=$ssare[1];
-							}
-						}
-					}
-				}
-				
-				$ss 	= '';
-				if(!$this->isempt($beforesavea)){
-					if(method_exists($this, $beforesavea)){
-						$befa = $this->$beforesavea($table, $uaarr, $id);
-						if(is_string($befa)){
-							$ss = $befa;
-						}else{
-							if(isset($befa['msg']))$ss=$befa['msg'];
-							if(isset($befa['rows'])){
-								foreach($befa['rows'] as $bk=>$bv)$uaarr[$bk]=$bv;
-							}
-						}
-					}	
-				}
-				$msg 	= $ss;	
-				$idadd 	= false;
-				if($msg == ''){
-					if($id>0 && $editrecord=='true')$oldrs = $db->getone($id);
-					if($db->record($uaarr, $where)){
-						$msg	= '处理成功';
-						$success= true;
-						if($id == 0){
-							$id = $this->db->insert_id();
-							$idadd = true;
-						}
-						if($fileid !='0')m('file')->addfile($fileid,$table,$id);
-						if(!$this->isempt($aftersavea)){
-							if(method_exists($this, $aftersavea)){
-								$this->$aftersavea($table, $uaarr, $id, $idadd);
-							}
-						}
-						//保存修改记录
-						if($oldrs && $flow!=null){
-							$newrs = $db->getone($id);
-							m('edit')->recordstr($flow->fieldsarr,$flow->mtable, $id, $oldrs, $newrs, 2);
-						}
+		if(isempt($table))return returnerror('错误表名');
+		if(!$this->checksignature($this->post('tablename_postabc')))return returnerror('无效请求');
+		$db		= m($table);
+		$where	= "`id`='$id'";
+		if($id==0)$where='';
+		$modenum 			= $this->post('sysmodenumabc');
+		$flow 				= null;
+		$msgerrortpl 		= $this->post('msgerrortpl');
+		$aftersavea			= $this->post('aftersaveaction', 'publicaftersave');
+		$beforesavea		= $this->post('beforesaveaction', 'publicbeforesave');
+		$submditfi 			= $this->rock->jm->base64decode($this->post('submitfields_postabc'));
+		$editrecord			= $this->post('editrecord_postabc'); //是否保存修改记录
+		$fileid 			= $this->post('fileid', '0');
+		$isturn 			= (int)$this->post('isturn_postabc', '1');
+		$int_type 			= ','.$this->post('int_filestype').',';
+		$md5_type 			= ','.$this->post('md5_filestype').',';
+		
+		if(isempt($submditfi))return returnerror('无效字段');
+		
+		if($modenum!='')$flow = m('flow')->initflow($modenum);
+		$fields	= explode(',', $submditfi);
+		
+		$uaarr	= array();
+		foreach($fields as $field){
+			$field	= $this->rock->xssrepstr($field);
+			$val	= $this->post(''.$field.'');
+			$type	= $this->post(''.$field.'_fieldstype');
+			$boa	= true;
+			if($this->contain($int_type, ','.$field.',')){
+				$val = (int)$val;
+			}
+			if($this->contain($md5_type, ','.$field.',')){
+				if($val=='')$boa=false;
+				$val = md5($val);
+			}
+			if($boa)$uaarr[$field]=$val;
+		}
+		
+		$otherfields		= $this->post('otherfields');
+		$addotherfields		= $this->post('add_otherfields');
+		$editotherfields	= $this->post('edit_otherfields');
+		if($id == 0)$otherfields.=','.$addotherfields.'';
+		if($id > 0)$otherfields.=','.$editotherfields.'';
+		if($otherfields != ''){
+			$otherfields = str_replace(array('{now}','{date}','{admin}','{adminid}'),array($this->now,date('Y-m-d'),$this->adminname,$this->adminid),$otherfields);
+			$fiarsse = explode(',', $otherfields);
+			foreach($fiarsse as $ffes){
+				if($ffes!=''){
+					$ssare = explode('=', $ffes);
+					$lea	= substr($ssare[1],0,1);
+					if($lea == '['){
+						$uaarr[$ssare[0]]=$uaarr[substr($ssare[1],1,-1)];
 					}else{
-						$msg = 'Error:'.$this->db->error();
+						$uaarr[$ssare[0]]=$ssare[1];
 					}
 				}
 			}
-		}else{
-			$msg = '错误表名';
 		}
+		
+		$ss 	= '';
+		if(!$this->isempt($beforesavea)){
+			if(method_exists($this, $beforesavea)){
+				$befa = $this->$beforesavea($table, $uaarr, $id);
+				if(is_string($befa)){
+					$ss = $befa;
+				}else{
+					if(isset($befa['msg']))$ss=$befa['msg'];
+					if(isset($befa['rows'])){
+						foreach($befa['rows'] as $bk=>$bv)$uaarr[$bk]=$bv;
+					}
+				}
+			}	
+		}
+		$msg 	= $ss;	
+		$idadd 	= false;
+		if($msg == ''){
+			if($id>0 && $editrecord=='true')$oldrs = $db->getone($id);
+			if($db->record($uaarr, $where)){
+				$msg	= '处理成功';
+				$success= true;
+				if($id == 0){
+					$id = $this->db->insert_id();
+					$idadd = true;
+				}
+				if($fileid !='0')m('file')->addfile($fileid,$table,$id);
+				if(!$this->isempt($aftersavea)){
+					if(method_exists($this, $aftersavea)){
+						$this->$aftersavea($table, $uaarr, $id, $idadd);
+					}
+				}
+				//保存修改记录
+				if($oldrs && $flow!=null){
+					$newrs = $db->getone($id);
+					m('edit')->recordstr($flow->fieldsarr,$flow->mtable, $id, $oldrs, $newrs, 2);
+				}
+			}else{
+				$msg = 'Error:'.$this->db->error();
+			}
+		}
+		
 		if($msg=='')$msg='处理失败';
 		$arr = array('success'=>$success,'msg'=>$msg,'id'=>$id);
 		echo json_encode($arr);
@@ -422,10 +435,13 @@ class Action extends mainAction
 	public function publicsavevalueAjax()
 	{
 		$this->iszclogin();
-		$table	= $this->rock->iconvsql($this->rock->post('tablename','',1),1);
-		$id		= $this->rock->post('id', '0');
-		$fields	= $this->rock->post('fieldname');
-		$value	= $this->rock->post('value');
+		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->post('tablename','',1),1));
+		if(!$this->checksignature($this->post('tablename')))return '无效请求';
+		$noupf	= array('pass','user');
+		$id		= $this->post('id', '0');
+		$fields	= $this->post('fieldname');
+		if(in_array(strtolower($fields), $noupf))return 'error';
+		$value	= $this->post('value');
 		$where	= "`id` in($id)";
 		m($table)->record(array($fields=>$value), $where);
 		$fiesa  = $this->rock->request('fieldsafteraction');

@@ -198,16 +198,24 @@ class xinhuapiChajian extends Chajian{
 	}
 	
 	/**
-	*	发送计划任务(不能用)
+	*	发送用官网计划任务
 	*/
 	public function starttask()
 	{
 		$turl	= getconfig('anayurl', URL);
-		$url 	= ''.$turl.'task.php?m=runt&a=getlist';
+		$url 	= ''.$turl.'task.php?m=runt&a=task';
 		
 		$barr 	= $this->postdata('anay','starttask', array(
 			'runurl' => $this->rock->jm->base64encode($url)
 		));
+		return $barr;
+	}
+	/**
+	*	停止计划任务
+	*/
+	public function stoptask()
+	{
+		$barr 	= $this->getdata('anay','stoptask');
 		return $barr;
 	}
 }

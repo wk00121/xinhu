@@ -128,9 +128,14 @@ abstract class mysql{
 		}
 		$this->nowerror	= false;
 		if(!$rsbool)$this->nowerror = true;
-		if(!$rsbool && DEBUG && $ebo){
+		if(!$rsbool && (DEBUG || $this->rock->adminid==1) && $ebo){
 			$txt	= '【错误SQL】'.chr(10).''.$sql.''.chr(10).''.chr(10).'【原因】'.chr(10).''.$this->error().''.chr(10).'';
 			$this->rock->debug($txt,'mysql_sqlerr');
+		}
+		if(!$rsbool && $ebo){
+			$stabs  = ''.$this->perfix.'log';
+			$errmsg = str_replace("'",'&#39;', $this->error());
+			if(!contain($sql, $stabs))m('log')->addlogs('错误SQL',''.$errmsg.'', 2); //写入日志中方便查看
 		}
 		return $rsbool;
 	}

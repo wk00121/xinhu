@@ -278,8 +278,22 @@ if($da['arr']['optmenu']){
 		}
 	?></ul></div>
 	<div class="r-border-t"></div>
+	
 	<?php 
-	}
+		if($da['arr']['readunarr']){
+	?>
+	
+	<div onclick="location.reload()" class="r-subtitle">&nbsp;&nbsp;未查阅人员(<?=count($da['arr']['readunarr'])?>)</div>
+	<div class="r-border-t" style="background:white"><ul class="ydullist"><?php
+		foreach($da['arr']['readunarr'] as $k=>$rs){
+			if($k>=30)break;//最多显示30人
+			echo '<li ><img src="'.$rs['face'].'" align="absmiddle"><br><span>'.$rs['name'].'</span></li>';
+		}
+	?></ul></div>
+	<div class="r-border-t"></div>
+	
+	<?php 
+	}}
 	?>	
 </div>
 <?php

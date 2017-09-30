@@ -196,7 +196,15 @@
 		};
 		this.save = function(o1){
 			this._save(o1, 1);
-		},
+		};
+		this.signature= function(da, url){
+			var time = parseInt(js.now('time')*0.001);
+			var siaa = ''+NOWURL+''+url+''+da.tablename_postabc+''+time+'_'+adminid+'';
+			var sign = md5(siaa);
+			da.sys_signature= sign;
+			da.sys_timeature= time;
+			return da;
+		};
 		this._save	= function(o1, lx){
 			if(this.isValid()){
 				this.setmsg(this.isValidText);
@@ -225,8 +233,8 @@
 			if(typeof(s)=='object'){
 				for(ac in s)data[ac]=s[ac];
 			}
-			data.tablename_postabc 		= can.tablename;
-			data.submitfields_postabc 	= can.submitfields;
+			data.tablename_postabc 		= jm.encrypt(can.tablename);
+			data.submitfields_postabc 	= jm.base64encode(can.submitfields);
 			data.aftersaveaction 	= can.aftersaveaction;
 			data.beforesaveaction 	= can.beforesaveaction;
 			data.editrecord_postabc = can.editrecord;
@@ -235,7 +243,7 @@
 			$.ajax({
 				type:'post',
 				url:can.url,
-				data:data,
+				data:this.signature(data, can.url),
 				success:function(da){
 					var a = js.decode(da);
 					if(a.success){

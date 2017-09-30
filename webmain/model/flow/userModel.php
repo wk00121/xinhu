@@ -54,7 +54,6 @@ class flow_userClassModel extends flowModel
 			}
 		}
 		$rs['online'] = $online;
-		
 		return $rs;
 	}
 	
@@ -89,6 +88,7 @@ class flow_userClassModel extends flowModel
 			'deptname' 	=> '信呼开发团队/开发部',
 			'tel' 		=> '0592-1234567-005',
 			'email' 	=> 'zhangsan@rockoa.com',
+			'workdate' 	=> '2017-01-17',
 		);
 	}
 	
@@ -110,7 +110,7 @@ class flow_userClassModel extends flowModel
 		foreach($rows as $k=>$rs){
 			$user = $rs['user'];
 			$name = $rs['name'];
-			$arr	= array();
+			$arr	= $rs;
 			
 			$arr['pingyin'] 	= $py->get($name,1);
 			if($this->rows("`name`='$name'")>0)$name = $name.'1';
@@ -121,16 +121,9 @@ class flow_userClassModel extends flowModel
 			$arr['user'] = strtolower($user);
 			$arr['name'] = $name;
 			
-			$arr['sex']  		= $rs['sex'];
-			$arr['ranking']  	= $rs['ranking'];
-			$arr['deptname']  	= $rs['deptname'];
-			$arr['mobile']  	= $rs['mobile'];
-			$arr['email']  		= $rs['email'];
-			$arr['tel']  		= $rs['tel'];
-			$arr['superman']  	= $rs['superman'];
 			$arr['pass']  		= md5('123456');
 			$arr['sort']  		= $sort+$k+1;
-			$arr['workdate']  	= $this->rock->date;
+			$arr['workdate']  	= arrvalue($rs,'workdate', $this->rock->date);
 			$arr['adddt']  		= $this->rock->now;
 			$arr['companyid']  	= 1; //默认公司Id为1
 			

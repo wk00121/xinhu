@@ -12,7 +12,9 @@ class flow_subscribeinfoClassModel extends flowModel
 			$filepath 	= '文件不存在了';
 			$rs['ishui']= 1;
 		}else{
-			$filepath	= '<a href="'.URL.''.$filepath.'" target="_blank">打开</a>';
+			$filepath	= '<a href="'.URL.''.$filepath.'"';
+			if(!$this->rock->ismobile())$filepath.=' target="_blank"';
+			$filepath	.= '>打开</a>';
 		}
 		$rs['filepath'] = $filepath;
 		return $rs;

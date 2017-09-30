@@ -36,7 +36,7 @@ class baseClassModel extends Model
 		if(isset($this->usrr[$ckey])){
 			$urs	= $this->usrr[$ckey];
 		}else{
-			$urs 	= $this->db->getone('[Q]admin','`id`='.$uid.'', '`name`,`deptname`,`ranking`,`deptid`,`num`,`deptallname`,`tel`,`mobile`,`email`,`id`,`superman`,`workdate`,`user`,`pingyin`');
+			$urs 	= $this->db->getone('[Q]admin','`id`='.$uid.'', '`name`,`deptname`,`ranking`,`deptid`,`num`,`companyid`,`deptallname`,`tel`,`mobile`,`email`,`id`,`superman`,`workdate`,`user`,`pingyin`');
 			$this->usrr[$ckey] = $urs;
 		}
 		if(!$urs)$urs= array();

@@ -308,6 +308,14 @@
 				});
 			}
 		};
+		this.signature= function(da, url){
+			var time = parseInt(js.now('time')*0.001);
+			var siaa = ''+NOWURL+''+url+''+da.tablename+''+time+'_'+adminid+'';
+			var sign = md5(siaa);
+			da.sys_signature= sign;
+			da.sys_timeature= time;
+			return da;
+		};
 		this._editforcuschen = function(o1, a, farr){
 			var o1= get('inputedit_'+rand+'');
 			var v = o1.value,ov = a.oldvalue;
@@ -324,11 +332,15 @@
 			this.bool = true;
 			var data = {tablename:can.tablename,id:a.id,fieldname:a.fields,value:v,fieldsafteraction:can.fieldsafteraction};
 			$.ajax({
-				data:data,type:'post',url:can.cellurl,
-				success:function(){
-					js.setmsg('处理完成','green',vid);
-					$('#edittable_'+rand+'').remove();
+				data:this.signature(data, can.cellurl),type:'post',url:can.cellurl,
+				success:function(bstr){
 					me.bool = false;
+					$('#edittable_'+rand+'').remove();
+					if(bstr!='success'){
+						js.msg('msg', bstr);
+						return;
+					}
+					js.setmsg('处理完成','green',vid);
 					var ohtml = a.obj.html();
 					ohtml	  = ohtml.replace(ov, v);
 					if(a.type=='checkbox')ohtml='<img height="20" width="20" src="images/checkbox'+v+'.png">';

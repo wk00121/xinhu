@@ -59,12 +59,14 @@ class flowClassAction extends Action
 	public function flowsetsavebefore($table, $cans)
 	{
 		$tab = $cans['table'];
+		$name= $this->rock->xssrepstr($cans['name']);
 		$num = strtolower($cans['num']);
 		$cobj= c('check');
 		if(!$cobj->iszgen($tab))return '表名格式不对';
 		if($cobj->isnumber($num))return '编号不能为数字';
 		if($cans['isflow']==1 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
-		$rows['num']= $num; 
+		$rows['num']= $this->rock->xssrepstr($num); 
+		$rows['name']= $name; 
 		return array(
 			'rows' => $rows
 		);

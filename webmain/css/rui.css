@@ -21,6 +21,8 @@ a:link,a:visited{TEXT-DECORATION:none;color:#0572AD}
 .blank30{ height:30px;  overflow:hidden;width:100%}
 .blank40{ height:40px;  overflow:hidden;width:100%}
 
+.r-wrap{word-wrap:break-word;word-break:break-all;white-space:normal;}
+
 .r-touch{-webkit-overflow-scrolling:touch;overflow-scrolling:touch;overflow-y:auto;overflow-x:hidden}
 
 .r-zhu-bgcolor{background-color:#1389D3;}

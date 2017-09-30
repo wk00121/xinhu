@@ -66,12 +66,14 @@ class runtClassAction extends runtAction
 	}
 	
 	/**
-	*	运行定时任务用于cli模式的
+	*	运行定时任务用于cli模式的，建每5分钟运行异常
 	*	Linux 使用crontab php task.php runt,task
 	*	win 使用计划任务 php task.php runt,task
+	*	也可以没5分钟访问地址：http://127.0.0.1/app/xinhu/task.php?m=runt&a=task
 	*/
 	public function taskAction()
 	{
-		echo m('task')->runjsonlist();
+		$runtime = $this->get('runtime',time());
+		echo m('task')->runjsonlist($runtime);
 	}
 }

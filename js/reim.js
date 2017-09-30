@@ -354,30 +354,32 @@ var reim = {
 		ty	= d.type;
 		if(ty=='user')d1=this.userarr[d.receid];
 		if(ty=='group')d1=this.grouparr[d.receid];
+		if(d1){
+			d.name = d1.name;
+			d.face = d1.face;
+		}
 		var num = ''+ty+'_'+d.receid+'';
 		$('#history_'+num+'').remove();
 		var stotal = 0;
-		if(d1){
-			cont 	= jm.base64decode(d.cont);
-			var ops = d.optdt.substr(11,5);
-			if(d.optdt.indexOf(this.date)!=0)ops=d.optdt.substr(5,5);
-			attr = 'oncontextmenu="return reim.historyright(this,event);" tsaid="'+d.receid+'" tsaype="'+d.type+'" ';
-			st	 = d.stotal;if(st=='0')st='';
-			stotal+=parseFloat(d.stotal);
-			stst = '';
-			if(d.type=='user'){
-				stst='uid="'+d.receid+'"';
-				if(d.online==0)stst+=' class="offline"';
-			}
-			s	= '<div '+attr+' class="lists" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
-			s+='<table cellpadding="0" border="0" width="100%"><tr>';
-			s+='<td style="padding-right:8px"><div '+stst+' style="height:34px;overflow:hidden"><img src="'+d1.face+'"></div></td>';
-			s+='<td align="left" width="100%"><div class="name">'+d1.name+'</div><div class="huicont">'+cont+'</div></td>';
-			s+='<td align="center" nowrap><span id="chatstotal_'+num+'" class="badge red">'+d.stotal+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
-			s+='</tr></table>';
-			s+='</div>';
-			if(!pad){o.append(s);}else{o.prepend(s)}
+		cont 	= jm.base64decode(d.cont);
+		var ops = d.optdt.substr(11,5);
+		if(d.optdt.indexOf(this.date)!=0)ops=d.optdt.substr(5,5);
+		attr = 'oncontextmenu="return reim.historyright(this,event);" tsaid="'+d.receid+'" tsaype="'+d.type+'" ';
+		st	 = d.stotal;if(st=='0')st='';
+		stotal+=parseFloat(d.stotal);
+		stst = '';
+		if(d.type=='user'){
+			stst='uid="'+d.receid+'"';
+			if(d.online==0)stst+=' class="offline"';
 		}
+		s	= '<div '+attr+' class="lists" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
+		s+='<table cellpadding="0" border="0" width="100%"><tr>';
+		s+='<td style="padding-right:8px"><div '+stst+' style="height:34px;overflow:hidden"><img src="'+d.face+'"></div></td>';
+		s+='<td align="left" width="100%"><div class="name">'+d.name+'</div><div class="huicont">'+cont+'</div></td>';
+		s+='<td align="center" nowrap><span id="chatstotal_'+num+'" class="badge red">'+d.stotal+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
+		s+='</tr></table>';
+		s+='</div>';
+		if(!pad){o.append(s);}else{o.prepend(s)}
 		$('#historylist_tems').hide();
 		this.showbadge('chat');
 	},
@@ -386,7 +388,7 @@ var reim = {
 		var rt = $(o1).attr('rtype');
 		if(isempt(rt))return false;
 		this.rightdivobj = o1;
-		var d=[{name:'打开会话',lx:0}];
+		var d=[{name:'打开',lx:0}];
 		if(rt.indexOf('agent')>-1){
 			d.push({name:'打开窗口',lx:1});
 		}
@@ -415,13 +417,23 @@ var reim = {
 	//打开聊天界面
 	openchat:function(id,type){
 		this.showbadge('chat',''+type+'_'+id+'', 0);
-		openchat(id,type);
+		if(type=='agent'){
+			this.openagent(id);
+		}else{
+			openchat(id,type);
+		}
+		this.setyd(type,id);
 	},
 	opengroup:function(id){
 		this.openchat(id, 'group');
 	},
 	openuser:function(id){
 		this.openchat(id, 'user');
+	},
+	
+	//会话标识已读
+	setyd:function(type,id){
+		this.ajax(this.apiurl('reim','yiduall'),{type:type,gid:id},false);
 	},
 	
 	//切换聊天主界面隐藏显示
@@ -571,7 +583,7 @@ var reim = {
 		var col = 3,wd = 100/col;
 		for(ty in typearr){
 			len = typearr[ty].length;
-			s='<div class="reim_agent_types">'+ty+'('+len+')</div><table class="reim_agent_grid" width="100%"><tr>';
+			s='<div class="reim_agent_types">'+ty+'</div><table class="reim_agent_grid" width="100%"><tr>';
 			oi	= 0;
 			for(i=0;i<len;i++){
 				oi++;atr='';
@@ -633,6 +645,8 @@ var reim = {
 			}
 			w = 320;
 		}
+		var jg = (url.indexOf('?')>-1)?'&':'?';
+		url+=''+jg+'openfrom=reim';
 		//考勤打卡
 		if(d.num=='kqdaka'){
 			this.opendaka();return;
@@ -647,11 +661,13 @@ var reim = {
 	},
 	
 	//显示到会话列表上
-	addhistory:function(lx,id,sot,cont,opt,sne){
+	addhistory:function(lx,id,sot,cont,opt,sne,name,face){
 		if(!sne)sne='';
 		if(sne)sne=jm.base64encode(sne+':');
 		if(lx!='group')sne='';
 		var d={type:lx,receid:id,stotal:sot,cont:sne+cont,optdt:opt};
+		if(name)d.name = name;
+		if(face)d.face = face;
 		this.showhistorys(d, true);
 	},
 	
@@ -723,6 +739,7 @@ var reim = {
 		//应用的通知提醒
 		if(lx == 'agent'){
 			garr = this.agentarr[gid];
+			num	 = 'agent_'+gid+'';
 			if(!garr){
 				this.loadagent();
 				garr={face:'images/logo.png',pid:0};
@@ -739,7 +756,12 @@ var reim = {
 					return false;
 				}
 			}});
+			
+			ot 		= $('#chatstotal_'+num+'');ots=ot.text();if(ots=='')ots='0';
+			if(!ops)ots = parseFloat(ots)+1;
+			this.addhistory(lx,gid,ots,d.cont,d.optdt,'', tits, garr.face);
 		}
+	
 		if(lx == 'loadgroup'){
 			this.loadgroup();
 		}

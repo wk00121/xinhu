@@ -42,16 +42,25 @@ class socketChajian extends Chajian
 	public function udppush($str, $host='', $port=0)
 	{
 		$msg 	= '';
-		if(!function_exists('socket_create'))$msg= '没有开启Socket组件';
+		if(!function_exists('stream_socket_client'))$msg= '没有开启Socket组件';
 		if($msg==''){
-			$sock 	= socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-			$len 	= strlen($str);
-			socket_sendto($sock, $str, $len, 0, $host, $port);
-			$bstr 	= @socket_read($sock, 8192);
-			socket_close($sock);
-			if(isempt($bstr))$msg = 'error';
+			$handle = stream_socket_client("udp://{$host}:{$port}", $errno, $errstr);
+			if(!$handle){  
+				$msg = "ERROR: {$errno} - {$errstr}"; 
+			}
+			if($msg==''){
+				fwrite($handle, $str);  
+				$bstr = fread($handle, 1024); 
+				fclose($handle);
+				if(isempt($bstr))$msg = 'error';
+			}
 		}
-		if($msg!='')$bstr = '{"code":2,"msg":"'.$msg.'"}';
-		return json_decode($bstr, true);
+		$barr['code'] = 0;
+		$barr['msg']  = 'ok';
+		if($msg!=''){
+			$barr['code'] = 2;
+			$barr['msg']  = $msg;
+		}	
+		return $barr;
 	}
 }

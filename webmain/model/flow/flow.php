@@ -449,7 +449,7 @@ class flowModel extends Model
 			}
 		}
 		$arr['contview'] = $contview;
-		$arr['readarr']	 = m('log')->getreadarr($this->mtable, $this->id);
+		$arr['readarr']	 = m('log')->getreadarr($this->mtable, $this->id); //已读人员
 		
 		$arr['isedit'] 	 = $this->iseditqx();
 		$arr['isdel'] 	 = $this->isdeleteqx();
@@ -465,7 +465,9 @@ class flowModel extends Model
 		$arr['isgbjl']		= (int)$this->rock->arrvalue($this->moders,'isgbjl','0'); //是否关闭操作记录
 		$arr['isgbcy']		= (int)$this->rock->arrvalue($this->moders,'isgbcy','0'); //是否不显示查阅记录
 		
-		$arr['flowinfor']= array();
+		$arr['flowinfor']	= array(); //流程信息
+		$arr['readunarr']	= array(); //未读人员
+		
 		if($this->isflow==1)$arr['flowinfor']= $this->getflowinfor();
 		if(isset($data['title']))$arr['title'] = $data['title'];
 		$_oarr 			 = $this->flowdatalog($arr);
@@ -2107,29 +2109,63 @@ class flowModel extends Model
 		$ztfields		= arrvalue($nas, 'ztfields', 'status');
 		if(!isempt($status))$where .= ' and {asqom}`'.$ztfields.'`='.$status.'';
 		if(!isempt($key) && isempt($arr['keywhere'])){
-			$allfields = $this->db->getallfields('[Q]'.$this->mtable.'');
-			$_kearr = array();
-			$skeay 	= array('text','textarea','htmlediter','changeuser','changeusercheck','changedept','changedeptusercheck','selectdatafalse','selectdatatrue');
-			foreach($this->fieldsarra as $k=>$rs){
-				if($rs['issou']==1 && in_array($rs['fieldstype'], $skeay) && in_array($rs['fields'], $allfields) && substr($rs['fields'],-2) != 'dt'){
-					$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
+			$check 	   	= c('check');
+			$allfields 	= $this->db->getallfields('[Q]'.$this->mtable.'');
+			$_kearr 	= array();
+			//关键词是数字
+			if($check->isnumber($key)){
+				$_kearr[] = "{asqom}`id`='$key'";
+				if($temsao==1)$_kearr[] = "b.`uid`='$key'";
+			}else if($check->isdate($key) || $check->ismonth($key)){
+				$skeay 	= array('date','datetime','month');
+				foreach($this->fieldsarra as $k=>$rs){
+					$flx = $rs['fieldstype'];
+					$fid = $rs['fields'];
+					if($rs['issou']==1 && in_array($flx, $skeay) && in_array($fid, $allfields)){
+						if($check->isdate($key)){
+							if($flx=='date')$_kearr[] = "{asqom}`".$fid."`='$key'";
+							if($flx=='datetime')$_kearr[] = "{asqom}`".$fid."` like '$key%'";
+							if($flx=='month')$_kearr[] = "{asqom}`".$fid."`='".substr($key,0,7)."'";
+							if($temsao==1){
+								$_kearr[] = "b.`applydt`='$key'";
+							}
+						}
+						if($check->ismonth($key)){
+							if($flx=='month'){
+								$_kearr[] = "{asqom}`".$fid."`='$key'";
+							}else{
+								$_kearr[] = "{asqom}`".$fid."` like '$key%'";
+							}
+							if($temsao==1){
+								$_kearr[] = "b.`applydt` like '$key%'";
+							}
+						}
+					}
 				}
 			}
-			if($temsao==1){
-				$_kearr[] = "b.`uname` like '%".$key."%'";
-				$_kearr[] = "b.`udeptname` like '%".$key."%'";
-				$_kearr[] = "b.`sericnum` = '$key'";
-			}
-			//其他or字段条件
-			if(isset($nas['orlikefields'])){
-				$owhee = explode(',', $nas['orlikefields']);
-				foreach($owhee as $owhees){
-					$_owhees  = explode('@', $owhees);
-					$sle 	  = arrvalue($_owhees, 1);
-					if($sle=='1'){
-						$_kearr[] = "".$_owhees[0]." ='$key'";
-					}else{
-						$_kearr[] = "".$_owhees[0]." like '%".$key."%'";
+			if(!$_kearr){
+				$skeay 	= array('text','textarea','htmlediter','changeuser','changeusercheck','changedept','changedeptusercheck','selectdatafalse','selectdatatrue');
+				foreach($this->fieldsarra as $k=>$rs){
+					if($rs['issou']==1 && in_array($rs['fieldstype'], $skeay) && in_array($rs['fields'], $allfields) && substr($rs['fields'],-2) != 'dt'){
+						$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
+					}
+				}
+				if($temsao==1){
+					$_kearr[] = "b.`uname` like '%".$key."%'";
+					$_kearr[] = "b.`udeptname` like '%".$key."%'";
+					$_kearr[] = "b.`sericnum` = '$key'";
+				}
+				//其他or字段条件
+				if(isset($nas['orlikefields'])){
+					$owhee = explode(',', $nas['orlikefields']);
+					foreach($owhee as $owhees){
+						$_owhees  = explode('@', $owhees);
+						$sle 	  = arrvalue($_owhees, 1);
+						if($sle=='1'){
+							$_kearr[] = "".$_owhees[0]." ='$key'";
+						}else{
+							$_kearr[] = "".$_owhees[0]." like '%".$key."%'";
+						}
 					}
 				}
 			}

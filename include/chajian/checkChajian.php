@@ -61,7 +61,9 @@ class checkChajian extends Chajian{
 		return $encode;
 	}
 	
-	//是否为数字
+	/**
+	*	是否为数字
+	*/
 	public function isnumber($str)
 	{
 		if(isempt($str))return false;
@@ -74,5 +76,21 @@ class checkChajian extends Chajian{
 	public function isinnumber($str)
 	{
 		return preg_match("/[0-9]/", $str);
+	}
+	
+	/**
+	*	是否为日期
+	*/
+	public function isdate($str)
+	{
+		return preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $str);
+	}
+	
+	/**
+	*	是否为月份
+	*/
+	public function ismonth($str)
+	{
+		return preg_match("/^([0-9]{4})-([0-9]{2})$/", $str);
 	}
 }

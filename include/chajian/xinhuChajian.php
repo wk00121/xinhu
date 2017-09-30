@@ -39,24 +39,10 @@ class xinhuChajian extends Chajian{
 		return $data;
 	}
 	
-	public function helpstr($num)
+	public function helpstr($num, $na='')
 	{
-		return '<a style="color:blue" href="'.$this->updatekey.'view_'.$num.'.html" target="_blank">[帮助]</a>';
+		if($na=='')$na='帮助';
+		return '<a style="color:blue" href="'.$this->updatekey.'view_'.$num.'.html" target="_blank">['.$na.']</a>';
 	}
 	
-	/**
-	*	生成短域名服务，一般用于短息上的
-	*/
-	public function urlsmall($url)
-	{
-		
-	}
-	
-	/**
-	*	使用官网异步功能发送
-	*/
-	public function sendanay($url)
-	{
-		
-	}
 }

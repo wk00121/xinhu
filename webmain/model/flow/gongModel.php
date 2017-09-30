@@ -1,6 +1,7 @@
 <?php
 class flow_gongClassModel extends flowModel
 {
+	private $readunarr = array();//未读人员
 	
 	public function initModel()
 	{
@@ -28,6 +29,7 @@ class flow_gongClassModel extends flowModel
 			if(isempt($receid))$receid='all';
 			$barr 	= m('log')->getreadshu($this->mtable, $rs['id'],$receid , $rs['optdt'], $this->adminmodel);
 			foreach($barr as $k=>$v)$rs[$k]=$v;
+			$this->readunarr = $barr['wduarr'];
 		}
 		if($mintou>0){
 			$rs['title'] .='(投票)';
@@ -122,6 +124,7 @@ class flow_gongClassModel extends flowModel
 		$maxtou		= (int)arrvalue($this->rs, 'maxtou','0');
 		$status		= (int)arrvalue($this->rs, 'status','0');
 		$touarr		= array();
+		$logarr 	= array();
 		if($mintou>0){
 			$istoupiao	= 4;
 			$toutype 	= 0;//不需要投票，1已投票，2未投票
@@ -167,7 +170,11 @@ class flow_gongClassModel extends flowModel
 			//判断是否可以显示结果
 			$showtou	= 0;
 			if($istoupiao!=2 && $status==1 && ($toutype==1 || $toutype==0))$showtou = 1;
-			
+			if($showtou==0){
+				foreach($arr['logarr'] as $k1=>$rs1){
+					if($rs1['actname']!='投票')$logarr[] = $rs1;
+				}
+			}
 			
 			$touarr['showtou'] = $showtou;
 			$touarr['mintou'] = $mintou;
@@ -181,6 +188,11 @@ class flow_gongClassModel extends flowModel
 		$arr['toupiaostatus'] 	= $toupiaoarrr[$istoupiao];
 		$arr['title'] 		= '';
 		$arr['touarr'] 		= $touarr;
+		if($logarr)$arr['logarr'] 	= $logarr;
+		
+		
+		$arr['readunarr'] 			= $this->readunarr;//读取未查阅
+		
 		return $arr;
 	}
 }

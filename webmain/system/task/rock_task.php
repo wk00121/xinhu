@@ -118,15 +118,15 @@ $(document).ready(function(){
 				}
 			});
 		},
-		start:function(){
-			js.msg('wait','启动中...');
-			js.ajax(js.getajaxurl('starttask','{mode}','{dir}'),{},function(s){
-				if(s=='ok'){
-					js.msg('success', '启动成功');
+		start:function(lx){
+			js.msg('wait','处理中...');
+			js.ajax(js.getajaxurl('starttask','{mode}','{dir}'),{lx:lx},function(ret){
+				if(ret.success){
+					js.msg('success', ret.data);
 				}else{
-					js.msg('msg', s);
+					js.msg('msg', ret.msg);
 				}
-			});
+			},'get,json');
 		},
 		clearzt:function(){
 			js.msg('wait','清空中...');
@@ -149,6 +149,20 @@ $(document).ready(function(){
 		get('yun_{rand}').disabled = bo;
 	}
 	js.initbtn(c);
+	
+	$('#randkstrt_{rand}').rockmenu({
+		width:220,top:35,donghua:false,
+		data:[{
+			name:'使用我自己REIM服务端<font color=green>启动</font>',lx:'0'
+		},{
+			name:'使用官网服务<font color=green>启动</font>(VIP专用)',lx:'1'
+		},{
+			name:'<font color=red>停止</font>用官网的计划任务',lx:'2'
+		}],
+		itemsclick:function(d, i){
+			c.start(d.lx);
+		}
+	});
 });
 </script>
 
@@ -161,7 +175,7 @@ $(document).ready(function(){
 		<button class="btn btn-primary" click="clickwin,0" type="button"><i class="icon-plus"></i> 新增</button> &nbsp; 
 		<button class="btn btn-default" click="refresh" type="button"><i class="icon-refresh"></i> 刷新</button> &nbsp; 
 		<button class="btn btn-default" click="clearzt" type="button">清空状态</button> &nbsp; 
-		<button class="btn btn-success" click="start" type="button"><i class="icon-stop"></i> 重启任务</button>
+		<button class="btn btn-success" id="randkstrt_{rand}" type="button"><i class="icon-stop"></i> 启动计划任务 <i class="icon-angle-down"></i></button>
 	</td>
 	
 	
