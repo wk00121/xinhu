@@ -1,6 +1,8 @@
 <?php
 class flow_caigouClassModel extends flowModel
 {
+	public $minwidth	= 600;//子表最小宽
+	
 	//审核完成处理
 	protected function flowcheckfinsh($zt){
 		m('goodss')->update('status='.$zt.'',"`mid`='$this->id'");
@@ -17,8 +19,10 @@ class flow_caigouClassModel extends flowModel
 		foreach($rows as $k=>$rs){
 			$one = $db->getone($rs['aid']);
 			if($one){
-				if($lx==1)$rows[$k]['aid'] = $one['name'];
-				$rows[$k]['temp_aid'] = $one['name'];
+				$name = $one['name'];
+				if(!isempt($one['xinghao']))$name.='('.$one['xinghao'].')';
+				if($lx==1)$rows[$k]['aid'] = $name; //1展示时
+				$rows[$k]['temp_aid'] = $name;
 			}
 		}
 		return $rows;

@@ -114,7 +114,7 @@ var myScroll=false,yy={
 		}
 		return [bh,goi,goj];
 	},
-	showtabstr(oi, tit){
+	showtabstr:function(oi, tit){
 		$('[temp="tablx"]').removeClass('active');
 		$('[temp="tablx"]:eq('+oi+')').addClass('active');
 		$('[temp="tabying"]').css({'color':'','border-top':''});

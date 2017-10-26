@@ -6,7 +6,7 @@ class imgroupClassAction extends Action
 		$s 		= 'and 1=2';
 		$gid 	= $this->post('gid','0');
 		if($gid>0){
-			$s = " and id in(select uid from [Q]im_groupuser where `gid`='$gid')";
+			$s = " and id in(select `uid` from `[Q]im_groupuser` where `gid`='$gid')";
 		}
 		return array(
 			'where' => $s,

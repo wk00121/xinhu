@@ -404,7 +404,16 @@ class inputAction extends Action
 			if($tableas){
 				foreach($tableas as $k1=>$tableass){
 					$zbstr 	 = m('input')->getsubtable($modeid,$k1+1,1,1);
-					if($zbstr!='')$content.='<tr><td  style="padding:5px;" colspan="2"><div><b>'.arrvalue($nameaas, $k1).'</b></div><div>'.$zbstr.'</div></td></tr>';
+					if($zbstr!=''){
+						$content.='<tr><td style="padding:5px;" colspan="2"><div><b>'.arrvalue($nameaas, $k1).'</b></div>';
+						if($this->flow->minwidth>300){
+							$content.='<div tmp="mobilezbiao" style="width:280px;overflow:auto;"><div 
+						style="min-width:'.$this->flow->minwidth.'px">'.$zbstr.'</div></div>';
+						}else{
+							$content.='<div>'.$zbstr.'</div>';
+						}
+						$content.= '</td></tr>';
+					}
 				}
 			}
 			$isupfile = contain($pclucont, '{file_content}') ? 1 : 0;
@@ -525,7 +534,17 @@ class inputAction extends Action
 		$rows 	= array();
 		$act	= $this->get('act');
 		$modenum= $this->get('sysmodenum');
-		if(!isempt($act) && method_exists($this, $act)){
+		
+		//用:读取model上的数据
+		if(!isempt($act) && contain($act,':')){
+			$acta = explode(':', $act);
+			$objs = m($acta[0]);
+			if(method_exists($objs, $acta[1])){
+				$rows = $objs->$acta[1]();
+			}
+		}
+		
+		if(!$rows && !isempt($act) && method_exists($this, $act)){
 			$rows = $this->$act();
 		}
 		//从Model上读取

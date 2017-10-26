@@ -20,7 +20,7 @@ $(document).ready(function(){
 			text:'详情',dataIndex:'view'
 		},{
 			text:'操作',dataIndex:'opt',align:'left',renderer:function(v,d){
-				if(d.isaz=='0')return '<font color=#888888>还不能安装</font>';
+				if(d.isaz=='0')return '<font color=#888888>无需安装</font>';
 				var s='';
 				if(v==1)s='<font color=green>已安装</font> ';
 				if(v==2)s='<button onclick="upsho{rand}(2,'+d.id+',\''+d.key+'\')" class="btn btn-danger btn-sm" type="button">升级</button>';

@@ -59,6 +59,7 @@ class flow_meetClassModel extends flowModel
 			$rs['content_style'] = 'padding:0px';
 		}
 		$rs['state'] = $this->getstatezt($zt);
+		$rs['nzt']	 = $zt;
 		return $rs;
 	}
 	

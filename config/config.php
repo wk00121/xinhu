@@ -40,8 +40,9 @@ $config		= array(
 	'updir'		=> 'upload',
 	'dbencrypt'	=> false,
 	'sqllog'	=> false,
-	'db_drive'	=> 'mysqli',	//数据库操作驱动
-	'db_engine'	=> 'MyISAM',	//数据库默认引擎
+	'memory_limit'	=> '',			//运行内存大小
+	'db_drive'		=> 'mysqli',	//数据库操作驱动
+	'db_engine'		=> 'MyISAM',	//数据库默认引擎
 	'debug'			=> true,	//默认debug模式
 	'reim_show' 	=> true,	//首页是否显示REIM
 	'mobile_show' 	=> true,	//首页是否显示手机版
@@ -53,6 +54,7 @@ if(file_exists($_confpath)){
 	$_tempconf	= require($_confpath);
 	foreach($_tempconf as $_tkey=>$_tvs)$config[$_tkey] = $_tvs;
 	if(isempt($config['url']))$config['url'] = $rock->url();
+	if(!isempt($config['memory_limit']) && function_exists('ini_set'))ini_set('memory_limit', $config['memory_limit']);
 }
 
 define('DEBUG', $config['debug']);

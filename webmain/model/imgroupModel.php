@@ -12,9 +12,10 @@ class imgroupClassModel extends Model
 			$onr 	= $this->getone($id);
 			$deptid = $onr['deptid'];
 		}
-		if(isempt($deptid))return;
+		if(isempt($deptid) || $deptid=='0')return;
 		$dbs	= m('im_groupuser');
 		$uids	= m('admin')->gjoin($deptid,'d');
+		if(isempt($uids))$uids='0';
 		$dbs->delete("`gid`='$id' and `uid` not in($uids)");
 		$rows 	= $this->db->getall("SELECT a.id,a.`name`,b.gid FROM `[Q]admin` a left join `[Q]im_groupuser` b on a.`id`=b.`uid` and b.`gid`='$id' where a.`status`=1 and a.`id` in($uids)");
 		foreach($rows as $k=>$rs){

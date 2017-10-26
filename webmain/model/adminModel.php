@@ -3,9 +3,10 @@ class adminClassModel extends Model
 {
 	private $_getjoinstr = array();
 	
-	public function gjoin($joinid, $glx='ud', $blx='bxl')
+	public function gjoin($joinid, $glx='', $blx='bxl')
 	{
 		$uid 	= $did = $gid = '0';
+		if($glx=='')$glx = 'ud';
 		if(isempt($joinid))return '';
 		$joinid 	= strtolower($joinid);
 		if(contain($joinid, 'all'))return 'all';
@@ -199,17 +200,20 @@ class adminClassModel extends Model
 			if($supername!='')$supername=substr($supername,1);
 		}
 		//部门路径
-		$deptpath	= $this->rock->strformat('[?0]', $deptpath);
+		if(!isempt($deptpath))$deptpath	= $this->rock->strformat('[?0]', $deptpath);
+		//有多部门
 		if(!isempt($dids)){
 			$didsa = explode(',', $dids);
 			foreach($didsa as $dids1){
 				$desss 	= $this->db->getpval('[Q]dept', 'pid', 'id', $dids1, '],[');
+				if(isempt($desss))continue;
 				$desssa	= explode(',', $this->rock->strformat('[?0]', $desss));
 				foreach($desssa as $desssa1){
 					if(!contain($deptpath, $desssa1))$deptpath.=','.$desssa1.'';
 				}
 			}
 		}
+		if(!isempt($deptpath) && substr($deptpath,0,1)==',')$deptpath = substr($deptpath,1);
 		
 		$rows['deptpath'] 	= $deptpath; 
 		$rows['superpath'] 	= $superpath;
@@ -368,11 +372,17 @@ class adminClassModel extends Model
 	*/
 	public function getuser($lx=0)
 	{
-		$uid  = $this->adminid;
-		$where= m('view')->viewwhere('user', $uid, 'id');
+		$uid  	= $this->adminid;
+		$where	= m('view')->viewwhere('user', $uid, 'id');
+		$range 	= $this->rock->get('changerange'); //指定了人
+		$where1 = '';
+		if(!isempt($range)){
+			$where1 = $this->gjoin($range, '', 'where');
+			$where1 = 'and ('.$where1.')';
+		}
 		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`';
 		//读取我可查看权限
-		$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid'))",$fields,'sort,name');
+		$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
 		$py   = c('pingyin');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] = $rs['face'] = $this->getface($rs['face']);

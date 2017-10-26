@@ -26,6 +26,7 @@ class tableClassAction extends Action
 		$value 	= $this->post('value');
 		$sql 	= "ALTER TABLE `$id` COMMENT '$value';";
 		$this->db->query($sql);
+		return 'success';
 	}
 	
 	public function tablefieldsAjax()

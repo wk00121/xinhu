@@ -706,4 +706,12 @@ class kaoqinClassAction extends Action
 			}
 		}
 	}
+	
+	//自动添加年假
+	public function addnianjiaAjax()
+	{
+		$dt 	= $this->get('dt');
+		$barr	= m('flow:leave')->autoaddleave();
+		return '共添加'.count($barr).'人';
+	}
 }

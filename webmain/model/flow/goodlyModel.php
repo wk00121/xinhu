@@ -19,12 +19,14 @@ class flow_goodlyClassModel extends flowModel
 		foreach($rows as $k=>$rs){
 			$one = $db->getone($rs['aid']);
 			if($one){
+				$name 	= $one['name'];
+				if(!isempt($one['xinghao']))$name.='('.$one['xinghao'].')';
 				if($lx==1){
-					$rows[$k]['aid'] 	= $one['name'];
+					$rows[$k]['aid'] 	= $name;
 					$rows[$k]['count'] 	= 0-$rs['count']; //负数显示为正数
 				}
 				$rows[$k]['unit'] 	= $one['unit'];
-				$rows[$k]['temp_aid'] = $one['name'];
+				$rows[$k]['temp_aid'] = $name;
 			}
 		}
 		return $rows;

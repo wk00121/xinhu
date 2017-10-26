@@ -49,9 +49,9 @@ function yingyonginit(){
 	yy.loadshow();
 }
 function initbody(){
-	adminid = js.getoption('adminid', <?=$da['adminid']?>);
+	adminid = js.getoption('adminid', '<?=$da['adminid']?>');
 	admintoken = js.getoption('admintoken', '<?=$xhrock->admintoken?>');
-	yy.init();
+	try{yy.init();}catch(e){alert(e);}
 	yingyonginit();
 }
 function callPhone(o1){

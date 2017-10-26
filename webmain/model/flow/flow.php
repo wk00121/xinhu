@@ -26,6 +26,7 @@ class flowModel extends Model
 	public $optid	= 0;		//当前当街对应操作用Id，如提交人Id
 	public $isflow	= 0;		//当前模块是否有流程审核步骤
 	public $ismobile= 0;		//是否移动的页面请求的
+	public $minwidth	= 100;	//录入页面子表最小宽度
 	
 	
 	//当初始化模块后调用
@@ -191,6 +192,7 @@ class flowModel extends Model
 		$this->rssust	= $this->rs;
 		$this->flowchangedata();
 		
+		$this->rs['base_systitle']	= TITLE;//系统名称
 		$this->rs['base_modename']	= $this->modename;
 		$this->rs['base_sericnum']	= $this->sericnum;
 		$this->rs['base_summary']	= $this->rock->reparr($this->moders['summary'], $this->rs);
@@ -364,10 +366,10 @@ class flowModel extends Model
 		foreach($this->fieldsarra as $k=>$rs){
 			$fid 	= $rs['fields'];
 			if($rs['fieldstype']=='uploadfile'){
-				$fval 	= (int)$this->rock->arrvalue($data, $fid, '0');
-				if($fval>0){
-					$ftrs = $fobj->getone($fval);
-					$data[$fid] = $fobj->getfilestr($ftrs, 2);
+				$fval 	= $this->rock->arrvalue($data, $fid);
+				if(isempt($fval))$fval='0';
+				if($fval!='0'){
+					$data[$fid] = $fobj->getstr('', '', 2, "`id` in($fval)");
 				}
 			}
 			if($rs['fieldstype']=='uploadimg'){
@@ -551,10 +553,16 @@ class flowModel extends Model
 		$uploadfile		= $this->rock->post('uploadfile');
 		$filearr 		= array();
 		foreach($this->fieldsarr as $k=>$rs){
+			
+			//读取文件详情
 			if($rs['fieldstype']=='uploadfile'){
 				$fid 	= $rs['fields'];
-				$fval 	= (int)$this->rock->arrvalue($this->rssust, $fid, '0');
-				if($fval>0)$filearr['f'.$fval.''] = $fobj->getone($fval,'filename,id,filesizecn,fileext,optname');
+				$fval 	= arrvalue($this->rssust, $fid);
+				if(isempt($fval))$fval='0';
+				if($fval != '0'){
+					$fvalsa = explode(',', $fval);
+					foreach($fvalsa as $fval1)$filearr['f'.$fval1.''] = $fobj->getone($fval1,'filename,id,filesizecn,fileext,optname,thumbpath');
+				}
 			}
 		}
 		$arr['filearr'] = $filearr;
@@ -580,16 +588,18 @@ class flowModel extends Model
 		}
 		$logarr = $this->getlog();
 		$nowcur = $this->nowcourse;
-		if($this->rock->arrvalue($this->nextcourse,'checktype')=='change')$ischange = 1; //需要自己选择下一步处理人
+		if(arrvalue($this->nextcourse,'checktype')=='change'){
+			$ischange = 1; //需要自己选择下一步处理人
+		}
 		$sarr['ischeck'] 		= $ischeck;
 		$sarr['ischange'] 		= $ischange;
 		$sarr['nowcourse'] 		= $nowcur;
-		$sarr['iszhuanban'] 	= $this->rock->arrvalue($nowcur,'iszf',0);
+		$sarr['iszhuanban'] 	= arrvalue($nowcur,'iszf',0);
 		$sarr['nextcourse'] 	= $this->nextcourse;
 		$sarr['nstatustext'] 	= $arr['nstatustext'];
 		
 		//读取当前审核表单
-		$_checkfields	= $this->rock->arrvalue($nowcur,'checkfields');
+		$_checkfields	= arrvalue($nowcur,'checkfields');
 		$checkfields	= array();
 		if($ischeck == 1 && !isempt($_checkfields)){
 			
@@ -915,14 +925,23 @@ class flowModel extends Model
 	{
 		$shiyong = array();
 		$defix 	 = $xuhao 	 = 0; //默认是0的
+		$uid 	 = arrvalue($urs,'id',0);
 		foreach($rows as $k=>$rs){
 			$whereid = (int)$rs['whereid'];
 			$receid  = $rs['receid'];
+			$wherestr= arrvalue($rs, 'where');
 			
 			//停用了
 			if($rs['status']=='0')continue;
 			
-			//有条件的
+			//where条件字段
+			if(!isempt($wherestr)){
+				$wherestr = m('base')->strreplace($this->rock->jm->base64decode($wherestr), $uid);
+				$to 	  = $this->rows("`id`='$this->id' and $wherestr ");
+				if($to==0)continue;//条件不成立
+			}
+			
+			//有条件的【流程模块条件】下的ID
 			if($whereid > 0){
 				$bo = $this->wheremanzhu($whereid);
 				if(!$bo)continue;
@@ -1722,7 +1741,7 @@ class flowModel extends Model
 				'description' 	=> $cont,
 				'url' 			=> $wxurl
 			);
-			$picurl  = $this->rock->arrvalue($this->rs, 'fengmian');
+			$picurl  = arrvalue($this->rs, 'fengmian');
 			if($picurl != ''){
 				if(substr($picurl,0,4) != 'http')$picurl = URL.$picurl;
 				$wxarr['picurl'] = $picurl;
@@ -1738,19 +1757,18 @@ class flowModel extends Model
 				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gname.',办公助手', $wxarr);
 				m('log')->todolog('企业微信提醒', $barr);
 			}
-			$this->flowweixinarr=array();
 		}
 		//钉钉提醒发送
 		if($ddtx==1 && $reim->installwx(2)){
 			$barr = m('dingding:index')->sendoa($receid, $gname, array(
 				'title' 		=> $title,
 				'content' 		=> $cont,
-				'wxurl' 		=> $wxurl,
-				'pcurl' 		=> $url,
+				'wxurl' 		=> arrvalue($this->flowweixinarr, 'url', $wxurl),
 				'modename'		=> $modename
 			));
 			m('log')->todolog('钉钉提醒', $barr);
 		}
+		$this->flowweixinarr=array();
 		return $receid;
 	}
 	
@@ -2112,11 +2130,9 @@ class flowModel extends Model
 			$check 	   	= c('check');
 			$allfields 	= $this->db->getallfields('[Q]'.$this->mtable.'');
 			$_kearr 	= array();
-			//关键词是数字
-			if($check->isnumber($key)){
-				$_kearr[] = "{asqom}`id`='$key'";
-				if($temsao==1)$_kearr[] = "b.`uid`='$key'";
-			}else if($check->isdate($key) || $check->ismonth($key)){
+			
+			//关键词是日期
+			if($check->isdate($key) || $check->ismonth($key)){
 				$skeay 	= array('date','datetime','month');
 				foreach($this->fieldsarra as $k=>$rs){
 					$flx = $rs['fieldstype'];
@@ -2150,12 +2166,17 @@ class flowModel extends Model
 						$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
 					}
 				}
-				if($temsao==1){
+				
+				if($check->isnumber($key)){
+					$_kearr[] = "{asqom}`id`='$key'";
+					if($temsao==1)$_kearr[] = "b.`uid`='$key'";
+				}else if($temsao==1){
 					$_kearr[] = "b.`uname` like '%".$key."%'";
 					$_kearr[] = "b.`udeptname` like '%".$key."%'";
 					$_kearr[] = "b.`sericnum` = '$key'";
 				}
-				//其他or字段条件
+				
+				//其他or字段条件格式：name@1,title
 				if(isset($nas['orlikefields'])){
 					$owhee = explode(',', $nas['orlikefields']);
 					foreach($owhee as $owhees){

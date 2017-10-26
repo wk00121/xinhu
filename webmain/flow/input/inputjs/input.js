@@ -30,12 +30,12 @@ function geturlact(act,cns){
 function initbody(){
 	js.tanstyle = 1;
 	$('body').keydown(function(et){
-		var code	= event.keyCode;
+		var code	= et.keyCode;
 		if(code==27){
 			c.close();
 			return false;
 		}
-		if(event.altKey){
+		if(et.altKey){
 			if(code == 83){
 				get('AltS').click();
 				return false;
@@ -291,10 +291,10 @@ var c={
 		}
 	},
 	//初始上传框
+	filearr:{},
 	initinput:function(){
 		var o,o1,sna,i,tsye,uptp,tdata,farr=alldata.filearr,far;
 		var o = $('div[id^="filed_"]');
-		if(isedit==1)o.show();
 		for(i=0;i<o.length;i++){
 			o1 = o[i];sna= $(o1).attr('tnam');tsye=$(o1).attr('tsye');tdata=$(o1).attr('tdata');
 			if(isedit==1){
@@ -302,6 +302,9 @@ var c={
 				if(tsye=='file'){
 					uptp='*';
 					if(!isempt(tdata))uptp=tdata;
+					$('#'+sna+'_divadd').show();
+				}else{
+					$(o1).show();
 				}
 				$.rockupload({
 					'inputfile':''+o1.id+'_inp',
@@ -313,14 +316,33 @@ var c={
 							get('imgview_'+sna+'').src = d.filepath;
 							form(sna).value=d.filepath;
 						}else if(tsye=='file'){
-							$('#fileview_'+sna+'').html(c.showfilestr(d));
-							form(sna).value=d.id;
+							$('#meng_'+c.uprnd+'').remove();
+							$('#up_'+c.uprnd+'').attr('upid_'+sna+'',d.id);
+							c.upfbo = false;
+							c.filearr['f'+d.id+''] = f;
+							c.showupid(sna);//显示ID	
 						}
 					},
 					'onprogress':function(f,bl){
 						var sna= f.sname,tsye=f.snape;
 						if(tsye=='file'){
-							$('#fileview_'+sna+'').html('上传中('+bl+'%)...');
+							$('#meng_'+c.uprnd+'').html(''+bl+'%');
+						}
+					},
+					onchange:function(f){
+						var sna= f.sname,tsye=f.snape;
+						if(tsye=='file'){
+							var flx = js.filelxext(f.fileext);
+							c.uprnd = js.getrand();
+							c.upfbo = true;
+							var s='<div onclick="c.clickupfile(this,\''+sna+'\')" id="up_'+c.uprnd+'" title="'+f.filename+'('+f.filesizecn+')"  class="upload_items">';
+							if(f.isimg){
+								s+='<img class="imgs" src="'+f.imgviewurl+'">'
+							}else{
+								s+='<div class="upload_items_items"><img src="web/images/fileicons/'+flx+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
+							}
+							s+='<div id="meng_'+c.uprnd+'" class="upload_items_meng" style="font-size:16px">0%</div></div>';
+							$('#'+sna+'_divadd').before(s);
 						}
 					}
 				});
@@ -329,24 +351,90 @@ var c={
 			if(tsye=='img'){
 				if(val)get('imgview_'+sna+'').src=val;
 			}
-			if(tsye=='file' && val && val>0){
-				far = farr['f'+val];
-				if(far){
-					$('#fileview_'+sna+'').html(c.showfilestr(far));
-				}else{
-					form(sna).value='0';
+			//显示上传文件信息
+			if(tsye=='file' && farr){
+				var fid,f,s;
+				for(fid in farr){
+					f = farr[fid];
+					if(!f)continue;
+					s='<div onclick="c.clickupfile(this,\''+sna+'\')" title="'+f.filename+'('+f.filesizecn+')" upid_'+sna+'="'+f.id+'" class="upload_items">';
+					if(js.isimg(f.fileext)){
+						s+='<img class="imgs" src="'+f.thumbpath+'">';
+					}else{
+						s+='<div class="upload_items_items"><img src="web/images/fileicons/'+js.filelxext(f.fileext)+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
+					}
+					s+='</div>';
+					$('#'+sna+'_divadd').before(s);
+					this.filearr[fid] = f;
 				}
+				this.showupid(sna);
 			}
 		}
+		
+		if(ismobile==1){
+			$('div[tmp="mobilezbiao"]').css('width',''+($(window).width()-12)+'px');
+		}
 	},
+	
+	//多文件点击上传
+	uploadfilei:function(sna){
+		if(isedit==0)return;
+		if(this.upfbo){js.msg('msg','请等待上传完成在添加');return;}
+		get('filed_'+sna+'_inp').click();
+	},
+	//上传完成
+	showupid:function(sna){
+		var os = $('div[upid_'+sna+']'),fvid='';
+		for(var i=0;i<os.length;i++){
+			fvid+=','+$(os[i]).attr('upid_'+sna+'')+'';
+		}
+		if(fvid!='')fvid=fvid.substr(1);
+		form(sna).value=fvid;
+	},
+	//上传文件点击
+	clickupfile:function(o1,sna, xs){
+		this.yuobj = o1;
+		var o = $(o1);
+		var fid = o.attr('upid_'+sna+'');
+		if(isempt(fid))return;
+		var f = this.filearr['f'+fid+''];if(!f)return;
+		if(isedit==0 || xs){
+			if(js.isimg(f.fileext)){
+				var src = f.imgviewurl;
+				if(!src)src=f.thumbpath.replace('_s','');
+				this.showviews(src);
+			}else{
+				js.downshow(fid);
+			}
+		}else{
+			js.confirm('确定要删除文件：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">[预览]</a>',function(jg){
+				if(jg=='yes'){
+					o.remove();
+					c.showupid(sna);
+					$.get(js.getajaxurl('delfile','upload','public',{id:fid}));
+				}
+			});
+		}
+	},
+	
 	showfilestr:function(d){
 		var flx = js.filelxext(d.fileext);
 		var s = '<img src="web/images/fileicons/'+flx+'.gif" align="absmiddle" height=16 width=16> <a href="javascript:;" onclick="js.downshow('+d.id+')">'+d.filename+'</a> ('+d.filesizecn+')';
 		return s;
 	},
-	showviews:function(o1){
-		$.imgview({'url':o1.src,'ismobile':ismobile==1});
+	
+	loadicons:function(){
+		if(!this.loacdis){
+			$('body').append('<link rel="stylesheet" type="text/css" href="web/res/fontawesome/css/font-awesome.min.css">');
+			this.loacdis= true;
+		}
 	},
+	showviews:function(o1){
+		this.loadicons();
+		var url = (typeof(o1)=='string')? o1 : o1.src;
+		$.imgview({'url':url,'ismobile':ismobile==1});
+	},
+	
 	initdatelx:function(){
 		
 	},

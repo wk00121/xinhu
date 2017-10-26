@@ -15,6 +15,7 @@ class deptClassModel extends Model
 				if(!isempt($dpath)){
 					$dpatha = explode(',', $dpath);
 					foreach($dpatha as $dpatha1){
+						if(isempt($dpatha1))continue;
 						$darr[$dpatha1]=$dpatha1;
 						if(!isset($dtotal[$dpatha1]))$dtotal[$dpatha1]=0;
 						$dtotal[$dpatha1]++;
@@ -24,11 +25,17 @@ class deptClassModel extends Model
 			foreach($darr as $k1=>$v1)$did.=','.$k1.'';
 			$where= 'id in('.$did.')';
 			$dbs  = m('admin');
-			if((int)$dbs->getmou('type', $this->adminid)==1){
-				$where='id>0';
-			}else{
-				$where1=m('view')->viewwhere('dept', $this->adminid, 'id');
-				$where = '`id`>0 and ((1 '.$where1.') or (id in('.$did.')))';
+			if(isempt($this->rock->get('changerange'))){
+				if((int)$dbs->getmou('type', $this->adminid)==1){
+					$where = '1=1'; //管理员可看全部
+				}else{
+					$where1= m('view')->viewwhere('dept', $this->adminid, 'id');
+					if(contain($where1,'1=1')){
+						$where = '1=1'; //全部
+					}else{
+						$where = '`id`>0 and ((1 '.$where1.') or (id in('.$did.')))';
+					}
+				}
 			}
 		}else{
 			$where = '1=1';

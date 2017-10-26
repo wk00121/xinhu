@@ -15,13 +15,14 @@
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script>
 var mid = '<?=$da['arr']['mid']?>',adminid='<?=$da['adminid']?>',admintoken='',modenum='<?=$da['arr']['modenum']?>',ismobile=1;
-js.changeuser=function(na,lx){
-	$('body').chnageuser({
+js.changeuser=function(na,lx, cans){
+	var can = {
 		'changetype':lx,
 		'titlebool':get('header_title'),
 		'idobj':get(na+'_id'),
 		'nameobj':get(na)
-	});
+	};
+	$('body').chnageuser(js.apply(can,cans));
 }
 </script>
 <style>
@@ -194,7 +195,7 @@ if($da['arr']['optmenu']){
 		<tr>
 			<td class="tdys1"><div  align="right" style="color:#555555"><font color=red>*</font>下一步处理人：</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
-			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" name="nextname"><input name="nextnameid" id="nextname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck')" class="webbtn">选择</a></td></tr></table>
+			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" name="nextname"><input name="nextnameid" id="nextname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
 			</div></td>
 		</tr>
 		<?php }?>

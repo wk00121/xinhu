@@ -15,9 +15,10 @@ class fileClassModel extends Model
 		return $this->mimitype[$lx];
 	}
 	
-	public function getfile($mtype, $mid)
+	public function getfile($mtype, $mid, $where='')
 	{
-		$rows	= $this->getall("`mtype`='$mtype' and `mid` in($mid) order by `id`",'id,`mid`,filename,filepath,filesizecn,filesize,fileext,optname');
+		if($where=='')$where = "`mtype`='$mtype' and `mid` in($mid)";
+		$rows	= $this->getall("$where order by `id`",'id,`mid`,filename,filepath,filesizecn,filesize,fileext,optname');
 		return $rows;
 	}
 	
@@ -28,9 +29,9 @@ class fileClassModel extends Model
 		}
 	}
 	
-	public function getstr($mtype, $mid, $lx=0)
+	public function getstr($mtype, $mid, $lx=0, $where='')
 	{
-		$filearr 	= $this->getfile($mtype, $mid);
+		$filearr 	= $this->getfile($mtype, $mid, $where);
 		$fstr		= $this->getstrstr($filearr, $lx);
 		return $fstr;
 	}
@@ -77,7 +78,7 @@ class fileClassModel extends Model
 		$flx   = $rs['fileext'];
 		if(!$this->contain($this->fileall,','.$flx.','))$flx='wz';
 		$str1  = '';
-		$fstr .='<img src="'.URL.'web/images/fileicons/'.$flx.'.gif" align="absmiddle" height=16 width=16> <a '.$str.' style="color:blue">'.$rs['filename'].'</a>';
+		$fstr .='<img src="'.URL.'web/images/fileicons/'.$flx.'.gif" align="absmiddle" height=16 width=16> <a '.$str.' style="color:blue;">'.$rs['filename'].'</a>';
 		if($lx==2 && !$this->rock->ismobile()){
 			$fstr .= ' <a '.$strd.' class="zhu">[下载]</a>';
 		}

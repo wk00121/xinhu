@@ -1,18 +1,48 @@
 //1、当页面加载完成会调用函数 initbodys()，里面可以写初始信息，绑定事件等。
 function initbodys(){
-	$(form('custid')).change(function(){
-		//绑定下拉框custid的触发事件
-		changedata();
-	});
-	$(form('custname')).blue(function(){
-		//绑定文本框custname失去焦点事件
-		changedata();
+	
+	
+	//当元素类型是[弹框下拉选择]时
+	c.onselectdata['tanxuan']=function(d){
+		console.log(d);
+		js.msg('success','选中的数据：'+JSON.stringify(d)+'');
+	}
+	
+	//弹出多选触发
+	c.onselectdata['tanxuancheck']=function(d){
+		console.log(d);
+		js.msg('success','选中的数据：'+JSON.stringify(d)+'');
+	}
+	
+	//绑定省用来联动
+	$(form('sheng')).change(function(){
+		form('shi').length=1;//清空市下拉框的数据
+		form('xian').length=1;//清空县下拉框的数据
+		var val = this.value;
+		if(val=='')return;
+		
+		//ajax获取对应城市数据，在webmain/flow/input/mode_demoAction.php 下方法getcityAjax 查找数据库返回
+		js.ajax(geturlact('getcity'),{'sheng':val},function(ret){
+			//得到数据填充到下拉框
+			js.msg('success','城市数据：'+JSON.stringify(ret)+'');
+			js.setselectdata(form('shi'),ret,'name');
+		},'post,json');
 	});
 	
-	//当元素类型是[弹框下拉选择]时，绑定选择触发事件用如下方法绑定custname选择文本框的触发
-	c.onselectdata['custname']=function(d){
-		js.getarr(d);
-	}
+	//绑定市用来联动
+	$(form('shi')).change(function(){
+		form('xian').length=1;//清空县下拉框的数据
+		var val = this.value;
+		if(val=='')return;
+		
+		//ajax获取对应县数据，在webmain/flow/input/mode_demoAction.php 下方法getxianAjax 查找数据库返回
+		js.ajax(geturlact('getxian'),{'city':val},function(ret){
+			
+			//得到数据填充到下拉框
+			js.msg('success','县(区)数据：'+JSON.stringify(ret)+'');
+			js.setselectdata(form('xian'),ret,'name');
+		},'post,json');
+	});
 }
 /**
 *	常用的方法
@@ -31,12 +61,12 @@ function changedata(){
 
 //3、提交保存时触发事件，常用于判断数据是否完整性
 function changesubmit(d){
-	if(!d.name)return '名称不能为空';
+	//if(!d.name)return '名称不能为空';
 };
 
 //4、保存提交成功触发
 function savesuccess(){
-	
+	alert('保存成功，我在页面上自己写的');
 };
 
 

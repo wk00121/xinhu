@@ -32,7 +32,7 @@ final class rockClass
 		$this->host		= isset($_SERVER['HTTP_HOST'])		? $_SERVER['HTTP_HOST']		: '' ;
 		$this->url		= '';
 		$this->isqywx	= false;
-		$this->win		=  php_uname();
+		$this->win		= php_uname();
 		$this->HTTPweb	= isset($_SERVER['HTTP_USER_AGENT'])? $_SERVER['HTTP_USER_AGENT']	: '' ;
 		$this->web		= $this->getbrowser();
 		$this->unarr	= explode(',','1,2');

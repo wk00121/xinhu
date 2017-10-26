@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -21,7 +21,7 @@ $(document).ready(function(){
 		loadafter:function(a){
 			c.changetype(0);
 			if(a.data){
-				
+				h.form.where.value=jm.base64decode(a.data.where);
 			}
 		},
 		submitcheck:function(d){
@@ -29,7 +29,9 @@ $(document).ready(function(){
 			if(d.checktype=='rank'&&d.checktypename=='')return '请输入职位';
 			if(d.checktype=='cname'&&d.checktypeid=='')return '请选择审核人员组';
 			if(d.checktype=='field'&&d.checktypeid=='')return '请选择主表元素';
-			return '';
+			return {
+				where:jm.base64encode(d.where)
+			};
 		}
 	});
 	h.forminit();
@@ -64,6 +66,17 @@ $(document).ready(function(){
 					nameobj:h.form.checktypename,
 					idobj:h.form.checktypeid,
 				});
+				return;
+			}
+			if(val=='change'){
+				var cans = {
+					nameobj:h.form.checktypename,
+					idobj:h.form.checktypeid,
+					value:h.form.checktypeid.value,
+					type:'deptusercheck',
+					title:'选择指定人范围'
+				};
+				js.getuser(cans);
 				return;
 			}
 			var cans = {
@@ -101,6 +114,10 @@ $(document).ready(function(){
 			}
 			if(v=='field'){
 				$('#checktext_{rand}').html('选择主表上元素：');
+				$('#checkname_{rand}').show();
+			}
+			if(v=='change'){
+				$('#checktext_{rand}').html('指定人范围：');
 				$('#checkname_{rand}').show();
 			}
 		},
@@ -210,9 +227,9 @@ $(document).ready(function(){
 		<table cellspacing="0" border="0" width="100%" align="center" cellpadding="0">
 		<tr>
 			<td  align="right"  width="15%"><font color=red>*</font> 步骤名称：</td>
-			<td class="tdinput"  width="35%"><input name="name" class="form-control"></td>
+			<td class="tdinput"  width="35%"><input name="name" onblur="this.value=strreplace(this.value)" class="form-control"></td>
 			<td  align="right"   width="15%">编号：</td>
-			<td class="tdinput" width="35%"><input name="num" class="form-control"></td>
+			<td class="tdinput" width="35%"><input onblur="this.value=strreplace(this.value)" name="num" class="form-control"></td>
 		</tr>
 		
 		<tr>
@@ -249,11 +266,7 @@ $(document).ready(function(){
 		</tr>
 		
 		
-		<tr>
-			<td  align="right" >审核条件：</td>
-			<td class="tdinput"><select class="form-control" name="whereid"><option value="0">无条件</option></select></td>
-			<td colspan="2"><font color=#888888>在【流程模块条件】上添加，满足此条件才需要此步骤</font><a click="reloadhweil" href="javascript:;">[刷新]</a></td>
-		</tr>
+		
 		<tr>
 			<td  align="right" >手写签名设置：</td>
 			<td class="tdinput"><select class="form-control" name="isqm"><option value="0">不需要手写签名</option><option value="1">需要手写签名</option><option value="2">通过才需要手写签名</option><option value="3">不通过才需要手写签名</option></select></td>
@@ -268,6 +281,18 @@ $(document).ready(function(){
 				</table>
 			</td>
 		</tr>
+		
+		<tr>
+			<td  align="right" >审核条件：</td>
+			<td class="tdinput"><select class="form-control" name="whereid"><option value="0">无条件</option></select></td>
+			<td colspan="2"><font color=#888888>在【流程模块条件】上添加，满足此条件才需要此步骤</font><a click="reloadhweil" href="javascript:;">[刷新]</a></td>
+		</tr>
+		
+		<tr>
+			<td  align="right" >审核条件：</td>
+			<td colspan="3"  class="tdinput"><textarea placeholder="写SQL条件，条件成立才需要此步骤" name="where" style="height:50px" class="form-control"></textarea></td>
+		</tr>
+		
 
 		<tr>
 			<td  align="right" >审核动作：</td>
@@ -278,9 +303,11 @@ $(document).ready(function(){
 			<td  align="right" >审核处理表单：</td>
 			<td class="tdinput" colspan="3"><input name="checkfields" class="form-control"><div style="padding-top:0px" class="tishi">需要处理表单元素必须在【表单元素管理】上，输入字段名，多个用, 分开</div></td>
 		</tr>
+		
+		
 		<tr>
 			<td  align="right" >说明：</td>
-			<td class="tdinput" colspan="3"><textarea  name="explain" style="height:60px" class="form-control"></textarea></td>
+			<td class="tdinput" colspan="3"><textarea  name="explain" style="height:50px" class="form-control"></textarea></td>
 		</tr>
 		
 		<tr>

@@ -44,11 +44,13 @@ class goodsClassModel extends Model
 	
 	public function getgoodsdata()
 	{
-		$rowss  = m('goods')->getall('1=1','id,name');
+		$rowss  = m('goods')->getall('1=1','id,name,xinghao');
 		$rows	= array();
 		foreach($rowss as $k=>$rs){
+			$name 	= $rs['name'];
+			if(!isempt($rs['xinghao']))$name.='('.$rs['xinghao'].')';
 			$rows[] = array(
-				'name' => $rs['name'],
+				'name' 	=> $name,
 				'value' => $rs['id'],
 			);
 		}

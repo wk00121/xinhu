@@ -44,4 +44,10 @@ class kaoqinClassAction extends runtAction
 		$flow->dailytodo($dt); 	//未写日报通知
 		echo 'success';
 	}
+
+	public function dayAction()
+	{
+		m('flow:leave')->autoaddleave(); //年假自动添加
+		echo 'success';
+	}
 }

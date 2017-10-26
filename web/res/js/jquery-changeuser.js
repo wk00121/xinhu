@@ -34,12 +34,13 @@
 	
 			this.userarr = [];
 			this.deptarr = [];
-			
-			var us = js.getoption('userjson');
-			if(us)this.userarr = js.decode(us);
-			
-			us = js.getoption('deptjson');
-			if(us)this.deptarr = js.decode(us);
+			if(isempt(this.changerange)){
+				var us = js.getoption('userjson');
+				if(us)this.userarr = js.decode(us);
+				
+				us = js.getoption('deptjson');
+				if(us)this.deptarr = js.decode(us);
+			}
 			this.show();
 		};
 		
@@ -98,7 +99,7 @@
 		};
 		this.showlist=function(pid,oi){
 			var type=this.inputtype,hw=24;
-			var a=this.deptarr,len=a.length,i,s='',wjj,s2='';
+			var a=this.deptarr,len=a.length,i,s='',ssu='',wjj,s2='';
 			var s1='<div style="width:'+(hw*oi)+'px"></div>';
 			var dob=this.changetype.indexOf('dept')==-1;
 			var uob=this.changetype.indexOf('user')>=0;
@@ -120,14 +121,14 @@
 				len=a.length;
 				for(i=0;i<len;i++){
 					if(a[i].deptid==pid){
-						s+='<div class="listsss">';
-						s+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
-						s+='</div>';
+						ssu+='<div class="listsss">';
+						ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
+						ssu+='</div>';
 					}
 				}
 			}
 			
-			$('#showdiv'+rand+'_'+pid+'').html(s).attr('show','true');
+			$('#showdiv'+rand+'_'+pid+'').html(ssu+s).attr('show','true');
 			if(pid==0)this.showlist(1, 1);
 			$('#showdiv'+rand+'_0 [deptxu]').unbind('click').click(function(){
 				me._deptclicks(this);
@@ -216,22 +217,27 @@
 			var o1 = $('#showdiv'+rand+'_0'),url;
 			o1.html('<div align="center" style="padding:30px"><img src="images/mloading.gif"></div>');
 			if(js.getajaxurl){
-				url = js.getajaxurl('deptuserjson','dept','system');
+				url = js.getajaxurl('deptuserjson','dept','system',{'changerange':this.changerange,'gtype':'change'});
 			}else{
-				url = js.apiurl('dept','data',{callback:'?'});
+				url = js.apiurl('dept','data',{callback:'?','changerange':this.changerange,'gtype':'change'});
 			}
 			$.getJSON(url, function(ret){
 				if(ret.code==200){
 					ret = ret.data;
-					js.setoption('deptjson', ret.deptjson);
-					js.setoption('userjson', ret.userjson);
-					me.userarr = js.decode(ret.userjson);
-					me.deptarr = js.decode(ret.deptjson);
-					me.showlist(0, 0);
+					me._loaddatashow(ret);	
 				}else{
 					o1.html(ret.msg);
 				}
 			});
+		};
+		this._loaddatashow=function(ret){
+			if(isempt(this.changerange)){
+				js.setoption('deptjson', ret.deptjson);
+				js.setoption('userjson', ret.userjson);
+			}
+			this.userarr = js.decode(ret.userjson);
+			this.deptarr = js.decode(ret.deptjson);
+			this.showlist(0, 0);
 		};
 		this._changboxxuan=function(os){
 			var ns= 'changeuserinput_'+rand+'';
@@ -314,6 +320,9 @@
 			$('#changekey_'+this.rand+'').keydown(function(e){
 				me._searchkeys(e)
 			});
+			$('#changekey_'+this.rand+'').keyup(function(e){
+				me._searchkeys(e)
+			});
 		};
 		this._getobj=function(lx){
 			var o = $('#selectdata_'+rand+'').find("[tsid='"+lx+"']");
@@ -336,9 +345,9 @@
 					xna= o1.attr('xname');
 					xu = parseFloat(o1.attr('xu'));
 					if(this.checked){
-						seld.push(this.data[xu]);
+						seld.push(this.nowdata[xu]);
 					}else{
-						seld=this.data[xu];
+						seld=this.nowdata[xu];
 					}
 					xal= o1.val();
 					sid+=','+xal+'';
@@ -359,29 +368,35 @@
 		};
 		this.showdata=function(a,inb){
 			if(!a)a=[];
-			var i,len=a.length,s='',s2,s1='',atr,oldvel='';
+			var s='',len=a.length,s1='';
 			if(len==0){
 				s='<div align="center" style="margin-top:30px;color:#cccccc;font-size:16px">无记录</div>';
 				if(!inb)this.loaddata();
 			}else{
-				if(this.nameobj)oldvel=this.nameobj.value;
-				if(this.idobj)oldvel=this.idobj.value;
-				var type='checkbox',ched='';
-				if(!this.checked)type='radio';
-				oldvel = ','+oldvel+',';
-				for(i=0;i<len && i<this.maxshow;i++){
-					ched='';
-					if(!isempt(a[i].value) && oldvel.indexOf(','+a[i].value+',')>-1)ched='checked';
-					s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+a[i].name+'" value="'+a[i].value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
-					atr = '';
-					if(a[i].padding)atr='style="padding-left:'+a[i].padding+'px"';
-					s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+a[i].name+'</label></div>';
-				}
+				s = this.showhtml(a);
 				s1='共'+len+'条';
 			}
 			this._getobj('count').html(s1);
 			var o = $('#selectlist_'+rand+'');
 			o.html(s);
+		};
+		this.showhtml=function(a){
+			this.nowdata = a;
+			var i,len=a.length,s='',s2,s1='',atr,oldvel='';
+			if(this.nameobj)oldvel=this.nameobj.value;
+			if(this.idobj)oldvel=this.idobj.value;
+			var type='checkbox',ched='';
+			if(!this.checked)type='radio';
+			oldvel = ','+oldvel+',';
+			for(i=0;i<len && i<this.maxshow;i++){
+				ched='';
+				if(!isempt(a[i].value) && oldvel.indexOf(','+a[i].value+',')>-1)ched='checked';
+				s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+a[i].name+'" value="'+a[i].value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
+				atr = '';
+				if(a[i].padding)atr='style="padding-left:'+a[i].padding+'px"';
+				s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+a[i].name+'</label></div>';
+			}
+			return s;
 		};
 		this.loaddata=function(){
 			var url = this.url;
@@ -400,26 +415,23 @@
 			},500);
 		};
 		this._searchkey = function(bo){
-			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],len,i,oi=0;
+			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],len,i,oi=0,s;
 			a=this.data;
-			len=a.length;
-			var o = $('#selectlist_'+rand+'');
+			len=a.length;if(len==0)return;
 			if(key!='')for(i=0;i<len;i++){
 				if(a[i].name.indexOf(key)>-1 || a[i].value==key){
-					d.push(i);
+					d.push(a[i]);
 					oi++;
-					if(oi>this.maxshow)break;
+					if(oi>20)break;//最多显示搜索
 				}
 			}
 			len = d.length;
 			if(len==0){
-				o.find('div').show();
+				s=this.showhtml(this.data);
 			}else{
-				o.find('div').hide();
-				for(i=0;i<len;i++){
-					o.find('div:eq('+d[i]+')').show();
-				}
+				s=this.showhtml(d);
 			}
+			$('#selectlist_'+rand+'').html(s);
 			if(bo && len==0 && key!='')js.msg('msg','无相关['+key+']的记录', 2);
 		};
 	}
@@ -429,6 +441,7 @@
 			'title' : '请选择...',
 			'titlebool':true,
 			'showview':'',
+			'changerange':'', //从哪些人员中选择
 			'changetype' : 'user',
 			'idobj':false,'nameobj':false,
 			'onselect':function(){},
@@ -444,7 +457,7 @@
 		var defaultVal = {
 			'showview': '',
 			'title' : '请选择...',
-			'maxshow' : 200, //最多显示防止卡死浏览器
+			'maxshow' : 100, //最多显示防止卡死浏览器
 			'data'	  : [], 'url' : '',
 			'checked' : false,
 			'idobj'	  : false, 'nameobj':false,

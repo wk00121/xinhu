@@ -128,7 +128,7 @@ class inputChajian extends Chajian
 			$datanum 	= $data;
 			$fopt		= $this->getdatastore($type, $objs, $datanum, $fid);
 			if($fopt)foreach($fopt as $k=>$rs){
-				$_val= $rs['value'];
+				$_val= arrvalue($rs,'value', $rs['name']);
 				$sel = ($_val==$val)?'selected':'';
 				$sel2 = ($_val==$val)?'checked':'';
 				$ocn = '';
@@ -178,8 +178,9 @@ class inputChajian extends Chajian
 		}
 		if($type=='uploadfile'){
 			$str = '<input name="'.$fname.'" value="'.$val.'" type="hidden">';
-			$str.= '<span id="fileview_'.$fname.'"></span>';
-			$str.= '<div style="display:none" tsye="file" tnam="'.$fname.'" tdata="'.$data.'" id="filed_'.$fname.'"><input type="file"  style="width:120px" id="filed_'.$fname.'_inp"></div>';
+			//$str.= '<span id="fileview_'.$fname.'"></span>';
+			$str.= '<div style="display:inline-block" id="fileview_'.$fname.'"><div onclick="c.uploadfilei(\''.$fname.'\')" style="display:none;border:dashed 1px #cccccc" id="'.$fname.'_divadd" class="upload_items"><img class="imgs" src="images/jia.png"></div></div>';
+			$str.= '<div style="display:none" tsye="file" tnam="'.$fname.'" tdata="'.$data.'" id="filed_'.$fname.'"><input type="file" style="width:120px" id="filed_'.$fname.'_inp"></div>';
 		}
 		if($type=='auto'){
 			$datanum = $data;
@@ -227,6 +228,15 @@ class inputChajian extends Chajian
 					'name' => $nam,
 					'value' => $val,
 				);
+			}
+		}
+		
+		//用:读取model上的数据
+		if(!$fopt && !isempt($datanum) && contain($datanum,':')){
+			$acta = explode(':', $datanum);
+			$objs = m($acta[0]);
+			if(method_exists($objs, $acta[1])){
+				$fopt = $objs->$acta[1]();
 			}
 		}
 		

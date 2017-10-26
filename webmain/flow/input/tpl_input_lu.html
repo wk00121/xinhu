@@ -88,7 +88,7 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 					}
 					$stsp.= ''.$firstrs['name'].'：</td>';
 					$stsp.= '<td width="100%"><input  class="inputs" style="width:99%" id="sysnextchange" value="" placeholder="'.$placeholder.'" readonly type="text" name="sysnextopt"><input name="sysnextoptid" value="" id="sysnextchange_id" type="hidden"><input name="sysnextcustidid" value="'.$firstrs['id'].'" type="hidden"></td>';
-					$stsp.= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'sysnextchange\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_recename" onclick="js.changeuser(\'sysnextchange\',\'changeusercheck\')" class="webbtn">选择</a></td>';
+					$stsp.= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'sysnextchange\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_recename" onclick="js.changeuser(\'sysnextchange\',\'changeusercheck\',\'选择'.$firstrs['name'].'\',{changerange:\''.$firstrs['checktypeid'].'\'})" class="webbtn">选择</a></td>';
 					$stsp.= '</tr></table></div>';
 					echo $stsp;
 				}

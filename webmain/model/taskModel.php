@@ -13,7 +13,8 @@ class taskClassModel extends Model
 		$runa	= array();
 		$sdts	= strtotime($dt);
 		$edts	= strtotime($dt.' 23:59:59');
-		if($ntime==0)$ntime 	= time();
+		if($ntime==0)$ntime = time();
+		$ntime	= $ntime-20;//稍微减一下防止出现跳过的
 		$brows	= array();
 		$dtobj 	= c('date');
 		$w 		= (int)date('w', $sdts);if($w==0)$w=7;//星期7
@@ -197,7 +198,7 @@ class taskClassModel extends Model
 	
 	private function tasklistpath()
 	{
-		return ''.UPDIR.'/'.date('Y-m').'/tasklist.json';
+		return ''.ROOT_PATH.'/'.UPDIR.'/'.date('Y-m').'/tasklist.json';
 	}
 	
 	/**
@@ -226,7 +227,7 @@ class taskClassModel extends Model
 	public function createjson($time)
 	{
 		$barr 	= $this->getrunlist($this->rock->date, 2, $time);
-		$this->rock->createtxt($this->tasklistpath(), json_encode($barr));
+		@file_put_contents($this->tasklistpath(), json_encode($barr));
 		return $barr;
 	}
 	
@@ -236,9 +237,14 @@ class taskClassModel extends Model
 	public function runjsonlist($time)
 	{
 		$barr	= array();
-		$fstr	= @file_get_contents($this->tasklistpath());
-		$time1 	= strtotime(date('Y-m-d'));
-		if($time-$time1<180)$fstr = '';//每天自动重启生成json
+		$fstr	= '';
+		$fpath	= $this->tasklistpath();
+		$dt 	= date('Y-m-d', $time);
+		if(file_exists($fpath)){
+			$lastdt = date('Y-m-d H:i:s',filemtime($fpath));//最后修改的时间
+			$editdt = date('Y-m-d H:i:s',filectime($fpath));//上次修改时间
+			if(contain($lastdt, $dt) && contain($editdt, $dt))$fstr	= @file_get_contents($fpath);
+		}
 		if(isempt($fstr)){
 			$barr = $this->createjson($time);
 			m('option')->setval('systaskrun', $this->rock->now);//记录运行时间
