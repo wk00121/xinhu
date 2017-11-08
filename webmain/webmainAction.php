@@ -310,7 +310,7 @@ class Action extends mainAction
 	*/
 	public function checksignature($table)
 	{
-		//return true;//使用代理这个验证都失败直接开启这行吧。
+		if(!getconfig('checksign'))return true;//不验证
 		$sign = $this->post('sys_signature');
 		$time = $this->post('sys_timeature');
 		$signs= md5($this->rock->nowurl().$table.$time.'_'.$this->adminid);

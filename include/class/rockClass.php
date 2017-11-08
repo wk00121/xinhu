@@ -160,7 +160,7 @@ final class rockClass
 		}
 		$txt.=''.chr(10).''.chr(10).'【IP】'.chr(10).''.$this->ip.'';
 		$txt.=''.chr(10).''.chr(10).'【浏览器】'.chr(10).''.$this->HTTPweb.'';
-		$this->createtxt(''.UPDIR.'/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log', $txt);
+		$this->createtxt(''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log', $txt);
 	}
 	
 	private function isjm($s)
@@ -548,7 +548,7 @@ final class rockClass
 	{
 		if(!DEBUG)return;
 		$msg 	= '['.$this->now.']:'.$this->nowurl().''.chr(10).''.$str.'';
-		$mkdir 	= ''.UPDIR.'/'.date('Y-m').'';
+		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
 		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.rand(100,999).'.log', $msg);
 	}
 	

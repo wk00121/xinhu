@@ -287,6 +287,19 @@ class kaoqinClassAction extends Action
 		m('kaoqin')->kqanayall($dt, $whe);
 		echo 'ok';
 	}
+	public function kqanayallinitAjax()
+	{
+		$dt 	= $this->post('dt');
+		return m('kaoqin')->kqanayallfirst($dt, 1);
+	}
+	public function kqanayallpageAjax()
+	{
+		$dt 	= $this->post('dt');
+		$page 	= (int)$this->post('page');
+		m('kaoqin')->kqanayall($dt, '', $page);
+		echo 'ok';
+	}
+	
 	
 	//考勤分析总表
 	public function kqanayallbeforeshow($table)

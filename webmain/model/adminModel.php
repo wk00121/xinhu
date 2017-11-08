@@ -380,7 +380,7 @@ class adminClassModel extends Model
 			$where1 = $this->gjoin($range, '', 'where');
 			$where1 = 'and ('.$where1.')';
 		}
-		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`';
+		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`';
 		//读取我可查看权限
 		$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
 		$py   = c('pingyin');
@@ -439,12 +439,20 @@ class adminClassModel extends Model
 	*/
 	public function updateinfo($where='')
 	{
-		$rows	= $this->db->getall("select id,name,deptid,superid,deptpath,superpath,deptname,deptallname,superman,deptids from `[Q]admin` a where id>0 $where order by `sort`");
+		$rows	= $this->db->getall("select id,name,deptid,superid,deptpath,superpath,deptname,deptallname,groupname,superman,deptids from `[Q]admin` a where id>0 $where order by `sort`");
 		$total	= $this->db->count;
 		$cl		= 0;
+		$sjo    = m('sjoin');
 		foreach($rows as $k=>$rs){
 			$nrs	= $this->getpath($rs['deptid'], $rs['superid'], $rs['deptids']);
-			if($nrs['deptpath'] != $rs['deptpath'] || $nrs['deptname'] != $rs['deptname'] || $nrs['superpath'] != $rs['superpath'] || $nrs['superman'] != $rs['superman'] || $nrs['deptallname'] != $rs['deptallname']){
+			$gids 	= $sjo->getgroupid($rs['id']);
+			if($gids=='0'){
+				$gids = '';
+			}else{
+				$gids = substr($gids, 2);
+			}
+			if($nrs['deptpath'] != $rs['deptpath'] || $nrs['deptname'] != $rs['deptname'] || $nrs['superpath'] != $rs['superpath'] || $nrs['superman'] != $rs['superman'] || $nrs['deptallname'] != $rs['deptallname'] || $gids != $rs['groupname']){
+				$nrs['groupname'] = $gids;
 				$this->record($nrs, "`id`='".$rs['id']."'");
 				$cl++;
 			}

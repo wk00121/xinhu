@@ -146,4 +146,10 @@ class indexClassAction extends Action{
 		if(is_string($bo))return $bo;
 		return 'ok';
 	}
+	
+	public function testAjax()
+	{
+		//header("HTTP/1.1 500 Not Found");
+		echo $this->get('abc');
+	}
 }

@@ -79,6 +79,14 @@
 		var bo  = (lxs=='input' || lxs=='textarea');
 		if(e.keyCode==8 && !bo)return false;
 	});
+	
+	//开启js异步队列
+	queue.start();
+	/*
+	for(var i=0;i<=1;i++)
+	queue.add({url:'index.php?a=test&m=index&ajaxbool=true&abc='+i+'',success:function(str,bsr,i){
+		console.log(''+i+':'+str+'');
+	}});*/
 }
 
 

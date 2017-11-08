@@ -4,11 +4,11 @@ $(document).ready(function(){
 	var gid = 0;
 	var a = $('#veiw_{rand}').bootstable({
 		tablename:'group',celleditor:true,url:publicstore('{mode}','{dir}'),storeafteraction:'groupafter',
-		modenum:'group',
+		modenum:'group',sort:'sort',dir:'asc',
 		columns:[{
 			text:'组名',dataIndex:'name',editor:true
 		},{
-			text:'排序号',dataIndex:'sort',editor:true
+			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
 			text:'人员数',dataIndex:'utotal'
 		},{

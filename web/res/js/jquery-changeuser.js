@@ -216,11 +216,7 @@
 		this._loaddata=function(){
 			var o1 = $('#showdiv'+rand+'_0'),url;
 			o1.html('<div align="center" style="padding:30px"><img src="images/mloading.gif"></div>');
-			if(js.getajaxurl){
-				url = js.getajaxurl('deptuserjson','dept','system',{'changerange':this.changerange,'gtype':'change'});
-			}else{
-				url = js.apiurl('dept','data',{callback:'?','changerange':this.changerange,'gtype':'change'});
-			}
+			var url = 'index.php?a=deptuserjson&m=dept&d=system&ajaxbool=true&changerange='+this.changerange+'&gtype=change';
 			$.getJSON(url, function(ret){
 				if(ret.code==200){
 					ret = ret.data;
@@ -234,6 +230,7 @@
 			if(isempt(this.changerange)){
 				js.setoption('deptjson', ret.deptjson);
 				js.setoption('userjson', ret.userjson);
+				js.setoption('groupjson', ret.groupjson);
 			}
 			this.userarr = js.decode(ret.userjson);
 			this.deptarr = js.decode(ret.deptjson);

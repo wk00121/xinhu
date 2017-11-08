@@ -1,7 +1,10 @@
 <?php
 class deptClassAction extends Action
 {
-	
+	public function defaultAction()
+	{
+		
+	}
 	
 	public function dataAjax()
 	{
@@ -114,9 +117,11 @@ class deptClassAction extends Action
 		$udarr 		= m('dept')->getdeptuserdata();
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
+		$grouparr 	= $udarr['garr'];
 		
 		$arr['deptjson']	= json_encode($deptarr);
 		$arr['userjson']	= json_encode($userarr);
+		$arr['groupjson']	= json_encode($grouparr);
 		$this->showreturn($arr);
 	}
 }

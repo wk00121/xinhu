@@ -96,6 +96,7 @@ class flow_knowtikuClassModel extends flowModel
 		$inarr = array();
 		foreach($rows as $k=>$rs){
 			$rs['typeid'] 	= $this->option->gettypeid('knowtikutype',$rs['typeid']);
+			$rs['type']		= (arrvalue($rs,'type')=='单选') ? 0 : 1;
 			$inarr[] = $rs;
 		}
 		

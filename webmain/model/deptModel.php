@@ -7,6 +7,7 @@ class deptClassModel extends Model
 	public function getdata($uarr=array())
 	{
 		$darr = $dtotal =array();
+		$gids = '0';
 		//要权限判断
 		if(is_array($uarr)){
 			$did  = '0';
@@ -21,6 +22,7 @@ class deptClassModel extends Model
 						$dtotal[$dpatha1]++;
 					}
 				}
+				if(!isempt(arrvalue($rs,'groupname')))$gids.=','.$rs['groupname'].'';
 			}
 			foreach($darr as $k1=>$v1)$did.=','.$k1.'';
 			$where= 'id in('.$did.')';
@@ -46,6 +48,7 @@ class deptClassModel extends Model
 			$rows[$k]['stotal'] = $stotal; //对应部门下有多少人
 			$rows[$k]['ntotal']	= $this->rock->arrvalue($dtotal, $rs['id'], '0');
 		}
+		$this->groupids = $gids;
 		return $rows;
 	}
 	
@@ -63,10 +66,12 @@ class deptClassModel extends Model
 	{
 		$userarr 	= m('admin')->getuser(1);
 		$deptarr 	= $this->getdata($userarr);
+		$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
 		
 		return array(
 			'uarr' => $userarr,
 			'darr' => $deptarr,
+			'garr' => $grouparr,
 		);
 	}
 	

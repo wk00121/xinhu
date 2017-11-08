@@ -40,6 +40,7 @@ $config		= array(
 	'updir'		=> 'upload',
 	'dbencrypt'	=> false,
 	'sqllog'	=> false,
+	'checksign'	=> false,			//列表请求是否验证
 	'memory_limit'	=> '',			//运行内存大小
 	'db_drive'		=> 'mysqli',	//数据库操作驱动
 	'db_engine'		=> 'MyISAM',	//数据库默认引擎

@@ -817,9 +817,11 @@ js.isimg = function(lx){
 	return bo;
 }
 js.changeuser=function(na, lx, tits,ocans){
-	var h = winHb()-70;if(!ocans)ocans={};
+	var h = winHb()-70,w=350;if(!ocans)ocans={};
 	if(h>400)h=400;if(!tits)tits='请选择...';
-	js.tanbody('changeaction',tits,350,h,{
+	var nibo = ((lx=='changedeptusercheck'||lx=='deptusercheck') && ismobile==0);
+	if(nibo)w=650;
+	js.tanbody('changeaction',tits,w,h,{
 		html:'<div id="showuserssvie" style="height:'+h+'px"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
 		bbar:'none'
 	});
@@ -836,7 +838,23 @@ js.changeuser=function(na, lx, tits,ocans){
 		can.nameobj = get(na);
 	}
 	for(var i in ocans)can[i]=ocans[i];
-	$('#showuserssvie').chnageuser(can);
+	if(nibo){
+		var changevalue = '';
+		if(can.idobj)changevalue=can.idobj.value;
+		changcallback=function(sna,sid){
+			if(can.idobj)can.idobj.value = sid;
+			if(can.nameobj){
+				can.nameobj.value = sna;
+				can.nameobj.focus();
+			}
+			js.tanclose('changeaction');
+			if(can.callback)can.callback(sna,sid);
+		}
+		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+changevalue+'&callback=changcallback';
+		winiframe.location.href = url;
+	}else{
+		$('#showuserssvie').chnageuser(can);
+	}
 	return false;
 }
 js.back=function(){

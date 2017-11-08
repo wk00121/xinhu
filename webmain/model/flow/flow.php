@@ -1848,7 +1848,7 @@ class flowModel extends Model
 	}
 	
 	/**
-	*	短信催办
+	*	短信催办，需要有短信功能
 	*/
 	public function smschuiban($sm='')
 	{
@@ -1858,7 +1858,7 @@ class flowModel extends Model
 			$nowcheckid = $farr['nowcheckid']; //当前处理人
 			$tplnum		= $this->option->getval('sms_cbnum','defnum');//短信模版
 			$wxurl		= $this->getxiangurl();
-			$barr 		= c('xinhusms')->sendsms($nowcheckid, '', $tplnum, array(
+			$barr 		= c('xinhuapi')->sendsms($nowcheckid, '', $tplnum, array(
 				'modename' => $this->modename,
 				'sericnum' => $this->sericnum,
 				'applyname'=> $this->uname,

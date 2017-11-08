@@ -352,11 +352,11 @@ var c={
 				if(val)get('imgview_'+sna+'').src=val;
 			}
 			//显示上传文件信息
-			if(tsye=='file' && farr){
-				var fid,f,s;
+			if(tsye=='file' && farr && val){
+				var fid,f,s,vals=','+val+',';
 				for(fid in farr){
 					f = farr[fid];
-					if(!f)continue;
+					if(!f || vals.indexOf(','+f.id+',')<0)continue;
 					s='<div onclick="c.clickupfile(this,\''+sna+'\')" title="'+f.filename+'('+f.filesizecn+')" upid_'+sna+'="'+f.id+'" class="upload_items">';
 					if(js.isimg(f.fileext)){
 						s+='<img class="imgs" src="'+f.thumbpath+'">';

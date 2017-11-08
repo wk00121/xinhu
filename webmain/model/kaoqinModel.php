@@ -302,18 +302,45 @@ class kaoqinClassModel extends Model
 		return $mid;
 	}
 	
-	public function kqanayall($month, $where='')
+	//返回条件
+	public function kqanayallfirst($month,$glx=0)
+	{
+		$month	= substr($month, 0, 7);
+		$start	= ''.$month.'-01';
+		$enddt 	= $this->dtobj->getenddt($month);
+		$s 		= "and (`quitdt` is null or `quitdt`>='$start') and (`workdate` is null or `workdate`<='$enddt')";
+		
+		if($glx==0)return $s;
+		
+		$count 	= $this->admindb->rows('1=1 '.$s.'');
+		$limit	= 50;
+		$maxpage= ceil($count/$limit);
+		
+		return array(
+			'count' => $count,
+			'limit' => $limit,
+			'maxpage' => $maxpage,
+		);
+	}
+	
+	public function kqanayall($month, $where='', $page=0)
 	{
 		if(isempt($month))return;
 		$month	= substr($month, 0, 7);
-		$start	= ''.$month.'-01';
-		$max 	= c('date')->getmaxdt($month);
-		$enddt	= ''.$month.'-'.$max.'';
-		$s 		= "and (`quitdt` is null or `quitdt`>='$start') and (`workdate` is null or `workdate`<='$enddt') $where";
-		$urows 	= $this->admindb->getall('1=1 '.$s.'', '`id`,`workdate`,`quitdt`');
+		$s 		= $this->kqanayallfirst($month).' '.$where.'';
+		$max 	= $this->dtobj->getmaxdt($month);
+		$sql 	= "select `id`,`workdate`,`quitdt` from `[Q]admin` where 1=1 ".$s."";
+		$limit	= 50;
+		if($page>0){
+			$sql.=" limit ".($page-1)*$limit.",".$limit."";
+		}
+		$urows 	= $this->db->getall($sql);
+		$oi 	= 0;
 		foreach($urows as $k=>$urs){
 			$this->kqanaymonth($urs['id'], $month, $urs, $max);
+			$oi++;
 		}
+		return $oi;
 	}
 	
 	public function kqanayalldt($dt)
@@ -329,7 +356,7 @@ class kaoqinClassModel extends Model
 	{
 		$month	= substr($month, 0, 7);
 		if(!$urs)$urs 	= $this->admindb->getone($uid, '`workdate`,`quitdt`,`id`');
-		if($max==0)$max = c('date')->getmaxdt($month);
+		if($max==0)$max = $this->dtobj->getmaxdt($month);
 		for($i=1; $i<=$max; $i++){
 			$oi = $i;if($oi<10)$oi='0'.$i.'';
 			$dt = ''.$month.'-'.$oi.'';
