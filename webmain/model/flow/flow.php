@@ -254,6 +254,7 @@ class flowModel extends Model
 					$bo = 1;
 				}
 			}
+			if($this->rs['status']==1)$bo=0;
 		}
 		if($bo==0){
 			$where 	= $this->viewmodel->editwhere($this->moders, $this->adminid);
@@ -275,6 +276,7 @@ class flowModel extends Model
 					$bo = 1;
 				}
 			}
+			if($this->rs['status']==1)$bo=0;
 		}
 		if($bo==0){
 			$where 	= $this->viewmodel->deletewhere($this->moders, $this->adminid);
@@ -368,6 +370,7 @@ class flowModel extends Model
 			if($rs['fieldstype']=='uploadfile'){
 				$fval 	= $this->rock->arrvalue($data, $fid);
 				if(isempt($fval))$fval='0';
+				$data[$fid] = '';
 				if($fval!='0'){
 					$data[$fid] = $fobj->getstr('', '', 2, "`id` in($fval)");
 				}
@@ -841,6 +844,11 @@ class flowModel extends Model
 			$marr['status'] = 0;
 			$this->rs['status'] = 0;
 			$this->update($marr, $this->id);
+			
+			//每次编辑判断是否重新开始走审批。
+			if(arrvalue($this->moders,'isflowlx')=='1'){
+				$this->flogmodel->update('`valid`=0', ''.$this->mwhere.' and `courseid`>0 and `valid`=1');
+			}
 			$farr = $this->getflow();
 			//第一步自定义审核人
 			if($farr['nowcourseid']>0){
@@ -2077,7 +2085,7 @@ class flowModel extends Model
 		$nas 			= $this->flowbillwhere($uid, $lx);
 		$inwhere		= '';
 		if(substr($lx,0,5)=='grant'){
-			$inwhere	= $this->viewmodel->viewwhere($this->moders, $this->adminid, $this->flowviewufieds);
+			$inwhere	= $this->viewmodel->viewwhere($this->moders, $this->adminid, $this->flowviewufieds, 1);
 		}
 		$_wehs			= '';
 		if(is_array($nas)){

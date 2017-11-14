@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：officic.公文查阅，
+*	模块：godepot.仓库管理，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.公文查阅]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.仓库管理]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'officic',modename='公文查阅',isflow=0,modeid='69',atype = params.atype,pnum=params.pnum;
+	var modenum = 'godepot',modename='仓库管理',isflow=0,modeid='73',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"num","name":"\u516c\u6587\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"unitsame","name":"\u53d1\u6587\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"miji","name":"\u516c\u6587\u5bc6\u7ea7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"optdt","name":"\u64cd\u4f5c\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"filecontid","name":"\u6b63\u6587\u6587\u4ef6","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"depotname","name":"\u4ed3\u5e93\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"cgname","name":"\u4ed3\u5e93\u7ba1\u7406\u5458","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotnum","name":"\u4ed3\u5e93\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotaddress","name":"\u4ed3\u5e93\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotexplain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -69,14 +69,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'公文查阅('+nowtabs.name+')',
-				cont:'公文查阅('+nowtabs.name+')的列表的',
-				explain:'订阅[公文查阅]的列表',
+				title:'仓库管理('+nowtabs.name+')',
+				cont:'仓库管理('+nowtabs.name+')的列表的',
+				explain:'订阅[仓库管理]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_officic|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_godepot|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -120,8 +120,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistofficic = a;
-			addtabs({num:'daoruofficic',url:'flow,input,daoru,modenum=officic',icons:'plus',name:'导入公文查阅'});
+			window.managelistgodepot = a;
+			addtabs({num:'daorugodepot',url:'flow,input,daoru,modenum=godepot',icons:'plus',name:'导入仓库管理'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -191,10 +191,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('b2ZmaWNpYWw:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29kZXBvdA::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"公文编号",dataIndex:"num"},{text:"标题",dataIndex:"title"},{text:"发文单位",dataIndex:"unitsame"},{text:"操作时间",dataIndex:"optdt",sortable:true},{
+		columns:[{text:"仓库名称",dataIndex:"depotname"},{text:"仓库管理员",dataIndex:"cgname"},{text:"仓库编号",dataIndex:"depotnum"},{text:"仓库地址",dataIndex:"depotaddress"},{text:"排序号",dataIndex:"sort"},{text:"说明",dataIndex:"depotexplain"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -211,12 +211,12 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-$('#tdleft_{rand}').hide();
+
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewofficic_{rand}').bootstable(bootparams);
+	var a = $('#viewgodepot_{rand}').bootstable(bootparams);
 	c.init();
 	var ddata = [{name:'高级搜索',lx:0}];
 	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
@@ -258,5 +258,5 @@ $('#tdleft_{rand}').hide();
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewofficic_{rand}"></div>
+<div id="viewgodepot_{rand}"></div>
 <!--HTMLend-->

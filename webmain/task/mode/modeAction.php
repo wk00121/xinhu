@@ -43,9 +43,6 @@ class modeClassAction extends ActionNot
 		if(!file_exists($spagepath)){
 			$spagepath = '';
 		}
-		$isheader = 0;
-		if($this->web != 'wxbro' && $this->web != 'xinhu' && $this->web != 'ding' && $this->get('show')=='we')$isheader=1;
-		$this->assign('isheader', $isheader);
 		$this->smartydata['spagepath']		= $spagepath;
 		$this->smartydata['pagetitle']		= $pagetitle;
 		

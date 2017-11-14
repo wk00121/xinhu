@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 moregonggao=function(){
 	addtabs({num:'gong',url:'flow,page,gong,atype=my',icons:'volume-up',name:'通知公告'});
 }
-homeobject.showgonglist=function(a){
+homeobject.show_gong_list=function(a){
 	var s='',a1,i,col;
 	$('#homegonglist a[temp]').remove();
 	for(i=0;i<a.length;i++){

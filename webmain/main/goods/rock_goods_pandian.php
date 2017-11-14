@@ -1,7 +1,7 @@
 <?php if(!defined('HOST'))die('not access');?>
 <script >
 $(document).ready(function(){
-	
+	var lbefe = false;
 	var at = $('#optionview_{rand}').bootstree({
 		url:js.getajaxurl('gettreedata','option','system',{'num':'goodstype'}),
 		columns:[{
@@ -10,53 +10,60 @@ $(document).ready(function(){
 			text:'ID',dataIndex:'id',width:'20%'
 		}],
 		load:function(d){
-			c.loadfile('0','所有出入库详情');
+			c.loadfile('0','所有物品');
 		},
 		itemdblclick:function(d){
 			c.loadfile(d.id,d.name);
 		}
 	});
 	
+	var columns = [{
+			text:'编号',dataIndex:'num'
+	},{
+		text:'名称',dataIndex:'name',align:'left'
+	},{
+		text:'分类',dataIndex:'typeid',align:'left'
+	},{
+		text:'单价',dataIndex:'price',sortable:true
+	},{
+		text:'单位',dataIndex:'unit'
+	},{
+		text:'规格',dataIndex:'guige'
+	},{
+		text:'型号',dataIndex:'xinghao'
+	},{
+		text:'ID',dataIndex:'id',sortable:true
+	},{
+		text:'总库存',dataIndex:'stock',sortable:true
+	}];
+	
 	var a = $('#view_{rand}').bootstable({
-		tablename:'goodss',autoLoad:false,celleditor:true,fanye:true,dir:'desc',sort:'a.id',checked:true,
-		url:publicstore('{mode}','{dir}'),storebeforeaction:'xiangbeforeshow',storeafteraction:'xiangaftershow',
-		columns:[{
-			text:'名称',dataIndex:'name',align:'left'
-		},{
-			text:'分类',dataIndex:'typeid',align:'left'
-		},{
-			text:'类型',dataIndex:'kind',sortable:true
-		},{
-			text:'日期',dataIndex:'applydt',sortable:true
-		},{
-			text:'操作人',dataIndex:'optname'
-		},{
-			text:'数量',dataIndex:'count',sortable:true,align:'right'
-		},{
-			text:'对应仓库',dataIndex:'depotname'
-		},{
-			text:'说明',dataIndex:'explain',align:'left'
-		},{
-			text:'状态',dataIndex:'status'
-		}]
+		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
+		url:publicstore('{mode}','{dir}'),params:{'atype':'pan'},storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		columns:columns,
+		loadbefore:function(d){
+			if(!lbefe && d.depotarr){
+				for(var i=0;i<d.depotarr.length;i++)columns.push({text:d.depotarr[i].namea,dataIndex:'stockdepotid'+d.depotarr[i].id+''});
+				a.setColumns(columns);
+			}
+			lbefe = true;
+		}
 	});
 	var c = {
 		search:function(){
 			var s=get('key_{rand}').value;
 			a.setparams({key:s,dt:get('dt1_{rand}').value},true);
 		},
-		clickdt:function(o1, lx){
-			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
-		},
+
 		daochu:function(){
-			a.exceldown('物品出入库详情');
+			a.exceldown();
 		},
 		loadfile:function(spd,nsd){
 			$('#megss{rand}').html(nsd);
 			a.setparams({'typeid':spd}, true);
 		},
 		genmu:function(){
-			this.loadfile('0','所有出入库详情');
+			this.loadfile('0','所有物品');
 		},
 		del:function(){
 			a.del({checked:true,url:js.getajaxurl('delxiang','{mode}','{dir}')});
@@ -84,19 +91,14 @@ $(document).ready(function(){
 <div>
 <table width="100%"><tr>
 	<td align="left" nowrap>
-			<button class="btn btn-default" click="genmu"  type="button">所有详情</button>&nbsp; 
+			<button class="btn btn-default" click="genmu"  type="button">所有物品</button>&nbsp; 
 	</td>
 	<td nowrap  style="padding-left:10px">
-		<div style="width:120px"  class="input-group">
-			<input placeholder="月份" readonly class="form-control" id="dt1_{rand}" >
-			<span class="input-group-btn">
-				<button class="btn btn-default" click="clickdt,1" type="button"><i class="icon-calendar"></i></button>
-			</span>
-		</div>
+		<input placeholder="日期" style="width:120px" onclick="js.changedate(this)" readonly class="form-control datesss" id="dt1_{rand}" >
 	</td>
 
 	<td style="padding-left:10px">
-	<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="物品名/操作人/仓库">
+	<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="物品名/型号/规格">
 	</td>
 	<td style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button> 
@@ -106,8 +108,7 @@ $(document).ready(function(){
 		&nbsp;&nbsp;<span id="megss{rand}"></span>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>&nbsp;&nbsp;
-		<button class="btn btn-danger" id="del_{rand}" click="del" type="button"><i class="icon-trash"></i> 删除</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>
 </tr></table>
 </div>

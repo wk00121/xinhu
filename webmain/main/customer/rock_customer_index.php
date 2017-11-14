@@ -21,7 +21,7 @@ $(document).ready(function(){
 	});
 	
 	obj[1] = $('#view1_{rand}').bootstable({
-		tablename:'custract',params:{'atype':'my_all'},fanye:false,modenum:'custract',modename:'合同',limit:5,moreurl:'main,customer,ract,atype=my',morenum:'num108',
+		tablename:'custract',params:{'atype':'my'},fanye:false,modenum:'custract',modename:'合同',limit:5,moreurl:'main,customer,ract,atype=my',morenum:'num108',
 		columns:[{
 			text:'合同编号',dataIndex:'num'
 		},{
@@ -41,7 +41,7 @@ $(document).ready(function(){
 	});
 	
 	obj[2] = $('#view2_{rand}').bootstable({
-		tablename:'custfina',params:{'atype':'myskd_wei'},modenum:'custfina',modename:'收款单',limit:5,moreurl:'main,customer,fina,atype=myskd',morenum:'num106',
+		tablename:'custfina',params:{'atype':'myskdws'},modenum:'custfina',modename:'收款单',limit:5,moreurl:'main,customer,fina,atype=myskd',morenum:'num106',
 		columns:[{
 			text:'所属日期',dataIndex:'dt'
 		},{
@@ -59,7 +59,7 @@ $(document).ready(function(){
 	});
 	
 	obj[3] = $('#view3_{rand}').bootstable({
-		tablename:'custfina',params:{'atype':'myfkd_wei'},modenum:'custfina',modename:'付款单',limit:5,moreurl:'main,customer,fina,atype=myfkd',morenum:'num107',
+		tablename:'custfina',params:{'atype':'myfkdwf'},modenum:'custfina',modename:'付款单',limit:5,moreurl:'main,customer,fina,atype=myfkd',morenum:'num107',
 		columns:[{
 			text:'所属日期',dataIndex:'dt'
 		},{

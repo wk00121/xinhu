@@ -150,7 +150,7 @@ function notifyClass(opts){
 			'info':['#31708f', '#d9edf7','#bce8f1'],
 			'success':['#3c763d', '#dff0d8','#d6e9c6'],
 			'error':['#a94442', '#f2dede','#ebccd1'],
-			'wait':['#8a6d3b', '#fcf8e3','#faebcc'],
+			'wait':['#8a6d3b', '#fcf8e3','#faebcc']
 		};
 		var cos = coarr[can.type],id = 'notify_show_'+can.rand+'';
 		$('#'+id+'').remove();

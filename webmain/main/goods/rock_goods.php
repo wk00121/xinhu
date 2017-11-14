@@ -7,6 +7,8 @@ $(document).ready(function(){
 		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
 		url:publicstore('{mode}','{dir}'),storebeforeaction:'beforeshow',storeafteraction:'aftershow',
 		columns:[{
+			text:'编号',dataIndex:'num'
+		},{
 			text:'名称',dataIndex:'name',align:'left'
 		},{
 			text:'分类',dataIndex:'typeid',align:'left'
@@ -19,7 +21,7 @@ $(document).ready(function(){
 		},{
 			text:'型号',dataIndex:'xinghao'
 		},{
-			text:'库存',dataIndex:'stock',sortable:true
+			text:'总库存',dataIndex:'stock',sortable:true
 		},{
 			text:'ID',dataIndex:'id'	
 		}],
@@ -104,9 +106,7 @@ $(document).ready(function(){
 	<td nowrap>
 		<button class="btn btn-primary" click="clickwin,0" type="button"><i class="icon-plus"></i> 新增</button>
 	</td>
-	<td  style="padding-left:10px">
-		<button class="btn btn-default" click="piliang" type="button">导入</button>
-	</td>
+	
 	<td style="padding-left:10px">
 	<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="物品名">
 	</td>
@@ -118,6 +118,9 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="rukuchu,0" type="button">入库</button>
 		<button class="btn btn-default" click="rukuchu,1" type="button">出库</button>
 		</div>
+	</td>
+	<td  style="padding-right:10px">
+		<button class="btn btn-default" click="piliang" type="button">导入</button>
 	</td>
 	<td  style="padding-right:10px">
 		<button class="btn btn-default" click="daochu" type="button">导出</button>

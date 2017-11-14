@@ -1,6 +1,7 @@
 <?php 
 /**
 *	计划任务地址，指向目录webmain/task下
+*	也可用cli处理的命令如：php task.php cli,run
 *	主页：http://www.rockoa.com/
 *	软件：信呼
 *	作者：雨中磐石(rainrock)

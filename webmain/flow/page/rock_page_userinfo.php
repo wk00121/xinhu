@@ -260,6 +260,7 @@ if(atype=='all'){
 	
 	$('#viewuserinfo_{rand}').after('<div class="tishi">添加人员档案请到[用户管理]那添加，删除档案，需要先删除用户在删除档案。</div>');
 }
+$('#tdleft_{rand}').hide();
 
 //[自定义区域end]
 

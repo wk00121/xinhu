@@ -196,7 +196,7 @@ class upgradeClassAction extends Action
 		}
 		$dir	= str_replace('/','-', $dir);
 		$nfile 	= ''.$dir.''.date('YmdHis').'@'.$file.'';
-		$topath = ''.UPDIR.'/'.date('Y-m').'/'.$nfile.'';
+		$topath = ''.UPDIR.'/logs/'.date('Y-m').'/'.$nfile.'';
 		$this->rock->createdir($topath);
 		@copy($path, $topath);
 	}

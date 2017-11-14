@@ -219,6 +219,8 @@ c.setcolumns('base_deptname',{
 	text:'拟办人部门'
 });
 
+$('#addbtn_{rand}').html('<i class="icon-plus"></i> 拟办');
+
 //[自定义区域end]
 
 	js.initbtn(c);

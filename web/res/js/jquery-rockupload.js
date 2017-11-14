@@ -63,7 +63,7 @@
 			}
 			
 			var f = o1.files[0];
-			if(!f)return;
+			if(!f || f.name=='/')return;
 			var a = {filename:f.name,filesize:f.size,filesizecn:js.formatsize(f.size)};
 			if(a.filesize<=0){
 				js.msg('msg',''+f.name+'不存在');

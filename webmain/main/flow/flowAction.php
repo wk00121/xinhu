@@ -575,6 +575,8 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$mid 	= $cans['mid'];
 		$type 	= $cans['fieldstype'];
 		$lens 	= $cans['lens'];
+		$dev 	= $cans['dev'];
+		$data 	= $cans['data'];
 		$iszb 	= (int)$cans['iszb'];
 		
 		$mrs 	= $this->mmoders;
@@ -586,25 +588,37 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		}
 		if(!isempt($tables) && substr($fields,0,5)!='temp_' && $cans['islu']==1){
 			$allfields = $this->db->getallfields('[Q]'.$tables.'');
-			if(!in_array($fields, $allfields)){
-				$str = "ALTER TABLE `[Q]".$tables."` ADD `$fields` ";
-				if($type=='date' || $type=='datetime' || $type=='time'){
-					$str .= ' '.$type.'';
-				}else if($type=='number'){
-					$str .= ' smallint(6)';
-				}else if($type=='checkbox'){
-					$str .= ' tinyint(1)';	
-				}else if($type=='textarea'){
-					$str .= ' varchar(2000)';
-				}else{
-					if(isempt($lens))$lens='0';
-					if($lens=='0')$lens='50';
-					$str .= ' varchar('.$lens.')';
+			$this->createfields($allfields, $tables, $fields, $type, $lens, $dev, $name);
+			if(substr($type,0,6)=='change' && !isempt($data)){
+				if($type=='changeuser' || $type=='changedept'){
+					$type='number';
 				}
-				if(!isempt($cans['dev']))$str.= " DEFAULT '".$cans['dev']."'";
-				$str.= " COMMENT '$name'";
-				$this->db->query($str);
+				$this->createfields($allfields, $tables, $data, $type, $lens, '', $name.'的ID');
 			}
+		}
+	}
+	
+	//创建字段
+	private function createfields($allfields, $tables, $fields, $type, $lens, $dev, $name)
+	{
+		if(!in_array($fields, $allfields)){
+			$str = "ALTER TABLE `[Q]".$tables."` ADD `$fields` ";
+			if($type=='date' || $type=='datetime' || $type=='time'){
+				$str .= ' '.$type.'';
+			}else if($type=='number'){
+				$str .= ' smallint(6)';
+			}else if($type=='checkbox'){
+				$str .= ' tinyint(1)';	
+			}else if($type=='textarea'){
+				$str .= ' varchar(2000)';
+			}else{
+				if(isempt($lens))$lens='0';
+				if($lens=='0')$lens='50';
+				$str .= ' varchar('.$lens.')';
+			}
+			if(!isempt($dev))$str.= " DEFAULT '$dev'";
+			$str.= " COMMENT '$name'";
+			$this->db->query($str);
 		}
 	}
 	

@@ -44,6 +44,7 @@ class homeitemsClassModel extends Model
 		$arr['workwwc']	= m('work')->getwwctotals($uid);
 		$arr['email']	= m('emailm')->wdtotal($uid);
 		$arr['flowtodo']= m('flowtodo')->getwdtotals($uid);
+		$arr['cropt']	= m('goods')->getdaishu(); //出入库操作数
 		return $arr;
 	}
 	
@@ -84,5 +85,11 @@ class homeitemsClassModel extends Model
 			'sbarr' => $sbarr,
 			'dkarr' => $dkarr,
 		);
+	}
+	
+	//读取我查阅公文
+	public function get_officic_arr()
+	{
+		return m('flow')->initflow('officic')->getflowrows($this->adminid,'my');
 	}
 }

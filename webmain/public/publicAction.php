@@ -13,7 +13,7 @@ class publicClassAction extends Action{
 		$types 		= ','.$type.',';
 		//可读取文件预览的扩展名
 		$vest 	= ',txt,log,html,htm,js,php,php3,cs,sql,java,json,css,asp,aspx,shtml,c,vbs,jsp,xml,bat,sh,';
-		$docx	= ',doc,docx,xls,xlsx,';
+		$docx	= ',doc,docx,xls,xlsx,ppt,pptx,';
 		if(contain($docx, $types)){
 			$filepath 	= $frs['pdfpath'];
 			if(isempt($filepath)){
@@ -55,23 +55,30 @@ class publicClassAction extends Action{
 		$this->smartydata['ismobile'] = $this->rock->ismobile()?'1':'0';
 	}
 	
+	/**
+	*	请求转化
+	*/
 	public function changetopdfAjax()
 	{
-		if(!contain(PHP_OS,'WIN'))exit('只能在windows的服务器下转化');
 		$id = (int)$this->get('id','0');
-		$frs= m('file')->getone($id);
-		if(!$frs)exit('文件的记录不存在了1');
-		$type 		= $frs['fileext'];
-		$types 		= ','.$type.',';
-		$filepath 	= $frs['filepath'];
-		if(!file_exists($filepath))exit('文件不存在了2');
-		$docx		= ',doc,docx,xls,xlsx,';
-		if(!contain($docx, $types))exit('只能doc,excel的文件类型才能转化');
-		$bo 		= c('socket')->topdf($frs['filepath'], $id, $type);
-		if(!$bo || is_string($bo)){
-			echo ''.$bo.'，<a target="_blank" class="zhu" href="'.URLY.'view_topdf.html">[查看帮助?]</a>';
-		}else{
-			echo 'ok';
-		}
+		return c('xinhuapi')->officesend($id);
+	}
+	
+	/**
+	*	获取状态
+	*/
+	public function officestatusAjax()
+	{
+		$id = (int)$this->get('id','0');
+		return c('xinhuapi')->officestatus($id);
+	}
+	
+	/**
+	*	获取状态
+	*/
+	public function officedownAjax()
+	{
+		$id = (int)$this->get('id','0');
+		return c('xinhuapi')->officedown($id);
 	}
 }

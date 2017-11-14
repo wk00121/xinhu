@@ -81,12 +81,18 @@
 	});
 	
 	//开启js异步队列
-	queue.start();
-	/*
-	for(var i=0;i<=1;i++)
-	queue.add({url:'index.php?a=test&m=index&ajaxbool=true&abc='+i+'',success:function(str,bsr,i){
-		console.log(''+i+':'+str+'');
-	}});*/
+	try{queue.start();}catch(e){console.error('无法使用js队列');}
+	var dsa = [];
+	$('#topmenudiv span[pmenuid]').each(function(){
+		dsa.push({name:$(this).html(),objs:this});
+	});
+	$('#donwrigthw').rockmenu({
+		width:150,top:50,
+		data:dsa,
+		itemsclick:function(d){
+			d.objs.click();
+		}
+	});
 }
 
 
@@ -144,7 +150,7 @@ function clickhome(){
 	addtabs(ad);
 	return false;
 }
-
+var fistwk=0;
 function resizewh(){
 	var _lw = 0;
 	if(get('indexmenu')){
@@ -166,6 +172,22 @@ function resizewh(){
 	$('#indexmenuss').css({height:''+nh+'px'});
 	$('#menulist').css({height:''+(viewheight)+'px'});
 	_pdleftirng();
+	
+	if(fistwk==0){
+		$('#topmenudiv span[pmenuid]').each(function(){
+			fistwk+=$(this).width()+30;
+		});
+	}
+	var lw=$('#logodiv').width();
+	var rw = $('#topheaderright').width();
+	var kj = winWb()-lw-rw;
+	$('#topmenudiv').css('width',''+kj+'px');
+	var o1 = $('#donwrigthw').css('right',''+rw+'px');
+	o1.hide();
+	if(fistwk>kj){
+		o1.show();
+		$('#topmenudiv').css('width',''+(kj-20)+'px');
+	}
 }
 
 function clickmenu(o, i, k){

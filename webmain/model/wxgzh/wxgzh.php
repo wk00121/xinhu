@@ -59,7 +59,7 @@ class wxgzhModel extends Model
 	*/
 	public function isusegzh($lx=0)
 	{
-		if($this->rock->web!='wxbro' || $this->rock->isqywx)return 0;
+		if(!$this->rock->iswebbro(0) || $this->rock->isqywx)return 0;
 		$this->readwxset();
 		$is = 1;
 		if($this->appid=='' || $this->secret=='')$is = 0;

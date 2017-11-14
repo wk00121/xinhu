@@ -9,7 +9,10 @@ class runtAction extends ActionNot
 	
 	public function initAction()
 	{
+		ob_start(); //打开缓冲区
 		$this->runid	= (int)$this->get('runid','0');
+		if($this->runid==0)$this->runid = $this->getparams('runid','0');
+		
 		$this->runrs	= m('task')->getone($this->runid);
 		$this->display 	= false;
 		if($this->runrs && !isempt($this->runrs['lastdt'])){
@@ -48,6 +51,27 @@ class runtAction extends ActionNot
 			}
 		}
 	}
+	
+	/**
+	*	获取cli上参数格式：-key=val
+	*/
+	public function getparams($key, $dev='')
+	{
+		$arr = $GLOBALS['argv'];
+		$sss = '';
+		for($i=2;$i<count($arr);$i++){
+			$str = $arr[$i];
+			if(!isempt($str)){
+				$stra = explode('=', $str);
+				if($stra[0]=='-'.$key.''){
+					$sss  = arrvalue($stra, 1);
+					break;
+				}
+			}
+		}
+		if(isempt($sss))$sss = $dev;
+		return $sss;
+	}
 }
 class runtClassAction extends runtAction
 {
@@ -66,10 +90,10 @@ class runtClassAction extends runtAction
 	}
 	
 	/**
-	*	运行定时任务用于cli模式的，建每5分钟运行异常
+	*	运行定时任务用于cli模式的，建每5分钟运行一次
 	*	Linux 使用crontab php task.php runt,task
 	*	win 使用计划任务 php task.php runt,task
-	*	也可以没5分钟访问地址：http://127.0.0.1/app/xinhu/task.php?m=runt&a=task
+	*	也可以每5分钟访问地址：http://127.0.0.1/app/xinhu/task.php?m=runt&a=task
 	*/
 	public function taskAction()
 	{

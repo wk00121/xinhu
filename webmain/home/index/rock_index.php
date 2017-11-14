@@ -98,10 +98,14 @@ $(document).ready(function(){
 			//显示桌面项数据
 			for(i=0;i<homenums.length;i++){
 				nust = homenums[i];
-				if(homeobject['show'+nust+'list'] && a[''+nust+'arr'])homeobject['show'+nust+'list'](a[''+nust+'arr']);
+				if(a[''+nust+'arr']){
+					if(homeobject['show'+nust+'list'])homeobject['show'+nust+'list'](a[''+nust+'arr']);
+					if(homeobject['show_'+nust+'_list'])homeobject['show_'+nust+'_list'](a[''+nust+'arr']);
+				}
 			}
 			if(a.reimstotal=='0')a.reimstotal='';
 			$('#reim_stotal').html(a.reimstotal+'');
+			try{resizewh();}catch(e){}
 			if(a.reimstotal!=''){
 				notifyobj.show({
 					icon:'images/todo.png',title:'REIM提醒',rand:'reimto',

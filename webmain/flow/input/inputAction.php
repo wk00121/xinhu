@@ -300,9 +300,6 @@ class inputAction extends Action
 	public function lumAction()
 	{
 		$this->ismobile = 1;
-		$isheader = 0;
-		if($this->web != 'wxbro' && $this->web != 'xinhu' && $this->web != 'ding' && $this->get('show')=='we')$isheader=1;
-		$this->assign('isheader', $isheader);
 		$this->luactions();
 	}
 	
@@ -703,6 +700,31 @@ class inputAction extends Action
 		}
 
 		return returnsuccess('成功导入'.$oi.'条数据');
+	}
+	
+	//读取导入的excel数据
+	public function readxlsAjax()
+	{
+		$fileid = (int)$this->get('fileid','0');
+		$fpath  = m('file')->getmou('filepath', $fileid);
+		if(isempt($fpath))return returnerror('文件不存在了');
+		$rows   = c('PHPExcelReader')->reader($fpath);
+		if(is_string($rows))return returnerror('无法读取Excel文件('.$rows.')');
+		
+		$str = '';
+		foreach($rows as $k=>$rs){
+			$str1 = '';
+			$xi   = 0;
+			foreach($rs as $k1=>$v1){
+				if($xi>0)$str1.='	';
+				$str1.=''.$v1.'';
+				$xi++;
+			}
+			if($k>0)$str.="\n";
+			$str.=$str1;
+		}
+		
+		return returnsuccess($str);
 	}
 	
 	//下载导入的模版

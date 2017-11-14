@@ -7,7 +7,7 @@
 <script language="javascript">
 var callback= '<?=$params['callback']?>',
 	maxup	= <?=$params['maxup']?>,
-	uptype	= '<?=$params['uptype']?>',
+	uptype	= '<?=str_replace(',','|',$params['uptype'])?>',
 	thumbnail = '<?=$params['thumbnail']?>',
 	maxwidth  = '<?=$params['maxwidth']?>',
 	showid  	= '<?=$params['showid']?>',
@@ -256,8 +256,8 @@ var up={
 		var sid = this.getsid(this.wcarr);
 		<?php if($callback!=''){?>try{parent.<?=$callback?>(this.wcarr,js.request('params1'), js.request('params2'), sid)}catch(e){}<?php }?>
 		if(showid!=''){
-			try{parent.js.downupshow(this.wcarr, showid, sid);}catch(e){}
-			try{opener.js.downupshow(this.wcarr, showid, sid);}catch(e){}
+			try{parent.js.downupshow(this.wcarr, showid);}catch(e){}
+			try{opener.js.downupshow(this.wcarr, showid);}catch(e){}
 		}
 		this.closeaa();
 	},

@@ -34,10 +34,10 @@ class viewClassModel extends Model
 	}
 	
 	//返回可查看条件
-	public function viewwhere($mid, $uid=0, $ufid='')
+	public function viewwhere($mid, $uid=0, $ufid='', $glx=0)
 	{
 		$this->getursss($mid, $uid);
-		return $this->getsswhere(0, $ufid);
+		return $this->getsswhere(0, $ufid, $glx);
 	}
 	
 	//是否有新增权限
@@ -74,7 +74,8 @@ class viewClassModel extends Model
 		return $this->getsswhere(3);
 	}
 	
-	private function getsswhere($type, $ufid='')
+	//$type类型0查看,1新增 $ufid 用户ID $glx0返回类型
+	private function getsswhere($type, $ufid='', $glx=0)
 	{
 		$mid	= $this->modeid;
 		$where 	= $this->addb->getjoinstr('receid', $this->urs);
@@ -86,8 +87,9 @@ class viewClassModel extends Model
 		if($type==1 || $type==4){
 			return $count>0;
 		}
+		$qomss  = ($glx==0)?'':'{asqom}';
 		if($type== 0 && $count==0 && $this->isflow==1){
-			$rows[] = array('wherestr'=>$this->rock->jm->base64encode('uid={uid}'),'whereid'=>0);
+			$rows[] = array('wherestr'=>$this->rock->jm->base64encode('`uid`={uid}'),'whereid'=>0);
 		}
 		foreach($rows as $k=>$rs){
 			$sw = $this->rock->jm->base64decode($rs['wherestr']);
@@ -113,7 +115,7 @@ class viewClassModel extends Model
 			}
 			if(!isempt($sw)){
 				$sw 	= $this->whereobj->getstrwhere($sw, $uid, $ufid);
-				$sw 	= str_replace('{asqom}','', $sw);
+				$sw 	= str_replace('{asqom}', $qomss, $sw);
 				$sw 	= '('.$sw.')';
 				$wehs[] = $sw;
 			}

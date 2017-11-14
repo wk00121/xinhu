@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 moremeets=function(){
 	addtabs({num:'meet',url:'flow,page,meet,atype=today',name:'今日会议'});
 }
-homeobject.showmeetlist=function(a){
+homeobject.show_meet_list=function(a){
 	var s='',a1,i;
 	$('#homemeetlist a[temp]').remove();
 	for(i=0;i<a.length;i++){

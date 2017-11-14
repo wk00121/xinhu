@@ -65,6 +65,7 @@ class cogClassAction extends Action
 		$arr['xinhukey'] 	= getconfig('xinhukey');
 		$arr['bcolorxiang'] = getconfig('bcolorxiang');
 		$arr['asynsend'] 	= getconfig('asynsend');
+		$arr['officeyl'] 	= getconfig('officeyl'); //文档预览
 		$arr['sqllog'] 		= getconfig('sqllog') ? '1' : '0';
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
@@ -108,6 +109,8 @@ class cogClassAction extends Action
 		$arr['xinhukey'] 	= $this->post('xinhukey');
 		$arr['bcolorxiang'] = $this->post('bcolorxiang');
 		
+		$arr['officeyl'] 	= $this->post('officeyl');
+		
 		$asynsend 		 	= $this->post('asynsend');
 		$arr['asynsend'] 	= $asynsend;
 		
@@ -123,7 +126,8 @@ class cogClassAction extends Action
 		$smarr['url']			= '系统URL';
 		$smarr['localurl']		= '本地系统URL，用于服务器上浏览地址';
 		$smarr['title']			= '系统默认标题';
-		$smarr['apptitle']		= 'APP上或PC客户端上的标题';
+		$smarr['neturl']		= '系统外网地址，用于公网';
+		$smarr['apptitle']		= 'APP上和手机网页版上的标题';
 		$smarr['reimtitle']		= 'REIM即时通信上标题';
 		$smarr['weblogo']		= 'PC客户端上的logo图片';
 		$smarr['db_host']		= '数据库地址';
@@ -145,6 +149,7 @@ class cogClassAction extends Action
 		$smarr['debug']			= '为true调试开发模式,false上线模式';
 		$smarr['reim_show']		= '首页是否显示REIM';
 		$smarr['mobile_show']	= '首页是否显示手机版';
+		$smarr['officeyl']		= '文档Excel.Doc预览类型,0自己部署插件，1使用官网支持任何平台';
 		
 		$str1 = '';
 		foreach($arr as $k=>$v){

@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_set',
 		url:publicsave('{mode}','{dir}'),url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'optdt={now}'},aftersaveaction:'flowsetsaveafter',beforesaveaction:'flowsetsavebefore',
-		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isgbcy,isbxs,lbztxs',
+		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isflowlx,isgbcy,isbxs,lbztxs',
 		requiredfields:'name,type,num,table',
 		success:function(){
 			closenowtabs();
@@ -171,6 +171,13 @@ cont:
 		<tr>
 			<td  align="right" >status字段状态值设置：</td>
 			<td class="tdinput" colspan="3"><input name="statusstr" class="form-control"><a href="javascript:;" click="setstatus">[设置]</a><font color=#888888>默认状态值是：【待处理|blue,已审核|green,未通过|red】对应值从0开始，其中0,1,2,5固定的5是作废,1必须是已完成,已审核状态</font></td>
+		</tr>
+		
+		<tr>
+			<td  align="right" >流程上选项：</td>
+			<td class="tdinput" colspan="3">
+				<label>申请人提交编辑时:<select name="isflowlx"><option value="0">在原来流程上</option><option value="1">重头走审批</option></label>
+			</td>
 		</tr>
 		
 		<tr>

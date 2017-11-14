@@ -1,14 +1,19 @@
 <?php
 class flow_goodlyClassModel extends flowModel
 {
+	public function initModel()
+	{
+		$this->goodsobj = m('goods');
+	}
 	
 	//审核完成处理
 	protected function flowcheckfinsh($zt){
+		/*
 		m('goodss')->update('status='.$zt.'',"`mid`='$this->id'");
 		$aid  = '0';
 		$rows = m('goodss')->getall("`mid`='$this->id'",'aid');
 		foreach($rows as $k=>$rs)$aid.=','.$rs['aid'].'';
-		m('goods')->setstock($aid);
+		m('goods')->setstock($aid);*/
 	}
 
 	
@@ -30,5 +35,13 @@ class flow_goodlyClassModel extends flowModel
 			}
 		}
 		return $rows;
+	}
+	
+	//$lx,0默认,1详情展示，2列表显示
+	public function flowrsreplace($rs)
+	{
+		$rs['states']= $rs['state'];
+		$rs['state'] = $this->goodsobj->crkstate($rs['state'],1);
+		return $rs;
 	}
 }

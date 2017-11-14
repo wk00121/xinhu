@@ -1,10 +1,7 @@
 <?php 
 /**
-	PHPExcel 读取插件类
+*	PHPExcel 读取插件类
 */
-
-include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php');
-include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php');
 class PHPExcelReaderChajian extends Chajian{
 	
 
@@ -17,18 +14,22 @@ class PHPExcelReaderChajian extends Chajian{
 	
 	public function reader($filePath=null, $index=2)
 	{
+		if(file_exists(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php'))include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php');
+if(file_exists(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php'))include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php');
+		$help = c('xinhu')->helpstr('phpexcel');
+		if(!class_exists('PHPExcel_Reader_Excel2007'))return '没有安装PHPExcel插件'.$help.'';
 		if($filePath==null)$filePath = $_FILES['file']['tmp_name'];
 		$PHPReader = new PHPExcel_Reader_Excel2007();
 		if(!$PHPReader->canRead($filePath)){
 			$PHPReader = new PHPExcel_Reader_Excel5();
 			if(!$PHPReader->canRead($filePath)){
-				return 'no Excel';
+				return '不是正规的Excel文件'.$help.'';
 			}
 		}
 		
 		$PHPExcel 	= $PHPReader->load($filePath);
 		$rows		= array();
-		$sheet 		= $PHPExcel->getSheet(0);
+		$sheet 		= $PHPExcel->getSheet(0); //第一个表
 		$allColumn 	= $sheet->getHighestColumn();
 		$allRow 	= $sheet->getHighestRow();
 		$allCell	= $this->AT[$allColumn];

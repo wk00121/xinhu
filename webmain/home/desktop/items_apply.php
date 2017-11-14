@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 moemyapplylist=function(){
 	addtabs({num:'applymy',url:'main,fwork,bill,atype=my',icons:'align-left',name:'我的申请'});
 }
-homeobject.showapplylist=function(a){
+homeobject.show_apply_list=function(a){
 	var s='',a1,i;
 	$('#myapplylist a[temp]').remove();
 	for(i=0;i<a.length;i++){

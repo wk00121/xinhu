@@ -6,7 +6,7 @@ class loginClassAction extends ActionNot{
 		//判断是否可以快捷登录
 		$iskj 	= $this->weiuser();
 		
-		if($this->rock->web == 'ding'){
+		if($this->rock->iswebbro(1)){
 			$token = $this->option->getval('dingding_token0');
 			if(!isempt($token))$iskj=3;
 		}
@@ -17,7 +17,7 @@ class loginClassAction extends ActionNot{
 	public function weiuser()
 	{
 		$iskj = 0;
-		if($this->rock->web == 'wxbro'){
+		if($this->rock->iswebbro(0)){
 			$qycrid	= $this->option->getval('weixinqy_corpid');
 			if($this->rock->isqywx){
 				if(!isempt($qycrid))$iskj=2;

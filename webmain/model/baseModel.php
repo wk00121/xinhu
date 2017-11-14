@@ -11,6 +11,7 @@ class baseClassModel extends Model
 	{
 		if($lx==0)$runurl		= getconfig('localurl', URL);
 		if($lx==1)$runurl		= getconfig('anayurl', URL); //使用异步通信地址
+		if($lx==2)$runurl		= getconfig('waiurl', URL);	//使用外网地址
 		$key 	 	= getconfig('asynkey');
 		if($key!='')$key = md5(md5($key));
 		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$this->adminid.'&asynkey='.$key.'';

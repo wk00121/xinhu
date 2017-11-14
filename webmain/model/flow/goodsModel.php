@@ -13,6 +13,7 @@ class flow_goodsClassModel extends flowModel
 		return array(
 			'typeid' 		=> '办公耗材/笔',
 			'name' 			=> '红色粉笔',
+			'num' 			=> 'WP-829',
 			'guige' 		=> '红色',
 			'xinghao' 		=> '5厘米',
 			'price' 		=> '0.1',

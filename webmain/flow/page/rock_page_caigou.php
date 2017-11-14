@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：officic.公文查阅，
+*	模块：caigou.物品采购，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.公文查阅]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.物品采购]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'officic',modename='公文查阅',isflow=0,modeid='69',atype = params.atype,pnum=params.pnum;
+	var modenum = 'caigou',modename='物品采购',isflow=1,modeid='28',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"num","name":"\u516c\u6587\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"unitsame","name":"\u53d1\u6587\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"miji","name":"\u516c\u6587\u5bc6\u7ea7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"optdt","name":"\u64cd\u4f5c\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"filecontid","name":"\u6b63\u6587\u6587\u4ef6","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"custname","name":"\u4f9b\u5e94\u5546\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"discount","name":"\u4f18\u60e0\u4ef7\u683c","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"money","name":"\u91c7\u8d2d\u91d1\u989d","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"state","name":"\u5165\u5e93\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -69,14 +69,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'公文查阅('+nowtabs.name+')',
-				cont:'公文查阅('+nowtabs.name+')的列表的',
-				explain:'订阅[公文查阅]的列表',
+				title:'物品采购('+nowtabs.name+')',
+				cont:'物品采购('+nowtabs.name+')的列表的',
+				explain:'订阅[物品采购]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_officic|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_caigou|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -120,8 +120,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistofficic = a;
-			addtabs({num:'daoruofficic',url:'flow,input,daoru,modenum=officic',icons:'plus',name:'导入公文查阅'});
+			window.managelistcaigou = a;
+			addtabs({num:'daorucaigou',url:'flow,input,daoru,modenum=caigou',icons:'plus',name:'导入物品采购'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -191,10 +191,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('b2ZmaWNpYWw:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29vZG0:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"公文编号",dataIndex:"num"},{text:"标题",dataIndex:"title"},{text:"发文单位",dataIndex:"unitsame"},{text:"操作时间",dataIndex:"optdt",sortable:true},{
+		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"申请日期",dataIndex:"applydt"},{text:"说明",dataIndex:"explain"},{text:"供应商名称",dataIndex:"custname"},{text:"优惠价格",dataIndex:"discount"},{text:"采购金额",dataIndex:"money"},{text:"入库状态",dataIndex:"state",sortable:true},{text:"状态",dataIndex:"statustext"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -211,12 +211,22 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-$('#tdleft_{rand}').hide();
+if(pnum=='all'){
+	c.setcolumns('state',{
+		renderer:function(v,d){
+			if(d.states!='1' && d.status=='1')v+=',<a href="javascript:;" onclick="rukuope{rand}('+d.id+')">去入库</a>';
+			return v;
+		}
+	});
+	rukuope{rand}=function(id){
+		addtabs({url:'main,goods,churuku,type=0,mid='+id+',kind=0,kindname=采购入库','num':'rukuopt'+id+'',name:''+id+'.'+modename+'操作'});
+	}
+}
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewofficic_{rand}').bootstable(bootparams);
+	var a = $('#viewcaigou_{rand}').bootstable(bootparams);
 	c.init();
 	var ddata = [{name:'高级搜索',lx:0}];
 	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
@@ -241,9 +251,9 @@ $('#tdleft_{rand}').hide();
 	<tr>
 		<td style="padding-right:10px;" id="tdleft_{rand}" nowrap><button id="addbtn_{rand}" class="btn btn-primary" click="clickwin,0" disabled type="button"><i class="icon-plus"></i> 新增</button></td>
 		<td>
-			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
+			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
 		</td>
-		
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -258,5 +268,5 @@ $('#tdleft_{rand}').hide();
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewofficic_{rand}"></div>
+<div id="viewcaigou_{rand}"></div>
 <!--HTMLend-->

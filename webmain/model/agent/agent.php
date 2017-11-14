@@ -25,6 +25,8 @@ class agentModel extends Model
 	protected function agenttotals($uid){return array();}
 	protected function agentdata($uid, $lx){return false;}
 	
+	protected $showuface	= true;//是否显示对应人员头像
+	
 	
 	public function gettotal()
 	{
@@ -182,6 +184,7 @@ class agentModel extends Model
 	*/
 	private function showrowsface($rows)
 	{
+		if(!$this->showuface)return $rows;
 		$uids	= '0';
 		foreach($rows as $k=>$rs){
 			if(isset($rs['uid']))$uids		.=','.$rs['uid'].'';

@@ -41,7 +41,7 @@ function globalbody(){
 <div class="topheader" id="topheaderid">
 	<table border="0" width="100%" cellspacing="0" cellpadding="0">
 	<tr>	
-		<td height="50" nowrap>
+		<td height="50" id="logodiv" nowrap>
 			<table  border="0" cellspacing="0" cellpadding="0"><tr>	
 				<td style="padding:0px 10px;" nowrap><img src="images/xh829.png" height="34" width="34"></td>
 				<td style="font-size:18px;padding-right:20px" nowrap><b><?=TITLE?></b></td>
@@ -49,17 +49,18 @@ function globalbody(){
 			</table>
 		</td>
 		<td width="80%" >
-			<div class="topmenubg">
+			<div id="topmenudiv" class="topmenubg">
 				<?php foreach($da['topmenu'] as $k=>$rs){?>
 				<span pmenuid="<?=$rs['id']?>"><?php if($rs['icons']){?><i class="icon-<?=$rs['icons']?>"></i> <?php }?><?=$rs['name']?></span>
 				<?php }?>
+				<span id="donwrigthw" style="position:absolute;top:0px;right:500px;display:none"><i class="icon-caret-down"></i></span>
 			</div>
 		</td>
 	</tr>
 	</table>
 </div>
 
-<div class="topcenter"  align="right">
+<div class="topcenter" id="topheaderright" align="right">
 	<span id="indexuserl" ><img src="<?=$da['face']?>" style="border:1px #cccccc solid;background:#ffffff;border-radius:15px;cursor:pointer;margin-right:10px" align="absmiddle" id="myface" height="30" width="30"><?=$da['adminname']?>&nbsp; <i class="icon-caret-down"></i></span>
 	<?php
 	if(getconfig('reim_show',true))echo '<span title="REIM即时通信" onclick="openreim()"><i class="icon-comments-alt"></i> REIM <font class="badge red" id="reim_stotal"></font></span>';

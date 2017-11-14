@@ -42,6 +42,7 @@ class sysClassAction extends runtAction
 	
 	
 	//数据更新,更新用户的
+	//命令就是：php task.php sys,dataup -runid=6
 	public function dataupAction()
 	{
 		m('admin')->updateinfo();

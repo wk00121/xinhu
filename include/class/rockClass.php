@@ -1,10 +1,10 @@
 <?php 
 /**
 	*****************************************************************
-	* 联系QQ： 290802026/1073744729									*
+	* 联系QQ： 290802026											*
 	* 版  本： V2.0													*
-	* 开发者：雨中磐石工作室										*
-	* 邮  箱： qqqq2900@126.com										*
+	* 开发者：雨中磐石(rainrock)									*
+	* 邮  箱： admin@rockoa.com										*
 	* 说  明: 基础操作类方法										*
 	* 备  注: 未经允许不得商业出售，代码欢迎参考纠正				*
 	*****************************************************************
@@ -279,7 +279,16 @@ final class rockClass
 	{
 		$arr = array('日','一','二','三','四','五','六');
 		return $arr[date('w', strtotime($date))];
-	}	
+	}
+	
+	/**
+	*	判断类型0微信,1钉钉,2安卓原生app,3企业微信
+	*/
+	public function iswebbro($lx=0)
+	{
+		$lxar = array('micromessenger','dingtalk','xinhuapp','wxwork');
+		return contain(strtolower($this->HTTPweb), $lxar[$lx]);
+	}
 		
 	public function getbrowser()
 	{
@@ -290,13 +299,16 @@ final class rockClass
 			array('MSIE 13'),array('Firefox'),array('OPR/','Opera'),array('Chrome'),array('Safari'),array('Android'),array('iPhone')
 		);
 		foreach($parr as $wp){
-			if($this->contain($web, $wp[0])){
+			if(contain($web, $wp[0])){
 				$val	= $wp[0];
 				if(isset($wp[1]))$val	= $wp[1];
 				break;
 			}
 		}
-		if($val=='wxbro' && $this->contain($web, 'wxwork'))$this->isqywx = true;
+		$web = strtolower($web);
+		if(contain($web,'micromessenger'))$val='wxbro';//微信浏览器
+		if(contain($web,'dingtalk'))$val='ding';//钉钉浏览器
+		if($val=='wxbro' && contain($web, 'wxwork'))$this->isqywx = true;
 		return $val;
 	}
 	

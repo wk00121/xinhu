@@ -3,13 +3,20 @@ class flow_caigouClassModel extends flowModel
 {
 	public $minwidth	= 600;//子表最小宽
 	
-	//审核完成处理
+	public function initModel()
+	{
+		$this->goodsobj = m('goods');
+	}
+	
+	//审核完成处理,要通知仓库管理员出入库
 	protected function flowcheckfinsh($zt){
+		/*
 		m('goodss')->update('status='.$zt.'',"`mid`='$this->id'");
 		$aid  = '0';
 		$rows = m('goodss')->getall("`mid`='$this->id'",'aid');
 		foreach($rows as $k=>$rs)$aid.=','.$rs['aid'].'';
 		m('goods')->setstock($aid);
+		*/
 	}
 
 	
@@ -26,5 +33,13 @@ class flow_caigouClassModel extends flowModel
 			}
 		}
 		return $rows;
+	}
+	
+	//$lx,0默认,1详情展示，2列表显示
+	public function flowrsreplace($rs)
+	{
+		$rs['states']= $rs['state'];
+		$rs['state'] = $this->goodsobj->crkstate($rs['state']);
+		return $rs;
 	}
 }

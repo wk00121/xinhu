@@ -79,7 +79,7 @@ homeobject.showtime=function(){
 		o.disabled=false;
 	}
 }
-homeobject.showkqdklist=function(a){
+homeobject.show_kqdk_list=function(a){
 	var sbarr = a.sbarr;
 	var s = '',i;
 	for(i=0;i<sbarr.length;i++){

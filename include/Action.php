@@ -110,7 +110,10 @@ abstract class mainAction{
 		$web 	= $this->rock->web;
 		$this->assign('web', $web);
 		$showheader	= 1;
-		if(in_array($web, array('xinhu','wxbro','ding')))$showheader = 0;
+		if($this->rock->iswebbro(0)
+			|| $this->rock->iswebbro(1)
+			|| $this->rock->iswebbro(2))$showheader = 0; //隐藏头部
+		//if($showheader == 0 && $this->get('show')=='we')$showheader	= 1;
 		$this->assign('showheader', $showheader);
 	}
 

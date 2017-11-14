@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 openxtrilises=function(){
 	addtabs({num:'syslog',url:'system,cog,log',icons:'bookmark-empty',name:'日志查看'});
 }
-homeobject.showsysloglist=function(a){
+homeobject.show_syslog_list=function(a){
 	var s='',a1,i,atr;
 	$('#homesysloglist a[temp]').remove();
 	for(i=0;i<a.length;i++){

@@ -3,34 +3,88 @@ class goodsClassAction extends Action
 {
 	public function aftershow($table, $rows)
 	{
-		$typearr = array();
-		if($rows)foreach($rows as $k=>$rs){
-			$tid = $rs['typeid'];
-			if(isset($typearr[$tid])){
-				$rows[$k]['typeid']= $typearr[$tid];
-			}else{
-				$rows[$k]['typeid']		= $this->db->getpval('[Q]option','pid','name', $tid,'/','id',2);
-				$typearr[$tid] = $rows[$k]['typeid'];
+		$typearr = $depotarr = array();
+		$mid 	 = (int)$this->post('mid','0');//根据主表出入库操作
+		if($rows){
+			$aid = '0';
+			foreach($rows as $k=>$rs){
+				$tid = $rs['typeid'];
+				if(isset($typearr[$tid])){
+					$rows[$k]['typeid']	= $typearr[$tid];
+				}else{
+					$rows[$k]['typeid']	= $this->db->getpval('[Q]option','pid','name', $tid,'/','id',2);
+					$typearr[$tid] = $rows[$k]['typeid'];
+				}
+				$aid.=','.$rs['id'].'';
+				if($rs['stock']=='0')$rows[$k]['stock'] = '';
+			}
+			$rows = $this->pandian($aid, $rows);
+		}
+		if($this->loadci==1){
+			$type	= (int)$this->post('type');
+			$typearr= $this->option->getdata('kutype'.$type.'');
+			$depotarr = m('godepot')->getall('1=1','id,depotname as name,depotnum','`sort`');
+			foreach($depotarr as $k=>$rs){
+				$depotarr[$k]['namea']= $rs['name'];
+				$depotarr[$k]['name'] = ''.$rs['depotnum'].'.'.$rs['name'].'';
 			}
 		}
-		$type	= (int)$this->post('type');
-		$typearr= $this->option->getdata('kutype'.$type.'');
-		return array('rows' => $rows,'typearr'=>$typearr);
+		return array(
+			'rows' 		=> $rows,
+			'typearr' 	=> $typearr,
+			'depotarr' 	=> $depotarr,
+		);
 	}
 	
 	public function beforeshow($table)
 	{
 		$key 	= $this->post('key');
 		$typeid = (int)$this->post('typeid');
+		$mid 	= (int)$this->post('mid','0');//根据主表出入库操作
 		$where 	 	= '';
 		if($typeid != 0){
 			$alltpeid = $this->option->getalldownid($typeid);
 			$where .= ' and `typeid` in('.$alltpeid.')';
 		}
 		if($key!=''){
-			$where .= " and (`name` like '%$key%') ";
+			$where .= " and (`name` like '%$key%' or `num` like '%$key%' or `guige` like '%$key%' or `xinghao` like '%$key%') ";
 		}
+		if($mid>0){
+			/*
+			$carro = m('goodn')->getall('mid='.$mid.' and `couns`<`count`');
+			$typeids = '0';
+			foreach($carro as $k=>$rs)$typeids.=','.$rs['aid'].'';
+			$where .= ' and `id` in('.$typeids.')';
+			*/
+			return array(
+				'where' => 'and b.`mid`='.$mid.' and  b.`couns`<b.`count`',
+				'fields' => 'a.*,(b.`count`-b.`couns`)maxcount',
+				'table' => '`[Q]goods` a left join `[Q]goodn` b on a.`id`=b.`aid`'
+			);
+		}
+		
 		return $where;
+	}
+	
+	//盘点对应仓库库存计算
+	private function pandian($aid,$rows)
+	{
+		if($this->post('atype')!='pan')return $rows;
+		
+		$ckarr	= m('goods')->getstock($aid, $this->post('dt'));
+		foreach($rows as $k=>&$rs){
+			$rs['stock'] = '';
+			if(isset($ckarr[$rs['id']])){
+				$kdsra= $ckarr[$rs['id']];
+				$rs['stock'] = $kdsra[0]=='0'?'':$kdsra[0]; //总库存
+				
+				foreach($kdsra as $k1=>$v1){
+					if($k1>0)$rs['stockdepotid'.$k1.''] = $v1=='0'?'':$v1; //对应仓库库存
+				}
+			}
+		}
+		
+		return $rows;
 	}
 	
 	public function xiangbeforeshow($table)
@@ -38,6 +92,7 @@ class goodsClassAction extends Action
 		$key = $this->post('key');
 		$dt  = $this->post('dt');
 		$typeid  = (int)$this->post('typeid', 0);
+		$depotid  = (int)$this->post('depotid', 0);
 		
 		$where 	 = '';
 		if($typeid>0){
@@ -45,14 +100,17 @@ class goodsClassAction extends Action
 			$where.=" and b.typeid in($alltpeid)";
 		}
 		if($key!=''){
-			$where .= " and (b.`name` like '%$key%' or a.optname  like '%$key%' )";
+			$where .= " and (b.`name` like '%$key%' or a.optname  like '%$key%' or c.depotname like '%$key%' )";
 		}
 		if($dt!=''){
 			$where .= " and a.`applydt` like '$dt%' ";
 		}
+		if($depotid>0){
+			$where .= " and a.`depotid`='$depotid'";
+		}
 		
-		$table	= '`[Q]goodss` a left join `[Q]goods` b on a.aid=b.id';
-		$fields	= 'a.id,b.name,a.count,a.type,a.kind,a.status,a.optname,b.typeid,a.applydt,a.explain,a.mid';
+		$table	= '`[Q]goodss` a left join `[Q]goods` b on a.aid=b.id left join `[Q]godepot` c on a.depotid=c.id';
+		$fields	= 'a.id,b.name,a.count,c.depotname,a.type,a.kind,a.status,a.optname,b.typeid,a.applydt,a.explain,a.mid';
 		return array(
 			'where' => $where,
 			'table' => $table,
@@ -106,13 +164,16 @@ class goodsClassAction extends Action
 	{
 		$dt 	= $this->post('dt');
 		$type 	= (int)$this->post('type');
+		$depotid= (int)$this->post('depotid');
 		$kind 	= (int)$this->post('kind');
+		$mid 	= (int)$this->post('mid','0');
 		$sm 	= $this->post('sm');
 		$cont 	= $this->post('cont');
 		$sharr	= c('array')->strtoarray($cont);
 		$arr['applydt'] = $dt;
 		$arr['type'] 	= $type;
 		$arr['kind'] 	= $kind;
+		$arr['depotid'] = $depotid;
 		$arr['explain'] = $sm;
 		$arr['uid'] 	= $this->adminid;
 		$arr['optid'] 	= $this->adminid;
@@ -120,16 +181,57 @@ class goodsClassAction extends Action
 		$arr['optname'] = $this->adminname;
 		$arr['status'] 	= 1;
 		$aid 			= '0';
+		
+		$ndbs			= m('goodn');
+		
+		//根据主表出入库操作
+		if($mid>0){
+			if(m('goodm')->rows("`id`='$mid' and `status`=1")==0)return '该单据还未审核完成，不能出入库操作';
+			//读取已入库数量
+			$arwos = $ndbs->getall('`mid`='.$mid.' and `couns`<`count`');
+			$ruks  = array();
+			foreach($arwos as $k1=>$rs1){
+				$ruks[$rs1['aid']] = array(
+					'kes'   => floatval($rs1['count']) - floatval($rs1['couns']),//还可入库数
+					'id'	=> $rs1['id'],
+					'couns' => floatval($rs1['couns'])
+				); 
+			}
+		}
+		
 		foreach($sharr as $k=>$rs){
 			$arr['aid'] = $rs[0];
-			$count = $rs[1];
-			if($type==1)$count = 0-$count;
+			$count = (int)$rs[1];
+			
+			if($count<0)$count = 0-$count;
+			
+			if($mid>0){
+				if(!isset($ruks[$arr['aid']]))continue;
+				$shua = $ruks[$arr['aid']];
+				if($count>$shua['kes'])$count=$shua['kes'];//超过
+				$arr['mid'] = $mid;
+			}
+			
+			
+			if($count==0)continue;
+			
+			
 			$arr['count'] = $count;
-			$this->db->record('[Q]goodss', $arr);
+			if($type==1)$arr['count'] = 0- $arr['count'];//出库为负数
+			
+			$ussid = $this->db->record('[Q]goodss', $arr);
 			$aid.=','.$rs[0].'';
+			
+			//更新已出入库的数量
+			if($mid>0 && $ussid){
+				$ndbs->update('`couns`=`couns`+'.$count.'', $shua['id']);
+			}
 		}
 		if($aid!='0')m('goods')->setstock($aid);
-		echo 'success';
+		if($mid>0){
+			m('goods')->upstatem($mid);
+		}
+		return 'success';
 	}
 	
 	
@@ -170,5 +272,37 @@ class goodsClassAction extends Action
 	public function reloadkcAjax()
 	{
 		m('goods')->setstock();
+	}
+	
+	//出入库操作
+	public function croptbeforeshow($table)
+	{
+		$key = $this->post('key');
+		$where= '';
+		if($key!=''){
+			$where.=" and (b.`uname` like '%$key%' or b.`sericnum` like '$key%')";
+		}
+		return array(
+			'where' => 'and a.`status`=1 and a.`state`<>1 '.$where.'',
+			'table' => '`[Q]'.$table.'` a left join `[Q]flow_bill` b on a.id=b.mid and b.`table`=\''.$table.'\'',
+			'fields' => 'a.id,a.applydt,a.optdt,a.`explain`,a.`state`,a.`type`,b.uname,b.sericnum,b.udeptname'
+		);
+	}
+	public function croptaftershow($table, $rows)
+	{
+		$dgs 	= m('goods');
+		$typeb = array('0'		,'1'	  ,'2'		,'3'); 
+		$typea = array('领用单' ,'采购单' ,'销售单'	,'调拨单'); 
+		$chux  = array('0','2');
+		if($rows)foreach($rows as $k=>&$rs){
+			$rs['typev'] = $rs['type'];
+			$rs['type']  = arrvalue($typea, $rs['type']);
+			$lx = 0; //入
+			if(in_array($rs['typev'],$chux))$lx=1;
+			$rs['state']  = $dgs->crkstate($rs['state'], $lx);
+		}
+		return array(
+			'rows' 		=> $rows
+		);
 	}
 }
