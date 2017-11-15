@@ -19,7 +19,7 @@ class viewClassModel extends Model
 		if(isset($this->ursarr[$uid])){
 			$this->urs	= $this->ursarr[$uid];
 		}else{
-			$this->urs 	= $this->db->getone('[Q]admin',$uid, 'id,name,deptpath,deptid,`type`');
+			$this->urs 	= $this->db->getone('[Q]admin',$uid);
 			$this->ursarr[$uid] = $this->urs;
 		}
 		if(is_array($mid)){
@@ -81,6 +81,7 @@ class viewClassModel extends Model
 		$where 	= $this->addb->getjoinstr('receid', $this->urs);
 		if($ufid=='')$ufid = 'uid';
 		$uid	= $this->urs['id'];
+		$companyid	= arrvalue($this->urs, 'companyid','0');
 		$rows 	= $this->getall('`type`='.$type.' and `modeid`='.$mid.' and `status`=1 '.$where.'','wherestr,whereid');
 		$wehs	= array();
 		$count  = $this->db->count;
@@ -109,6 +110,12 @@ class viewClassModel extends Model
 			if($sw=='{dept}' && !isempt($this->urs['deptid'])){
 				$sw = "`$ufid` in(select `id` from `[Q]admin` where `deptid`=".$this->urs['deptid'].")";
 			}
+			
+			//同一个单位
+			if($sw=='{company}'){
+				$sw = "`$ufid` in(select `id` from `[Q]admin` where `companyid`=".$companyid.")";
+			}
+			
 			//所有数据
 			if($sw=='all'){
 				return ' and 1=1';

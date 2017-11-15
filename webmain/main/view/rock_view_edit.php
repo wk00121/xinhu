@@ -51,6 +51,7 @@ $(document).ready(function(){
 			if(lx==2)h.form.wherestr.value='{super}';
 			if(lx==4)h.form.wherestr.value='{dept}';
 			if(lx==3)h.form.wherestr.value='all';
+			if(lx==5)h.form.wherestr.value='{company}';
 		}
 		,
 		reloadhweil:function(){
@@ -108,7 +109,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" >相应条件：</td>
-			<td class="tdinput" colspan="3"><textarea placeholder="由对应模块上主表字段，如:optid={uid}，操作人是当前用户" name="wherestr" style="height:60px" class="form-control"></textarea><br>如:<a click="hanrenss,0" href="javascript:;">[receid中包含我]</a>,<a click="hanrenss,1" href="javascript:;">[所有下属人员]</a>,<a click="hanrenss,2" href="javascript:;">[直属下属人员]</a>,<a click="hanrenss,4" href="javascript:;">[同级本部门]</a>,<a click="hanrenss,3" href="javascript:;">[所有数据]</a></td>
+			<td class="tdinput" colspan="3"><textarea placeholder="由对应模块上主表字段，如:optid={uid}，操作人是当前用户" name="wherestr" style="height:60px" class="form-control"></textarea><br>如:<a click="hanrenss,0" href="javascript:;">[receid中包含我]</a>,<a click="hanrenss,1" href="javascript:;">[所有下属人员]</a>,<a click="hanrenss,2" href="javascript:;">[直属下属人员]</a>,<a click="hanrenss,4" href="javascript:;">[同级本部门]</a>,<a click="hanrenss,5" href="javascript:;">[所在单位]</a>,<a click="hanrenss,3" href="javascript:;">[所有数据]</a></td>
 		</tr>
 		
 		<tr>

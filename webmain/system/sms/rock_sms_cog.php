@@ -9,13 +9,16 @@ $(document).ready(function(){
 			o.value='加载中...';
 			js.ajax(js.getajaxurl('gettotal','{mode}','{dir}'),false,function(ret){
 				if(ret.success){
-					$('#stotal{rand}').html(''+ret.data.balance+'元('+ret.data.smstotal+'条)');
+					$('#stotal{rand}').html(ret.data.smsinfo);
 					$('#typetext{rand}').html(ret.data.typetext);
+					if(ret.data.type=='2')$('#tessh{rand}').show();
 				}else{
 					js.msg('msg', ret.msg);
 				}
 				get('sms_iscb_{rand}').value=ret.sms_iscb;
 				get('sms_cbnum_{rand}').value=ret.sms_cbnum;
+				get('sms_apikey_{rand}').value=ret.sms_apikey;
+				
 				o.value='刷新';
 			},'get,json');
 		},
@@ -38,7 +41,11 @@ $(document).ready(function(){
 		
 		save:function(){
 			js.msg('wait','保存中...');
-			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),{sms_iscb:get('sms_iscb_{rand}').value,sms_cbnum:get('sms_cbnum_{rand}').value},function(ret){
+			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),{
+				sms_iscb:get('sms_iscb_{rand}').value,
+				sms_cbnum:get('sms_cbnum_{rand}').value,
+				sms_apikey:get('sms_apikey_{rand}').value
+			},function(ret){
 				js.msg('success','保存成功');
 			},'get');
 		}
@@ -68,6 +75,11 @@ $(document).ready(function(){
 		<td class="tdinput"><span id="typetext{rand}">普通用户</span></td>
 	</tr>
 	
+	
+	<tr style="display:none" id="tessh{rand}">
+		<td  align="right">短信APIKEY：</td>
+		<td class="tdinput"><input id="sms_apikey_{rand}"  style="width:250px" class="form-control">&nbsp;<a href="<?=URLY?>view_smsapi.html" target="_blank">如何获取?</a></td>
+	</tr>
 	
 	<tr>
 		<td  align="right" ></td>

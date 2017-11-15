@@ -11,6 +11,7 @@ class smsClassAction extends Action
 		$barr = $this->smsobj->getdata('sms','smstotal');
 		$barr['sms_iscb'] = $this->option->getval('sms_iscb','0');
 		$barr['sms_cbnum'] = $this->option->getval('sms_cbnum','defnum');
+		$barr['sms_apikey'] = $this->option->getval('sms_apikey');
 		return $barr;
 	}
 	
@@ -19,6 +20,7 @@ class smsClassAction extends Action
 	{
 		$this->option->setval('sms_iscb', $this->get('sms_iscb','0'));
 		$this->option->setval('sms_cbnum', $this->get('sms_cbnum'));
+		$this->option->setval('sms_apikey', $this->get('sms_apikey'));
 	}
 	
 	//测试
@@ -57,6 +59,16 @@ class smsClassAction extends Action
 			'rows' => $rows
 		);
 	}
+	
+	//删除短信记录
+	public function delrecordAjax()
+	{
+		$barr = $this->smsobj->getdata('sms','delrecord', array(
+			'id' => $this->post('id')
+		));
+		return $barr;
+	}
+	
 	//保存签名
 	public function saveqianAjax()
 	{

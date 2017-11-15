@@ -271,7 +271,7 @@ js.winiframe=function(tit, url){
 	var mxw= 900;
 	var hm = winHb()-150;if(hm>800)hm=800;if(hm<400)hm=400;
 	if(url.indexOf('wintype=max')>0){
-		mxw= 900;
+		mxw= 1000;
 		hm=winHb()-45;
 	}
 	var wi = winWb()-150;if(wi>mxw)wi=mxw;if(wi<700)wi=700;

@@ -8,6 +8,7 @@ class xinhuapiChajian extends Chajian{
 	private $updatekey 	= '';
 	private $updatekeys = '';
 	private $systemnum  = '';
+	private $smsapikey  = '';
 	
 	
 	protected function initChajian()
@@ -18,12 +19,14 @@ class xinhuapiChajian extends Chajian{
 			$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
 		}
 		$this->updatekey	=$this->rock->jm->base64decode($this->updatekeys);
+		$this->getsysnum();
 	}
 	
 	private function getsysnum()
 	{
 		$dbs 	= m('option');
 		$this->systemnum  = $dbs->getval('systemnum');
+		$this->smsapikey  = $dbs->getval('sms_apikey');
 		if(isempt($this->systemnum)){
 			$rnd  	= md5(str_shuffle('abcedfghijk').rand(1000,9999));
 			$dbs->setval('systemnum', $rnd);
@@ -36,9 +39,9 @@ class xinhuapiChajian extends Chajian{
 	public function geturlstr($mod, $act, $can=array())
 	{
 		$url 	= $this->updatekey;
-		$sysnum = $this->getsysnum();
 		$url.= '?m='.$mod.'&a='.$act.'';
-		$url.= '&host='.$this->rock->jm->base64encode(HOST).'&version='.VERSION.'&randtime='.time().'&ip='.$this->rock->ip.'&xinhukey='.getconfig('xinhukey').'&sysnum='.$sysnum.'';
+		$url.= '&host='.$this->rock->jm->base64encode(HOST).'&version='.VERSION.'&randtime='.time().'&ip='.$this->rock->ip.'&xinhukey='.getconfig('xinhukey').'&sysnum='.$this->systemnum.'';
+		if(!isempt($this->smsapikey))$url.='&smsapikey='.$this->smsapikey.'';
 		foreach($can as $k=>$v)$url.='&'.$k.'='.$v.'';
 		return $url;
 	}
