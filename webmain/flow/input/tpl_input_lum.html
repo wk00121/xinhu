@@ -128,6 +128,14 @@ if($showheader==1)echo '<div id="header_title" class="header"><span onclick="js.
 				echo $stsp;
 			}
 		}
+		$iscs = (int)$da['moders']['iscs'];
+		if($iscs>0){
+		?><tr>
+			<td class="lurim" nowrap><font color="red"><?=(($iscs==1) ? '':'*')?></font>抄送给</td>
+			<td><div class="divinput"><table width="98%"><tr><td width="100%"><input class="inputs" style="width:99%" id="syschaosongs" value="<?=$da['chao']['csname']?>" placeholder="选择要抄送的人员" readonly type="text" name="syschaosong"><input name="syschaosongid" value="<?=$da['chao']['csnameid']?>" id="syschaosongs_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('syschaosongs')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('syschaosongs','changeusercheck','选择抄送人员')" class="webbtn">选择</a></td></tr></table></div></td>
+		</tr>	
+		<?php
+		}
 		?>
 		</table>
 		</div>

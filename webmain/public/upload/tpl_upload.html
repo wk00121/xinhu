@@ -219,7 +219,7 @@ var up={
 		if(result.id){
 			up.wcarr.push({id:result.id,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,filepath:result.filepath,thumbpath:result.thumbpath,width:result.width,height:result.height});
 		}else{
-			$('#'+up.updengid+'').html('<font color=red>上传失败1</font>');
+			$('#'+up.updengid+'').html('<font color=red>上传失败1,保存失败</font>');
 			js.msg('msg',result.msg);
 		}
 		setTimeout('up.start('+(arr.xuoi+1)+')',5);
@@ -273,7 +273,7 @@ window.onbeforeunload=function(){
 <style type="text/css">
 button{cursor:pointer}
 .alert{ padding:1px 5px; border:1px #996 solid; background-color:#ffffff; color:#933}
-*{ font-size:14px;font-family:微软雅黑,Verdana, Geneva, sans-serif;}
+*{ font-size:14px;}
 .mdiv{ border-bottom:1px #cccccc solid; height:22px; overflow:hidden}
 .mdiv div{ float:left; height:22px; line-height:22px; overflow:hidden; padding:0px 3px}
 .div01{ width:55%;text-align:left;border-right:1px #cccccc solid;}

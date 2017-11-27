@@ -2,6 +2,7 @@
 class adminClassModel extends Model
 {
 	private $_getjoinstr = array();
+	public $nowurs;
 	
 	public function gjoin($joinid, $glx='', $blx='bxl')
 	{
@@ -70,9 +71,9 @@ class adminClassModel extends Model
 		if($uids!='')$uids= substr($uids, 1);
 		return $uids;
 	}
-	
+
 	/**
-		判断某个id是不是在里面
+	*	判断某个id是不是在里面,权限
 	*/
 	public function containjoin($joinid, $myid=0, $glx='ud')
 	{
@@ -91,9 +92,10 @@ class adminClassModel extends Model
 		if(is_numeric($us)){
 			$key= 'a'.$fids.''.$us.'_'.$lx.'_'.$slx.'';
 			if(isset($this->_getjoinstr[$key]))return $this->_getjoinstr[$key];
-			$us	= $this->getone($us,'id,`name`,`deptid`,`deptpath`');
+			$us	= $this->getone($us,'id,`name`,`deptid`,`deptpath`,`type`');
 		}
 		if(!$us)return '';
+		$this->nowurs = $us;
 		$uid	= $us['id'];
 		$key 	= 'a'.$fids.''.$uid.'_'.$lx.'_'.$slx.'';
 		if(isset($this->_getjoinstr[$key]))return $this->_getjoinstr[$key];

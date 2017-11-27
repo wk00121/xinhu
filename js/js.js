@@ -1,4 +1,4 @@
-var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',ISDEMO=false,NOWURL='',nwjsgui=false;
+var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false;
 var windows	= null,ismobile=0;
 function initbody(){}
 function bodyunload(){}
@@ -324,7 +324,7 @@ js.downupshow=function(a, showid, nbj){
 }
 js.apiurl = function(m,a,cans){
 	var url='api.php?m='+m+'&a='+a+'';
-	url+='&cfrom=pc';
+	url+='&cfrom='+CFROM+'';
 	if(!cans)cans={};
 	for(var i in cans)url+='&'+i+'='+cans[i]+'';
 	return url;

@@ -128,9 +128,11 @@ class flow_userClassModel extends flowModel
 			$arr['companyid']  	= 1; //默认公司Id为1
 			
 			//读取上级主管Id
-			$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
-			if($superid==0)$arr['superman'] = '';
-			$arr['superid'] = $superid;
+			if(isset($arr['superman'])){
+				$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
+				if($superid==0)$arr['superman'] = '';
+				$arr['superid'] = $superid;
+			}
 			
 			//读取部门Id
 			$deptarr 	= $this->getdeptid($rs['deptname'], $dbs);

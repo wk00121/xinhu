@@ -191,6 +191,7 @@ var c={
 				}
 			}
 		}
+		
 		//子表判断记录是不是空
 		len = subfielsa.length;
 		for(i=0;i<this.subcount;i++){//子表数
@@ -230,6 +231,12 @@ var c={
 				return false;
 			}
 		}
+		
+		if(moders.iscs=='2' && isempt(d.syschaosongid)){
+			this.showtx('请选择抄送对象');
+			return false;
+		}
+		
 		var s=changesubmit(d);
 		if(typeof(s)=='string'&&s!=''){
 			this.showtx(s);

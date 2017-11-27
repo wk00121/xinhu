@@ -16,6 +16,7 @@
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="web/res/js/nwjs.js"></script>
 <script>
+CFROM = 'reim';
 var temp_token='';
 var logifouct=false;
 function initbody(){
@@ -142,6 +143,47 @@ function getpassobj(){
 	return $('input[type=password]');
 }
 
+//二维码登录
+function loginewm(){
+	var s = '<div style="height:180px;" align="center"><img style="margin:5px" id="logeweerew" src="images/logo.png" width="170" height="170"></div><div style="padding:5px;" align="center"><span id="miaoshuv">请使用手机扫一扫</span>，还有<span id="miaoshu">60</span>秒</div>';
+	js.tanbody('syscogshow','扫一扫登录',240,100,{html:s});
+	var stra    = parseInt(Math.random()*999999);
+	randkey = js.getoption('ewmrandkey', 'ewm'+stra+'');
+	js.setoption('ewmrandkey', randkey);
+	get('logeweerew').src=js.apiurl('login','getewm',{'randkey':randkey});
+	starttimest(60);
+}
+function starttimest(ms){
+	if(!get('miaoshu'))return;
+	if(ms<0){
+		$('#miaoshu').parent().html('<font color=#888888>二维码已过期，请重新打开</font>');
+		return;
+	}
+	$('#miaoshu').html(''+ms+'');
+	if(ms<57){
+		$.getJSON(js.apiurl('login','checkewm',{'randkey':randkey}),function(ret){
+			setTimeout('starttimest('+(ms-1)+')',1000);
+			var dst = ret.data.val;
+			if(dst=='0'){
+				$('#miaoshuv').html('<font color=green>请在手机按确认登录</font>');
+			}
+			if(dst=='-1'){
+				$('#miaoshu').parent().html('<font color=#888888>已取消，请重新打开</font>');
+			}
+			if(dst>0){
+				$('#miaoshu').parent().html('<font color=#ff6600><img src="images/loadings.gif" align="absmiddle"> 已确认，登录中...</font>');
+				var da = ret.data;
+				get('myface').src = da.face;
+				form('adminuser').value=da.user;
+				getpassobj().val(da.pass);
+				loginsubmit(1);
+			}
+		});
+	}else{
+		setTimeout('starttimest('+(ms-1)+')',1000);
+	}
+}
+
 </script>
 <style>
 .faceicons{height:100px;width:100px;overflow:hidden;border:1px #cccccc solid; background-color:white;border-radius:50%;}
@@ -167,7 +209,7 @@ function getpassobj(){
 		</div>
 		<div class="blank10"></div>
 		<div style="padding:0px 20px">
-			<label><input onclick="changeauto(this)" id="checkautologin" type="checkbox">下次自动登录</label>
+			<label><input onclick="changeauto(this)" id="checkautologin" type="checkbox">下次自动登录</label> &nbsp;<img class="cursor" onclick="loginewm()" title="用二维码登录" src="images/ewml.png" align="absmiddle" width="16">
 		</div>
 		<div class="blank20"></div>
 		

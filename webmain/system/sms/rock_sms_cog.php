@@ -11,7 +11,7 @@ $(document).ready(function(){
 				if(ret.success){
 					$('#stotal{rand}').html(ret.data.smsinfo);
 					$('#typetext{rand}').html(ret.data.typetext);
-					if(ret.data.type=='2')$('#tessh{rand}').show();
+					//if(ret.data.type=='2')$('#tessh{rand}').show();
 				}else{
 					js.msg('msg', ret.msg);
 				}

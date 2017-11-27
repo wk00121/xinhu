@@ -140,7 +140,7 @@ $(document).ready(function(){
 	</div>
 	<div class="blank10"></div>
 	<div id="veiw_{rand}"></div>
-	<div class="tishi">先双击对应组查看人员，在添加组下人员</div>
+	<div class="tishi">在组的ID列下双击，查看组下的人员，在添加组下人员</div>
 </td>
 <td width="10"></td>
 <td>

@@ -347,7 +347,9 @@ class inputAction extends Action
 			'name' 	=> $moders['name'],
 			'names' => $moders['names'],
 			'isflow'=> $moders['isflow'],
+			'iscs'	=> $moders['iscs'],
 		);
+		$this->smartydata['chao']	= $this->flow->getcsname($mid);
 		$modeid 	= $moders['id'];
 		if($mid==0 && $lutype==0){
 			$isadd = m('view')->isadd($modeid, $uid);

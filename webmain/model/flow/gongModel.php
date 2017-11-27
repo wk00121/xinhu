@@ -12,7 +12,7 @@ class flow_gongClassModel extends flowModel
 		$cont 	= c('html')->replace($this->rs['content']);
 		$fm 	= $this->rs['fengmian'];
 		if(!isempt($fm) && file_exists($fm)){
-			$cont='<div align="center"><img style="max-width:500px" src="'.$fm.'"></div>'.$cont.'';
+			$cont='<div align="center"><img style="max-width:500px" src="'.URL.''.$fm.'"></div>'.$cont.'';
 		}
 		$this->rs['content'] = $cont;
 	}

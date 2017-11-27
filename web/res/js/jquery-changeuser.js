@@ -379,7 +379,7 @@
 		};
 		this.showhtml=function(a){
 			this.nowdata = a;
-			var i,len=a.length,s='',s2,s1='',atr,oldvel='';
+			var i,len=a.length,s='',s2,s1='',atr,oldvel='',d;
 			if(this.nameobj)oldvel=this.nameobj.value;
 			if(this.idobj)oldvel=this.idobj.value;
 			var type='checkbox',ched='';
@@ -387,11 +387,14 @@
 			oldvel = ','+oldvel+',';
 			for(i=0;i<len && i<this.maxshow;i++){
 				ched='';
-				if(!isempt(a[i].value) && oldvel.indexOf(','+a[i].value+',')>-1)ched='checked';
-				s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+a[i].name+'" value="'+a[i].value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
+				d = a[i];
+				if(!isempt(d.value) && oldvel.indexOf(','+d.value+',')>-1)ched='checked';
+				s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+d.name+'" value="'+d.value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
 				atr = '';
-				if(a[i].padding)atr='style="padding-left:'+a[i].padding+'px"';
-				s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+a[i].name+'</label></div>';
+				if(d.padding)atr='style="padding-left:'+d.padding+'px"';
+				if(!d.iconswidth)d.iconswidth=18;
+				if(d.iconsimg)s2+=' <img align="absmiddle" src="'+d.iconsimg+'" height="'+d.iconswidth+'" width="'+d.iconswidth+'">';
+				s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+d.name+'</label></div>';
 			}
 			return s;
 		};

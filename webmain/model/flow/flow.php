@@ -120,6 +120,7 @@ class flowModel extends Model
 		$this->settable($table);
 		$this->mtable		= $table;
 		$this->viewmodel	= m('view');
+		$this->chaomodel	= m('flow_chao');
 		$this->billmodel	= m('flow_bill');
 		$this->todomodel	= m('flow_todo');
 		$this->todosmodel	= m('flowtodo');
@@ -195,7 +196,7 @@ class flowModel extends Model
 		$this->rs['base_systitle']	= TITLE;//系统名称
 		$this->rs['base_modename']	= $this->modename;
 		$this->rs['base_sericnum']	= $this->sericnum;
-		$this->rs['base_summary']	= $this->rock->reparr($this->moders['summary'], $this->rs);
+		$this->rs['base_summary']	= $this->getsummary();
 	}
 	
 	/**
@@ -865,11 +866,51 @@ class flowModel extends Model
 			}
 		}
 		$this->flowsubmit($na, $sm);
+		//抄送保存
+		$csname 	= $this->rock->post('syschaosong');
+		$csnameid 	= $this->rock->post('syschaosongid');
+		if(!isempt($csnameid)){
+			$csid 			= (int)$this->chaomodel->getmou('id', $this->mwhere);
+			$where 			= ''.$this->mwhere;
+			if($csid==0)$where = '';
+			$this->chaomodel->record(array(
+				'modeid' => $this->modeid,
+				'table'  => $this->mtable,
+				'mid'  => $this->id,
+				'uid'  => $this->uid,
+				'csname'  	=> $csname,
+				'csnameid'  => $csnameid,
+			),$where);
+			if($isturn==1)$this->nexttodo($csnameid,'chao', $na);//发送通知
+		}
 		if($na=='编辑'){
 			$this->gettodosend('boedit');
 		}else{
 			$this->gettodosend('boturn');//提交
 		}
+	}
+	
+	/**
+	*	获取抄送人姓名
+	*/
+	public function getcsname($id=0)
+	{
+		if($id>0){
+			$where= "`table`='$this->mtable' and `mid`='$id'";
+		}else{
+			$where= "`modeid`={$this->modeid} and `uid`={$this->adminid}";
+		}
+		$ors 	= $this->chaomodel->getone($where,'*','`id` desc');
+		$csname = $csnameid = '';
+		if($ors){
+			$csname = $ors['csname'];
+			$csnameid = $ors['csnameid'];
+		}
+		return array(
+			'csname' => $csname,
+			'csnameid' => $csnameid,
+			'id' => $id,
+		);
 	}
 	
 	/**
@@ -1358,6 +1399,7 @@ class flowModel extends Model
 	{
 		$cont	= '';
 		$gname	= '流程待办';
+		$summary= $this->getsummary();
 		if($type=='submit' || $type=='next' || $type == 'cuiban'){
 			$cont = '你有['.$this->uname.']的['.$this->modename.',单号:'.$this->sericnum.']需要处理';
 			if($sm!='')$cont.='，说明:'.$sm.'';
@@ -1377,7 +1419,22 @@ class flowModel extends Model
 		if($type == 'tui'){
 			$cont = '['.$this->adminname.']退回单据['.$this->modename.',单号:'.$this->sericnum.']到你这请及时处理，说明:'.$sm.'';
 		}
+		//提交抄送
+		if($type == 'chao'){
+			$cont = ''.$this->adminname.''.$sm.'了“'.$this->modename.'”';
+			if(!isempt($summary))$cont.='，摘要“'.$summary.'”';
+			if($this->isflow==1)$cont.='，单号“'.$this->sericnum.'”';
+			$gname= '';
+		}
 		if($cont!='')$this->push($nuid, $gname, $cont);
+	}
+	
+	/**
+	*	获取摘要
+	*/
+	public function getsummary()
+	{
+		return $this->rock->reparr($this->moders['summary'], $this->rs);
 	}
 	
 	private function addcheckname($courseid, $uid, $uname, $onbo=false, $addlx=0)
@@ -1797,6 +1854,13 @@ class flowModel extends Model
 			$is = $this->isdeleteqx();
 			if($is==0)return '无权删除';
 		}
+		
+		//删除前判断
+		if(method_exists($this,'flowdeletebillbefore')){
+			$bstr = $this->flowdeletebillbefore($sm);
+			if(!isempt($bstr))return $bstr;
+		}
+		
 		$this->flogmodel->delete($this->mwhere);
 		m('reads')->delete($this->mwhere);
 		m('file')->delfiles($this->mtable, $this->id);
@@ -1975,7 +2039,7 @@ class flowModel extends Model
 		
 		//定时提醒设置
 		if($isreadbo && $this->modenum != 'remind' && !in_array($status, array(2,5))){
-			$smcont	= ''.$this->modename.'：'.$this->rock->reparr($this->moders['summary'], $this->rs);
+			$smcont	= ''.$this->modename.'：'.$this->getsummary();
 			$mid	= (int)m('remind')->getmou('id',"`uid`='$this->adminid' and `modenum`='$this->modenum' and `mid`='$this->id'");
 			$namess	= '＋添加提醒设置';
 			if($mid>0)$namess	= '提醒设置编辑';

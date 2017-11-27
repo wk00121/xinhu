@@ -24,7 +24,7 @@ $(document).ready(function(){
 		},{
 			text:'姓名',dataIndex:'name',sortable:true
 		},{
-			text:'部门',dataIndex:'deptname',align:'left'
+			text:'部门',dataIndex:'deptallname',align:'left'
 		},{
 			text:'职位',dataIndex:'ranking',sortable:true
 		},{

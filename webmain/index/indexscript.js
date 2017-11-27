@@ -17,13 +17,11 @@
 	}
 	if(a.length<=1)$('.topmenubg').html('');
 	var ddsata=[{
-		name:'<i class="icon-lock"></i> 修改密码',num:'pass',url:'system,geren,pass',names:'修改密码'
+		name:'<i class="icon-cog"></i> 个人设置',num:'grcog','icon':'cog',url:'system,geren,cog',names:'个人设置'
 	},{
-		name:'<i class="icon-bell"></i> 提醒信息',num:'todo',url:'system,geren,todo',names:'提醒信息'
+		name:'<i class="icon-bell"></i> 提醒信息',num:'todo','icon':'bell',url:'system,geren,todo',names:'提醒信息'
 	},{
-		name:'<i class="icon-picture"></i> 修改头像',num:'face'
-	},{
-		name:'<i class="icon-magic"></i> 切换皮肤',num:'style',url:'system,geren,style',names:'切换皮肤'
+		name:'<i class="icon-picture"></i> 修改头像',num:'face','icon':'picture'
 	},{
 		name:'<i class="icon-user"></i> 帐号('+adminuser+')',num:'user'
 	}];
@@ -43,7 +41,7 @@
 				return;
 			}
 			if(d.num=='user')return;
-			addtabs({num:d.num,url:d.url,name:d.names});
+			addtabs({num:d.num,url:d.url,name:d.names,icons:d.icon});
 		}
 	});
 	$('#reordershla').click(function(){

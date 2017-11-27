@@ -195,7 +195,7 @@ class inputChajian extends Chajian
 			$lx  = 'span';if($ism==1)$lx='div';
 			$str = '<'.$lx.' id="div_'.$fname.'" class="divinput">'.$str.'</'.$lx.'>';
 			if($ism==1 && $iszb==0){
-				$str = '<tr><td class="lurim" nowrap>'.$fnams.':</td><td width="90%">'.$str.'</td></tr>';
+				$str = '<tr><td class="lurim" nowrap>'.$fnams.'</td><td width="90%">'.$str.'</td></tr>';
 			}
 		}
 		return $str;
@@ -222,8 +222,9 @@ class inputChajian extends Chajian
 			$rows = $this->db->getall($sql);
 			if($rows)foreach($rows as $k=>$rs){
 				$nam = arrvalue($rs,'name');
-				$val = arrvalue($rs,'value');if(isempt($val))$val = arrvalue($rs,'id');
-				if(isempt($val))$val = $nam;
+				$val = $nam;
+				if(isset($rs['id']))$val 	= $rs['id'];
+				if(isset($rs['value']))$val = $rs['value'];
 				$fopt[] = array(
 					'name' => $nam,
 					'value' => $val,

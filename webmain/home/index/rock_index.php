@@ -106,7 +106,7 @@ $(document).ready(function(){
 			if(a.reimstotal=='0')a.reimstotal='';
 			$('#reim_stotal').html(a.reimstotal+'');
 			try{resizewh();}catch(e){}
-			if(a.reimstotal!=''){
+			if(a.reimstotal!='' && a.notodo!='1'){
 				notifyobj.show({
 					icon:'images/todo.png',title:'REIM提醒',rand:'reimto',
 					body:'未读REIM消息('+a.reimstotal+')条',
@@ -120,7 +120,7 @@ $(document).ready(function(){
 			if(s!=''){
 				todocontent = s;
 				var tx = this.opennewtx(1);
-				if(tx=='0'){
+				if(tx=='0'  && a.notodo!='1'){
 					$('#tishidivshow').fadeIn();
 					$('#tishicontent').html(s);
 					notifyobj.showpopup(s1,{icon:'images/todo.png',rand:'systodo',title:'系统提醒',click:function(b){

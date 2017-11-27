@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_set',
 		url:publicsave('{mode}','{dir}'),url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'optdt={now}'},aftersaveaction:'flowsetsaveafter',beforesaveaction:'flowsetsavebefore',
-		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isflowlx,isgbcy,isbxs,lbztxs',
+		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isflowlx,isgbcy,isbxs,lbztxs,iscs',
 		requiredfields:'name,type,num,table',
 		success:function(){
 			closenowtabs();
@@ -192,7 +192,8 @@ cont:
 		<tr>
 			<td  align="right" >录入页面上：</td>
 			<td class="tdinput" colspan="3">
-				<label><input name="isbxs" value="1" type="checkbox"> 不显示流程图</label>
+				<label><input name="isbxs" value="1" type="checkbox"> 不显示流程图</label>&nbsp; &nbsp; 
+				用户抄送:<select name="iscs"><option value="0">不开启</option><option value="1">开启(可选抄送对象)</option><option value="2">开启(必须选择抄送对象)</option></select>
 			</td>
 		</tr>
 		

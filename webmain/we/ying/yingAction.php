@@ -1,4 +1,12 @@
 <?php 
+/**
+*	移动端应用控制器页面
+*	主页：http://www.rockoa.com/
+*	软件：信呼
+*	作者：雨中磐石(rainrock)
+*	日期：2016-10-10
+*/
+
 class yingClassAction extends ActionNot{
 	
 	public function initAction()
@@ -19,11 +27,21 @@ class yingClassAction extends ActionNot{
 		$yyurljs 	= ''.P.'/we/ying/yingyong/'.$num.'.js';
 		if(!file_exists($yyurljs))$yyurljs='';
 		$this->assign('arr', $rs);
+		$this->assign('num', $num);
 		$this->assign('openfrom', $this->get('openfrom'));
 		$this->assign('yyurl', $yyurl);
 		$this->assign('yyurljs', $yyurljs);
 		$gid 	= $rs['id'];
 		$reim->setallyd('agent', $this->adminid, $gid);
+		
+		
+		$clasne 	= 'ying_'.$num.'Class';
+		$classpath  = ''.P.'/we/ying/yingyong/'.$clasne.'.php';
+		if(file_exists($classpath)){
+			include_once($classpath);
+			$yingobj = new $clasne();
+			$yingobj->initYing($this);
+		}
 		
 		//以下是新版应用页面，不想用可以删掉
 		//if($rs['url']=='auto' || $yyurl=='')$this->displayfile = ''.P.'/we/agent/tpl_agent.html';

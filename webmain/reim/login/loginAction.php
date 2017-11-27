@@ -9,4 +9,5 @@ class loginClassAction extends ActionNot
 		}
 		$this->title = getconfig('reimtitle','REIM');
 	}
+	
 }

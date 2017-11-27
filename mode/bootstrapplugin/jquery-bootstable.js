@@ -393,6 +393,7 @@
 			das.keywhere=jm.encrypt(das.keywhere.replace(/\'/g, '[F]'));
 			das.where = jm.encrypt(das.where.replace(/\'/g, '[F]'));
 			das.start = can.pageSize*(p-1);
+			das.page  = p;
 			das.limit = can.pageSize;
 			if(!can.fanye)das.limit = can.limit;
 			das		  = js.apply(das, can.params);

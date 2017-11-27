@@ -6,7 +6,7 @@ $(document).ready(function(){
 	
 
 	var a = $('#view_{rand}').bootstable({
-		tablename:'knowledge',celleditor:true,autoLoad:false,modenum:'knowledge',
+		tablename:'knowledge',celleditor:true,autoLoad:false,modenum:'knowledge',fanye:true,
 		columns:[{
 			text:'标题',dataIndex:'title',editor:false,align:'left'
 		},{

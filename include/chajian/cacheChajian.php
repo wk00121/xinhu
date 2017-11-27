@@ -12,7 +12,7 @@ class cacheChajian extends Chajian{
 	*/
 	public function set($key, $data, $time=0)
 	{
-		if(isempt($data))return $this->del($key);
+		$this->del($key); //删除原来的
 		$sarr['key']  = $this->getkey($key);
 		$sarr['data'] = $data;
 		if($time>0){
@@ -21,8 +21,9 @@ class cacheChajian extends Chajian{
 			$time = 0;
 		}
 		$sarr['time'] = $time;
+		if($time>0)$sarr['timedt'] = date('Y-m-d H:i:s', $time);
 		$sarr['url']  = $this->rock->nowurl();
-		return $this->rock->createtxt($this->getpath($key), json_encode($sarr));
+		return $this->rock->createtxt($this->getpath($key, $time), json_encode($sarr));
 	}
 	
 	private function getkey($key)
@@ -30,10 +31,28 @@ class cacheChajian extends Chajian{
 		return ''.QOM.''.$key.'';
 	}
 	
-	private function getpath($key)
+	private function getpath($key, $time=0)
 	{
 		$key = $this->getkey($key);
-		return ''.UPDIR.'/cache/'.md5($key).'.cache';
+		$ske = '';
+		if($time>0)$ske='_'.$time.'';
+		return ''.UPDIR.'/cache/'.md5($key).''.$ske.'';
+	}
+	
+	//获取文件名
+	private function getpaths($key)
+	{
+		$key = $this->getkey($key);
+		$file= ''.UPDIR.'/cache/'.md5($key).'';
+		$bar = glob(''.$file.'*');
+		foreach($bar as $k=>$fil1){
+			if($k==0){
+				$file = $fil1;
+			}else{
+				unlink($fil1);
+			}
+		}
+		return $file;
 	}
 	
 	/**
@@ -41,18 +60,19 @@ class cacheChajian extends Chajian{
 	*/
 	public function get($key, $dev='')
 	{
-		$file= $this->getpath($key);
+		$file= $this->getpaths($key);
 		$data= $dev;
 		if(file_exists($file)){
-			$cont = file_get_contents($file);
-			if(!isempt($cont)){
-				$sarr = json_decode($cont, true);
-				$time = (int)arrvalue($sarr, 'time',0);
-				if($time==0 || $time>=time()){
+			$filea= explode('_', $file);
+			$time = (int)arrvalue($filea, count($filea)-1,'0');
+			if($time==0 || $time>=time()){
+				$cont = file_get_contents($file);
+				if(!isempt($cont)){
+					$sarr = json_decode($cont, true);
 					$data = arrvalue($sarr, 'data');
-				}else{
-					$this->del($key); //已经过期了
 				}
+			}else{
+				unlink($file); //已经过期了
 			}
 		}
 		return $data;
@@ -63,8 +83,19 @@ class cacheChajian extends Chajian{
 	*/
 	public function del($key)
 	{
-		$file= $this->getpath($key);
+		$file= $this->getpaths($key);
 		if(file_exists($file))@unlink($file);
 		return true;
+	}
+	
+	/**
+	*	删除所有缓存
+	*/
+	public function delall()
+	{
+		$bar = glob(''.UPDIR.'/cache/*');
+		foreach($bar as $k=>$fil1){
+			unlink($fil1);
+		}
 	}
 }                               

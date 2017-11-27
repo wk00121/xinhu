@@ -57,6 +57,7 @@ class indexClassAction extends Action{
 		$itemsarr		= m('homeitems')->getitemsdata($this->get('nums'));
 		foreach($itemsarr as $k=>$v)$arr[$k] = $v;
 		
+		$arr['notodo']	= $this->option->getval('gerennotodo_'.$uid.'');
 		
 		return $arr;
 	}

@@ -123,6 +123,7 @@ var myScroll=false,yy={
 		this.settitle(tit);
 	},
 	clickmenu:function(oi,o1){
+		if(o1.className.indexOf('disabled')>0)return;
 		var sid='menushoess_'+oi+'';
 		if(get(sid)){
 			$('#'+sid+'').remove();

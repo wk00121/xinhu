@@ -89,4 +89,16 @@ class indexClassAction extends apiAction
 		m('admin')->update("`apptx`='$apptx'", $this->adminid);
 		$this->showreturn('');
 	}
+	
+	
+	public function checkewmAction()
+	{
+		$randkey = $this->get('randkey');
+		$lx 	 = (int)$this->get('lx');
+		$val 	 = $this->adminid;
+		$lxarr 	 = array('已取消','已确认');
+		if($lx==0)$val='-1';
+		$this->option->setval($randkey, $val);
+		$this->showreturn($lxarr[$lx]);
+	}
 }

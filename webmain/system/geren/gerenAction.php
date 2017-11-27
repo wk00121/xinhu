@@ -1,6 +1,21 @@
 <?php
 class gerenClassAction extends Action
 {
+	public function getinitAjax()
+	{
+		$uid = $this->adminid;
+		
+		return array(
+			'gerentodo' => $this->option->getval('gerennotodo_'.$uid.'')
+		);
+	}
+	
+	public function cogsaveAjax()
+	{
+		$uid = $this->adminid;
+		$this->option->setval('gerennotodo_'.$uid.'', $this->get('gerentodo','0'));
+	}
+	
 	public function filebefore($table)
 	{
 		$key	= $this->post('key');

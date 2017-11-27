@@ -108,4 +108,38 @@ class loginClassAction extends apiAction
 		$barr['title'] 	= getconfig('reimtitle','REIM');
 		$this->showreturn($barr);
 	}
+	
+	//获取二维码
+	public function getewmAction()
+	{
+		$randkey = $this->get('randkey');
+		$this->option->setval($randkey, '');
+		header("Content-type:image/png");
+		$url = ''.URL.'?m=logn&d=we&randkey='.$randkey.'';
+		$img = c('qrcode')->show($url);
+		echo $img;
+	}
+	public function checkewmAction()
+	{
+		$randkey 		= $this->get('randkey');
+		$val 	 		= $this->option->getval($randkey);
+		
+		$data['val'] 	= $val;
+		if(isempt($randkey))$this->showreturn($data);
+		if($val>'0'){
+			$dbs 		= m('admin');
+			$urs 		= $dbs->getone("`id`='$val' and `status`=1",'`name`,`user`,`face`,`pass`');
+			if(!$urs){
+				$val = '-1';
+			}else{
+				$data['user'] = $urs['user'];
+				$data['face'] = $dbs->getface($urs['face']);
+				$data['pass'] = md5($urs['pass']);
+			}
+			$this->option->delete("`num`='$randkey'");
+		}
+		$data['val'] 	= $val;
+		$this->showreturn($data);
+	}
+	
 }
