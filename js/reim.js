@@ -490,7 +490,7 @@ var reim = {
 		len=this.maindata.uarr.length;
 		for(i=0;i<len;i++){
 			a=this.maindata.uarr[i];
-			if(pid==a.deptid){
+			if(pid==a.deptid || a.deptidss.indexOf(','+pid+',')>-1){
 				cls='online';if(a.online==1)cls='online';
 				s='<div uid="'+a.id+'" class="'+cls+'" style="padding-left:'+(xu*20+10)+'px" onclick="reim.openuserzl('+a.id+')">';
 				s+='	<img src="'+a.face+'" align="absmiddle"> '+a.name+' <font color="#888888">('+a.ranking+')<font>';

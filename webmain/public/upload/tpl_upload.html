@@ -203,7 +203,7 @@ var up={
 			$('#bilishow').html(per);
 		}, false);  
 		xhr.addEventListener("load", function(){
-			up.upsuccess(this.response);
+			up.upsuccess(this.response, this.status);
 		}, false);  
 		xhr.addEventListener("error", function(){
 			$('#'+up.updengid+'').html('<font color=red>上传失败0</font>');
@@ -212,15 +212,21 @@ var up={
 		fd.append('file', this.suarr.fileobj); 
 		xhr.send(fd);
 	},
-	upsuccess:function(bstr){
-		$('#'+up.updengid+'').html('<font color=green>上传成功</font>');
-		var result	= js.decode(bstr);
+	upsuccess:function(bstr, code){
 		var arr 	= this.suarr;
-		if(result.id){
-			up.wcarr.push({id:result.id,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,filepath:result.filepath,thumbpath:result.thumbpath,width:result.width,height:result.height});
+		var o1s		= $('#'+up.updengid+'');
+		if(code!=200){
+			o1s.html('<font color=red>失败:'+code+'</font>');
+			js.msg('msg', bstr, 0);
 		}else{
-			$('#'+up.updengid+'').html('<font color=red>上传失败1,保存失败</font>');
-			js.msg('msg',result.msg);
+			o1s.html('<font color=green>上传成功</font>');
+			var result	= js.decode(bstr);
+			if(result.id){
+				up.wcarr.push({id:result.id,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,filepath:result.filepath,thumbpath:result.thumbpath,width:result.width,height:result.height});
+			}else{
+				o1s.html('<font color=red>上传失败1,保存失败</font>');
+				js.msg('msg',result.msg, 0);
+			}
 		}
 		setTimeout('up.start('+(arr.xuoi+1)+')',5);
 	},

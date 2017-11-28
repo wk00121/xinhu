@@ -151,7 +151,7 @@ class wordClassModel extends Model
 		$sarr	= array(
 			'where' => $where,
 			'table' => '`[Q]word` a left join `[Q]file` b on a.fileid=b.id',
-			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.fileext,b.filepath,b.downci',
+			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.fileext,b.filepath,b.thumbpath,b.downci',
 			'order' => 'a.`type` desc,a.`sort`,a.id desc'
 		);
 		
@@ -172,6 +172,7 @@ class wordClassModel extends Model
 				
 			}else{
 				if(isempt($rs['name']))$rs['name'] = $rs['filename'];
+				if(!isempt($rs['thumbpath']) && !file_exists($rs['thumbpath']))$rs['thumbpath']='';
 			}
 		}
 		if($lx==0){

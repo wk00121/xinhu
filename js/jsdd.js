@@ -18,7 +18,7 @@ js.jssdkdingding = function(qxlist,afe){
 	});
 	if(!afe)return;
 	var surl= location.href;
-	if(!qxlist)qxlist= ['runtime.info','biz.chat.open','biz.util.open','biz.user.get','biz.contact.choose','biz.telephone.call','biz.ding.post'];
+	if(!qxlist)qxlist= ['runtime.info','device.geolocation.get','biz.util.open','biz.user.get','biz.contact.choose','biz.telephone.call','biz.ding.post'];
 	var agentid=js.request('agentid');
 	$.getJSON('api.php?m=login&a=ddsign&url='+jm.base64encode(surl)+'&agentid='+agentid+'',function(ret){
 		ret = ret.data;//js.getarr(ret);

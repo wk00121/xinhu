@@ -421,10 +421,30 @@ abstract class mysql{
 		}else{
 			return false;
 		}
-	}	
+	}
+	
+	/**
+	*	开启事务
+	*/
+	public function routinestart()
+	{
+		$this->starttran();
+	}
+	
+	/**
+	*	提交/回滚事务
+	*	$bo=null 自动 true 提交,false 回滚
+	*/
+	public function routineend($bo=null)
+	{
+		if(!is_bool($bo))$bo = $this->backsql();
+		$this->endtran($bo);
+		return $bo;
+	}
+	
 
 	/**
-	*	启用事务
+	*	启用事务，没有事务
 	*/	
 	private function tranbegin($sql)
 	{
@@ -432,8 +452,8 @@ abstract class mysql{
 		if($this->conn == null)$this->connect();
 		$this->iudcount++;
 		if(!$this->tran){
-			$this->starttran();
-			$this->tran=true;
+			//$this->starttran();
+			//$this->tran=true;
 		}
 		$rsa	= $this->query($sql);
 		$this->iudarr[]=$rsa;
@@ -447,7 +467,7 @@ abstract class mysql{
 	private function tranend()
 	{
 		if($this->tran){
-			$this->endtran($this->backsql());
+			//$this->endtran($this->backsql());
 		}
 		$this->tran=false;
 	}

@@ -75,6 +75,7 @@ var nwjs={
 	removetray:function(){
 		if(!this.nw)return;
 		this.tray.remove();
+		this.win.removeAllListeners('close');
 		if(this.shortcut)nwjsgui.App.unregisterGlobalHotKey(this.shortcut);
 		this.closeserver();
 		this.tray = false;
@@ -167,6 +168,7 @@ var nwjs={
 		if(!this.server)return;
 		if(this.socketobj)this.socketobj.destroy();
 		this.server.close();
+		this.server=false;
 	},
 	socketobj:false,
 	udpserver:function(funarr){

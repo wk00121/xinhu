@@ -32,7 +32,8 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:'word',celleditor:true,autoLoad:false,checked:true,url:publicmodeurl('worc','getfiledata'),fanye:true,
 		columns:[{
-			text:'',dataIndex:'fileext',renderer:function(v){
+			text:'',dataIndex:'fileext',renderer:function(v,d){
+				if(!isempt(d.thumbpath))return '<img src="'+d.thumbpath+'" width="24" height="24">';
 				if(v!='folder'){
 					var lxs = js.filelxext(v);
 					return '<img src="web/images/fileicons/'+lxs+'.gif">';

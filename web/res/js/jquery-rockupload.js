@@ -213,8 +213,8 @@
 		};
 		this._onsuccess=function(o){
 			this.upbool = false;
-			var bstr 	= o.response;
-			if(bstr.indexOf('id')<0){
+			var bstr 	= o.response; 
+			if(bstr.indexOf('id')<0 || o.status!=200){
 				this._error(bstr);
 			}else{
 				this.onsuccessa(this.filearr,bstr,o);

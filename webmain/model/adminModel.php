@@ -382,7 +382,7 @@ class adminClassModel extends Model
 			$where1 = $this->gjoin($range, '', 'where');
 			$where1 = 'and ('.$where1.')';
 		}
-		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`';
+		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`,`deptids`';
 		//读取我可查看权限
 		$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
 		$py   = c('pingyin');
@@ -393,6 +393,9 @@ class adminClassModel extends Model
 					$rows[$k]['pingyin'] = $rs['pingyin'] = $py->get($rs['name'],1);
 				}
 			}
+			$deptidss = ','.$rs['deptid'].',';
+			if(!isempt($rs['deptids']))$deptidss.=''.$rs['deptids'].',';
+			$rows[$k]['deptidss'] = $deptidss;
 			foreach($rs as $k1=>$v1)if($v1==null)$rows[$k][$k1]='';
 		}
 		return $rows;

@@ -6,7 +6,8 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:'word',url:publicmodeurl('worc','getfiledata'),fanye:true,params:{'atype':'shateall'},
 		columns:[{
-			text:'类型',dataIndex:'fileext',renderer:function(v){
+			text:'类型',dataIndex:'fileext',renderer:function(v, d){
+				if(!isempt(d.thumbpath))return '<img src="'+d.thumbpath+'" width="24" height="24">';
 				var lxs = js.filelxext(v);
 				return '<img src="web/images/fileicons/'+lxs+'.gif">';
 			}

@@ -10,16 +10,30 @@
 <link rel="shortcut icon" href="favicon.ico" />
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
+<script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
+<?php
+if($web=='ding')echo '<script type="text/javascript" src="js/jsdd.js?'.time().'"></script>';
+?>
 <style>
 body,html{overflow:hidden}
 .hd{padding:2em 0; text-align:center;}
 .hd img{height:100px;width:100px;border-radius:50px}
 </style>
 <script>
-ismobile = 1;
+ismobile = 1,openbo=false;
+function initbody(){
+	//if(js.jssdkdingding)js.jssdkdingding(['biz.chat.chooseConversationByCorpId','biz.chat.openSingleChat','biz.chat.pickConversation']);
+}
+js.jssdkddcall=function(bo){
+	openbo = bo;
+}
 function gotochar(){
-	js.location('?m=chat&d=we&type=user&uid=<?=$arr['id']?>');
+	if(!openbo){
+		js.location('?m=chat&d=we&type=user&uid=<?=$arr['id']?>');
+	}else{
+		
+	}
 }
 function showface(o1){
 	$.imgview({url:o1.src,ismobile:true});
