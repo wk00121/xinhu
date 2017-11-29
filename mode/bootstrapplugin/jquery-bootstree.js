@@ -1,5 +1,9 @@
 /**
-	bootstree
+*	bootstable 表格树形插件
+*	caratename：雨中磐石(rainrock)
+*	caratetime：2014-04-06 21:40:00
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
 
 (function ($) {
@@ -185,7 +189,7 @@
 			this.bool = true;
 			var parm = can.params;
 			$.ajax({
-				type:'POST',url:can.url,
+				type:can.method,url:can.url,
 				data:parm,
 				success:function(da){
 					if(!get('treebody_'+rand+''))return;
@@ -251,7 +255,7 @@
 	
 	$.fn.bootstree	= function(options){
 		var defaultVal = {
-			data:[],rand:'',columns:[],hideHeaders:false,selectColor:'#DFF0D8',
+			data:[],rand:'',columns:[],hideHeaders:false,selectColor:'#DFF0D8',method:'GET',
 			itemdblclick:function(){},checked:false,autoLoad:true,url:'',params:{},
 			itemclick:function(da, index, e){},load:function(){}
 		};

@@ -1,6 +1,11 @@
 /**
-	bootsform
+*	bootstable 表单录入插件
+*	caratename：雨中磐石(rainrock)
+*	caratetime：2014-04-06 21:40:00
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
+
 
 (function ($) {
 	

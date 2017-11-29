@@ -1,9 +1,9 @@
 /**
 *	bootstable 表格插件
-*	caratename：chenxihu
+*	caratename：雨中磐石(rainrock)
 *	caratetime：2014-04-06 21:40:00
-*	email:qqqq2900@126.com
-*	homepage:www.xh829.com
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
 
 (function ($) {
@@ -407,7 +407,7 @@
 			can.beforeload();
 			this.bool = true;
 			$.ajax({
-				url:url,type:'POST',data:das,
+				url:url,type:can.method,data:das,
 				success:function(da){
 					if(!get('tablebody_'+rand+''))return;
 					var a = js.decode(da);
@@ -782,6 +782,7 @@
 			loadbefore:function(){}, //数据加载完成后但还没有渲染出来时触发
 			outsearch:function(){return  ''}, //外搜索条件
 			searchview:'',  //没用
+			method:'POST', //post请求
 			rendertr:function(){return  ''}, //少用
 			rowsbody:function(){return ''}, //少用
 			celldblclick:false //没用
