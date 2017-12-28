@@ -14,6 +14,7 @@ var c = {
 	typeid:0,
 	cqid:0,
 	ismanage:0,
+	uptype:'',
 	init:function(){
 		c.getfile(0,0);
 		c.upobj = $.rockupload({
@@ -65,12 +66,13 @@ var c = {
 		$('#wordlisttable').append(this.showlist(a));
 	},
 	up:function(){
-		c.upobj.click();
+		c.upobj.click({'uptype':this.uptype});
 	},
 	
 	//切换分区
 	changfenqu:function(fq){
 		$('#workheader span:gt(0)').remove();
+		this.uptype = $(fq.options[fq.selectedIndex]).attr('uptype');
 		this.getfile(0, fq.value);
 	},
 	disabedgl:function(lx){
@@ -289,9 +291,9 @@ yy.clickevent=function(d){
 }
 yy.initScroll=function(){}
 </script>
-<div><select id="cpselect" onchange="c.changfenqu(this)" style="width:100%;border:none;height:40px;font-size:16px;padding:5px"><option value="0">所有分区</option><?php
+<div><select id="cpselect" onchange="c.changfenqu(this)" style="width:100%;border:none;height:40px;font-size:16px;padding:5px"><option uptype="" value="0">所有分区</option><?php
 foreach($worcarr['rows'] as $k=>$rs){
-	echo '<option value="'.$rs['id'].'">'.$rs['name'].'</option>';
+	echo '<option uptype="'.$rs['uptype'].'" value="'.$rs['id'].'">'.$rs['name'].'</option>';
 }
 ?></select></div>
 <div class="workheader" id="workheader" style="line-height:50px; background-color:#ffffff;overflow:hidden;border-top:1px #dddddd solid"><span onclick="c.clickheadeer(0, this)">顶级目录&gt;</span></div>

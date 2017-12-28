@@ -194,6 +194,10 @@
 					s3 = a[i].renderstyle(val, ov, j);
 					if(!isempt(s3))sty+=''+s3+';';
 				}
+				if(typeof(a[i].renderattr)=='function'){
+					s3 = a[i].renderattr(val, ov, j);
+					if(!isempt(s3))attr+=' '+s3+'';
+				}
 				s+='<td align="'+a[i].align+'" '+attr+' style="'+sty+'" row="'+j+'" cell="'+i+'">'+s2+''+s1+'</td>';
 			}
 			s+='</tr>';

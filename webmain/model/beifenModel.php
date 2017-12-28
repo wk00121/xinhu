@@ -21,7 +21,8 @@ class beifenClassModel extends Model
 				'data'		=> $rows
 			);
 			$file	= ''.$tabs.'_'.count($fields).'_'.count($rows).'.json';
-			$str  	= $this->rock->jm->mcrypt_encrypt(json_encode($data));
+			//$str  	= $this->rock->jm->mcrypt_encrypt(json_encode($data));
+			$str  	= json_encode($data);
 			$this->rock->createtxt(''.$beidir.'/'.$file.'', $str);
 		}
 		/*

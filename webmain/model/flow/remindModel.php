@@ -120,8 +120,8 @@ class flow_remindClassModel extends flowModel
 	public function getremindtodo($startdt='', $enddt='')
 	{
 		if($startdt=='')$startdt = $this->rock->now;
-		$stime= strtotime($startdt);
-		if($enddt=='')$enddt	= date('Y-m-d H:i:s', $stime + 300); //默认是5分钟内提醒
+		$stime= strtotime($startdt)-10;
+		if($enddt=='')$enddt	= date('Y-m-d H:i:s', $stime + 310); //默认是5分钟内提醒
 		$dt	  = substr($startdt, 0, 10);
 		$rows = $this->getreminddt($startdt);
 		

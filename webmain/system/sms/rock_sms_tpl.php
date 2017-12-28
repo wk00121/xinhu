@@ -84,6 +84,9 @@ $(document).ready(function(){
 					js.msg('msg',ret.msg);
 				}
 			},'get,json');
+		},
+		reloadszt:function(){
+			this.getztss('');
 		}
 	};
 
@@ -102,7 +105,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="reloads"  type="button"><i class="icon-refresh"></i> 刷新</button>
 	</td>
 	<td align="right">
-		
+		<button class="btn btn-default" click="reloadszt"  type="button"><i class="icon-refresh"></i> 刷新状态/获取模版</button>&nbsp;
 		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
 	</td>

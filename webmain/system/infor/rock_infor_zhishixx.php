@@ -44,7 +44,10 @@ $(document).ready(function(){
 			text:'',dataIndex:'opt',renderer:function(v,d,oi){
 				return '<a href="javascript:;" onclick="openxiangs(\'知识\',\'knowledge\','+d.id+')">查看</a>';
 			}
-		}]
+		}],
+		itemdblclick:function(d){
+			openxiangs(d.title,'knowledge', d.id);
+		}
 	});
 
 

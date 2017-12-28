@@ -101,13 +101,16 @@ class Action extends mainAction
 	{
 		$where		= $this->request('where');
 		$keywhere	= $this->request('keywhere');
-		$where 		= $this->jm->uncrypt($this->rock->iconvsql($where));
-		$keywhere 	= $this->jm->uncrypt($this->rock->iconvsql($keywhere));
-		$where  	= $this->rock->covexec($where);
-		$keywhere  	= $this->rock->covexec($keywhere);
+		if(!isempt($where)){
+			$where 		= $this->jm->uncrypt($this->rock->iconvsql($where));
+			$where  	= $this->db->filterstr($this->rock->covexec($where));
+		}
+		if(!isempt($keywhere)){
+			$keywhere 	= $this->jm->uncrypt($this->rock->iconvsql($keywhere));
+			$keywhere  	= $this->db->filterstr($this->rock->covexec($keywhere));
+		}
 		
 		$wherea	  .= " $where $keywhere";
-		$wherea	   = $this->db->filterstr($wherea);
 		$order	   = $this->getOrder($order);
 		$group	   = '';
 		if(isset($arr['group']) && !isempt($arr['group']))$group="GROUP BY ".$arr['group']." ";

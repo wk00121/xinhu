@@ -1,17 +1,24 @@
 <?php
 class loginClassModel extends Model
 {
+	private $loginrand = '';
+	
 	public function initModel()
 	{
 		$this->settable('logintoken');
 	}
 	
-	public function start($user, $pass, $cfrom='', $device='')
+	public function setloginrand($rand)
+	{
+		$this->loginrand = $rand;
+	}
+	
+	public function start($user, $pass, $cfrom='', $devices='')
 	{
 		$uid   = 0; 
 		$cfrom = $this->rock->request('cfrom', $cfrom);
 		$token = $this->rock->request('token');
-		$device= $this->rock->request('device', $device);
+		$device= $this->rock->request('device', $devices);
 		$ip	   = $this->rock->request('ip', $this->rock->ip);
 		$web   = $this->rock->request('web', $this->rock->web);
 		$cfroar= explode(',', 'pc,reim,weixin,appandroid,appios,mweb');
@@ -101,6 +108,11 @@ class loginClassModel extends Model
 					$msg	= '';
 					$logins = '快捷登录';	
 				}
+			}
+			//其他时判断
+			if($this->loginrand != '' && $pass==$this->loginrand){
+				$msg	= '';
+				$logins = ''.$devices.'登录';
 			}
 		}
 		$name 	= $face = $ranking = $deptname	= '';

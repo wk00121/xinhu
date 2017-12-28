@@ -110,7 +110,7 @@ class goodsClassAction extends Action
 		}
 		
 		$table	= '`[Q]goodss` a left join `[Q]goods` b on a.aid=b.id left join `[Q]godepot` c on a.depotid=c.id';
-		$fields	= 'a.id,b.name,a.count,c.depotname,a.type,a.kind,a.status,a.optname,b.typeid,a.applydt,a.explain,a.mid';
+		$fields	= 'a.id,b.name,a.count,c.depotname,a.type,a.kind,a.status,a.optname,b.typeid,b.xinghao,b.guige,a.applydt,a.explain,a.mid';
 		return array(
 			'where' => $where,
 			'table' => $table,
@@ -124,6 +124,8 @@ class goodsClassAction extends Action
 			$typearr0= $this->option->getdata('kutype0');
 			$typearr1= $this->option->getdata('kutype1');
 			$tyeparr = array();
+			$tyeparr['a0_3'] = '调拨入库';
+			$tyeparr['a1_3'] = '调拨出库';
 			foreach($typearr0 as $k=>$rs)$tyeparr['a0_'.$rs['value'].''] = $rs['name'];
 			foreach($typearr1 as $k=>$rs)$tyeparr['a1_'.$rs['value'].''] = $rs['name'];
 			$statusar= array('<font color=blue>待审核</font>','<font color=green>已审核</font>','<font color=red>审核未通过</font>');
@@ -184,9 +186,12 @@ class goodsClassAction extends Action
 		
 		$ndbs			= m('goodn');
 		
+		$mtype 			= -1;
+		
 		//根据主表出入库操作
 		if($mid>0){
-			if(m('goodm')->rows("`id`='$mid' and `status`=1")==0)return '该单据还未审核完成，不能出入库操作';
+			$mrs 	= m('goodm')->getone("`id`='$mid' and `status`=1");
+			if(!$mrs)return '该单据还未审核完成，不能出入库操作';
 			//读取已入库数量
 			$arwos = $ndbs->getall('`mid`='.$mid.' and `couns`<`count`');
 			$ruks  = array();
@@ -197,11 +202,18 @@ class goodsClassAction extends Action
 					'couns' => floatval($rs1['couns'])
 				); 
 			}
+			$mtype = (int)$mrs['type']; //3就是调拨
 		}
+		
+		//调拨必须先出库原来的
+		
 		
 		foreach($sharr as $k=>$rs){
 			$arr['aid'] = $rs[0];
 			$count = (int)$rs[1];
+			$arr['depotid'] = $depotid;
+			$arr['type'] 	= $type;
+			$arr['explain'] = $sm;
 			
 			if($count<0)$count = 0-$count;
 			
@@ -225,6 +237,14 @@ class goodsClassAction extends Action
 			//更新已出入库的数量
 			if($mid>0 && $ussid){
 				$ndbs->update('`couns`=`couns`+'.$count.'', $shua['id']);
+			}
+			
+			if($mtype==3){
+				$arr['depotid'] = $mrs['custid']; //仓库
+				$arr['type'] 	= 1; //出库
+				$arr['count']	= 0 - $count;
+				//$arr['explain']	= '调拨出库';
+				$this->db->record('[Q]goodss', $arr);
 			}
 		}
 		if($aid!='0')m('goods')->setstock($aid);

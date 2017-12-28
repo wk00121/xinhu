@@ -22,15 +22,10 @@ $(document).ready(function(){
 		},{
 			text:'ID',dataIndex:'id'
 		},{
-			text:'',dataIndex:'opt',renderer:function(v,d,oi){
-				return '<a href="javascript:;" onclick="openxiangs(\'知识\',\'knowledge\','+d.id+')">查看</a>';
-			}
+			text:'',dataIndex:'caozuo'
 		}],
-		itemclick:function(){
-			get('del_{rand}').disabled=false;
-		},
-		beforeload:function(){
-			get('del_{rand}').disabled=true;
+		itemdblclick:function(d){
+			openxiangs(d.title,'knowledge', d.id);
 		}
 	});
 
@@ -46,7 +41,9 @@ $(document).ready(function(){
 			var s=get('key_{rand}').value;
 			a.setparams({key:s},true);
 		},
-		
+		daochu:function(){
+			a.exceldown();
+		},
 		mobj:a,
 		title:'知识分类',
 		stable:'knowledge',
@@ -89,7 +86,7 @@ $(document).ready(function(){
 			&nbsp;&nbsp;<span id="megss{rand}"></span>
 		</td>
 		<td align="right">
-			<button class="btn btn-danger" id="del_{rand}" disabled click="del" type="button"><i class="icon-trash"></i> 删除</button>
+			<button class="btn btn-default"  click="daochu" type="button">导出</button>
 		</td>
 	</tr></table>
 	</div>

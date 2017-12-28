@@ -12,7 +12,7 @@ class flow_gongClassModel extends flowModel
 		$cont 	= c('html')->replace($this->rs['content']);
 		$fm 	= $this->rs['fengmian'];
 		if(!isempt($fm) && file_exists($fm)){
-			$cont='<div align="center"><img style="max-width:500px" src="'.URL.''.$fm.'"></div>'.$cont.'';
+			$cont='<div align="center"><img style="max-width:100%" src="'.URL.''.$fm.'"></div>'.$cont.'';
 		}
 		$this->rs['content'] = $cont;
 	}
@@ -73,6 +73,14 @@ class flow_gongClassModel extends flowModel
 		$cont = $h->substrstr($cont,0, 50);
 		if(strlen($cont)>40)$cont.='...';
 		$this->push($this->rs['receid'], '通知公告', $cont, $this->rs['title'],1);
+		
+		//添加短信提醒
+		$receid = $this->rs['receid'];//接收人ID，可以为部门合聚，如d2,u1(必须)
+		$qiannum= ''; //【系统→短信管理→短信签名】下获取,如没有自己的签名默认【信呼OA】
+		$tplnum	= "default";//到【系统→短信管理→短信模版】下获取(必须)
+		$params = array();
+		$url	= "";//详情连接地址(选填)，短信模版有URL就需要填写
+		//$barr 	= c('xinhuapi')->sendsms($receid,$qiannum, $tplnum, $params, $url);
 	}
 	
 	protected function flowgetoptmenu($opt)

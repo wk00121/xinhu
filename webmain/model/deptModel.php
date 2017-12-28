@@ -66,7 +66,8 @@ class deptClassModel extends Model
 	{
 		$userarr 	= m('admin')->getuser(1);
 		$deptarr 	= $this->getdata($userarr);
-		$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
+		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
+		$grouparr	= m('group')->getall('id >0','id,name','`sort`');
 		
 		return array(
 			'uarr' => $userarr,

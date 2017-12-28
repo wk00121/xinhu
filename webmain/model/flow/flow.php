@@ -35,6 +35,9 @@ class flowModel extends Model
 	//当初始化单据调用
 	protected function flowchangedata(){}
 	
+	//当触发通知时处理
+	protected function flowchangetodo(){}
+	
 	//删除单据时调用，$sm删除说明
 	protected function flowdeletebill($sm){}
 	
@@ -1785,7 +1788,7 @@ class flowModel extends Model
 			'modenum'	=> $modenum,
 		));
 		$reim->pushagent($receid, $gname, $cont, $title, $url, $wxurl, $slx);
-		
+		$this->flowchangetodo($receid, $gname);
 		
 		if(isempt($title))$title = $modename;
 		//邮件提醒发送不发送全体人员的，太多了

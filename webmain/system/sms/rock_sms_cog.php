@@ -8,13 +8,16 @@ $(document).ready(function(){
 			var o = get('btnss{rand}');
 			o.value='加载中...';
 			js.ajax(js.getajaxurl('gettotal','{mode}','{dir}'),false,function(ret){
+				var curl = '<?=URLY?>user_index_sms_a.html';
 				if(ret.success){
 					$('#stotal{rand}').html(ret.data.smsinfo);
 					$('#typetext{rand}').html(ret.data.typetext);
-					//if(ret.data.type=='2')$('#tessh{rand}').show();
+					if(ret.data.automy=='1')$('#tessh{rand}').show();
+					curl = ret.data.chongurl;
 				}else{
 					js.msg('msg', ret.msg);
 				}
+				get('chong{rand}').href=curl;
 				get('sms_iscb_{rand}').value=ret.sms_iscb;
 				get('sms_cbnum_{rand}').value=ret.sms_cbnum;
 				get('sms_apikey_{rand}').value=ret.sms_apikey;
@@ -67,7 +70,7 @@ $(document).ready(function(){
 
 	<tr>
 		<td  align="right" width="180">剩余短信：</td>
-		<td class="tdinput"><span id="stotal{rand}">0.00元(0条)</span>，<a class="btn btn-success btn-xs" href="<?=URLY?>user_index_sms_a.html" target="_blank">去充值</a></td>
+		<td class="tdinput"><span id="stotal{rand}">0.00元(0条)</span>，<a id="chong{rand}" class="btn btn-success btn-xs" href="<?=URLY?>user_index_sms_a.html" target="_blank">去充值</a></td>
 	</tr>
 	
 	<tr>

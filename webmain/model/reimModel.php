@@ -284,7 +284,7 @@ class reimClassModel extends Model
 		$ugarr	= array();
 		foreach($urows as $k=>$rs)$ugarr[$rs['gid']] = $rs['utotal'];
 		
-		$rows 	= m('im_group')->getall("`id`>0 and ((`type` in(0,1) and `id` in($ids) ) ) order by `type`,`sort` ",'`id`,`type`,`name`,`face`,`sort`');
+		$rows 	= m('im_group')->getall("`id`>0 and ((`type` in(0,1) and `id` in($ids) ) ) order by `type`,`sort` ",'`id`,`type`,`name`,`face`,`sort`,`deptid`');
 		$facarr = array('images/group.png','images/group.png','images/system.png');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] 	= $this->getface($rs['face'], $facarr[$rs['type']]);

@@ -148,9 +148,9 @@ class htmlChajian extends Chajian{
 		
 		$s.='</body></html>';
 		
-		$mkdir 	= ''.UPDIR.'/'.date('Y-m').'';
+		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
 		
-		if(contain(strtolower(PHP_OS),'linux')){
+		if(!contain(strtolower(PHP_OS),'win')){
 			$title = c('pingyin')->get($title, 1);//linux要用拼音，不然会乱码
 		}
 		

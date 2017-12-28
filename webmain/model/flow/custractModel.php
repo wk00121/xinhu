@@ -58,7 +58,7 @@ class flow_custractClassModel extends flowModel
 		return array(
 			'where' => $where,
 			'order' => '`optdt` desc',
-			'orlikefields' => 'custname'
+			//'orlikefields' => 'custname'
 		);
 	}
 	

@@ -69,7 +69,7 @@ class flow_emailmClassModel extends flowModel
 	/**
 	*	读取原来邮件内容
 	*/
-	private function getoldcont($hid, $bo=true)
+	public function getoldcont($hid, $bo=true)
 	{
 		$hid = (int)$hid;
 		if($hid==0)return '';

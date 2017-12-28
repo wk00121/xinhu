@@ -18,6 +18,7 @@ xh xh   xhxhxhxhxh    xhxhxh       xh
 */
 
 var ismobile=0,firstrs={},alldata={},isxiang=0,
+	submitparams={},//要提交提交的参数
 	subdataminlen=[];//子表至少行数
 function initbodys(){};
 function savesuccess(){};
@@ -243,6 +244,7 @@ var c={
 			return false;
 		}
 		if(typeof(s)=='object')d=js.apply(d,s);
+		d = js.apply(d,submitparams);
 		d.sysmodeid=moders.id;
 		d.sysmodenum=moders.num;
 		return d;

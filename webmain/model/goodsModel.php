@@ -126,4 +126,20 @@ class goodsClassModel extends Model
 		$arows 	= m('customer')->getall('`status`=1 and `isgys`=1','id as value,name');
 		return $arows;
 	}
+	
+	/**
+	*	获取仓库下拉框
+	*/
+	public function godepotarr()
+	{
+		$depotarr = m('godepot')->getall('1=1','id,depotname as name,depotnum','`sort`');
+		$rows 		= array();
+		foreach($depotarr as $k=>$rs){
+			$rows[] = array(
+				'name' 	=> ''.$rs['depotnum'].'.'.$rs['name'].'',
+				'value' => $rs['id'],
+			);
+		}
+		return $rows;
+	}
 }

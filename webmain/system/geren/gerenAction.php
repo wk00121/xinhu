@@ -29,7 +29,18 @@ class gerenClassAction extends Action
 		}
 		return array(
 			'where' => $where,
-			'fields' => '`id`,fileext,filename,filesizecn,filepath,adddt,optname,downci,ip,web,mtype,mid',
+			'fields' => '`id`,fileext,filename,filesizecn,thumbpath,filepath,adddt,optname,downci,ip,web,mtype,mid',
+		);
+	}
+	public function fileafter($table, $rows)
+	{
+		foreach($rows as $k=>&$rs){
+			if(!isempt($rs['thumbpath'])){
+				if(!file_exists($rs['thumbpath']))$rs['thumbpath']='';
+			}
+		}
+		return array(
+			'rows' => $rows
 		);
 	}
 	

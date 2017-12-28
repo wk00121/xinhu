@@ -113,9 +113,10 @@ $(document).ready(function(){
 		},
 		uploadfile:function(){
 			if(isnotquan)return;
-			var na = at.changedata.name;
+			var na = at.changedata.name,upte=at.changedata.uptype;
 			if(!na)na='文件';
-			js.upload('_editfacech{rand}angback',{'title':'上传到'+na+'','params1':cqid});	
+			if(!upte)upte='';
+			js.upload('_editfacech{rand}angback',{'title':'上传到'+na+'','uptype':upte,'params1':cqid});	
 		},
 		openfenqu:function(id,nsd){
 			this.openfolder(0,id);

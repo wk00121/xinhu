@@ -57,9 +57,9 @@ class runtAction extends ActionNot
 	*/
 	public function getparams($key, $dev='')
 	{
-		$arr = $GLOBALS['argv'];
+		$arr = arrvalue($GLOBALS, 'argv');
 		$sss = '';
-		for($i=2;$i<count($arr);$i++){
+		if($arr)for($i=2;$i<count($arr);$i++){
 			$str = $arr[$i];
 			if(!isempt($str)){
 				$stra = explode('=', $str);

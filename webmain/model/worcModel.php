@@ -12,7 +12,7 @@ class worcClassModel extends Model
 		$dbs  = m('word');
 		$str  = $db->getjoinstr('receid', $uid, 1);
 		$utype= arrvalue($db->nowurs,'type','0');
-		$rows = $this->getall('1=1 and ('.$str.')','id,name,guanname,guanid','`sort`');
+		$rows = $this->getall('1=1 and ('.$str.')','id,name,guanname,guanid,uptype','`sort`');
 		$ids  = '';
 		foreach($rows as $k=>$rs){
 			$ids.=','.$rs['id'].'';
@@ -27,6 +27,8 @@ class worcClassModel extends Model
 			$wcount = $dbs->rows('`cid`='.$rs['id'].' and `type`=0');
 			
 			$rows[$k]['wcount'] = $wcount;
+			if(isempt($rs['uptype']))$rs['uptype'] = '';
+			$rows[$k]['uptype'] = $rs['uptype'];
 		}
 		if($ids!='')$ids = substr($ids, 1);
 		return array(

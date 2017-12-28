@@ -74,6 +74,8 @@ var reim = {
 			this.reload();
 		}
 		
+		if(this.timeloads==5)this.getonline();
+		
 		//如果服务端断开，用ajax连接
 		if(this.timeloads % 10==0){
 			this.loadredata();
@@ -257,7 +259,7 @@ var reim = {
 		var s = '<font color="green">已连接</font>';s='';
 		if(lx==0)s='<font color="red">未连接</font>'
 		if(lx==2)s='<font color="#ff6600">在别处连接</font>'
-		if(lx==3)s='<font color="blue">没服务端</font>'
+		if(lx==3)s='<font color="blue">没服务端</font>';
 		$('#reim_statusserver').html(s);
 	},
 	relianshotime:function(oi){
@@ -276,6 +278,12 @@ var reim = {
 		websocketobj.send(a);
 		return true;
 	},
+	
+	//获取在线人员
+	getonline:function(){
+		this.serversend({'atype':'getonline'});
+	},
+	
 	//加载数据
 	loadhistory:function(){
 		this.loaddata('history');
@@ -350,7 +358,7 @@ var reim = {
 	},
 	showhistorys:function(d,pad){
 		if(!d)return;
-		var s,ty,o=$('#historylist'),d1,st,attr,stst,cont;
+		var s,ty,o=$('#historylist'),d1,st,attr,stst,cont,cls,nastr;
 		ty	= d.type;
 		if(ty=='user')d1=this.userarr[d.receid];
 		if(ty=='group')d1=this.grouparr[d.receid];
@@ -368,20 +376,46 @@ var reim = {
 		st	 = d.stotal;if(st=='0')st='';
 		stotal+=parseFloat(d.stotal);
 		stst = '';
+		cls  = '';
+		nastr= d.name;
 		if(d.type=='user'){
 			stst='uid="'+d.receid+'"';
-			if(d.online==0)stst+=' class="offline"';
+			if(d1.online=='0')cls=' offline';
 		}
-		s	= '<div '+attr+' class="lists" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
+		if(d.type=='group' && d1){
+			if(d1.deptid=='1')nastr+=' <span class="reimlabel">全员</span>';
+			if(d1.deptid>'1')nastr+=' <span class="reimlabel1">部门</span>';
+		}
+		s	= '<div '+attr+' '+stst+' class="lists'+cls+'" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
 		s+='<table cellpadding="0" border="0" width="100%"><tr>';
-		s+='<td style="padding-right:8px"><div '+stst+' style="height:34px;overflow:hidden"><img src="'+d.face+'"></div></td>';
-		s+='<td align="left" width="100%"><div class="name">'+d.name+'</div><div class="huicont">'+cont+'</div></td>';
+		s+='<td style="padding-right:8px"><div style="height:34px;overflow:hidden"><img src="'+d.face+'"></div></td>';
+		s+='<td align="left" width="100%"><div class="name">'+nastr+'</div><div class="huicont">'+cont+'</div></td>';
 		s+='<td align="center" nowrap><span id="chatstotal_'+num+'" class="badge red">'+d.stotal+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
 		s+='</tr></table>';
 		s+='</div>';
 		if(!pad){o.append(s);}else{o.prepend(s)}
 		$('#historylist_tems').hide();
 		this.showbadge('chat');
+	},
+	
+	//在线离线设置
+	setonline:function(online){
+		$('div[uid]').addClass('offline');
+		var onlies = online.split(','),i,uid;
+		for(i=0;i<onlies.length;i++){
+			uid=onlies[i];
+			this.setonlines(uid, 1);
+		}
+	},
+	setonlines:function(uid, on){
+		var d = this.userarr[uid];
+		if(on==1){
+			$('div[uid='+uid+']').removeClass('offline');
+		}else{
+			$('div[uid='+uid+']').addClass('offline');
+		}
+		this.userarr[uid].online = on;
+		this.maindata.uarr[d.i].online = on;
 	},
 	
 	historyright:function(o1,e){
@@ -474,7 +508,10 @@ var reim = {
 		o.html('');
 		for(i=0;i<len;i++){
 			d 	= a[i];
-			s	= '<div style="padding-left:10px" id="group_'+d.id+'" onclick="reim.opengroup('+d.id+')"><img src="'+d.face+'" align="absmiddle">'+d.name+'</div>';
+			s	= '<div style="padding-left:10px" id="group_'+d.id+'" onclick="reim.opengroup('+d.id+')"><img src="'+d.face+'" align="absmiddle">'+d.name+'';
+			if(d.deptid=='1')s+=' <span class="reimlabel">全员</span>';
+			if(d.deptid>'1')s+=' <span class="reimlabel1">部门</span>';
+			s	+='</div>';
 			this.grouparr[d.id] = d;
 			o.append(s);
 		}
@@ -491,7 +528,7 @@ var reim = {
 		for(i=0;i<len;i++){
 			a=this.maindata.uarr[i];
 			if(pid==a.deptid || a.deptidss.indexOf(','+pid+',')>-1){
-				cls='online';if(a.online==1)cls='online';
+				cls='offline';if(a.online==1)cls='';
 				s='<div uid="'+a.id+'" class="'+cls+'" style="padding-left:'+(xu*20+10)+'px" onclick="reim.openuserzl('+a.id+')">';
 				s+='	<img src="'+a.face+'" align="absmiddle"> '+a.name+' <font color="#888888">('+a.ranking+')<font>';
 				s+='</div>';
@@ -522,6 +559,8 @@ var reim = {
 		for(i=0;i<len;i++){
 			d 	= a[i];
 			d.i = i;
+			d.online=0;
+			this.maindata.uarr[i] = d;
 			this.userarr[d.id] = d;
 		}
 	},
@@ -687,6 +726,10 @@ var reim = {
 			this.otherlogins();
 			return;
 		}
+		if(lx=='getonline'){
+			this.setonline(d.online);
+			return;
+		}
 		var a 	= this.userarr[sendid];
 		if(a){
 			d.sendname=a.name;
@@ -706,13 +749,14 @@ var reim = {
 				}
 				face= garr.face;
 			}
-			
+			this.setonlines(sendid,1);//说明是在线的
+			var title = document.title+'消息';
 			if(ops){
 				ops.focus();
 			}else{
 				if(lx == 'user'){
 					msg = '人员['+d.sendname+']，发来一条信息';
-					notifyobj.showpopup(msg,{icon:d.face,sendid:sendid,title:'REIM消息',rand:num,click:function(b){
+					notifyobj.showpopup(msg,{icon:d.face,sendid:sendid,title:title,rand:num,click:function(b){
 						reim.openuser(b.sendid);
 						return true;
 					}});
@@ -721,7 +765,7 @@ var reim = {
 					if(!d.gname)d.gname = d.name;
 					msg = '人员['+d.sendname+']，发来一条信息，来自['+d.gname+']';
 					if(d.form=='ajax')d.sendname='';
-					notifyobj.showpopup(msg,{icon:garr.face,gid:gid,title:'REIM消息',rand:num,click:function(b){
+					notifyobj.showpopup(msg,{icon:garr.face,gid:gid,title:title,rand:num,click:function(b){
 						reim.opengroup(b.gid);
 						return true;
 					}});

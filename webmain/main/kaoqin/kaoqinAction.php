@@ -727,4 +727,32 @@ class kaoqinClassAction extends Action
 		$barr	= m('flow:leave')->autoaddleave();
 		return '共添加'.count($barr).'人';
 	}
+	
+	
+	//剩余假期统计
+	public function kqtotalafterjiashow($table, $rows)
+	{
+		$zta 	= m('flow:userinfo');
+		$dt 	= $this->post('month');
+		$kqkind	= $this->option->getmnum('kqkind');
+		$kq 	= m('kaoqin');
+		
+		foreach($rows as $k=>$rs){
+			if($rs['state']==5)$rows[$k]['ishui']=1;
+			$rows[$k]['state'] = $zta->getuserstate($rs['state']);
+	
+			foreach($kqkind as $k1=>$rs1){
+				$tosss = $kq->getqjsytime($rs['id'], str_replace('增加','', $rs1['name']), $dt);
+				if($tosss==0)$tosss='';
+				$rows[$k]['total'.$k1.''] = $tosss;
+			}
+			$tosss = $kq->getqjsytime($rs['id'], '调休', $dt);
+			if($tosss==0)$tosss='';
+			$rows[$k]['tiaoxiu'] = $tosss;
+		}
+		return array(
+			'rows'=> $rows,
+			'kqkind'=> $kqkind,
+		);
+	}
 }

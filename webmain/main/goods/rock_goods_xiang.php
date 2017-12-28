@@ -23,6 +23,10 @@ $(document).ready(function(){
 		columns:[{
 			text:'名称',dataIndex:'name',align:'left'
 		},{
+			text:'规格',dataIndex:'guige'
+		},{
+			text:'型号',dataIndex:'xinghao'
+		},{
 			text:'分类',dataIndex:'typeid',align:'left'
 		},{
 			text:'类型',dataIndex:'kind',sortable:true

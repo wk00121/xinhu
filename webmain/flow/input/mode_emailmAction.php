@@ -19,6 +19,14 @@ class mode_emailmClassAction extends inputAction{
 			$urs = m('admin')->getone($this->adminid, 'id,name,email');
 			$barr['sendname'] = ''.$urs['name'].'('.$urs['email'].')';
 		}
+		
+		//回复的ID
+		$huiid = $this->post('huiid');
+		if(!isempt($huiid)){
+			$barr['hid'] = $huiid;
+			m('emails')->update('ishui=1','`mid`='.$huiid.' and `uid`='.$this->adminid.' and `type`=0');//更新已回复
+		}
+		
 		return array('rows'=>$barr);
 	}
 	
@@ -104,9 +112,42 @@ class mode_emailmClassAction extends inputAction{
 	public function getzfcontAjax()
 	{
 		$zfid 	= (int)$this->get('zfid');
-		$rs 	= m('emailm')->getone($zfid,'title,content');
-		$zffes	= m('file')->copyfile('emailm', $zfid); //转发附件
-		$rs['filers'] = $zffes;
+		$zflx 	= (int)$this->get('zflx');
+		$rs 	= m('emailm')->getone($zfid,'title,content,type,sendid,sendname,fromemail,id');
+		if($zflx==0){
+			$zffes	= m('file')->copyfile('emailm', $zfid); //转发附件
+			$rs['filers'] = $zffes;
+		}else{
+			//外发时读取
+			if($rs['type']==1){
+				$rs['sendid'] 	= '';
+				$rs['sendname'] = '';
+				$rsem = m('emails')->getone("`mid`='$zfid' and `type`=2");
+				if($rsem){
+					$toemail 	= $rsem['email'];
+					$toname 	= $rsem['personal'];
+					//加入到个人通讯录上
+					$rse = m('vcard')->getone("`uid`='$this->adminid' and `email`='$toemail'");
+					if(!$rse){
+						$toid = m('vcard')->insert(array(
+							'name' => $toname,
+							'uid' => $this->adminid,
+							'email' => $toemail,
+							'gname' => '未分组',
+							'optdt' => $this->now,
+						));
+					}else{
+						$toid = $rse['id'];
+					}
+					$rs['sendid'] = $toid;
+					$rs['sendname'] = $toname.'('.$toemail.')';
+				}
+				
+				$flow = m('flow')->initflow('emailm');
+				$rs['content']  = '<br><br><br>'.$flow->getoldcont($zfid, false);
+			}
+		}
+		$rs['zflx'] = $zflx;
 		$this->returnjson($rs);
 	}
 }	

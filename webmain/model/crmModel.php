@@ -69,9 +69,12 @@ class crmClassModel extends Model
 		return $moneys;
 	}
 	
+	/**
+	*	对应人统计金额
+	*/
 	public function moneytotal($uid, $month)
 	{
-		$sql 	= "SELECT uid,type,ispay,sum(money)money,count(1)stotal FROM `[Q]custfina` where `createid`='$uid' and `dt` like '$month%' GROUP BY type,ispay";
+		$sql 	= "SELECT uid,type,ispay,sum(money)money,count(1)stotal FROM `[Q]custfina` where `uid`='$uid' and `dt` like '$month%' GROUP BY type,ispay";
 		$farr	= explode(',', 'shou_moneyd,shou_moneyz,shou_moneys,shou_moneyn,shou_shu,fu_moneyd,fu_moneyz,fu_moneys,fu_moneyn,fu_shu');
 		foreach($farr as $f)$$f= 0;
 		$rows 	= $this->db->getall($sql);
@@ -98,7 +101,7 @@ class crmClassModel extends Model
 			}
 		}
 		//当月已收付
-		$sql = "SELECT type,sum(money)money FROM `[Q]custfina` where `createid`='$uid' and ispay=1 and paydt like '$month%' GROUP BY type";
+		$sql = "SELECT type,sum(money)money FROM `[Q]custfina` where `uid`='$uid' and `ispay`=1 and `paydt` like '$month%' GROUP BY type";
 		$rows 	= $this->db->getall($sql);
 		foreach($rows as $k=>$rs){
 			if($rs['type']==0)$shou_moneyn = $rs['money']+0;

@@ -1,4 +1,5 @@
 /**
+*	网址：www.rockoa.com
 *	异步url使用
 */
 
@@ -28,14 +29,17 @@ var queue = {
 	addqueuearr:[],
 	yunoi:0,
 	maxxu:10, //每次最多运行进程
+	yunshu:0,
 	start:function(){
 		setInterval('queue.starts()', 1000);
 	},
 	starts:function(){
+		if(this.yunshu>0)return;//有任务在运行
 		var i,len = this.addqueuearr.length,oi=0;
 		for(i=this.yunoi;i<len;i++){
 			if(oi>=this.maxxu)break;
 			oi++;
+			this.yunshu++;
 			this.runqueue(i);
 		}
 		this.yunoi += oi; 
@@ -69,7 +73,27 @@ var queue = {
 			}else{
 				if(da.error)da.error(str, da, i);
 			}
+			queue.yunshu--;
 			queue.addqueuearr[i]=false;
 		};
+	},
+	//发送一组地址:
+	addlist:function(darr,funb, lxs){
+		var oi=0,zong=darr.length,i,bers;
+		if(!lxs)lxs='处理';
+		if(!funb)funb=function(){};
+		if(zong>0)js.msg('success',''+lxs+'中(<span id="chulsss">0%</span>)...',0);
+		for(i=0;i<zong;i++){
+			bers = function(str){
+				oi++;
+				var bili = (oi/zong)*100;
+				$('#chulsss').html(''+bili+'%');
+				if(bili==100){
+					js.msg('success',''+lxs+'完成');
+					funb();
+				}
+			};
+			queue.add({url:darr[i],success:bers,error:bers});
+		}
 	}
 }

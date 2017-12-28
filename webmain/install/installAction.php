@@ -109,7 +109,7 @@ class installClassAction extends ActionNot{
 if(!defined('HOST'))die('not access');
 //系统配置文件		
 return array(
-	'url'		=> '$url',		//系统URL
+	'url'		=> '',		//系统URL
 	'localurl'	=> '',			//本地系统URL，用于服务器上浏览地址
 	'title'		=> '$title',	//系统默认标题
 	'apptitle'	=> '信呼OA',			//APP上或PC客户端上的标题

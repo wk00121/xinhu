@@ -9,13 +9,30 @@ function initbodys(){
 	}
 	//读取转发邮件的内容
 	var zfid = js.request('zfid');
+	var zflx = js.request('zflx');
 	if(mid==0&&zfid){
-		js.ajax(geturlact('getzfcont',{zfid:zfid}),false,function(a){
-			form('title').value='转发：'+a.title+'';
-			form('content').value=a.content;
-			if(ismobile==1)form('content').value=a.content.replace(/<br>/g,"\n");
-			if(ismobile==0)c.editorobj['content'].html(a.content);
-			js.downupshow(a.filers,'fileidview');
+		js.ajax(geturlact('getzfcont',{zfid:zfid,zflx:zflx}),false,function(a){
+			
+			form('type').value = a.type; //外发还是 其他
+			//转发
+			if(a.zflx==0){
+				form('title').value='转发：'+a.title+'';
+				form('content').value=a.content;
+				if(ismobile==1)form('content').value=a.content.replace(/<br>/g,"\n");
+				if(ismobile==0)c.editorobj['content'].html(a.content);
+				js.downupshow(a.filers,'fileidview');
+			}
+			//回复
+			if(a.zflx==1){
+				submitparams.huiid = a.id;
+				form('title').value='回复：'+a.title+'';
+				form('recename').value = a.sendname;
+				form('receid').value = a.sendid;
+				if(a.type==1){
+					if(ismobile==1)form('content').value=a.content.replace(/<br>/g,"\n");
+					if(ismobile==0)c.editorobj['content'].html(a.content);
+				}
+			}
 		},'get,json');
 	}
 	if(mid==0){

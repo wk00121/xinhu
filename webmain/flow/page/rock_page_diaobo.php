@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：worc.文档分区，
+*	模块：diaobo.调拨单，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.文档分区]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.调拨单]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'worc',modename='文档分区',isflow=0,modeid='74',atype = params.atype,pnum=params.pnum;
+	var modenum = 'diaobo',modename='调拨单',isflow=1,modeid='76',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u540d\u79f0","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"recename","name":"\u53ef\u67e5\u770b\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"guanname","name":"\u7ba1\u7406\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"uptype","name":"\u9650\u5236\u4e0a\u4f20\u7c7b\u578b","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"custid","name":"\u8c03\u62e8\u4ed3\u5e93","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"state","name":"\u51fa\u5e93\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -69,14 +69,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'文档分区('+nowtabs.name+')',
-				cont:'文档分区('+nowtabs.name+')的列表的',
-				explain:'订阅[文档分区]的列表',
+				title:'调拨单('+nowtabs.name+')',
+				cont:'调拨单('+nowtabs.name+')的列表的',
+				explain:'订阅[调拨单]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_worc|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_diaobo|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -120,8 +120,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistworc = a;
-			addtabs({num:'daoruworc',url:'flow,input,daoru,modenum=worc',icons:'plus',name:'导入文档分区'});
+			window.managelistdiaobo = a;
+			addtabs({num:'daorudiaobo',url:'flow,input,daoru,modenum=diaobo',icons:'plus',name:'导入调拨单'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -191,10 +191,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('d29yYw::'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29vZG0:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"名称",dataIndex:"name",sortable:true},{text:"可查看人员",dataIndex:"recename"},{text:"管理人员",dataIndex:"guanname"},{text:"排序号",dataIndex:"sort",sortable:true},{text:"操作人",dataIndex:"optname",sortable:true},{text:"限制上传类型",dataIndex:"uptype"},{
+		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"申请日期",dataIndex:"applydt"},{text:"调拨仓库",dataIndex:"custid"},{text:"出库状态",dataIndex:"state",sortable:true},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -211,15 +211,12 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-bootparams.celleditor = true;
-c.setcolumns('sort',{
-	editor:true
-});
+
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewworc_{rand}').bootstable(bootparams);
+	var a = $('#viewdiaobo_{rand}').bootstable(bootparams);
 	c.init();
 	var ddata = [{name:'高级搜索',lx:0}];
 	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
@@ -244,9 +241,9 @@ c.setcolumns('sort',{
 	<tr>
 		<td style="padding-right:10px;" id="tdleft_{rand}" nowrap><button id="addbtn_{rand}" class="btn btn-primary" click="clickwin,0" disabled type="button"><i class="icon-plus"></i> 新增</button></td>
 		<td>
-			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
+			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
 		</td>
-		
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -261,5 +258,5 @@ c.setcolumns('sort',{
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewworc_{rand}"></div>
+<div id="viewdiaobo_{rand}"></div>
 <!--HTMLend-->

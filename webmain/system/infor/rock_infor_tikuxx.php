@@ -42,7 +42,10 @@ $(document).ready(function(){
 			text:'答案',dataIndex:'answer',renderer:function(v,d,oi){
 				return '<a href="javascript:;" onclick="openxiangs(\'知识学习\',\'knowtiku\','+d.id+')">查看</a>';
 			}
-		}]
+		}],
+		itemdblclick:function(d){
+			openxiangs(d.title,modenum, d.id);
+		}
 	});
 
 	var c = {

@@ -42,9 +42,12 @@
 			if(document[fids])document[fids].reset();
 		};
 		this.setparams=function(ars){
-			this.oparams = js.apply({uptype:'*'}, ars);
+			this.oparams = js.apply({uptype:this.uptype}, ars);
 			this.uptype=this.oparams.uptype;
 		};
+		this.setuptype=function(lx){
+			this.uptype = lx;
+		},
 		this.click=function(ars){
 			if(this.upbool)return;
 			this.setparams(ars);
@@ -77,6 +80,7 @@
 			}
 			var filename = f.name;
 			var fileext	 = filename.substr(filename.lastIndexOf('.')+1).toLowerCase();
+			if(!this.uptype)this.uptype='*';
 			if(this.uptype=='image')this.uptype='jpg,gif,png,bmp,jpeg';
 			if(this.uptype=='word')this.uptype='doc,docx,pdf,xls,xlsx,ppt,pptx,txt';
 			if(this.uptype!='*'){

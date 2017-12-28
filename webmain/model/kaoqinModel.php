@@ -599,8 +599,8 @@ class kaoqinClassModel extends Model
 			$wehe = 'and `jiatype`=0'; //只有可调休才能用
 		}
 		if($dt=='')$dt = $this->rock->now;
-		$to1	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`kind`='请假' and `qjkind`='$type' and `uid`='$uid' and `status` not in(5) and `id`<>$id ");
-		$zto	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`kind`='$types' $wehe and `uid`='$uid'  and `status`=1 and `stime`<='$dt'");
+		$to1	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`uid`='$uid' and `kind`='请假' and `qjkind`='$type' and `status` not in(5) and `id`<>$id ");
+		$zto	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`uid`='$uid' and `kind`='$types' $wehe and `status`=1 and `stime`<='$dt'");
 		if(is_null($to1))$to1=0;
 		if(is_null($zto))$zto=0;
 		return floatval($zto) - floatval($to1);
