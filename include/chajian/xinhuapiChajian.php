@@ -27,6 +27,8 @@ class xinhuapiChajian extends Chajian{
 		$dbs 	= m('option');
 		$this->systemnum  = $dbs->getval('systemnum');
 		$this->smsapikey  = $dbs->getval('sms_apikey');
+		$this->qiannum    = $dbs->getval('sms_qmnum');
+		if(isempt($this->qiannum))$this->qiannum = '';
 		if(isempt($this->systemnum)){
 			$rnd  	= md5(str_shuffle('abcedfghijk').rand(1000,9999));
 			$dbs->setval('systemnum', $rnd);
@@ -109,6 +111,7 @@ class xinhuapiChajian extends Chajian{
 		$tomobile = m('admin')->getjoinfields($receid, 'mobile');
 		
 		if(isempt($tomobile))return returnerror('接收人['.$receid.']可能没设置手机号');
+		if(isempt($qiannum))$qiannum = $this->qiannum; //
 		
 		//异步发送
 		if(getconfig('asynsend') && $isyb){

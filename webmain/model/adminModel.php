@@ -182,12 +182,15 @@ class adminClassModel extends Model
 		return $s;
 	}
 	
+	private $deptarr = array();
 	public function getpath($did, $sup,$dids='')
 	{
 		$deptpath 	= $this->db->getpval('[Q]dept', 'pid', 'id', $did, '],[');
 		$deptallname= $this->db->getpval('[Q]dept', 'pid', 'name', $did, '/');
-		$deptname	= $this->db->getmou('[Q]dept', 'name', "`id`='$did'");
+		if(!$this->deptarr)$this->deptarr = $this->db->getkeyall('[Q]dept','id,name');
+		$deptname	= arrvalue($this->deptarr, $did);
 		$supername	= '';
+		$deptnames	= '';
 		
 		$superpath	= '';
 		if(!$this->rock->isempt($sup)){
@@ -213,13 +216,17 @@ class adminClassModel extends Model
 				foreach($desssa as $desssa1){
 					if(!contain($deptpath, $desssa1))$deptpath.=','.$desssa1.'';
 				}
+				$names1 = arrvalue($this->deptarr, $dids1);
+				if(!isempt($names1))$deptnames.=','.$names1.'';
 			}
+			if($deptnames!='')$deptnames=substr($deptnames, 1);
 		}
 		if(!isempt($deptpath) && substr($deptpath,0,1)==',')$deptpath = substr($deptpath,1);
 		
 		$rows['deptpath'] 	= $deptpath; 
 		$rows['superpath'] 	= $superpath;
 		$rows['deptname'] 	= $deptname;
+		$rows['deptnames'] 	= $deptnames;
 		$rows['superman'] 	= $supername;
 		$rows['deptallname']= $deptallname;
 		
@@ -444,7 +451,7 @@ class adminClassModel extends Model
 	*/
 	public function updateinfo($where='')
 	{
-		$rows	= $this->db->getall("select id,name,deptid,superid,deptpath,superpath,deptname,deptallname,groupname,superman,deptids from `[Q]admin` a where id>0 $where order by `sort`");
+		$rows	= $this->db->getall("select * from `[Q]admin` a where id>0 $where");
 		$total	= $this->db->count;
 		$cl		= 0;
 		$sjo    = m('sjoin');
@@ -456,7 +463,7 @@ class adminClassModel extends Model
 			}else{
 				$gids = substr($gids, 2);
 			}
-			if($nrs['deptpath'] != $rs['deptpath'] || $nrs['deptname'] != $rs['deptname'] || $nrs['superpath'] != $rs['superpath'] || $nrs['superman'] != $rs['superman'] || $nrs['deptallname'] != $rs['deptallname'] || $gids != $rs['groupname']){
+			if($nrs['deptpath'] != $rs['deptpath'] || $nrs['deptname'] != $rs['deptname'] || $nrs['superpath'] != $rs['superpath'] || $nrs['superman'] != $rs['superman'] || $nrs['deptnames'] != $rs['deptnames'] || $nrs['deptallname'] != $rs['deptallname'] || $gids != $rs['groupname']){
 				$nrs['groupname'] = $gids;
 				$this->record($nrs, "`id`='".$rs['id']."'");
 				$cl++;

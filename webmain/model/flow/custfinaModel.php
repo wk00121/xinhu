@@ -26,9 +26,9 @@ class flow_custfinaClassModel extends flowModel
 		//标识已付款处理
 		if($ors['num']=='pay'){
 			$ispay = 0;
-			$paydt = $arr['fields_paydt'];
+			$paydt = arrvalue($arr,'fields_paydt', $this->rock->now);
 			if(!isempt($paydt))$ispay = 1;
-			$this->update('ispay='.$ispay.'', $this->id);
+			$this->update("`ispay`='$ispay',`paydt`='$paydt'", $this->id);
 			m('crm')->ractmoney($this->rs['htid']);
 		}
 	}

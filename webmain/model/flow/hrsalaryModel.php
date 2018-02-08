@@ -54,7 +54,7 @@ class flow_hrsalaryClassModel extends flowModel
 	
 	public function todouser()
 	{
-		$this->push($this->rs['xuid'],'','您['.$this->rs['month'].']月份薪资已发放，请注意查看对账。','薪资发放通知');
+		$this->push($this->rs['xuid'],'工资条','您['.$this->rs['month'].']月份薪资已发放，请注意查看对账。','薪资发放通知');
 	}
 	
 	public function gongzifafang($sid)

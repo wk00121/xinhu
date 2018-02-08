@@ -80,7 +80,7 @@ class flow_custractClassModel extends flowModel
 				$arr['optname'] = $this->adminname;
 				$arr['createname']= $this->adminname;
 				$arr['createid']  = $this->adminid;
-				$arr['optid'] 	= $this->adminid;
+				//$arr['optid'] 	= $this->adminid;
 				$arr['type'] 	= $this->rs['type'];
 				$arr['explain'] = $arrs['sm'];
 				$arr['money'] 	= $money;

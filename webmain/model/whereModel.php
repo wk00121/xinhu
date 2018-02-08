@@ -115,6 +115,10 @@ class whereClassModel extends Model
 			if($type=='dept'){
 				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.$deptid.')';
 			}
+			//我的同级部门人员(含子部门)：{uid,deptall}
+			if($type=='deptall'){
+				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where instr(`deptpath`,\'['.$deptid.']\')>0)';
+			}
 			//所属单位：{uid,company}
 			if($type=='company'){
 				$rstr= '{asqom}`'.$fie.'` in('.$companys.')';

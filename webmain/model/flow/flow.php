@@ -978,6 +978,8 @@ class flowModel extends Model
 		$shiyong = array();
 		$defix 	 = $xuhao 	 = 0; //默认是0的
 		$uid 	 = arrvalue($urs,'id',0);
+		$zshu	 = count($rows);
+		//print_r($rows);
 		foreach($rows as $k=>$rs){
 			$whereid = (int)$rs['whereid'];
 			$receid  = $rs['receid'];
@@ -1031,6 +1033,11 @@ class flowModel extends Model
 						$this->getflowpipeis(array($this->pipeiCoursearrc[$nid]), $urs, $kqobj);
 					}
 				}
+			}
+		}else{
+			//可能是跳过
+			if($zshu==1 && $rows[0]['checkshu']>0){
+				$this->getflowpipeis($rows[0]['children'], $urs, $kqobj);
 			}
 		}
 	}
@@ -1406,7 +1413,27 @@ class flowModel extends Model
 		if($type=='submit' || $type=='next' || $type == 'cuiban'){
 			$cont = '你有['.$this->uname.']的['.$this->modename.',单号:'.$this->sericnum.']需要处理';
 			if($sm!='')$cont.='，说明:'.$sm.'';
+			
+			//短信提醒
+			if($type != 'cuiban'){
+				$txnum 	= $this->option->getval('sms_txnum');
+				if(!isempt($txnum)){
+					$mknum 	= $this->option->getval('sms_mknum');
+					if($mknum=='all' || contain(','.$mknum.',',','.$this->modenum.',')){
+						$wxurl		= $this->getxiangurl();
+						$barr 		= c('xinhuapi')->sendsms($nuid, '', $txnum, array(
+							'modename' => $this->modename,
+							'sericnum' => $this->sericnum,
+							'applyname'=> $this->uname,
+							'deptname' => $this->rs['base_deptname'],
+						),$wxurl);
+					}
+				}
+			}
 		}
+		
+		
+		
 		//审核不同意
 		if($type == 'nothrough'){
 			$cont = '你提交['.$this->modename.',单号:'.$this->sericnum.']'.$this->adminname.'处理['.$act.']，原因:['.$sm.']';
@@ -2315,7 +2342,7 @@ class flowModel extends Model
 			}
 			$arr['fields'] = substr($fieldss, 1);
 		}
-		$arr['where'] 	= $where;
+		$arr['where'] 	= str_replace('{asqom}','', $where);//替换一下
 		return $arr;
 	}
 	

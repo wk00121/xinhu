@@ -111,6 +111,11 @@ class viewClassModel extends Model
 				$sw = "`$ufid` in(select `id` from `[Q]admin` where `deptid`=".$this->urs['deptid'].")";
 			}
 			
+			//同一个部门下人员(包括子部门)
+			if($sw=='{deptall}' && !isempt($this->urs['deptid'])){
+				$sw = "`$ufid` in(select `id` from `[Q]admin` where instr(`deptpath`,'[".$this->urs['deptid']."]')>0)";
+			}
+			
 			//同一个单位
 			if($sw=='{company}'){
 				$sw = "`$ufid` in(select `id` from `[Q]admin` where `companyid`=".$companyid.")";

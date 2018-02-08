@@ -150,12 +150,12 @@ class wordClassModel extends Model
 		
 		$sarr	= array(
 			'where' => $where,
-			'table' => '`[Q]word` a left join `[Q]file` b on a.fileid=b.id',
+			'table' => '`[Q]word` a left join `[Q]file` b on a.`fileid`=b.`id`',
 			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.fileext,b.filepath,b.thumbpath,b.downci',
 			'order' => 'a.`type` desc,a.`sort`,a.id desc'
 		);
 		
-		$barr	= $this->getlimit($sarr['where'], (int)$this->rock->get('page','1'), $sarr['fields'], $sarr['order'], (int)$this->rock->get('limit','15'), $sarr['table']);
+		$barr	= $this->getlimit($sarr['where'], (int)$this->rock->post('page','1'), $sarr['fields'], $sarr['order'], (int)$this->rock->post('limit','15'), $sarr['table']);
 		
 		$barr['totalCount'] = $barr['count'];
 		$rows 	= $barr['rows'];
@@ -207,7 +207,10 @@ class wordClassModel extends Model
 		}
 		$names = '';
 		$frows = $file->getall('`id` in('.$sid.')');
-		foreach($frows as $k=>$rs)$names.=','.$rs['filename'].'';
+		$zongs = count($frows);
+		foreach($frows as $k=>$rs){
+			if($k<3)$names.=','.$rs['filename'].'';
+		}
 		
 		//发送推送通知
 		$cprs = m('worc')->getone($cid);
@@ -218,7 +221,7 @@ class wordClassModel extends Model
 			if(isempt($receid))$receid = 'u0';
 			if(!isempt(arrvalue($fors,'shateid')))$receid.=','.$fors['shateid'].''; //同时发给共享的
 			
-			$cont = "{$this->adminname}在“{$cprs['name']}”上传了文件“{$names}”";
+			$cont = "{$this->adminname}在“{$cprs['name']}”上传了{$zongs}个文件“{$names}”";
 			$flow = m('flow')->initflow('word');
 			$flow->push($receid,'文档', $cont, ''.$this->adminname.'上传了文件',0, array(
 				'wxurl' => $flow->getwxurl()

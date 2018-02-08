@@ -8,4 +8,4 @@ defined('HOST') or die ('not access');
 
 ?>
 
-<div class="tishi" align="center">Copyright ©2017 &nbsp;<?=substr(URLY,7,-1)?> &nbsp;<?=TITLE?>v<?=VERSION?> &nbsp;技术支持：<a href="<?=URLY?>" target="_blank">信呼开发团队</a></div>
+<div class="tishi" align="center">Copyright &copy;<?=date('Y')?>  &nbsp;<?=substr(URLY,7,-1)?> &nbsp;<?=TITLE?>v<?=VERSION?> &nbsp;技术支持：<a href="<?=URLY?>" target="_blank">信呼开发团队</a></div>

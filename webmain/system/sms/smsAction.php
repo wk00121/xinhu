@@ -12,6 +12,9 @@ class smsClassAction extends Action
 		$barr['sms_iscb'] = $this->option->getval('sms_iscb','0');
 		$barr['sms_cbnum'] = $this->option->getval('sms_cbnum','defnum');
 		$barr['sms_apikey'] = $this->option->getval('sms_apikey');
+		$barr['sms_txnum'] 	= $this->option->getval('sms_txnum');
+		$barr['sms_mknum'] 	= $this->option->getval('sms_mknum');
+		$barr['sms_qmnum'] 	= $this->option->getval('sms_qmnum');
 		return $barr;
 	}
 	
@@ -21,6 +24,9 @@ class smsClassAction extends Action
 		$this->option->setval('sms_iscb', $this->get('sms_iscb','0'));
 		$this->option->setval('sms_cbnum', $this->get('sms_cbnum'));
 		$this->option->setval('sms_apikey', $this->get('sms_apikey'));
+		$this->option->setval('sms_txnum', $this->get('sms_txnum'));
+		$this->option->setval('sms_mknum', $this->get('sms_mknum'));
+		$this->option->setval('sms_qmnum', $this->get('sms_qmnum'));
 	}
 	
 	//测试

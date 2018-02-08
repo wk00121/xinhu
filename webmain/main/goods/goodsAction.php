@@ -206,6 +206,7 @@ class goodsClassAction extends Action
 		}
 		
 		//调拨必须先出库原来的
+		if($mtype==3 && $depotid==$mrs['custid'])return '调拨出入库仓库不能相同';
 		
 		
 		foreach($sharr as $k=>$rs){

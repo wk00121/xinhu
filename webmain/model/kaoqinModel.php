@@ -427,6 +427,7 @@ class kaoqinClassModel extends Model
 			$arrs 	= $this->kqanaysss($uid, $dt, $rs, $this->_dkarr);
 			$state	= $arrs['state'];
 			$states	= $arrs['states'];
+			$timesb	= $timeys = 0;
 			
 			//判断是否有请假和外出。。
 			if($iswork==1 && $state !='正常'){
@@ -437,8 +438,23 @@ class kaoqinClassModel extends Model
 				if($zcarr)$states = $this->getstates($zcarr, $dt, $uid);	
 			}
 			
-			$emiao	= $arrs['emiao'];
+			
+			$emiao	= $arrs['emiao']; //迟到早退秒数
 			$time	= $arrs['time'];
+			
+			
+			if($rs['isxx']=='0'){
+				$mshu	= strtotime(''.$dt.' '.$rs['stime'].'') - strtotime(''.$dt.' '.$rs['etime'].'');
+				$timesb	= abs(round($mshu / 60 / 60,1));
+				if($state=='正常' || !isempt($states)){
+					$timeys = $timesb;
+				}else{
+					if($emiao>0){
+						$timeys = round((abs($mshu) - $emiao)/60/60, 1);
+					}
+				}
+			}
+			
 			$arr	= array(
 				'ztname' 	=> $ztname,
 				'state' 	=> $state,
@@ -450,7 +466,9 @@ class kaoqinClassModel extends Model
 				'sort' 		=> $k,
 				'iswork' 	=> $iswork,
 				'optdt' 	=> $this->rock->now,
-				'emiao' 	=> $emiao
+				'emiao' 	=> $emiao,
+				'timesb' 	=> $timesb,
+				'timeys' 	=> $timeys
 			);
 			$where 	= "`uid`='$uid' and `dt`='$dt' and `ztname`='$ztname'";
 			$id 	= (int)$db->getmou('id', $where);
@@ -865,9 +883,22 @@ class kaoqinClassModel extends Model
 		$max 	= $dtobj->getmaxdt($month);
 		$startdt= ''.$month.'-01';
 		$enddt  = ''.$month.'-'.$max.'';
-		$tian	= 0;
-		$ysb	= 0;
-		$anayarr= $this->db->getrows('[Q]kqanay', "`uid`=$uid and `dt` like '$month%'");
+		$tian	= 0; //应上班
+		$ysb	= 0; //已上班
+		//$anayarr= $this->db->getrows('[Q]kqanay', "`uid`=$uid and `dt` like '$month%'");
+		
+		$sbxs	= $this->getworktime($uid); //每天上班时间
+		
+		$starr 	= $this->db->getall("SELECT `dt`,sum(timesb)as timesb,sum(timeys)as timeys FROM `xinhu_kqanay` where `uid`=$uid and `dt` like '$month%' and `iswork`=1 GROUP BY dt");
+		foreach($starr as $k=>$rs){
+			$timesb = floatval($rs['timesb']);
+			$timeys = floatval($rs['timeys']);
+			
+	
+			$tian  += $timesb/$sbxs;
+			$ysb   += $timeys/$sbxs;
+		}
+		/*
 		for($i=0; $i<$max; $i++){
 			$oi = ($i<10) ? '0'.$i.'' : $i;
 			$dt = ''.$month.'-'.$oi.'';
@@ -880,7 +911,7 @@ class kaoqinClassModel extends Model
 					}
 				}
 			}
-		}
+		}*/
 		return array($tian, $ysb, $tian-$ysb);
 	}
 	

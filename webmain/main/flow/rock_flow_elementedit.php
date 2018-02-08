@@ -91,7 +91,7 @@ $(document).ready(function(){
 		</tr>
 	
 		<tr>
-			<td align="right">数据源：</td>
+			<td align="right">数据源：<br><a target="_blank" href="<?=URLY?>view_element.html">看帮助</a>&nbsp;&nbsp;</td>
 			<td class="tdinput" colspan="3"><textarea placeholder="可以SQL,数据选项编号,自定义方法等" name="data" style="height:60px" onblur="blursehs{rand}(this)" class="form-control"></textarea></td>
 		</tr>
 		

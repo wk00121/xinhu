@@ -85,31 +85,48 @@ var c = {
 			$('div[tempxu=2]').removeClass(clas);
 		}
 	},
-	getfile:function(pid,cid,alx){
+	getfile:function(pid,cid,alx,padg){
 		this.typeid = pid;
 		this.cqid = cid;
 		this.disabedgl(true);
 		if(!alx)alx='';
 		this.atype = alx;
+		if(!padg)padg=1;
+		this.page = padg;
 		get('cpselect').value = this.cqid;
-		js.ajax('word','getdata',{typeid:pid,cqid:this.cqid,cqids:cqids,atype:alx},function(a){
+		js.ajax('word','getdata',{typeid:pid,cqid:this.cqid,cqids:cqids,atype:alx,page:padg},function(a){
 			c.ismanage = a.ismanage;
 			if(a.ismanage==1)c.disabedgl(false);//有权限
 			c.data=[];
-			c.showdata(a.rows);
+			c.showdata(a);
 		},'mode');
 	},
 	reload:function(){
 		this.getfile(this.typeid,this.cqid,this.atype);
 	},
+	nextpage:function(){
+		this.getfile(this.typeid,this.cqid,this.atype,this.page+1);
+	},
 	showdata:function(a){
-		var i,len=a.length,s;
+		$('#showblank').remove();
+		var rows = a.rows;
+		var i,len=rows.length,s;
 		s='<table id="wordlisttable" style="width:100%; background-color:white">';
 		for(i=0;i<len;i++){
-			s+=c.showlist(a[i]);
+			s+=c.showlist(rows[i]);
 		}
 		s+='</table>';
-		$('#mainbody_show').html(s);
+		s+='<div style="margin-top:10px" class="showblank" id="showblank">共'+a.count+'条记录';
+		if(a.maxpage>1)s+=',当前'+a.maxpage+'/'+a.page+'页';
+		if(a.page<a.maxpage){
+			s+=', <a id="showblankss" onclick="c.nextpage(this)" href="javascript:;">点击加载</a>';
+		}
+		s+='</div>';
+		if(a.page<=1){
+			$('#mainbody_show').html(s);
+		}else{
+			$('#mainbody_show').append(s);
+		}
 	},
 	showlist:function(d){
 		if(!d.id)d.id=d.fileid;
@@ -128,7 +145,9 @@ var c = {
 		}else{
 			var slx = d.fileext;
 			if(js.fileall.indexOf(','+slx+',')<0)slx='wz';
-			s+='<td align="center" width="40"><img src="web/images/fileicons/'+slx+'.gif" height="16" width="16"></td><td>'+s1+'</td>';
+			var fstr = 'web/images/fileicons/'+slx+'.gif';
+			if(d.thumbpath)fstr = d.thumbpath;
+			s+='<td align="center" width="40"><img src="'+fstr+'" height="16" width="16"></td><td>'+s1+'</td>';
 		}
 		s+='</tr>';
 		return s;
@@ -263,7 +282,7 @@ var c = {
 	},
 	zhuanfageiok:function(sna,sid){
 		var d  = this.tempda;
-		var ds = {'tuid':sid,'type':'user','cont':'','fileid':d.id};
+		var ds = {'tuid':sid,'type':'user','cont':'','fileid':d.fileid};
 		js.ajax('reim','forward', ds, function(){
 			js.msg('success','已转发给【'+sna+'】')
 		});

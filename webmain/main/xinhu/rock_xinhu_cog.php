@@ -61,6 +61,11 @@ $(document).ready(function(){
 			get('push_{rand}').readOnly=bo;
 			get('host_{rand}').readOnly=bo;
 			get('receid_{rand}').readOnly=bo;
+		},
+		qingkong:function(){
+			get('push_{rand}').value='';
+			get('host_{rand}').value='';
+			get('receid_{rand}').value='';
 		}
 	};
 	
@@ -114,7 +119,9 @@ $(document).ready(function(){
 		<tr>
 			<td  align="right"></td>
 			<td style="padding:15px 0px" colspan="3" align="left"
-			><button click="save" class="btn btn-success" type="button"><i class="icon-save"></i>&nbsp;保存</button>&nbsp; 
+			>
+			<a href="javascript:;" click="qingkong">清空</a>&nbsp;
+			<button click="save" class="btn btn-success" type="button"><i class="icon-save"></i>&nbsp;保存</button>&nbsp; 
 			<button click="testsss" class="btn btn-primary" type="button">测试通信地址</button>&nbsp; 
 			<button click="testss" class="btn btn-primary" type="button">测试推送地址</button>&nbsp; 
 			<span id="msgview_{rand}"><font color=red>测试地址前，请先保存！</font></span>

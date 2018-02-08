@@ -123,8 +123,8 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td  align="right">文档预览：</td>
-			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己预览插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
+			<td  align="right">文档转PDF预览：</td>
+			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
 			
 		</tr>
 		

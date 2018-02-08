@@ -539,13 +539,14 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		);
 	}
 	
+	//删除单据，用户=1不需要权限判断
 	public function delmodeshujuAjax()
 	{
 		$this->modeid 	= (int)$this->post('modeid');
 		$mid 			= (int)$this->post('mid');
 		$this->moders 	= m('flow_set')->getone($this->modeid);
 		if(!$this->moders)backmsg('sorry!');
-		$msg	= m('flow')->deletebill($this->moders['num'], $mid);
+		$msg	= m('flow')->deletebill($this->moders['num'], $mid, '', $this->adminid!=1);
 		if($msg=='ok')$msg='';
 		backmsg($msg);
 	}

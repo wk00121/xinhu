@@ -400,7 +400,7 @@ class inputAction extends Action
 			$content = $pclucont;
 		}else{
 			$content = $modelu;
-			if($tableas){
+			if($tableas && $slx==0){
 				foreach($tableas as $k1=>$tableass){
 					$zbstr 	 = m('input')->getsubtable($modeid,$k1+1,1,1);
 					if($zbstr!=''){
