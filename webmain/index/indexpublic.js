@@ -195,6 +195,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		var nwsh = 'showfielsv_'+js.getrand()+'';
 		var uostr= '<div align="left" style="padding:10px"><div id="'+nwsh+'" style="height:60px;overflow:auto" class="input"></div><input style="width:180px" id="'+nwsh+'_input" type="file"></div>';
 		var bts = (d.issm==1)?'必填':'选填';
+		if(d.optnum!=null && d.optnum.indexOf('noup')>-1)uostr='';
 		if(!d.smcont)d.smcont='';
 		if(lx==1 || lx==9 || lx==10 || lx==13 || lx==15 || lx==16 || lx==17){
 			if(d.nup==1)uostr=''; //不需要上传文件

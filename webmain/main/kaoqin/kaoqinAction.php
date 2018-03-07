@@ -54,7 +54,9 @@ class kaoqinClassAction extends Action
 		if($atype=='my'){
 			$s = 'and uid='.$uid.'';
 		}
-		
+		if($atype=='down'){
+			$s  = 'and '.m('admin')->getdownwheres('a.uid', $uid, 0);
+		}
 		
 		if(!isempt($dt1))$s.=" and a.`stime` >= '$dt1'";
 		if(!isempt($dt2))$s.=" and a.`stime` <= '$dt2 23:59:59'";
@@ -394,14 +396,17 @@ class kaoqinClassAction extends Action
 		$atype	= $this->post('atype');
 		$s 		= m('admin')->monthuwhere($dt1);
 		
-		
+		//下属,userinfo下的
+		if($atype=='down'){
+			$s  .= 'and '.m('admin')->getdownwheres('id', $this->adminid, 0);
+		}
 		
 		if($atype=='my'){
 			$s = 'and id='.$this->adminid.'';
 		}else{
 			if($iskq=='1')$s.=" and `iskq`=$iskq";
 		}
-		
+	
 		if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
 		
 		$fields = 'id,name,deptname,ranking,workdate,state';

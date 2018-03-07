@@ -107,7 +107,7 @@ class flow_workClassModel extends flowModel
 			$this->push($toid, '任务', $cont);
 			$this->update($arr, $this->id);
 		}
-		if($a['name']=='指派给'){
+		if($a['name']=='指派给' || $a['name']=='转发'){
 			$cname 	 = $this->rock->post('changename');
 			$cnameid = $this->rock->post('changenameid');
 			$state = '0';

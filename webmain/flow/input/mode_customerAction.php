@@ -13,5 +13,6 @@ class mode_customerClassAction extends inputAction{
 		m('custfina')->update("`custname`='$name'", "`custid`='$id'");
 		m('custract')->update("`custname`='$name'", "`custid`='$id'");
 		m('custsale')->update("`custname`='$name'", "`custid`='$id'");
+		m('custappy')->update("`custname`='$name'", "`custid`='$id'");
 	}
 }

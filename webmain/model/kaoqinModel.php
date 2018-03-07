@@ -889,14 +889,14 @@ class kaoqinClassModel extends Model
 		
 		$sbxs	= $this->getworktime($uid); //每天上班时间
 		
-		$starr 	= $this->db->getall("SELECT `dt`,sum(timesb)as timesb,sum(timeys)as timeys FROM `xinhu_kqanay` where `uid`=$uid and `dt` like '$month%' and `iswork`=1 GROUP BY dt");
+		$starr 	= $this->db->getall("SELECT `dt`,sum(timesb)as timesb,sum(timeys)as timeys FROM `[Q]kqanay` where `uid`=$uid and `dt` like '$month%' and `iswork`=1 GROUP BY dt");
 		foreach($starr as $k=>$rs){
 			$timesb = floatval($rs['timesb']);
 			$timeys = floatval($rs['timeys']);
 			
 	
-			$tian  += $timesb/$sbxs;
-			$ysb   += $timeys/$sbxs;
+			$tian  += round($timesb/$sbxs,1);
+			$ysb   += round($timeys/$sbxs, 1);
 		}
 		/*
 		for($i=0; $i<$max; $i++){
@@ -974,6 +974,19 @@ class kaoqinClassModel extends Model
 		));
 	}
 	
+	/**
+	*	考勤统计使用
+	*/
+	private function alltotalrowssst($rows,$dt, $oi=0)
+	{
+		$columns= array();
+		if(!isset($rows[$oi]))return $columns;
+		$fuid 	= $rows[$oi]['id'];
+		$farrs 	= $this->getkqztarr($fuid, $dt);
+		$columns= $farrs;
+		if($columns)return $columns;
+		return $this->alltotalrowssst($rows, $dt, $oi+1);
+	}
 	public function alltotalrows($month, $uids)
 	{
 		$rows	= array();
@@ -986,14 +999,11 @@ class kaoqinClassModel extends Model
 		$uids 	= '0';
 		foreach($rows as $k=>$rs)$uids.=','.$rs['id'].'';
 		$farrs	= $columns = array();
-		//获取考勤状态数组{'正常':'state0'}
-		if($rows){
-			$fuid 	= $rows[0]['id'];
-			$farrs 	= $this->getkqztarr($fuid, $month.'-01');
-			$columns= $farrs;
-		}
 		
-		$darr	= $this->db->getall("SELECT uid,state,states FROM `[Q]kqanay` where iswork=1 and dt like '$month%' and `uid` in($uids)");
+		//获取考勤状态数组{'正常':'state0'}
+		if($rows)$columns= $this->alltotalrowssst($rows, $month.'-01'); //读取表头
+		
+		$darr	= $this->db->getall("SELECT uid,state,states FROM `[Q]kqanay` where `uid` in($uids) and dt like '$month%' and iswork=1");
 		$sarr 	= array();
 		foreach($darr as $k=>$rs){
 			$state 	= $rs['state'];

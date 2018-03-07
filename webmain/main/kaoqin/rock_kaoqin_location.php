@@ -46,9 +46,22 @@ $(document).ready(function(){
 		},
 		daochu:function(){
 			a.exceldown();
+		},
+		xiashu:function(o1){
+			if(atype=='my'){
+				o1.value='我的记录';
+				atype = 'down';
+				nowtabssettext('下属定位记录');
+			}else{
+				o1.value='下属记录';
+				atype = 'my';
+				nowtabssettext('我的定位记录');
+			}
+			a.setparams({atype:atype}, true);
 		}
 	};
 	js.initbtn(c);
+	if(atype=='my')$('#down_{rand}').show();
 });
 </script>
 <div>
@@ -77,12 +90,12 @@ $(document).ready(function(){
 	<td  style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
-	<td  style="padding-left:5px">
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+	<td style="padding-left:10px">
+		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属记录" type="button">
 	</td>
 	<td width="80%"></td>
 	<td align="right" nowrap>
-		
+		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>
 </tr></table>
 </div>

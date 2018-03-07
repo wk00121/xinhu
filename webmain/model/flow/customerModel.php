@@ -87,7 +87,15 @@ class flow_customerClassModel extends flowModel
 				'shateid' 	=> '',
 				'shate' 	=> '',
 			), $this->id);
-		}	
+		}
+		
+		//放入公海
+		if($num=='ghnoup'){
+			$this->update(array(
+				'isgh' 	=> '1',
+				'uid' 	=> 0,
+			), $this->id);
+		}
 	}
 	
 	protected function flowbillwhere($uid, $lx)

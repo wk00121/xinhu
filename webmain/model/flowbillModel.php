@@ -284,4 +284,64 @@ class flowbillClassModel extends Model
 			}
 		}
 	}
+	
+	
+	/**
+	*	超过几分钟自动作废
+	*/
+	public function autocheck()
+	{
+		//要作废的流程模块
+		$rows = $this->db->getall('select `id`,`zfeitime`,`num` from `[Q]flow_set` where `status`=1 and `isflow`=1 and `zfeitime`>0');
+		$this->rock->adminid 	= 0;
+		$this->rock->adminname 	= '系统';
+		foreach($rows as $k=>$rs){
+			$modeid = $rs['id'];
+			$dtfei	= date('Y-m-d H:i:s', time()-(int)$rs['zfeitime']*60);
+			$data 	= $this->getall("`modeid`='$modeid' and `isturn`=1 and `status` not in(1,5) and `updt`<'$dtfei'");
+			if($data){
+				$flow 	= m('flow')->initflow($rs['num']);
+				foreach($data as $k1=>$rs1){
+					$flow->loaddata($rs1['mid'], false);
+					$flow->zuofeibill('超'.$rs['zfeitime'].'分钟未处理自动作废');
+				}
+			}
+		}
+		
+		//超过几分钟自动审核通过/不通过
+		$dats 		= $this->db->getarr('[Q]flow_course','`zshtime`>0 and `status`=1','zshtime,zshstate');
+		$custids 	= '';
+		if($dats)foreach($dats as $cid=>$rs)$custids.=','.$cid.'';
+		if($custids=='')return;
+		$custids	= substr($custids, 1);
+		$rows 		= $this->getall('`isturn`=1 and `status`=0 and `nowcourseid` in('.$custids.')');
+		if(!$rows)return;
+		$modeids 	= '';
+		foreach($rows as $k=>$rs)$modeids.=','.$rs['modeid'].'';
+		$modearr 	= $this->db->getarr('[Q]flow_set','id in('.substr($modeids, 1).')','`num`');
+		
+		foreach($rows as $k=>$rs){
+			if(isempt($rs['nowcheckid']))continue;
+			$cusrs 	= arrvalue($dats,$rs['nowcourseid'], false);
+			$modrs 	= arrvalue($modearr, $rs['modeid'], false);
+			if(!$modrs || !$cusrs)continue;
+			$dtfei	= time()-(int)$cusrs['zshtime']*60;
+			$updt 	= $rs['updt'];
+			if(isempt($updt))$updt = $rs['optdt'];
+			$nowcheckida1 	= explode(',', $rs['nowcheckid']);
+			$nowcheckida2 	= explode(',', $rs['nowcheckname']);
+			
+			$this->rock->adminid 	= arrvalue($nowcheckida1,0);
+			$this->rock->adminname 	= arrvalue($nowcheckida2,0);
+			
+			//超时了
+			if(strtotime($updt)<$dtfei){
+				$sm = '超'.$cusrs['zshtime'].'分钟未处理自动审核';
+				$zt = 1;
+				if($cusrs['zshstate']=='2')$zt = 2;
+				m('flow')->opt('check', $modrs['num'], $rs['mid'], $zt, $sm);//审核
+			}
+		}
+		
+	}
 }

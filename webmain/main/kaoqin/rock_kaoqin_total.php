@@ -95,11 +95,24 @@ $(document).ready(function(){
 				objtable:a,
 				params:{'month':'{month-1}','key':get('key_{rand}').value}
 			});
+		},
+		xiashu:function(o1){
+			if(atype=='my'){
+				o1.value='我的统计';
+				atype = 'down';
+				nowtabssettext('下属考勤统计');
+			}else{
+				o1.value='下属统计';
+				atype = 'my';
+				nowtabssettext('我的考勤统计');
+			}
+			a.setparams({atype:atype}, true);
 		}
 	};
 	
 	$('#dt1_{rand}').val(js.now('Y-m'));
 	js.initbtn(c);
+	if(atype=='my')$('#down_{rand}').show();
 });
 </script>
 <div>
@@ -124,8 +137,8 @@ $(document).ready(function(){
 	<td  style="padding-left:10px">
 		<button class="btn btn-default" click="dingyue" type="button">订阅此统计表</button>
 	</td>
-	<td  style="padding-left:5px">
-		
+	<td  style="padding-left:10px">
+		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属统计" type="button">
 	</td>
 	<td width="80%"></td>
 	<td align="right" nowrap>

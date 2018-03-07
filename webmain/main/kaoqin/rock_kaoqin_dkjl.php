@@ -86,9 +86,22 @@ $(document).ready(function(){
 			//addtabs({num:'admindkjlpl',url:'main,kaoqin,dkjlpl',name:'导入打卡记录'});
 			managelistkqdkjl = a;
 			addtabs({num:'daorukqdkjl',url:'flow,input,daoru,modenum=kqdkjl',icons:'plus',name:'导入打卡记录'});
+		},
+		xiashu:function(o1){
+			if(atype=='my'){
+				o1.value='我的记录';
+				atype = 'down';
+				nowtabssettext('下属打卡记录');
+			}else{
+				o1.value='下属记录';
+				atype = 'my';
+				nowtabssettext('我的打卡记录');
+			}
+			a.setparams({atype:atype}, true);
 		}
 	};
 	if(atype=='all')$('#btnss{rand}').show();
+	if(atype=='my')$('#down_{rand}').show();
 	
 	js.initbtn(c);
 });
@@ -113,16 +126,18 @@ $(document).ready(function(){
 			</span>
 		</div>
 	</td>
-	<td  style="padding-left:10px">
+	<td style="padding-left:10px">
 		<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="姓名/部门">
 	</td>
-	<td  style="padding-left:10px">
+	<td style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
-	<td  style="padding-left:5px">
+	<td style="padding-left:10px">
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>
-	<td width="80%"></td>
+	<td style="padding-left:10px" width="80%">
+		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属记录" type="button">
+	</td>
 	<td align="right" id="btnss{rand}" style="display:none" nowrap>
 		<button class="btn btn-default" click="daoru" type="button">导入</button>&nbsp;
 		<button class="btn btn-default" click="adddaka" type="button"><i class="icon-plus"></i> 新增</button>&nbsp;

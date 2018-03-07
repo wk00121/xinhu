@@ -14,6 +14,7 @@ class minute5ClassAction extends runtAction
 		$this->scheduletodo();
 		$this->meettodo();
 		$this->todologs();
+		m('flowbill')->autocheck(); //自动审批作废
 		m('reim')->chatpushtowx($this->enddtss);
 		echo 'success';
 	}

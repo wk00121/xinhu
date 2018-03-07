@@ -41,7 +41,7 @@ class mode_custractClassAction extends inputAction{
 	
 	protected function saveafter($table, $arr, $id, $addbo){
 		m('crm')->ractmoney($id); //计算未收/付款
-		$saleid = (int)$arr['saleid'];
+		$saleid = (int)arrvalue($arr, 'saleid', '0');
 		$dbs 	= m('custsale');
 		$dbs->update('htid=0', "`htid`='$id'");
 		if($saleid > 0){

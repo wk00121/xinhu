@@ -332,6 +332,11 @@ var c={
 		$('#qianmingdiv').jqSignature().on('jq.signature.changed', function() {
 			c.qianmingbo=true;
 		});
+		
+		if(ismobile==1)get('qianmingdiv').addEventListener('touchmove',function(e){
+			e.preventDefault();
+		},false);
+	
 		$('#qianming_btn0').click(function(){
 			c.qianmingok();
 		});

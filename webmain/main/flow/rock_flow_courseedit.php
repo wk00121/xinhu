@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -320,12 +320,15 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
+			<td  align="right" ></td>
+			<td class="tdinput" colspan="3">
+				超过<input class="input" type="number" id="shijian_{rand}" onfocus="js.focusval=this.value" value="0" onblur="js.number(this)" min="0"  style="width:70px" name="zshtime">分钟自动审核<select name="zshstate"><option value="1">通过</option><option value="2">不通过</option></select>,0不限制。<select onchange="$('#shijian_{rand}').val(this.value)" name="lbztxs"><option value="0">不限制</option><option value="30">30分钟</option><option value="120">2小时</option><option value="360">6小时</option><option value="1440">1天</option><option value="2880">2天</option><option value="10080">7天</option><option value="21600">15天</option><option value="43200">30天</option></select>
+			</td>
+		</tr>
+		
+		<tr>
 			<td align="right">排序号：</td>
 			<td class="tdinput"><input name="sort" value="0" maxlength="3" type="number"  onfocus="js.focusval=this.value" onblur="js.number(this)" class="form-control"></td>
-			
-			
-			
-			
 		</tr>
 		
 		<tr>
