@@ -187,7 +187,7 @@ class mode_knowtraimClassAction extends inputAction{
 		$oi 	= (int)$this->get('oi');
 		$sid 	= (int)$this->get('sid');
 		$tid 	= (int)$this->get('tid');
-		$dy 	= $this->get('dy');
+		$dy 	= strtoupper($this->get('dy'));
 		$uid = $this->adminid;
 		$dbs = m('knowtrais');
 		$ors = $dbs->getone("`id`='$sid' and `uid`='$uid'");

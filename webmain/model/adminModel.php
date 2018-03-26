@@ -108,6 +108,12 @@ class adminClassModel extends Model
 				$_deps 	= str_replace(array('[',']'), array('',''), $deps);
 				$tj[]	= $this->rock->dbinstr($fids, 'd'.$_deps);
 			}
+			//所在组Id
+			$gids 		= m('sjoin')->getgroupid($uid);
+			if($gids!='0'){
+				$gidsa	= explode(',', $gids);
+				foreach($gidsa as $k1=>$gid1)if($k1>0)$tj[]	= $this->rock->dbinstr($fids, 'g'.$gid1);
+			}
 		}
 		$s	= join(' or ', $tj);
 		if($s != '' && $lx==0)$s = ' and ('.$s.')';

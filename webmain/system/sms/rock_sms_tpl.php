@@ -24,6 +24,13 @@ $(document).ready(function(){
 		itemclick:function(d){
 			var bo = (d.isedit==1)?false:true;
 			btn(bo);
+		},
+		load:function(d){
+			if(!isempt(d.dirtype)){
+				btn(true);
+				get('btn1_{rand}').disabled=true;
+				get('btn2_{rand}').disabled=true;
+			}
 		}
 	});
 	
@@ -100,12 +107,12 @@ $(document).ready(function(){
 <div>
 	<table width="100%"><tr>
 	<td nowrap>
-		<button class="btn btn-primary" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
+		<button class="btn btn-primary" id="btn1_{rand}" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
 		 &nbsp; 
 		<button class="btn btn-default" click="reloads"  type="button"><i class="icon-refresh"></i> 刷新</button>
 	</td>
 	<td align="right">
-		<button class="btn btn-default" click="reloadszt"  type="button"><i class="icon-refresh"></i> 刷新状态/获取模版</button>&nbsp;
+		<button class="btn btn-default" click="reloadszt" id="btn2_{rand}" type="button"><i class="icon-refresh"></i> 刷新状态/获取模版</button>&nbsp;
 		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
 	</td>

@@ -90,9 +90,29 @@ class flow_userinfoClassModel extends flowModel
 		$cala   = $this->calendar->toCalday($this->rock->date);
 		$nongli	= $cala['cal'];
 		$rows 	= $this->db->getall("select a.`birthday`,b.`id`,a.`birtype`,b.`name` from `[Q]".$this->mtable."` a left join `[Q]admin` b on a.`id`=b.`id` where b.`status`=1 and a.`state`<>5 and ((a.`birthday` like '%".$dt."' and a.`birtype`=0) or (a.`birthday` like '%".$nongli."' and a.`birtype`=1) )");
+		
+		//是否生日短信提醒
+		$smsnum	= $this->option->getval('smsbirthday');
+		$dxobj	= c('xinhuapi');
+		$dt 	= date('Y年m月d日');
 		foreach($rows as $k=>$rs){
-			$cont = '今天是'.date('Y年m月d日').',农历'.$cala['month'].''.$cala['day'].'，是你的生日，我们在这里祝你生日快乐。';
+			
+			$dtnong	= ''.$cala['month'].''.$cala['day'].'';
+			$cont = '今天是'.$dt.',农历'.$dtnong.'，是你的生日，我们在这里祝你生日快乐。';
 			$this->push($rs['id'],'', $cont, '生日祝福');
+			
+			if(!isempt($smsnum)){
+				$smarr	= explode(',', $smsnum);
+				$tpl	= $smarr[0];
+				$qmv	= arrvalue($smarr, 1, ''); //签名
+				
+				$dxobj->sendsms($rs['id'], $qmv, $tpl, array(
+					'name' 	=> $rs['name'],
+					'dt'  	=> $dt,
+					'dtnong'=> $dtnong
+				));
+			}
 		}
+		
 	}
 }

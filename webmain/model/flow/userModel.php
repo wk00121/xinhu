@@ -73,6 +73,17 @@ class flow_userClassModel extends flowModel
 		$name 	= $this->rs['name'];
 		m('im_messzt')->delete('`uid`='.$id.'');
 		m('im_history')->delete('`uid`='.$id.'');
+		
+		
+		$dbs = m('userinfo');
+		$urs = $dbs->getone($id);
+		if(!$urs)return;
+		$quitdt = $urs['quitdt'];
+		$state  = $urs['state'];
+		$uarr	= array();
+		if(isempt($quitdt))$uarr['quitdt'] = date('Y-m-d'); //设置离职日期
+		if($state != '5')$uarr['state']		= 5;//离职状态为5
+		if($uarr)$dbs->update($uarr, $id);
 	}
 	
 	//导入数据的测试显示

@@ -222,6 +222,9 @@ c.setcolumns('workshu',{
 		return ''+v+'&nbsp;<a href="javascript:;" onclick="viespere{rand}('+i+')">查看</a>';
 	}
 });
+c.setcolumns('status',{
+	dataIndex:'statusstr'
+});
 viespere{rand}=function(id){
 	var d 	= a.getData(id);
 	var bo 	= addtabs({name:'项目['+d.title+']的任务',url:'flow,page,work,pnum=allall,atype=all,projcetid='+d.id+'',num:'projcetidwork'+d.id+''});

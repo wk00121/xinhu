@@ -74,6 +74,7 @@ class crmClassModel extends Model
 	*/
 	public function moneytotal($uid, $month)
 	{
+		$uid 	= (int)$uid;
 		$sql 	= "SELECT uid,type,ispay,sum(money)money,count(1)stotal FROM `[Q]custfina` where `uid`='$uid' and `dt` like '$month%' GROUP BY type,ispay";
 		$farr	= explode(',', 'shou_moneyd,shou_moneyz,shou_moneys,shou_moneyn,shou_shu,fu_moneyd,fu_moneyz,fu_moneys,fu_moneyn,fu_shu');
 		foreach($farr as $f)$$f= 0;

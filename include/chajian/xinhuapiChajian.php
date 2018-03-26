@@ -28,6 +28,7 @@ class xinhuapiChajian extends Chajian{
 		$this->systemnum  = $dbs->getval('systemnum');
 		$this->smsapikey  = $dbs->getval('sms_apikey');
 		$this->qiannum    = $dbs->getval('sms_qmnum');
+		$this->sendtype   = $dbs->getval('sms_dirtype');
 		if(isempt($this->qiannum))$this->qiannum = '';
 		if(isempt($this->systemnum)){
 			$rnd  	= md5(str_shuffle('abcedfghijk').rand(1000,9999));
@@ -89,14 +90,19 @@ class xinhuapiChajian extends Chajian{
 	*/
 	public function send($tomobile,$qiannum, $tplnum, $params=array(), $url='', $addlog=true)
 	{
-		$para['sys_tomobile'] = $tomobile;
-		$para['sys_tplnum']   = $tplnum;
-		$para['sys_qiannum']  = $qiannum;
-		
-		$para['sys_url']   	  = $this->rock->jm->base64encode($url); //详情的URL
-		foreach($params as $k=>$v)$para['can_'.$k.''] = $v;
-		
-		$barr 	= $this->postdata('sms','send', $para);
+		if($this->sendtype=='alisms'){
+			if(isempt($qiannum))$qiannum = $this->qiannum;
+			$barr 	= c('alisms')->send($tomobile, $qiannum, $tplnum, $params);
+		}else{
+			$para['sys_tomobile'] = $tomobile;
+			$para['sys_tplnum']   = $tplnum;
+			$para['sys_qiannum']  = $qiannum;
+			
+			$para['sys_url']   	  = $this->rock->jm->base64encode($url); //详情的URL
+			foreach($params as $k=>$v)$para['can_'.$k.''] = $v;
+			
+			$barr 	= $this->postdata('sms','send', $para);
+		}
 		if(!$barr['success'] && $addlog)m('log')->addlogs('短信', $barr['msg'],2);
 		return $barr;
 	}

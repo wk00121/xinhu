@@ -21,10 +21,12 @@ class flow_projectClassModel extends flowModel
 		}
 	}
 	
-	public function flowrsreplace($rs, $slx=0){
+	public function flowrsreplace($rs, $lx=0){
 		$zts 		= $rs['status'];
 		$str 		= $this->getstatus($rs,'','',1);
-		$rs['status']= $str;
+		
+		if($lx==2)$rs['statusstr']= $str; //列表时替换
+		
 		$id			= $rs['id'];
 		$wwc	= $this->workobj->rows('projectid='.$id.' and `status` not in(1,5)');
 		$wez	= $this->workobj->rows('projectid='.$id.'');

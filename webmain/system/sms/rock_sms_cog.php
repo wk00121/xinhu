@@ -2,7 +2,7 @@
 <script >
 $(document).ready(function(){
 	
-	
+	var utype = '0';
 	var c={
 		init:function(){
 			var o = get('btnss{rand}');
@@ -14,17 +14,26 @@ $(document).ready(function(){
 					$('#typetext{rand}').html(ret.data.typetext);
 					if(ret.data.automy=='1')$('#tessh{rand}').show();
 					curl = ret.data.chongurl;
+					utype = ret.data.type;
 				}else{
 					js.msg('msg', ret.msg);
 				}
-				get('chong{rand}').href=curl;
+				
 				get('sms_iscb_{rand}').value=ret.sms_iscb;
 				get('sms_cbnum_{rand}').value=ret.sms_cbnum;
 				get('sms_apikey_{rand}').value=ret.sms_apikey;
 				get('sms_txnum_{rand}').value=ret.sms_txnum;
 				get('sms_mknum_{rand}').value=ret.sms_mknum;
 				get('sms_qmnum_{rand}').value=ret.sms_qmnum;
+				get('sms_dirtype_{rand}').value=ret.sms_dirtype;
+				if(ret.sms_dirtype!=''){
+					$('#stotal{rand}').html('请到对应短信平台下查看');
+					curl='https://www.aliyun.com';
+					$('#tessh{rand}').hide();
+					get('sms_apikey_{rand}').value='';
+				}
 				
+				get('chong{rand}').href=curl;
 				o.value='刷新';
 			},'get,json');
 		},
@@ -39,7 +48,8 @@ $(document).ready(function(){
 		},
 		sheniokx:function(sj){
 			js.msg('wait','发送中...');
-			js.ajax(js.getajaxurl('testsend','{mode}','{dir}'),{mobile:sj},function(ret){
+			var lxs = get('sms_dirtype_{rand}').value;
+			js.ajax(js.getajaxurl('testsend','{mode}','{dir}'),{mobile:sj,dirtype:lxs},function(ret){
 				if(ret.success){
 					js.msg('success','测试发送成功');
 					c.init();
@@ -50,21 +60,51 @@ $(document).ready(function(){
 		},
 		
 		save:function(){
-			js.msg('wait','保存中...');
-			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),{
+			var lxs = get('sms_dirtype_{rand}').value;
+			var da  = {
 				sms_iscb:get('sms_iscb_{rand}').value,
 				sms_cbnum:get('sms_cbnum_{rand}').value,
 				sms_apikey:get('sms_apikey_{rand}').value,
 				sms_mknum:get('sms_mknum_{rand}').value,
 				sms_qmnum:get('sms_qmnum_{rand}').value,
-				sms_txnum:get('sms_txnum_{rand}').value
-			},function(ret){
+				sms_txnum:get('sms_txnum_{rand}').value,
+				sms_dirtype:lxs
+			};
+			if(lxs=='alisms'){
+				if(da.sms_qmnum==''){
+					js.msg('msg','使用短信签名不能为空，请输入如：信呼，更多查看帮助');
+					return;
+				}
+				if(da.sms_cbnum.substr(0,4)!='SMS_'){
+					js.msg('msg','流程短信催办模版编号格式不对，请查看帮助');
+					return;
+				}
+			}
+			js.msg('wait','保存中...');
+			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),da,function(ret){
 				js.msg('success','保存成功');
 			},'get');
+		},
+		changetype:function(o1){
+			var val = o1.value;
+			if(val!=''){
+				if(utype=='0'){
+					js.alert('不是官网vip用户无法切换短信平台');
+					o1.value='';
+					return;
+				}
+				$('#stotal{rand}').html('请到对应短信平台下查看');
+			}else{
+				$('#stotal{rand}').html('请到刷新查看');
+			}
 		}
 	};
 	js.initbtn(c);
 	c.init();
+	
+	$('#sms_dirtype_{rand}').change(function(){
+		c.changetype(this);
+	});
 });
 </script>
 
@@ -76,6 +116,11 @@ $(document).ready(function(){
 	<tr>
 		<td  colspan="2"><div class="inputtitle">基本信息
 		</div></td>
+	</tr>
+	
+	<tr>
+		<td  align="right">短信发送平台：</td>
+		<td class="tdinput"><select id="sms_dirtype_{rand}" style="width:200px" class="form-control"><option value="">信呼短信服务</option><option value="alisms">阿里云(短信服务)</option></select></td>
 	</tr>
 
 	<tr>
@@ -98,7 +143,6 @@ $(document).ready(function(){
 		<td  align="right" ></td>
 		<td class="tdinput">
 		<input type="button" click="init" id="btnss{rand}" value="刷新" class="btn btn-default">&nbsp; &nbsp;
-		<input type="button" click="ceshi" id="test{rand}" value="测试发送" class="btn btn-default">&nbsp;&nbsp;
 		<a href="<?=URLY?>view_dxto.html" target="_blank">[使用帮助]</a>
 		</td>
 	</tr>
@@ -119,12 +163,12 @@ $(document).ready(function(){
 	
 	<tr>
 		<td  align="right">流程短信催办模版编号：</td>
-		<td class="tdinput"><input id="sms_cbnum_{rand}"  maxlength="8" value="defnum" class="form-control"></td>
+		<td class="tdinput"><input id="sms_cbnum_{rand}"  maxlength="50" value="defnum" class="form-control"></td>
 	</tr>
 	
 	<tr>
 		<td  align="right">短信提醒给<font color=white>：</font><br>审批人模版编号：</td>
-		<td class="tdinput"><input id="sms_txnum_{rand}"  maxlength="8" placeholder="编号到[短信模版]下获取，建议使用：default"  class="form-control"><div style="padding-top:0" class="tishi">设置了,有流程的模块当申请人提交时会短信提醒给审批人</div></td>
+		<td class="tdinput"><input id="sms_txnum_{rand}"  maxlength="50" placeholder="编号到[短信模版]下获取，建议使用：default"  class="form-control"><div style="padding-top:0" class="tishi">设置了,有流程的模块当申请人提交时会短信提醒给审批人</div></td>
 	</tr>
 	
 	<tr>
@@ -135,6 +179,8 @@ $(document).ready(function(){
 	<tr>
 		<td  align="right"></td>
 		<td style="padding:15px 0px" colspan="3" align="left"><button click="save" class="btn btn-success" type="button"><i class="icon-save"></i>&nbsp;保存</button>
+		&nbsp;&nbsp;
+		<input type="button" click="ceshi" id="test{rand}" value="测试发送" class="btn btn-default">
 	</td>
 	</tr>
 	

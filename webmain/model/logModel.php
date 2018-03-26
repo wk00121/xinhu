@@ -16,7 +16,7 @@ class logClassModel extends Model
 	}
 	
 	/**
-	*	添加日志的
+	*	添加日志的 $level=2错误
 	*/
 	public function addlogs($type='', $remark='', $level=0, $sarr=array())
 	{

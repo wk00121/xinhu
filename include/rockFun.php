@@ -17,37 +17,31 @@
 *	m 读取数据模型，操作数据库的
 *	$name 表名/文件名
 */
-$GLOBALS['rockModelImport']	= array();
 function m($name)
 {
-	$cls			= NULL;
-	$pats	= $nac	= '';
-	if(isset($GLOBALS['rockModelImport'][$name])){
-		$cls		= clone $GLOBALS['rockModelImport'][$name];
-	}else{
-		$nas		= $name;
-		$asq		= explode(':', $nas);
-		if(count($asq)>1){
-			$nas	= $asq[1];
-			$nac	= $asq[0];
-			$pats	= $nac.'/';
-			$_pats	= ''.ROOT_PATH.'/'.PROJECT.'/model/'.$nac.'/'.$nac.'.php';
-			if(file_exists($_pats)){
-				include_once($_pats);
-				$class	= ''.$nac.'Model';
-				$cls	= new $class($nas);
-			}	
-		}
-		$class		= ''.$nas.'ClassModel';
-		$path		= ''.ROOT_PATH.'/'.PROJECT.'/model/'.$pats.''.$nas.'Model.php';
-		if(file_exists($path)){
-			include_once($path);
-			if($nac!='')$class= $nac.'_'.$class;
+	$cls		= NULL;
+	$pats		= $nac	= '';
+	$nas		= $name;
+	$asq		= explode(':', $nas);
+	if(count($asq)>1){
+		$nas	= $asq[1];
+		$nac	= $asq[0];
+		$pats	= $nac.'/';
+		$_pats	= ''.ROOT_PATH.'/'.PROJECT.'/model/'.$nac.'/'.$nac.'.php';
+		if(file_exists($_pats)){
+			include_once($_pats);
+			$class	= ''.$nac.'Model';
 			$cls	= new $class($nas);
-		}
-		if($cls==NULL)$cls = new sModel($nas);
-		$GLOBALS['rockModelImport'][$name]	= $cls;
+		}	
 	}
+	$class		= ''.$nas.'ClassModel';
+	$path		= ''.ROOT_PATH.'/'.PROJECT.'/model/'.$pats.''.$nas.'Model.php';
+	if(file_exists($path)){
+		include_once($path);
+		if($nac!='')$class= $nac.'_'.$class;
+		$cls	= new $class($nas);
+	}
+	if($cls==NULL)$cls = new sModel($nas);
 	return $cls;
 }
 

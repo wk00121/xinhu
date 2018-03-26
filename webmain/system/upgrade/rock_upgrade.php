@@ -174,7 +174,7 @@ $(document).ready(function(){
 <div class="blank10"></div>
 <div><h4><b>更多升级方法：</b></h4></div>
 <div style="line-height:35px">
-1、使用svn地址升级(推荐)，地址：<a href="https://git.oschina.net/rainrock/xinhu" target="_blank">https://git.oschina.net/rainrock/xinhu</a><br>
+1、使用svn/git地址升级(推荐)，地址：<a href="https://gitee.com/rainrock/xinhu" target="_blank">https://gitee.com/rainrock/xinhu</a>，<a href="https://github.com/rainrocka/xinhu" target="_blank">https://github.com/rainrocka/xinhu</a><br>
 2、去官网下载源码全部覆盖升级，如果您自己修改，请谨慎覆盖。<br>
 3、根据列表升级安装。
 </div>

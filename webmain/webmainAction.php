@@ -464,6 +464,7 @@ class Action extends mainAction
 		$title	= $this->post('exceltitle','',1);
 		$rows	= $arr['rows'];
 		$exceltype	= $this->post('exceltype','xls'); //保存文件类型
+		if($exceltype!='doc')$exceltype = 'xls';
 		$headArr	= array();
 		for($i=0; $i<count($fields); $i++){
 			$headArr[$fields[$i]] = $header[$i];

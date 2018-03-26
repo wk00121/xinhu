@@ -131,9 +131,14 @@ $(document).ready(function(){
 				}
 			});
 			h.isValid();
+		},
+		clickset:function(){
+			js.open('?a=helpset&m=email&d=system');
 		}
 	};
 	js.initbtn(c);
+	
+	if(adminid!='1')$('#msgss{rand}').html('');
 });
 </script>
 
@@ -181,7 +186,7 @@ $(document).ready(function(){
 			<button class="btn btn-default" click="search" type="button">搜索</button> 
 		</td>
 		<td width="90%">
-			
+			<div id="msgss{rand}">&nbsp;自动接收邮件设置，<a href="javascript:;" click="clickset">[打开设置]</a></div>
 		</td>
 		<td align="right" nowrap>
 			<button class="btn btn-default" id="btn1_{rand}" click="biaoyd" type="button">标识已读</button>&nbsp; 

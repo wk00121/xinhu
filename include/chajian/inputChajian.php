@@ -236,8 +236,9 @@ class inputChajian extends Chajian
 		if(!$fopt && !isempt($datanum) && contain($datanum,':')){
 			$acta = explode(':', $datanum);
 			$objs = m($acta[0]);
-			if(method_exists($objs, $acta[1])){
-				$fopt = $objs->$acta[1]();
+			$tacs = $acta[1];
+			if(method_exists($objs, $tacs)){
+				$fopt = $objs->$tacs();
 			}
 		}
 		

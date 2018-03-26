@@ -2398,12 +2398,16 @@ class flowModel extends Model
 		return $where;
 	}
 	
+	/**
+	*	根据流程模块条件读取记录和统计
+	*/
 	public function getflowrows($uid, $lx, $limit=5)
 	{
 		$nas 	= $this->billwhere($uid, $lx);
 		$table 	= $nas['table'];
 		if(!contain($table,' '))$table='[Q]'.$table.'';
 		if(isempt($nas['fields']))$nas['fields'] = '*';
+		if($limit==0)return $this->db->rows($table, '1=1 '.$nas['where'].''); 
 		$rows 	= $this->db->getrows($table, '1=1 '.$nas['where'].'', $nas['fields'], $nas['order'], $limit);
 		foreach($rows as $k=>$rs){
 			$rows[$k] = $this->flowrsreplace($rs, 2);

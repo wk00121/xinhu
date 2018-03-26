@@ -1,5 +1,5 @@
 <?php
-
+//任务的应用
 class agent_workClassModel extends agentModel
 {
 	

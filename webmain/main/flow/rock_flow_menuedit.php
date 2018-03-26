@@ -113,7 +113,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td align="right">更新内容：</td>
-			<td class="tdinput" colspan="3"><textarea  name="upgcont" style="height:60px" class="form-control"></textarea><font color=#888888>当触发时同时更新对应记录为这个内容</font></td>
+			<td class="tdinput" colspan="3"><textarea  name="upgcont" style="height:60px" class="form-control"></textarea><font color=#888888>当触发时同时更新对应记录为这个内容,{cname}选择的人,{cnameid}选择人id,{uid}当前用户id</font></td>
 		</tr>
 	
 		<tr>
