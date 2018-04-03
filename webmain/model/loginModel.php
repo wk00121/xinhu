@@ -223,7 +223,7 @@ class loginClassModel extends Model
 		$this->admintoken		= $token;
 		$this->adminname		= $name;
 		$this->adminid 			= $uid;
-		$this->rock->savecookie('mo_adminid', $uid);
+		$this->rock->savecookie('mo_adminid', $this->rock->jm->encrypt($token));
 	}
 	
 	//自动快速登录
@@ -237,15 +237,18 @@ class loginClassModel extends Model
 			$baid	= $aid;
 		}
 		if($baid==0){
-			$uid 	= (int)$this->rock->cookie('mo_adminid','0');//用cookie登录
-			$onrs 	= $this->getone("`uid`=$uid and `online`=1",'`name`,`token`,`id`,`uid`');
-			if($onrs){
-				$this->setsession($uid, $onrs['name'], $onrs['token']);
-				$this->update("moddt='".$this->rock->now."'", $onrs['id']);
-			}else{
-				$uid = 0;
+			$tokans = $this->rock->jm->uncrypt($this->rock->cookie('mo_adminid'));//用cookie登录
+			if(!isempt($tokans)){
+				$onrs 	= $this->getone("`token`='$tokans' and `online`=1",'`name`,`token`,`id`,`uid`');
+				if($onrs){
+					$uid= $onrs['uid'];
+					$this->setsession($uid, $onrs['name'], $onrs['token']);
+					$this->update("moddt='".$this->rock->now."'", $onrs['id']);
+				}else{
+					$uid = 0;
+				}
+				$baid = $uid;
 			}
-			$baid = $uid;
 		}
 		return $baid;
 	}
