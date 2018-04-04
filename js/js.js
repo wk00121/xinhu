@@ -10,6 +10,9 @@ $(document).ready(function(){
 	adminid=js.request('adminid');
 	token=js.request('token');
 	js.getsplit();
+	device= js.cookie('deviceid');
+	if(device=='')device=js.now('time');
+	js.savecookie('deviceid', device, 365);
 	try{
 		var winobj = js.request('winobj');
 		if(nwjsgui)window.focus=function(){nw.Window.get().focus()}

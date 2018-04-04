@@ -86,13 +86,11 @@ function changeauto(o){
 	if(o.checked)oi='1';
 	js.setoption('autologin', oi);
 }
+var loginyzm = '';
 function loginsubmit(lx){
 
 	var user = form('adminuser').value;
 	var pass = getpassobj().val();
-	var device= js.cookie('deviceid');
-	if(device=='')device=js.now('time');
-	js.savecookie('deviceid', device, 365);
 	if(user==''){
 		js.msg('msg','用户名不能为空');
 		form('adminuser').focus();
@@ -112,11 +110,13 @@ function loginsubmit(lx){
 	btnobj.disabled=true;
 	var data	= {};
 	var url		= js.getajaxurl('check','login');
-	data.device = '';
+	data.device = device;
 	data.cfrom  = 'reim';
 	data.adminuser = jm.base64encode(user);
 	data.adminpass = jm.base64encode(pass);
+	data.yanzm    = loginyzm;
 	js.bool		= true;
+	loginyzm = '';
 	js.ajax(url,data,function(a){
 		if(a.success){
 			get('myface').src=a.face;
@@ -129,6 +129,15 @@ function loginsubmit(lx){
 			btnobj.value='登录';
 			js.msg('msg',a.msg);
 			btnobj.disabled=false;
+			if(a.shouji){
+				mobilejsho = a.mobile;
+				js.prompt('输入手机验证码','手机号：'+a.shouji+'&nbsp;<span><a class="zhu" href="javascript:;" onclick="getcodes(this)">[获取验证码]</a></span>',function(jg,txt){
+					if(jg=='yes' && txt){
+						loginyzm = txt;
+						loginsubmit();
+					}
+				});
+			}
 		}
 	},'post,json');
 }
@@ -137,6 +146,19 @@ function loginsuccess(a){
 		var x = screen.width - window.screenX- $(window).width()-30;
 		window.moveBy(x,0);
 	}
+}
+
+function getcodes(o1){
+	var da = {'mobile':mobilejsho,'device':device};
+	var o2 = $(o1).parent();
+	o2.html(js.getmsg('获取中...'));
+	js.ajax('api.php?m=yanzm',da,function(a){
+		if(a.success){
+			o2.html(js.getmsg('获取成功','green'));
+		}else{
+			o2.html(js.getmsg(a.msg));
+		}
+	},'post,json');
 }
 
 function getpassobj(){

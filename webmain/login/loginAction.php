@@ -22,6 +22,13 @@ class loginClassAction extends ActionNot{
 		$arr 	= m('login')->start($user, $pass, $cfrom);
 		$barr 	= array();
 		if(is_array($arr)){
+			
+			if(isset($arr['mobile'])){
+				$barr = $arr;
+				$barr['success'] = false;
+				return $barr;
+			}
+			
 			$uid 	= $arr['uid'];
 			$name 	= $arr['name'];
 			$user 	= $arr['user'];

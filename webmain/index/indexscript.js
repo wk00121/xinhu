@@ -322,13 +322,13 @@ function tabsright(num,e){
 	if(!to.hideclose)d.push({'name':'关闭','num':num,lx:0});
 	if(num==nowtabs.num)d.push({'name':'关闭其它页面','num':num,lx:2});
 	if(admintype==1)d.push({'name':'查看页面地址','num':num,lx:1});
-	if(homeurl=='')d.push({'name':'新窗口打开',tobj:to,'num':num,lx:4});
+	if(homeurl=='' && to.id)d.push({'name':'新窗口打开',tobj:to,'num':num,lx:4});
 	d.push({'name':'全部刷新','num':num,lx:3});
 	tabsrights.setData(d);
 	tabsrights.showAt(e.clientX,e.clientY+5);
 }
 function _opentabls(d){
-	var url = '?homeurl='+jm.base64encode(d.url)+'&homename='+jm.base64encode(d.name)+'';
+	var url = '?homeurl='+jm.base64encode(d.url)+'&homename='+jm.base64encode(d.name)+'&menuid='+jm.base64encode(d.id)+'';
 	window.open(url);
 }
 
@@ -349,6 +349,7 @@ function addtabs(a){
 	if(url.indexOf('add,')==0){openinput(a.name,url.substr(4));return;}
 	if(url.indexOf('open:')==0){window.open(url.substr(5));return;}
 	if(url.indexOf('http')==0 || url.substr(0,1)=='?'){addiframe(a);return;}
+	if(nowtabs && nowtabs.id && !a.id)a.id=nowtabs.id;
 	nowtabs = a;
 	if(changetabs(num))return true;
 

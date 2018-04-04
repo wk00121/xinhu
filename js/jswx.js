@@ -65,12 +65,12 @@ js.ajax  = function(m,a,d,funs, mod,checs, erfs, glx){
 	var tsnr = '努力处理中...';
 	if(mod=='wait')js.msg(mod, tsnr);
 	if(mod=='mode')js.wx.load(tsnr);
-	function errsoers(ts){
+	function errsoers(ts, ds){
 		js.wx.unload();
 		js.setmsg(ts);
 		js.msg('msg',ts);
 		js.ajaxbool = false;
-		erfs(ts);
+		erfs(ts, ds);
 	}
 	var type=(!d)?'get':'post';if(glx)type=glx;
 	var ajaxcan={
@@ -84,7 +84,7 @@ js.ajax  = function(m,a,d,funs, mod,checs, erfs, glx){
 				return;
 			}
 			if(ret.code!=200){
-				errsoers(ret.msg);
+				errsoers(ret.msg, ret);
 			}else{
 				js.setmsg('');
 				js.msg('none');

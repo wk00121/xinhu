@@ -18,6 +18,7 @@ class indexClassAction extends Action{
 		$optdta	= $this->get('optdt');
 		$optdt 	= $this->now;
 		$uid 	= $this->adminid;
+		if(m('admin')->rows("`id`='$uid' and `status`=1")==0)exit('用户不存在');
 		$arr['optdt']	= $optdt;
 		$todo			= m('todo')->rows("uid='$uid' and `status`=0 and `tododt`<='$optdt'");
 		$arr['todo']	= $todo;

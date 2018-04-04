@@ -16,6 +16,7 @@ class smsClassAction extends Action
 		$barr['sms_mknum'] 	= $this->option->getval('sms_mknum');
 		$barr['sms_qmnum'] 	= $this->option->getval('sms_qmnum');
 		$barr['sms_dirtype'] 	= $this->option->getval('sms_dirtype');
+		$barr['sms_yanzm'] 	= $this->option->getval('sms_yanzm');
 		return $barr;
 	}
 	
@@ -29,6 +30,7 @@ class smsClassAction extends Action
 		$this->option->setval('sms_mknum', $this->get('sms_mknum'));  //要提醒的模块编号
 		$this->option->setval('sms_qmnum', $this->get('sms_qmnum')); //签名
 		$this->option->setval('sms_dirtype', $this->get('sms_dirtype'));
+		$this->option->setval('sms_yanzm', $this->get('sms_yanzm'));//验证码的短信编号
 	}
 	
 	//测试

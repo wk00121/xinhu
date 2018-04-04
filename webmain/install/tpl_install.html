@@ -11,6 +11,7 @@
 <style>
 .input{width:210px;height:30px;line-height:20px}
 </style>
+
 </head>
 <body style="padding:10px">
 <center>
@@ -22,13 +23,13 @@
 				<p>我们网站：<?=URLY?></p>
 				<p>产品名称：信呼</p>
 				
-				<p>源码仅供学习二次开发使用，禁止原封不动出售。</p>
+				<p>源码仅供学习开发使用，禁止原封不动出售。</p>
 				<p style="color:red">版权来自：信呼开发团队，二次开发请标识来自《信呼》。</p>
-				<p>合作开发：如您需要定制信呼上其他应用模块，方便可以联系我们看需求进行二次开发。</p>
-				<p>技术支持：<a href="<?=URLY?>" class="blue" target="_blank">信呼开发团队</a></p>
-				<p>版本：V<?=VERSION?></p>
+				<p><b>为了您使用系统安全请时时关注官网在线升级，有出现bug漏洞等要及时修复，尽量不要将自己公网地址暴露给不相关人员。</b></p>
+				<p>技术支持：<a href="<?=URLY?>" class="blue" target="_blank">信呼开发团队</a>，<a href="<?=URLY?>view_shengming.html"  target="_blank" class="blue"><u>责任声明</u></a></p>
+				<p>当前版本：V<?=VERSION?></p>
 				<p><a href="<?=URLY?>view_demo.html" class="blue" target="_blank"><u>在线演示</u></a>&nbsp; &nbsp; &nbsp; 已安装？<a href="?m=login" class="blue"><u>直接登录</u></a></p>
-				<div align="center" style="text-align:center;padding-top:15px"><a class="webbtn" onclick="nextabc()" href="javascript:">我知道了</a> &nbsp;<a target="_blank" href="<?=URLY?>view_anzz.html" class="blue" >用手动安装?</a></div>
+				<div align="center" style="text-align:center;padding-top:15px"><input class="webbtn" onclick="nextabc()" disabled id="zhidbtns" value="我知道了" type="button"> &nbsp;<a target="_blank" href="<?=URLY?>view_anzz.html" class="blue" >用手动安装?</a></div>
 			</div>
 			<div id="step2" style="display:none">
 			<form name="myform">
@@ -123,5 +124,21 @@
 	</div>
 	
 </center>
+
+<script>
+function restimes(sj){
+	var o = get('zhidbtns');
+	if(sj==0){
+		o.value='知道了';
+		o.disabled=false;
+		return;
+	}
+	o.value='在读'+sj+'秒';
+	o.disabled=true;
+	setTimeout('restimes('+(sj-1)+')',1000);
+}
+restimes(10);
+</script>
+
 </body>
 </html>

@@ -31,7 +31,7 @@ class checkChajian extends Chajian{
 	{
 		if(isempt($str))return false;
 		if(!is_numeric($str) || strlen($str)!=11)return false;
-		if(!preg_match("/1[34587]{1}\d{9}$/", $str))return false;
+		if(!preg_match("/1[3458769]{1}\d{9}$/", $str))return false;
 		return true;
 	}
 	

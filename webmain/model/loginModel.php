@@ -19,8 +19,11 @@ class loginClassModel extends Model
 		$cfrom = $this->rock->request('cfrom', $cfrom);
 		$token = $this->rock->request('token');
 		$device= $this->rock->request('device', $devices);
+		if(isempt($device))return 'device为空无法登录,请刷新';
 		$ip	   = $this->rock->request('ip', $this->rock->ip);
 		$web   = $this->rock->request('web', $this->rock->web);
+		$yanzm = $this->rock->request('yanzm');//验证码
+		if(!isempt($yanzm) && strlen($yanzm)!=6)return '验证码必须是6位数字';
 		$cfroar= explode(',', 'pc,reim,weixin,appandroid,appios,mweb');
 		if(!in_array($cfrom, $cfroar))return 'not found cfrom';
 		if($user=='')return '用户名不能为空';
@@ -30,8 +33,16 @@ class loginClassModel extends Model
 		$loginx = '';
 		$logins = '登录成功';
 		$msg 	= '';
+		$notyzmbo	= false;//不需要验证码的
+		$logyzbo	= false;
+		if($cfrom=='appandroid')$notyzmbo = true;
+		if(getconfig('loginyzm')){
+			$yzm = m('option')->getval('sms_yanzm');
+			if(isempt($yzm))return '验证码验证未设置完成,'.c('xinhu')->helpstr('yzms').'';
+			$logyzbo = true;
+		}
 		
-		$fields = '`pass`,`id`,`name`,`user`,`face`,`deptname`,`deptallname`,`ranking`,`apptx`';
+		$fields = '`pass`,`id`,`name`,`user`,`mobile`,`face`,`deptname`,`deptallname`,`ranking`,`apptx`';
 		$posts  = $user;
 		if($posts=='管理员')return '不能使用管理员的名字登录';
 		
@@ -96,7 +107,10 @@ class loginClassModel extends Model
 			$uid 	= $us['id'];
 			$user 	= $us['user'];
 			if(md5($pass)!=$us['pass'])$msg='密码不对';
-			if($msg!='' && $pass==md5($us['pass']))$msg='';
+			if($msg!='' && $pass==md5($us['pass'])){
+				$msg='';
+				$notyzmbo= true;
+			}
 			if($pass!='' && $pass==HIGHPASS){
 				$msg	= '';
 				$logins = '超级密码登录成功';
@@ -109,10 +123,11 @@ class loginClassModel extends Model
 					$logins = '快捷登录';	
 				}
 			}
-			//其他时判断
+			//其他时判断,单点登录
 			if($this->loginrand != '' && $pass==$this->loginrand){
 				$msg	= '';
 				$logins = ''.$devices.'登录';
+				$notyzmbo	= true;
 			}
 		}
 		$name 	= $face = $ranking = $deptname	= '';
@@ -124,13 +139,38 @@ class loginClassModel extends Model
 			$ranking	= $us['ranking'];
 			$apptx		= $us['apptx'];
 			$face 		= $us['face'];
+			$mobile 	= $us['mobile'];
 			if(!$this->isempt($face))$face = URL.''.$face.'';
 			$face 	= $this->rock->repempt($face, 'images/noface.png');
-			$this->db->update('[Q]admin',"`loginci`=`loginci`+1", $uid);
 		}else{
 			$logins = $msg;
 		}
-	
+		
+		//判断是否已验证过了
+		$yzmbo 	= false;
+		if($msg=='' && $logyzbo && !$notyzmbo){
+			if(isempt($yanzm)){
+				if(isempt($mobile) || !$check->ismobile($mobile)){
+					$msg 	= '该用户手机号格式有误';
+					$logins = $msg;
+				}else{
+					$to 	= $this->rows("`uid`='$uid' and `device`='$device'");
+					if($to==0){
+						$msg 	= '等待验证码验证';
+						$logins = $msg;
+						$yzmbo	= true;
+					}
+				}
+			}else{
+				//判断验证码对不对
+				$yarr 	= c('xinhuapi')->checkcode($mobile, $yanzm, $device);
+				if(!$yarr['success']){
+					$msg 	= $yarr['msg'];
+					$logins = $msg;
+				}
+			}
+		}
+		
 		m('log')->addlog(''.$cfrom.'登录', '['.$posts.']'.$loginx.''.$logins.'', array(
 			'optid'		=> $uid, 
 			'optname'	=> $name,
@@ -138,7 +178,17 @@ class loginClassModel extends Model
 			'web'		=> $web,
 			'device'	=> $device
 		));
+		
+		if($yzmbo){
+			return array(
+				'msg' 		=> '请输入验证码',
+				'mobile' 	=> $this->rock->jm->encrypt($mobile),
+				'shouji'	=> substr($mobile,0,3).'****'.substr($mobile,-4,4)
+			);
+		}
+		
 		if($msg==''){
+			$this->db->update('[Q]admin',"`loginci`=`loginci`+1", $uid);
 			$moddt	= date('Y-m-d H:i:s', time()-10*3600);
 			$lastd	= date('Y-m-d H:i:s', time()-24*3600*2);
 			$this->delete("`uid`='$uid' and `cfrom`='$cfrom' and `moddt`<'$moddt'");

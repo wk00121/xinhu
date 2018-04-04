@@ -22,8 +22,14 @@ class indexClassAction extends Action{
 		$this->smartydata['topmenu'] 	= m('menu')->getall("`pid`=0 and `status`=1 $mewhere order by `sort`");
 		$homeurl 						= $this->jm->base64decode($this->get('homeurl'));
 		$homename 						= $this->jm->base64decode($this->get('homename'));
+		$menuid 						= (int)$this->jm->base64decode($this->get('menuid'));
 		$showkey						= $this->jm->base64encode($this->jm->getkeyshow());
+		if($menuid<1)$menuid = '';
 		if($homeurl=='')$showkey = '';
+		if(!isempt($homeurl) && isempt($menuid))return '无权限打开['.$homename.']的页面1';
+		if(!isempt($menuid) && $isadmin==0){
+			if(!contain($myext,'['.$menuid.']'))return '无权限打开['.$homename.']的页面2';
+		}
 		$this->smartydata['showkey']	= $showkey;
 		$this->smartydata['homeurl']	= $homeurl;
 		$this->smartydata['homename']	= $homename;

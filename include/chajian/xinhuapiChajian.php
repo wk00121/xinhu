@@ -90,8 +90,8 @@ class xinhuapiChajian extends Chajian{
 	*/
 	public function send($tomobile,$qiannum, $tplnum, $params=array(), $url='', $addlog=true)
 	{
+		if(isempt($qiannum))$qiannum = $this->qiannum;
 		if($this->sendtype=='alisms'){
-			if(isempt($qiannum))$qiannum = $this->qiannum;
 			$barr 	= c('alisms')->send($tomobile, $qiannum, $tplnum, $params);
 		}else{
 			$para['sys_tomobile'] = $tomobile;
@@ -164,22 +164,30 @@ class xinhuapiChajian extends Chajian{
 	*	$qiannum 签名编号
 	*	$tplnum 模版编号
 	*/
-	public function getvercode($tomobile, $tplnum='', $qiannum='')
+	public function getvercode($tomobile, $device, $tplnum='', $qiannum='')
 	{
-		if($tplnum=='')$tplnum = 'defyzm';
-		$otme 	= floatval($this->rock->cookie('sms_vertime',0));
 		if(isempt($tomobile))return returnerror('接收手机号不能为空');
+		if($tplnum=='')$tplnum = m('option')->getval('sms_yanzm');
+		if(isempt($tplnum))return returnerror('验证码模版编号不能为空');
+		$otme	= 0;
+		
+		$lorsr	= m('log')->getone("`type`='获取验证码' and (`optname`='$tomobile' or `device`='$device')",'`optdt`','id desc');
+		if($lorsr)$otme = strtotime($lorsr['optdt']);
 		
 		$jgtims = 60;//每次获取间隔秒数
 		$jgtime	= time()-$otme;
 		if($otme>0 && $jgtime<$jgtims)return returnerror('获取太频繁,请'.($jgtims-$jgtime).'秒后在试');
 
-		$code 	= rand(100000,999999);
+		$code 	= '5'.rand(10000,99999);
 		$params['code'] = $code;
 		$barr 	= $this->send($tomobile, $qiannum, $tplnum, $params);
-		//$barr['success'] = $code;
+		//$barr	= returnsuccess('ok');
 		if($barr['success']){
-			$this->rock->savecookie('sms_vercode,sms_vertime,sms_yztime', array(md5($tomobile.$code), time(),1), 1/24/12);
+			m('log')->addlog('获取验证码', '获取验证码为：'.$code.'', array(
+				'device'	=> $device,
+				'optname'	=> $tomobile,
+				'optid'		=> $code
+			));
 		}
 		return $barr;
 	}
@@ -187,25 +195,20 @@ class xinhuapiChajian extends Chajian{
 	/**
 	*	验证验证码是否正确,最多只能验证5次
 	*/
-	public function checkcode($tomobile, $code)
+	public function checkcode($tomobile, $code, $device)
 	{
 		if(isempt($tomobile))return returnerror('手机号不能为空');
 		if(isempt($code))return returnerror('验证码不能为空');
-		$codes 	= md5($tomobile.$code);
-		$vercode= $this->rock->cookie('sms_vercode');
-		$yztime = (int)$this->rock->cookie('sms_yztime','1'); //验证次数
-		$otme 	= floatval($this->rock->cookie('sms_vertime',0));
-		if($otme<=0)return returnerror('未获取验证码');
+		
+		$ors 	= m('log')->getone("`type`='获取验证码' and `optname`='$tomobile' and `device`='$device'",'`optid`,`optdt`,`id`','`id` desc');
+		
+		if(!$ors)return returnerror('验证码不存在');
+		$otme 	= strtotime($ors['optdt']);
 		$youxiaq= 5*60;//
-		if(time() - $otme > $youxiaq)return returnerror('验证码已过期');
-		$keys 	= 'sms_vercode,sms_vertime,sms_yztime';
-		if($vercode != $codes){
-			$yztime++;
-			$this->rock->savecookie('sms_yztime', $yztime, 1/24/12);
-			if($yztime>5)$this->rock->clearcookie($keys);
-			return returnerror('验证码错误');
-		}
-		$this->rock->clearcookie($keys); //正确就清除
+		if(time()-$otme> $youxiaq)return returnerror('验证码已过期');
+		
+		if($code!=$ors['optid'])return returnerror('验证码错误');
+		m('log')->update('`optid`=0', $ors['id']);
 		return returnsuccess('ok');
 	}
 	

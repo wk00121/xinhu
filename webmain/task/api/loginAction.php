@@ -7,6 +7,11 @@ class loginClassAction extends apiAction
 		$adminpass	= $this->rock->jm->base64decode($this->post('pass'));
 		$arr 		= m('login')->start($adminuser, $adminpass);
 		if(is_array($arr)){
+			
+			if(isset($arr['mobile'])){
+				$this->showreturn($arr, $arr['msg'], 205);
+			}
+			
 			$arrs = array(
 				'uid' 	=> $arr['uid'],
 				'name' 	=> $arr['name'],

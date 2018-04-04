@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
 <title>登录</title>
 <link rel="stylesheet" type="text/css" href="mode/weui/weui.min.css"/>
+<link rel="stylesheet" type="text/css" href="webmain/css/rui.css">
 <link rel="shortcut icon" href="favicon.ico" />
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
@@ -51,6 +52,7 @@ function initbody(){
 		if(e.keyCode==13 && this.value)loginsubmit(0);
 	});
 }
+var loginyzm = '';
 function loginsubmit(lx){
 	if(js.ajaxbool)return false;
 	var user = get('adminuser').value,pass = get('adminpass').value;
@@ -69,17 +71,45 @@ function loginsubmit(lx){
 	o.disabled=true;
 	js.setoption('adminuser', user);
 	js.setmsg('');
-	var spd = {user:jm.base64encode(user),pass:jm.base64encode(pass),token:temp_token};
+	var spd = {user:jm.base64encode(user),pass:jm.base64encode(pass),token:temp_token,yanzm:loginyzm};
 	//js.getarr(spd);
+	loginyzm = '';
 	js.ajax('login','check',spd, function(da){
 		o.value='登录成功';
 		loginsuccess(da);
-	},'none',false, function(str){
+	},'none',false, function(str, ret){
 		o.value='登录';
 		o.disabled=false;
+		if(ret){
+			var a = ret.data;
+			if(a.shouji){
+				mobilejsho = a.mobile;
+				js.wx.prompt('输入手机验证码','手机号：'+a.shouji+'&nbsp;<span><a class="zhu" href="javascript:;" onclick="getcodes(this)">[获取验证码]</a></span>',function(txt){
+					if(txt){
+						loginyzm = txt;
+						loginsubmit(0);
+					}
+				});;
+			}
+		}
 	});
 	return false;
 }
+
+
+function getcodes(o1){
+	var da = {'mobile':mobilejsho,'device':device};
+	var o2 = $(o1).parent();
+	o2.html(js.getmsg('获取中...'));
+	js.ajax('yanzm','index',da, function(da){
+		o2.html(js.getmsg('获取成功','green'));
+	},'none',false, function(str, ret){
+		o2.html(js.getmsg(str));
+	});
+	return false;
+}
+
+
 function loginsuccess(d){
 	js.setoption('adminface', d.face);
 	js.setoption('adminame',d.name);

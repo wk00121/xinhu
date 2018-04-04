@@ -70,6 +70,7 @@ class cogClassAction extends Action
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
 		$arr['mobile_show'] = getconfig('mobile_show') ? '1' : '0';
+		$arr['loginyzm'] 	= getconfig('loginyzm') ? '1' : '0';
 		if(getconfig('systype')=='demo')$arr['xinhukey']='';
 		$this->returnjson($arr);
 	}
@@ -120,6 +121,7 @@ class cogClassAction extends Action
 		$arr['debug'] 	 = $this->post('debug')=='1';
 		$arr['reim_show'] 	 = $this->post('reim_show')=='1';
 		$arr['mobile_show']  = $this->post('mobile_show')=='1';
+		$arr['loginyzm']  	= $this->post('loginyzm')=='1';
 		
 		if($asynsend == '1' && isempt($puurl))exit('未安装或开启服务端不能使用异步发送消息');
 		
@@ -149,6 +151,7 @@ class cogClassAction extends Action
 		$smarr['debug']			= '为true调试开发模式,false上线模式';
 		$smarr['reim_show']		= '首页是否显示REIM';
 		$smarr['mobile_show']	= '首页是否显示手机版';
+		$smarr['loginyzm']		= '登录时短信验证码验证';
 		$smarr['officeyl']		= '文档Excel.Doc预览类型,0自己部署插件，1使用官网支持任何平台';
 		
 		$str1 = '';

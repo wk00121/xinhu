@@ -26,6 +26,7 @@ $(document).ready(function(){
 				get('sms_mknum_{rand}').value=ret.sms_mknum;
 				get('sms_qmnum_{rand}').value=ret.sms_qmnum;
 				get('sms_dirtype_{rand}').value=ret.sms_dirtype;
+				get('sms_yanzm_{rand}').value=ret.sms_yanzm;
 				if(ret.sms_dirtype!=''){
 					$('#stotal{rand}').html('请到对应短信平台下查看');
 					curl='https://www.aliyun.com';
@@ -68,6 +69,7 @@ $(document).ready(function(){
 				sms_mknum:get('sms_mknum_{rand}').value,
 				sms_qmnum:get('sms_qmnum_{rand}').value,
 				sms_txnum:get('sms_txnum_{rand}').value,
+				sms_yanzm:get('sms_yanzm_{rand}').value,
 				sms_dirtype:lxs
 			};
 			if(lxs=='alisms'){
@@ -159,6 +161,11 @@ $(document).ready(function(){
 	<tr>
 		<td  align="right">流程是否开短信催办：</td>
 		<td class="tdinput"><select id="sms_iscb_{rand}" style="width:200px" class="form-control"><option value="0">不开启</option><option value="1">开启</option></select></td>
+	</tr>
+	
+	<tr>
+		<td  align="right">短信验证码模版编号：</td>
+		<td class="tdinput"><input id="sms_yanzm_{rand}"  maxlength="50" value="" class="form-control"></td>
 	</tr>
 	
 	<tr>
