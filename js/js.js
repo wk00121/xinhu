@@ -74,7 +74,7 @@ js.getcan = function(i,dev){
 js.gethost=function(){
 	var url = location.href,sau='';
 	try{sau = url.split('//')[1].split('/')[0];}catch(e){}
-	if(sau.indexOf('demo.rockoa.com')>=0)ISDEMO=true;
+	if(sau.indexOf('demo.rockoa.com')>=0 || sau.indexOf('demo.oaqoa.com')>=0)ISDEMO=true;
 	var lse = url.lastIndexOf('/');NOWURL = url.substr(0, lse+1);
 	return sau;
 }

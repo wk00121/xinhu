@@ -2,7 +2,7 @@
 /**
 *	来自：信呼开发团队
 *	作者：磐石(rainrock)
-*	网址：http://www.rockoa.com/
+*	网址：http://www.oaqoa.com/
 *	系统默认配置文件，请不要去修改
 *	要修改配置文件在：webmain/webmainConfig.php
 */
@@ -26,7 +26,7 @@ if(!defined('ENTRANCE'))define('ENTRANCE', 'index');
 $config		= array(
 	'title'		=> '信呼',
 	'url'		=> '',
-	'urly'		=> 'http://www.rockoa.com/',	//官网域名地址，修改后就无法提供在线升级了。
+	'urly'		=> 'http://www.oaqoa.com/',	//官网域名地址，修改后就无法提供在线升级了。
 	'db_host'	=> '127.0.0.1',
 	'db_user'	=> 'root',
 	'db_pass'	=> '',

@@ -1,6 +1,7 @@
 <?php 
 /**
 *	连接官网API，短信发送
+*	来自信呼开发团队
 */
 
 class xinhuapiChajian extends Chajian{
@@ -16,7 +17,8 @@ class xinhuapiChajian extends Chajian{
 		if(getconfig('systype')=='dev'){
 			$this->updatekeys  = 'aHR0cDovLzEyNy4wLjAuMS9hcHAvcm9ja2FwaS8:';
 		}else{
-			$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
+			//$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
+			$this->updatekeys  = 'aHR0cDovL3d3dy5vYXFvYS5jb20vYXBpLw::';
 		}
 		$this->updatekey	=$this->rock->jm->base64decode($this->updatekeys);
 		$this->getsysnum();
