@@ -398,7 +398,7 @@ class reimClassModel extends Model
 			if($rs['url']=='link' || $rs['url']=='linko'){
 				$urlpc = $rs['urlpc'];
 				if(!isempt($urlpc) && $mrs = $mdbs->getone("`num`='$urlpc'")){
-					$urlpc = 'index.php?m=index&homeurl='.$this->rock->jm->base64encode($mrs['url']).'&homename='.$this->rock->jm->base64encode($mrs['name']).'';
+					$urlpc = 'index.php?m=index&homeurl='.$this->rock->jm->base64encode($mrs['url']).'&homename='.$this->rock->jm->base64encode($mrs['name']).'&menuid='.$this->rock->jm->base64encode($mrs['id']).'';
 					$rs['urlpc'] = $urlpc;
 				}
 			}
@@ -540,7 +540,7 @@ class reimClassModel extends Model
 			$one 	= $db->getone($where);
 			$arr 	= array();
 			$arr['optdt'] 	= $optdt;
-			$arr['cont'] 	= $cont;
+			$arr['cont'] 	= substr($cont, 0, 190);
 			$arr['sendid'] 	= $sendid;
 			$arr['title'] 	= $title;
 			if(!$one){

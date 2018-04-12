@@ -117,7 +117,7 @@ class flow_userClassModel extends flowModel
 		$sort 	= (int)$this->getmou('max(`sort`)', '`id`>0');
 		$dbs	= m('dept');
 		$py 	= c('pingyin');
-		
+		$dname	= $dbs->getmou('name', 1);if(isempt($dname))$dname = '信呼开发团队';
 		foreach($rows as $k=>$rs){
 			$user = $rs['user'];
 			$name = $rs['name'];
@@ -148,7 +148,7 @@ class flow_userClassModel extends flowModel
 			//读取部门Id
 			$deptarr 	= $this->getdeptid($rs['deptname'], $dbs);
 			
-			if($deptarr['deptid']==0)return '行'.($k+1).'找不到对应顶级部门['.$rs['deptname'].']';
+			if($deptarr['deptid']==0)return '行'.($k+1).'找不到顶级部门['.$rs['deptname'].'],请写完整部门路径如：'.$dname.'/'.$rs['deptname'].'';
 			
 			foreach($deptarr as $k1=>$v1)$arr[$k1]=$v1;
 			

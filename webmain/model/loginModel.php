@@ -19,7 +19,7 @@ class loginClassModel extends Model
 		$cfrom = $this->rock->request('cfrom', $cfrom);
 		$token = $this->rock->request('token');
 		$device= $this->rock->request('device', $devices);
-		if(isempt($device))return 'device为空无法登录,请刷新';
+		if(isempt($device))return 'device为空无法登录,清空浏览器缓存后刷新在试';
 		$ip	   = $this->rock->request('ip', $this->rock->ip);
 		$web   = $this->rock->request('web', $this->rock->web);
 		$yanzm = $this->rock->request('yanzm');//验证码
@@ -36,11 +36,19 @@ class loginClassModel extends Model
 		$notyzmbo	= false;//不需要验证码的
 		$logyzbo	= false;
 		if($cfrom=='appandroid')$notyzmbo = true;
+		
+		//5分钟内登录错误超过5次，限制一下
+		$dtstr	= date('Y-m-d H:i:s', time()-5*60);
+		$lasci	= m('log')->rows("`level`=3 and `device`='$device' and `optdt`>'$dtstr'");
+		if($lasci>=5)return '登录错误太频繁，请稍后在试';
+		
+		
 		if(getconfig('loginyzm')){
 			$yzm = m('option')->getval('sms_yanzm');
 			if(isempt($yzm))return '验证码验证未设置完成,'.c('xinhu')->helpstr('yzms').'';
 			$logyzbo = true;
 		}
+
 		
 		$fields = '`pass`,`id`,`name`,`user`,`mobile`,`face`,`deptname`,`deptallname`,`ranking`,`apptx`';
 		$posts  = $user;
@@ -94,7 +102,7 @@ class loginClassModel extends Model
 			);
 			$tos = $this->db->rows('[Q]admin', $arrs);
 			if($tos>1){
-				$msg = '存在相同姓名,无法识别用户';
+				$msg = '存在相同姓名,请使用用户名登录';
 			}
 			if($msg=='')$us = $this->db->getone('[Q]admin', $arrs , $fields);	
 			if($us)$loginx = '姓名';
@@ -170,8 +178,8 @@ class loginClassModel extends Model
 				}
 			}
 		}
-		
-		m('log')->addlog(''.$cfrom.'登录', '['.$posts.']'.$loginx.''.$logins.'', array(
+		$level	= ($msg=='') ? 0: 3;
+		m('log')->addlogs(''.$cfrom.'登录', '['.$posts.']'.$loginx.''.$logins.'',$level, array(
 			'optid'		=> $uid, 
 			'optname'	=> $name,
 			'ip'		=> $ip,

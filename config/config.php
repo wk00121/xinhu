@@ -47,7 +47,8 @@ $config		= array(
 	'debug'			=> true,	//默认debug模式
 	'reim_show' 	=> true,	//首页是否显示REIM
 	'mobile_show' 	=> true,	//首页是否显示手机版
-	'accesslogs' 	=> false	//是否记录访问日志和限制IP
+	'accesslogs' 	=> false,	//是否记录访问日志和限制IP
+	'upurl'			=> 'http://localhost/app/rockupfile/', 		//上传文件附件地址
 );
 
 $_confpath		= $rock->strformat('?0/?1/?1Config.php', ROOT_PATH, PROJECT);
@@ -78,6 +79,7 @@ define('QOM', $config['qom']);
 define('VERSION', $config['version']);
 define('HIGHPASS', $config['highpass']);
 define('SYSURL', ''.URL.PATH.'.php');
+define('UPURL', $config['upurl']);
 
 $_confpath	= ''.ROOT_PATH.'/config/iplogs.php'; //这个用来限制IP访问的
 if($config['accesslogs'] && file_exists($_confpath))include_once($_confpath);

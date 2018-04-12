@@ -44,11 +44,11 @@ if(file_exists($actfile)){
 		if(is_array($actbstr)){echo json_encode($actbstr);$xhrock->display=false;}
 	}else{
 		$methodbool = false;
-		if($ajaxbool == 'false')echo ''.$actname.' not found';
+		if($ajaxbool == 'false')echo ''.$actname.' not found;';
 	}
 	$xhrock->afterAction();
 }else{
-	echo ''.$actfile.' not found';
+	echo 'actionfile not exists;';
 	$xhrock		= new Action();
 }
 
@@ -73,7 +73,7 @@ if($xhrock->display && ($ajaxbool == 'html' || $ajaxbool == 'false')){
 		if(!$methodbool){
 			$errormsg	= 'in ('.$m.') not found Method('.$a.');';
 		}else{
-			$errormsg	= ''.$mpathname.' not exists;';
+			$errormsg	= ''.$tplname.' not exists;';
 		}
 		echo $errormsg;
 	}else{

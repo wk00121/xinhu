@@ -223,7 +223,9 @@ c.setcolumns('workshu',{
 	}
 });
 c.setcolumns('status',{
-	dataIndex:'statusstr'
+	renderer:function(v,d,i){
+		return d.statusstr;
+	}
 });
 viespere{rand}=function(id){
 	var d 	= a.getData(id);
