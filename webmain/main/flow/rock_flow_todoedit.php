@@ -164,7 +164,7 @@ $(document).ready(function(){
 		<tr>
 			<td  align="right" nowrap >通知给单据字段上：</td>
 			<td class="tdinput" colspan="3">
-				<input name="todofields" placeholder="写主表上的字段" class="form-control">
+				<input name="todofields" placeholder="写主表上的字段，必须是保存人员ID的字段" class="form-control">
 			</td>
 		</tr>
 	

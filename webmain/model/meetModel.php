@@ -35,6 +35,7 @@ class meetClassModel extends Model
 					'title' 	=> '['.$rs['hyname'].']'.$rs['title'].'',
 					'titles' 	=> $rs['title'],
 					'joinname' 	=> $rs['joinname'],
+					'optname' 	=> $rs['optname'],
 					'state' 	=> $state,
 					'status' 	=> $nzt,
 					'startdt' 	=> $dt,

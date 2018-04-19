@@ -8,7 +8,7 @@ class beifenClassModel extends Model
 	public function start()
 	{
 		$alltabls 	= $this->db->getalltable();
-		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads'); //不备份的表;
+		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads',''.PREFIX.'dailyfx',''.PREFIX.'todo'); //不备份的表;
 		
 		$beidir 	= ''.UPDIR.'/data/'.date('Y.m.d.H.i.s').'';
 		foreach($alltabls as $tabs){

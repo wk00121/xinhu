@@ -1011,9 +1011,10 @@ class kaoqinClassModel extends Model
 			if(!isempt($rs['states']))$state='正常';
 			if(!isset($sarr[$uid]))$sarr[$uid]=array();
 			if(!isset($sarr[$uid][$state]))$sarr[$uid][$state]=0;
-			$sarr[$uid][$state]++;
+			$sarr[$uid][$state]++; //统计次数用的
 		}
 		
+		$farrs				= $columns;
 		$farrs['未打卡'] 	= 'weidk';
 		$farrs['请假'] 		= 'qingjia';
 		$farrs['事假'] 		= 'shijia';

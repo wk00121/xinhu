@@ -174,7 +174,7 @@ class inputChajian extends Chajian
 		if($type=='uploadimg'){
 			$str = '<input name="'.$fname.'" type="hidden">';
 			$str.= '<img src="images/noimg.jpg" onclick="c.showviews(this)" id="imgview_'.$fname.'" height="100">';
-			$str.= '<div style="display:none" tsye="img" tnam="'.$fname.'" id="filed_'.$fname.'"><input type="file" style="width:120px" accept="image/jpg,image/jpeg,image/png" id="filed_'.$fname.'_inp"></div>';
+			$str.= '<div style="display:none" tsye="img" tnam="'.$fname.'" id="filed_'.$fname.'"><a href="javascript:;" onclick="c.uploadimgclear(\''.$fname.'\')">删</a>&nbsp;<input type="file" style="width:120px" accept="image/jpg,image/jpeg,image/png" id="filed_'.$fname.'_inp"></div>';
 		}
 		if($type=='uploadfile'){
 			$str = '<input name="'.$fname.'" value="'.$val.'" type="hidden">';

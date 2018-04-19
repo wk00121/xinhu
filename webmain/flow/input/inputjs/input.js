@@ -546,17 +546,11 @@ var c={
 			uploadJson:'?m=upload&a=upimg&d=public',
 			minWidth:'300px',height:'250',
 			items : [
-				'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
-				'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
-				'insertunorderedlist', '|','image','crop', 'link','unlink','|','source','clearhtml','fullscreen'
+				'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat','|','fontname', 'fontsize','quickformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist', '|', 'link','unlink','|','undo','source','clearhtml','fullscreen'
 			]	
 		};
-		KindEditor.plugin('crop', function(K){
-			this.clickToolbar('crop', function() {
-				js.cliendsend('crop');
-			});
-		});
-		KindEditor.lang({crop : '截屏'});
 		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
 	},
 	subtablefields:[],
@@ -754,6 +748,10 @@ var c={
 		var o = $('#div_'+fid+'').parent();
 		o.show();
 		o.prev().show();
+	},
+	uploadimgclear:function(fid){
+		get('imgview_'+fid+'').src='images/noimg.jpg';
+		form(fid).value='';
 	},
 	
 	//----强大公式计算函数处理start-----

@@ -63,7 +63,7 @@ var reim = {
 		setInterval('reim.timeload()', 1000);
 	},
 	openrecord:function(){
-		var url = '?homeurl=cmVpbSxyZWNvcmQsYXR5cGU9bXk:&homename=5oiR55qE5Lya6K!d6K6w5b2V';
+		var url = '?homeurl=cmVpbSxyZWNvcmQsYXR5cGU9bXk:&homename=5oiR55qE5Lya6K!d6K6w5b2V&menuid=MjI3';
 		js.open(url,1000,550,'chatrecord');
 	},
 	timeload:function(){

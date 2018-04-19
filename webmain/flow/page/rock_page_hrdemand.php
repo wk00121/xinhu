@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：work.任务，
+*	模块：hrdemand.人员需求，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.任务]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.人员需求]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'work',modename='任务',isflow=1,modeid='4',atype = params.atype,pnum=params.pnum;
+	var modenum = 'hrdemand',modename='人员需求',isflow=1,modeid='78',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"grade","name":"\u7b49\u7ea7","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"dist","name":"\u5206\u914d\u7ed9","fieldstype":"changeuser","ispx":"0","isalign":"0","islb":"1"},{"fields":"projectid","name":"\u6240\u5c5e\u9879\u76ee","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"startdt","name":"\u5f00\u59cb\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"ddname","name":"\u7763\u5bfc\u4eba","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"score","name":"\u4efb\u52a1\u5206\u503c","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"mark","name":"\u5f97\u5206","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u521b\u5efa\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"optdt","name":"\u521b\u5efa\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= {"columns_work_":"title,type,grade,dist,startdt,enddt,ddname,score,optname,optdt,caozuo","columns_work_all":"title,type,grade,dist,startdt,enddt,ddname,score,mark,optname,optdt,caozuo"};
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"zhiwei","name":"\u9700\u6c42\u5c97\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"bumen","name":"\u9700\u6c42\u90e8\u95e8","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"xinzi","name":"\u85aa\u8d44","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"renshu","name":"\u9700\u6c42\u4eba\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"content","name":"\u804c\u4f4d\u8981\u6c42","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -69,14 +69,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'任务('+nowtabs.name+')',
-				cont:'任务('+nowtabs.name+')的列表的',
-				explain:'订阅[任务]的列表',
+				title:'人员需求('+nowtabs.name+')',
+				cont:'人员需求('+nowtabs.name+')的列表的',
+				explain:'订阅[人员需求]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_work|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_hrdemand|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -120,8 +120,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistwork = a;
-			addtabs({num:'daoruwork',url:'flow,input,daoru,modenum=work',icons:'plus',name:'导入任务'});
+			window.managelisthrdemand = a;
+			addtabs({num:'daoruhrdemand',url:'flow,input,daoru,modenum=hrdemand',icons:'plus',name:'导入人员需求'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -191,10 +191,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('d29yaw::'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aHJkZW1pbnQ:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"标题",dataIndex:"title",align:"left"},{text:"类型",dataIndex:"type"},{text:"等级",dataIndex:"grade",sortable:true},{text:"分配给",dataIndex:"dist"},{text:"开始时间",dataIndex:"startdt"},{text:"截止时间",dataIndex:"enddt"},{text:"督导人",dataIndex:"ddname"},{text:"任务分值",dataIndex:"score"},{text:"得分",dataIndex:"mark",sortable:true},{text:"创建人",dataIndex:"optname"},{text:"创建时间",dataIndex:"optdt"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"需求岗位",dataIndex:"zhiwei"},{text:"需求部门",dataIndex:"bumen"},{text:"薪资",dataIndex:"xinzi"},{text:"需求人数",dataIndex:"renshu"},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -211,20 +211,12 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-var plid = params.projcetid;
-if(plid)bootparams.url+='&projcetid='+plid+'';
-c.setcolumns('title',{
-	renderer:function(v,d){
-		var s = v;
-		if(d.projectid!='')s+='<br><span style="color:#888888;font-size:12px">'+d.projectid+'</span>';
-		return s;
-	}
-});
+
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewwork_{rand}').bootstable(bootparams);
+	var a = $('#viewhrdemand_{rand}').bootstable(bootparams);
 	c.init();
 	var ddata = [{name:'高级搜索',lx:0}];
 	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
@@ -251,7 +243,7 @@ c.setcolumns('title',{
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待分配</option><option style="color:green" value="1">已完成</option><option style="color:red" value="2">未通过</option><option style="color:#ff6600" value="3">待执行</option><option style="color:#526D08" value="4">执行中</option><option style="color:#888888" value="5">已作废</option><option style="color:" value="6">待验证</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -266,5 +258,5 @@ c.setcolumns('title',{
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewwork_{rand}"></div>
+<div id="viewhrdemand_{rand}"></div>
 <!--HTMLend-->

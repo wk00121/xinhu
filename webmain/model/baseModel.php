@@ -45,6 +45,7 @@ class baseClassModel extends Model
 		$urs['uid']  		= $uid;
 		$urs['date'] 		= $date;
 		$urs['month']		= $month;
+		$urs['time']		= date('H:i:s');
 		$urs['now']  		= $this->rock->now;
 		$urs['admin']		= arrvalue($urs,'name', $this->adminname);
 		$urs['adminname']	= $urs['admin'];

@@ -135,7 +135,7 @@ abstract class mysql{
 		if(!$rsbool && $ebo){
 			$stabs  = ''.$this->perfix.'log';
 			$errmsg = str_replace("'",'&#39;', $this->error());
-			if(!contain($sql, $stabs))m('log')->addlogs('错误SQL',''.$errmsg.'', 2); //写入日志中方便查看
+			if(!contain($sql, $stabs))m('log')->addlogs('错误SQL','《'.$sql.'》'.$errmsg.'', 2); //写入日志中方便查看
 		}
 		return $rsbool;
 	}

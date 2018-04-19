@@ -366,19 +366,21 @@ class upgradeClassAction extends Action
 			
 			//操作菜单
 			$flow_menu= $arr['flow_menu'];
-			$sids 	  = '0';
-			foreach($flow_menu as $k2=>$rs2){
-				$rs2['setid'] = $modeid;
-				$sid  = $rs2['id'];
-				if($db2->rows('id='.$sid.'')>0){
-					$sids.=','.$sid.'';
-					$db2->update($rs2, 'id='.$sid.'');
-				}else{
-					$db2->insert($rs2);
-					$sids.=','.$this->db->insert_id().'';
+			if($flow_menu){
+				$sids 	  = '0';
+				foreach($flow_menu as $k2=>$rs2){
+					$rs2['setid'] = $modeid;
+					$sid  = $rs2['id'];
+					if($db2->rows('id='.$sid.'')>0){
+						$sids.=','.$sid.'';
+						$db2->update($rs2, 'id='.$sid.'');
+					}else{
+						$db2->insert($rs2);
+						$sids.=','.$this->db->insert_id().'';
+					}
 				}
+				$db2->delete("`setid`='$modeid' and `id` not in($sids)");
 			}
-			$db2->delete("`id` not in($sids)");
 			
 			//审核步骤
 			if(isset($arr['flow_course'])){

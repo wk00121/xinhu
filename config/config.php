@@ -2,7 +2,7 @@
 /**
 *	来自：信呼开发团队
 *	作者：磐石(rainrock)
-*	网址：http://www.oaqoa.com/
+*	网址：http://www.rockoa.com/
 *	系统默认配置文件，请不要去修改
 *	要修改配置文件在：webmain/webmainConfig.php
 */
@@ -26,7 +26,7 @@ if(!defined('ENTRANCE'))define('ENTRANCE', 'index');
 $config		= array(
 	'title'		=> '信呼',
 	'url'		=> '',
-	'urly'		=> 'http://www.oaqoa.com/',	//官网域名地址，修改后就无法提供在线升级了。
+	'urly'		=> 'http://www.rockoa.com/',	//官网域名地址，修改后就无法提供在线升级了。
 	'db_host'	=> '127.0.0.1',
 	'db_user'	=> 'root',
 	'db_pass'	=> '',
@@ -48,7 +48,7 @@ $config		= array(
 	'reim_show' 	=> true,	//首页是否显示REIM
 	'mobile_show' 	=> true,	//首页是否显示手机版
 	'accesslogs' 	=> false,	//是否记录访问日志和限制IP
-	'upurl'			=> 'http://localhost/app/rockupfile/', 		//上传文件附件地址
+	'upurl'			=> '', 		//上传文件附件地址(还不能使用)
 );
 
 $_confpath		= $rock->strformat('?0/?1/?1Config.php', ROOT_PATH, PROJECT);

@@ -16,8 +16,7 @@ class xinhuapiChajian extends Chajian{
 		if(getconfig('systype')=='dev'){
 			$this->updatekeys  = 'aHR0cDovLzEyNy4wLjAuMS9hcHAvcm9ja2FwaS8:';
 		}else{
-			//$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
-			$this->updatekeys  = 'aHR0cDovL3MtMjkwMjUyLmdvdG9jZG4uY29tOjkwL3JvY2thcGkv';
+			$this->updatekeys  = 'aHR0cDovL2FwaS5yb2Nrb2EuY29tLw::';
 		}
 		$this->updatekey	=$this->rock->jm->base64decode($this->updatekeys);
 		$this->getsysnum();

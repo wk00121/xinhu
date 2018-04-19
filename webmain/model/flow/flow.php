@@ -1708,7 +1708,7 @@ class flowModel extends Model
 			}
 			$uparr['status'] 	= $lzt;
 		}
-		$this->flowcheckafter($zt, $sm);
+		$this->flowcheckafter($zt, $sm, $nowcourse);
 		
 		$bsarr['nstatus'] = $lzt;
 		$bsarr['checksm'] = $sm;
@@ -2030,7 +2030,7 @@ class flowModel extends Model
 		if($flx==1)return $arr;
 		
 		
-		$status 	= $this->rs['status'];
+		$status 	= (int)arrvalue($this->rs,'status','0');
 		$isturn 	= (int)arrvalue($this->rs, 'isturn','0');
 		
 		$isreadbo 	= $this->isreadqx(1);
