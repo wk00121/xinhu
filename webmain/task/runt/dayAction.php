@@ -9,4 +9,9 @@ class dayClassAction extends runtAction
 		echo 'success';
 	}
 	
+	//http://127.0.0.1/app/xinhu/task.php?m=day|runt&a=getitle
+	public function getitleAction()
+	{
+		return TITLE;
+	}
 }

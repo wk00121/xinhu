@@ -10,11 +10,12 @@ class taskClassAction extends Action
 	public function starttaskAjax()
 	{
 		$lx		= (int)$this->get('lx','0');
-		m('task')->cleartask();
+		$tobj 	= m('task');
+		$tobj->cleartask();
 		if($lx==0){
-			$url 	= getconfig('localurl');
-			if($url=='')return returnerror('请先设置系统本地地址');
-			$barr 	= m('task')->starttask();
+			$carr 	= $tobj->pdlocal();
+			if(!$carr['success'])return $carr;
+			$barr 	= $tobj->starttask();
 			if($barr['code']==0){
 				return returnsuccess('启动成功');
 			}else{

@@ -106,13 +106,15 @@ class taskClassModel extends Model
 		return $turl;
 	}
 	
-	/*
-	private function getyunurl($id)
+	public function pdlocal()
 	{
-		$turl	= $this->gettaskurl();
-		$url 	= ''.$turl.'task.php?m=runt&a=run&mid='.$id.'';
-		return $url;
-	}*/
+		$urla= $this->gettaskurl();
+		$url = $urla.'task.php?m=day|runt&a=getitle';
+		if(c('curl')->getcurl($url)!=TITLE){
+			return returnerror('设置的本地地址“'.$urla.'”不能使用，请到[系统→系统工具→系统设置]下重新设置');
+		}
+		return returnsuccess();
+	}
 	
 	//获取运行url,$lx=2必须使用本地地址
 	private function showgeurl($url, $id, $lx=0)
