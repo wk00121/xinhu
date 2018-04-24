@@ -21,6 +21,7 @@ class loginClassAction extends apiAction
 				'deptallname' => $arr['deptallname'],
 				'face'  	=> $arr['face'],
 				'apptx'  	=> $arr['apptx'],
+				'loginyzm'  => (int)getconfig('loginyzm','0'),
 				'token'  	=> $arr['token'],
 				'iskq'  	=> (int)m('userinfo')->getmou('iskq', $arr['uid']), //判断是否需要考勤
 				'title'		=> getconfig('apptitle'),
@@ -42,6 +43,19 @@ class loginClassAction extends apiAction
 	{
 		m('login')->exitlogin();
 		$this->showreturn('');
+	}
+	
+	/**
+	*	app登录页面初始化
+	*/
+	public function appinitAction()
+	{
+		$arrs = array(
+			'loginyzm'  => (int)getconfig('loginyzm','0'),
+			'title'		=> getconfig('apptitle'),
+		);
+		
+		$this->showreturn($arrs);
 	}
 	
 	/**

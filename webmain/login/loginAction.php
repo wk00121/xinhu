@@ -7,6 +7,7 @@ class loginClassAction extends ActionNot{
 		$this->smartydata['ca_adminuser']	= $this->getcookie('ca_adminuser');
 		$this->smartydata['ca_rempass']		= $this->getcookie('ca_rempass');
 		$this->smartydata['ca_adminpass']	= $this->getcookie('ca_adminpass');
+		$this->smartydata['loginyzm']		= (int)getconfig('loginyzm','0'); //登录类型
 	}
 	
 	public function checkAjax()

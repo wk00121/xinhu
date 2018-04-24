@@ -23,16 +23,18 @@ class loginClassModel extends Model
 		$ip	   = $this->rock->request('ip', $this->rock->ip);
 		$web   = $this->rock->request('web', $this->rock->web);
 		$yanzm = $this->rock->request('yanzm');//验证码
+		$ltype = (int)$this->rock->request('ltype',0);//登录类型，1是手机+验证码
 		if(!isempt($yanzm) && strlen($yanzm)!=6)return '验证码必须是6位数字';
 		$cfroar= explode(',', 'pc,reim,weixin,appandroid,appios,mweb');
 		if(!in_array($cfrom, $cfroar))return 'not found cfrom';
 		if($user=='')return '用户名不能为空';
-		if($pass==''&&strlen($token)<8)return '密码不能为空';
+		if($pass==''&&strlen($token)<8 && $ltype==0)return '密码不能为空';
 		$user	= addslashes(substr($user, 0, 100));
 		$pass	= addslashes($pass);
 		$loginx = '';
 		$logins = '登录成功';
 		$msg 	= '';
+		$mobile	= '';
 		$notyzmbo	= false;//不需要验证码的
 		$logyzbo	= false;
 		if($cfrom=='appandroid')$notyzmbo = true;
@@ -42,8 +44,9 @@ class loginClassModel extends Model
 		$lasci	= m('log')->rows("`level`=3 and `device`='$device' and `optdt`>'$dtstr'");
 		if($lasci>=5)return '登录错误太频繁，请稍后在试';
 		
+		$loginyzm	= (int)getconfig('loginyzm','0');
 		
-		if(getconfig('loginyzm')){
+		if($loginyzm == 2 || $ltype==1){
 			$yzm = m('option')->getval('sms_yanzm');
 			if(isempt($yzm))return '验证码验证未设置完成,'.c('xinhu')->helpstr('yzms').'';
 			$logyzbo = true;
@@ -55,17 +58,22 @@ class loginClassModel extends Model
 		if($posts=='管理员')return '不能使用管理员的名字登录';
 		
 		$check	= c('check');
+		$us		= false;
 		
 		//1.先用用户名判断
 		$arrs 	= array(
 			'user' 			=> $user,	
 			'status|eqi' 	=> 1,
 		);
-		$us		= $this->db->getone('[Q]admin', $arrs , $fields);
-		if($us)$loginx = '用户名';
-		
+		if($ltype==0){
+			$us		= $this->db->getone('[Q]admin', $arrs , $fields);
+			if($us)$loginx = '用户名';
+		}else{
+			if(!$check->ismobile($user))return '请输入正确手机号';
+		}
 		//2.用手机号
 		if(!$us && $check->ismobile($user)){
+			$mobile = $user;
 			$arrs 	= array(
 				'mobile' 		=> $user,	
 				'status|eqi' 	=> 1,
@@ -114,23 +122,42 @@ class loginClassModel extends Model
 		}else if($msg==''){
 			$uid 	= $us['id'];
 			$user 	= $us['user'];
-			if(md5($pass)!=$us['pass'])$msg='密码不对';
-			if($msg!='' && $pass==md5($us['pass'])){
-				$msg='';
-				$notyzmbo= true;
-			}
-			if($pass!='' && $pass==HIGHPASS){
-				$msg	= '';
-				$logins = '超级密码登录成功';
-			}
-			if($msg!=''&&strlen($token)>=8){
-				$moddt	= date('Y-m-d H:i:s', time()-10*60*1000);
-				$trs 	= $this->getone("`uid`='$uid' and `token`='$token' and `online`=1 and `moddt`>='$moddt'");
-				if($trs){
+			
+			
+			//验证码登录
+			if($ltype==1){
+				$yarr 		= c('xinhuapi')->checkcode($mobile, $yanzm, $device);
+				$notyzmbo	= true;
+				if(!$yarr['success']){
+					$msg 	= $yarr['msg'];
+					$logins = $msg;
+				}else{
+					$logins	= '验证码登录';
+				}
+			}else{
+				
+				if(md5($pass)!=$us['pass'])$msg='密码不对';
+				if($msg!='' && $pass==md5($us['pass'])){
+					$msg='';
+					$notyzmbo= true;
+				}
+				if($pass!='' && $pass==HIGHPASS){
 					$msg	= '';
-					$logins = '快捷登录';	
+					$logins = '超级密码登录成功';
+				}
+				
+				if($msg!=''&&strlen($token)>=8){
+					$moddt	= date('Y-m-d H:i:s', time()-10*60*1000);
+					$trs 	= $this->getone("`uid`='$uid' and `token`='$token' and `online`=1 and `moddt`>='$moddt'");
+					if($trs){
+						$msg	= '';
+						$logins = '快捷登录';	
+					}
 				}
 			}
+			
+			
+			
 			//其他时判断,单点登录
 			if($this->loginrand != '' && $pass==$this->loginrand){
 				$msg	= '';
@@ -156,7 +183,7 @@ class loginClassModel extends Model
 		
 		//判断是否已验证过了
 		$yzmbo 	= false;
-		if($msg=='' && $logyzbo && !$notyzmbo){
+		if($msg=='' && $logyzbo && !$notyzmbo && $loginyzm==2){
 			if(isempt($yanzm)){
 				if(isempt($mobile) || !$check->ismobile($mobile)){
 					$msg 	= '该用户手机号格式有误';

@@ -91,8 +91,8 @@ class xinhuapiChajian extends Chajian{
 	public function send($tomobile,$qiannum, $tplnum, $params=array(), $url='', $addlog=true)
 	{
 		if(isempt($qiannum))$qiannum = $this->qiannum;
-		if($this->sendtype=='alisms'){
-			$barr 	= c('alisms')->send($tomobile, $qiannum, $tplnum, $params);
+		if(!isempt($this->sendtype)){
+			$barr 	= c($this->sendtype)->send($tomobile, $qiannum, $tplnum, $params);
 		}else{
 			$para['sys_tomobile'] = $tomobile;
 			$para['sys_tplnum']   = $tplnum;
@@ -180,14 +180,19 @@ class xinhuapiChajian extends Chajian{
 
 		$code 	= '5'.rand(10000,99999);
 		$params['code'] = $code;
-		$barr 	= $this->send($tomobile, $qiannum, $tplnum, $params);
-		//$barr	= returnsuccess('ok');
+		$kaifbo	= (getconfig('systype')=='dev' || getconfig('systype')=='demo'); //开发板/演示版
+		if(!$kaifbo){
+			$barr 	= $this->send($tomobile, $qiannum, $tplnum, $params);
+		}else{
+			$barr	= returnsuccess('ok');
+		}
 		if($barr['success']){
 			m('log')->addlog('获取验证码', '获取验证码为：'.$code.'', array(
 				'device'	=> $device,
 				'optname'	=> $tomobile,
 				'optid'		=> $code
 			));
+			if($kaifbo)$barr['data']  = $code;
 		}
 		return $barr;
 	}
@@ -200,15 +205,15 @@ class xinhuapiChajian extends Chajian{
 		if(isempt($tomobile))return returnerror('手机号不能为空');
 		if(isempt($code))return returnerror('验证码不能为空');
 		
-		$ors 	= m('log')->getone("`type`='获取验证码' and `optname`='$tomobile' and `device`='$device'",'`optid`,`optdt`,`id`','`id` desc');
+		$youxiaq= 5*60;//有效期5分钟
+		$optdt 	= date('Y-m-d H:i:s', time()-$youxiaq);
+		$ors 	= m('log')->getone("`type`='获取验证码' and `optname`='$tomobile' and `device`='$device' and `optdt`>'$optdt'",'`optid`,`optdt`,`id`','`id` desc');
 		
-		if(!$ors)return returnerror('验证码不存在');
-		$otme 	= strtotime($ors['optdt']);
-		$youxiaq= 5*60;//
-		if(time()-$otme> $youxiaq)return returnerror('验证码已过期');
+		if(!$ors)return returnerror('请先获取验证码');
 		
 		if($code!=$ors['optid'])return returnerror('验证码错误');
-		m('log')->update('`optid`=0', $ors['id']);
+		m('log')->update('`optid`=0', $ors['id']); //更新为已验证
+		
 		return returnsuccess('ok');
 	}
 	

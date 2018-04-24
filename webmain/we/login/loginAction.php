@@ -11,6 +11,11 @@ class loginClassAction extends ActionNot{
 			if(!isempt($token))$iskj=3;
 		}
 		$this->assign('iskj', $iskj);
+		
+		$ptoken		= $this->get('ptoken');
+		$loginyzm	= (int)getconfig('loginyzm','0');
+		if(!isempt($ptoken))$loginyzm = 0;
+		$this->assign('loginyzm', $loginyzm); //登录类型	
 	}
 	
 	//判断当前使用微信啥的

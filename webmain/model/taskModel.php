@@ -110,8 +110,8 @@ class taskClassModel extends Model
 	{
 		$urla= $this->gettaskurl();
 		$url = $urla.'task.php?m=day|runt&a=getitle';
-		if(c('curl')->getcurl($url)!=TITLE){
-			return returnerror('设置的本地地址“'.$urla.'”不能使用，请到[系统→系统工具→系统设置]下重新设置');
+		if($urla != URL){
+			if(c('curl')->getcurl($url) != TITLE)return returnerror('设置的本地地址“'.$urla.'”不能使用，请到[系统→系统工具→系统设置]下重新设置');
 		}
 		return returnsuccess();
 	}

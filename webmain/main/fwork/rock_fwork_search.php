@@ -27,6 +27,7 @@ $(document).ready(function(){
 	}
 	
 	opencoluske_{rand}=function(na,num,ats){
+		if(!ats)ats='my';
 		addtabs({name:na,num:'search'+num+'',url:'flow,page,'+num+',atype='+ats+'',icons:'search'});
 	}
 	

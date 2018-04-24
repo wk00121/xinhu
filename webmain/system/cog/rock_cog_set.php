@@ -126,8 +126,8 @@ $(document).ready(function(){
 			<td  align="right">文档转PDF预览：</td>
 			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
 			
-			<td  align="right">登录时验证码：</td>
-			<td class="tdinput"><select id="loginyzm_{rand}"  class="form-control"><option value="0">不需要</option><option value="1">需要验证码</option></select></td>
+			<td  align="right">登录方式：</td>
+			<td class="tdinput"><select id="loginyzm_{rand}"  class="form-control"><option value="0">仅使用帐号+密码</option><option value="1">帐号+密码/手机+验证码</option><option value="2">帐号+密码+验证码</option><option value="3">仅使用手机+验证码</option></select></td>
 			
 		</tr>
 		
