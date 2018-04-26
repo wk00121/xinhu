@@ -144,7 +144,7 @@ class reimClassModel extends Model
 	*/
 	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0)
 	{
-		if($slx==3)return false;
+		if($slx==3 || isempt($receid))return false;
 		$gid	= $this->getgroupid($gname);
 		$gname	= $this->groupname;
 		$admdb  = m('admin');

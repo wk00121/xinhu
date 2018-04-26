@@ -256,7 +256,7 @@ $(document).ready(function(){
 		</td>
 		
 		<td style="padding-left:10px">
-		<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="文件名/创建者">
+		<input class="form-control" style="width:120px" id="key_{rand}"   placeholder="文件名/创建者">
 		</td>
 		<td style="padding-left:10px">
 			<button class="btn btn-default" click="search" type="button">搜索</button> 

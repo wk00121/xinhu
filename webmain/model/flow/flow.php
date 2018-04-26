@@ -356,8 +356,8 @@ class flowModel extends Model
 			$this->rs['file_content'] 	= $fstr;
 		}
 		
-		$this->replacepbr($this->rs, 'explain');
-		$this->replacepbr($this->rs, 'content');
+		//$this->replacepbr($this->rs, 'explain');
+		//$this->replacepbr($this->rs, 'content');
 		
 		$data 			= $this->flowrsreplace($this->rs, 1);
 		//读取多行子表
@@ -371,7 +371,8 @@ class flowModel extends Model
 		//文件字段替换上传和上传图片的
 		foreach($this->fieldsarra as $k=>$rs){
 			$fid 	= $rs['fields'];
-			if($rs['fieldstype']=='uploadfile'){
+			$fty	= $rs['fieldstype'];
+			if($fty=='uploadfile'){
 				$fval 	= $this->rock->arrvalue($data, $fid);
 				if(isempt($fval))$fval='0';
 				$data[$fid] = '';
@@ -379,12 +380,16 @@ class flowModel extends Model
 					$data[$fid] = $fobj->getstr('', '', 2, "`id` in($fval)");
 				}
 			}
-			if($rs['fieldstype']=='uploadimg'){
+			if($fty=='uploadimg'){
 				$fval 	= $this->rock->arrvalue($data, $fid);
 				if(!isempt($fval) && substr($fval,0,4)!='<img'){
 					if(substr($fval,0,4)!='http')$fval=''.URL.$fval.'';
 					$data[$fid] = '<img src="'.$fval.'"  height="100">';	
 				}
+			}
+			//文本域自动换行
+			if($fty=='textarea'){
+				$this->replacepbr($data, $fid);
 			}
 		}
 
@@ -1814,8 +1819,8 @@ class flowModel extends Model
 			'modename'	=> $modename,
 			'modenum'	=> $modenum,
 		));
-		$reim->pushagent($receid, $gname, $cont, $title, $url, $wxurl, $slx);
-		$this->flowchangetodo($receid, $gname);
+		$reim->pushagent($uids, $gname, $cont, $title, $url, $wxurl, $slx);
+		$this->flowchangetodo($uids, $gname);
 		
 		if(isempt($title))$title = $modename;
 		//邮件提醒发送不发送全体人员的，太多了
@@ -2042,7 +2047,7 @@ class flowModel extends Model
 				$arr[] = array('name'=>'追加说明...','lx'=>1,'issm'=>1,'optmenuid'=>-12);
 			}
 			
-			if(!in_array($status, array(1,2,5)) && $this->uid == $this->adminid){
+			if(!in_array($status, array(1,5)) && $this->uid == $this->adminid){
 				$arr[] = array('name'=>'作废申请...','lx'=>16,'issm'=>1,'nup'=>1,'optmenuid'=>-16); //可直接作废
 			}
 			

@@ -305,7 +305,25 @@ class wordClassModel extends Model
 		
 		$this->update('`cid`='.$cqid.',`typeid`='.$typeid.'', "`id` in($ids)");
 		
+		//获取所有下级需要更新分区Id
+		$this->moveaddid 	= '0';
+		$this->getmovedanow($ids);
+		if($this->moveaddid!='0')$this->update('`cid`='.$cqid.'', '`id` in('.$this->moveaddid.')');
+		
 		return returnsuccess();
+	}
+	private function getmovedanow($ids)
+	{
+		$addid 	= '';
+		$rows 	= $this->getall('`typeid` in('.$ids.')');
+		foreach($rows as $k=>$rs){
+			$addid.=','.$rs['id'].'';
+		}
+		if($addid!=''){
+			$addid = substr($addid,1);
+			$this->moveaddid.=','.$addid.'';
+			$this->getmovedanow($addid);
+		}
 	}
 	
 	/**

@@ -34,7 +34,6 @@ class flow_dailyClassModel extends flowModel
 			$rs['dt'] = $dt;
 		}
 		$this->replacepbr($rs, 'content');
-		$this->replacepbr($rs, 'plan');
 		$rs['type'] 		= $this->typearr[$rs['type']];
 		return $rs;
 	}

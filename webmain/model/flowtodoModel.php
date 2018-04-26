@@ -23,12 +23,16 @@ class flowtodoClassModel extends Model
 		$uarrs 		= $this->getrows("`modenum`='$modenum' and `uid` in($uids)", '`uid`,`id`');
 		foreach($uarrs as $k=>$rs)$isuar[$rs['uid']]=$rs['id'];
 		foreach($uidsa as $uid){
-			if(isset($isuar[$uid]))continue;
+			$where = '';
+			if(isset($isuar[$uid])){
+				$where = $isuar[$uid];
+			}
 			$adda['adddt'] 	= $this->rock->now;
 			$adda['uid'] 	= $uid;
+			$adda['readdt'] = null;
 			$adda['isread'] = 0;
 			foreach($uarr as $k=>$v)$adda[$k] = $v;
-			$this->insert($adda);
+			$this->record($adda, $where);
 		}
 	}
 	
