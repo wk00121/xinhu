@@ -538,8 +538,9 @@ class inputAction extends Action
 		if(!isempt($act) && contain($act,':')){
 			$acta = explode(':', $act);
 			$objs = m($acta[0]);
-			if(method_exists($objs, $acta[1])){
-				$rows = $objs->$acta[1]();
+			$tacs = $acta[1];
+			if(method_exists($objs, $tacs)){
+				$rows = $objs->$tacs();
 			}
 		}
 		
