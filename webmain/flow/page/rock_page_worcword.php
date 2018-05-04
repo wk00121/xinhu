@@ -63,10 +63,12 @@ $(document).ready(function(){
 			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
 			text:'',dataIndex:'opt',renderer:function(v,d,oi){
+				var lxs = ',doc,docx,xls,xlsx,ppt,pptx,';
 				if(d.fileext=='folder'){
 					return '<a href="javascript:;" onclick="openfolder{rand}('+d.id+','+d.cid+')">打开</a>';
 				}else{
-					return '<a href="javascript:;" onclick="showvies{rand}('+oi+',0)">预览</a>&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',1)"><i class="icon-arrow-down"></i></a>';
+					var str = (lxs.indexOf(','+d.fileext+',')>-1 && !isnotquan) ? '&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',3)">编辑</a>' : '';
+					return '<a href="javascript:;" onclick="showvies{rand}('+oi+',0)">预览</a>'+str+'&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',1)"><i class="icon-arrow-down"></i></a>';
 				}
 			}
 		}],
@@ -92,6 +94,16 @@ $(document).ready(function(){
 	}
 	showvies{rand}=function(oi,lx){
 		var d=a.getData(oi);
+		if(lx==3){
+			var durl = '<?=URL?>',paramsstr='',
+				downurl = ''+durl+''+d.filepath+'',
+				cansa = [durl,d.filename,''+md5(durl)+'_'+d.filesize+'_'+d.fileid+'.'+d.fileext+'',downurl,d.fileid,adminid,'<?=$xhrock->admintoken?>','edit',d.fileext];
+			for(var i=0;i<cansa.length;i++)paramsstr+=','+cansa[i]+'';	
+			js.cliendsend('office',{
+				paramsstr:paramsstr.substr(1)
+			});
+			return;
+		}
 		if(lx==2){
 			c.openfolder(d.id,d.cid);
 			return;

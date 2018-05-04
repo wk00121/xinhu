@@ -318,8 +318,10 @@ var c={
 		}
 		if(zt=='1'){
 			$('#zhuangdiv').show();
+			$('#nextxuandiv').show();
 		}else{
 			$('#zhuangdiv').hide();
+			$('#nextxuandiv').hide();
 		}
 	},
 	//手写签名

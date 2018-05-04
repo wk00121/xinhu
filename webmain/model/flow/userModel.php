@@ -1,6 +1,9 @@
 <?php
 class flow_userClassModel extends flowModel
 {
+	
+	protected $flowviewufieds	= 'id';
+	
 	public function getstatusarr()
 	{
 		$barr[1] = array('启用','green');
@@ -106,21 +109,34 @@ class flow_userClassModel extends flowModel
 	//导入之后
 	public function flowdaoruafter()
 	{
+		//更新设置上级主管
+		foreach($this->superarrar as $superman=>$suparr){
+			$superid			= (int)$this->getmou('id', "`name`='$superman'");
+			$userld				= "'".join("','", $suparr)."'";
+			if($superid>0){
+				$this->update(array(
+					'superman' 	=> $superman,
+					'superid' 	=> $superid,
+				),"`user` in($userld)");
+			}
+		}
 		m('admin')->updateinfo();
 	}
 	
 	//导入之前判断
+	private $superarrar = array();
 	public function flowdaorubefore($rows)
 	{
 		$inarr	= array();
-		
 		$sort 	= (int)$this->getmou('max(`sort`)', '`id`>0');
 		$dbs	= m('dept');
 		$py 	= c('pingyin');
 		$dname	= $dbs->getmou('name', 1);if(isempt($dname))$dname = '信呼开发团队';
+		
 		foreach($rows as $k=>$rs){
 			$user = $rs['user'];
 			$name = $rs['name'];
+			$mobile = $rs['mobile'];
 			$arr	= $rs;
 			
 			$arr['pingyin'] 	= $py->get($name,1);
@@ -128,6 +144,7 @@ class flow_userClassModel extends flowModel
 			if(isempt($user))$user = $arr['pingyin'];
 			
 			if($this->rows("`user`='$user'")>0)$user = $user.'1'; //相同用户名?
+
 
 			$arr['user'] = strtolower($user);
 			$arr['name'] = $name;
@@ -140,10 +157,13 @@ class flow_userClassModel extends flowModel
 			
 			//读取上级主管Id
 			if(isset($arr['superman'])){
-				$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
-				if($superid==0)$arr['superman'] = '';
-				$arr['superid'] = $superid;
+				//$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
+				//if($superid==0)$arr['superman'] = '';
+				//$arr['superid'] = $superid;
+				$this->superarrar[$arr['superman']][] = $arr['user'];
 			}
+			$arr['superman'] = '';
+			$arr['superid']  = '';
 			
 			//读取部门Id
 			$deptarr 	= $this->getdeptid($rs['deptname'], $dbs);

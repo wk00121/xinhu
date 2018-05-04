@@ -944,6 +944,6 @@ js.cliendsend=function(at, cans, fun,ferr){
 		if(bo=='object')v='base64'+jm.base64encode(v)+'';
 		url+='&'+i+'='+v+'';
 	}
-	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录PC客户端');},500);
+	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录REIM客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
 }

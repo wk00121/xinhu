@@ -192,6 +192,7 @@ class xinhuapiChajian extends Chajian{
 				'optname'	=> $tomobile,
 				'optid'		=> $code
 			));
+			$barr['data']	= '';
 			if($kaifbo)$barr['data']  = $code;
 		}
 		return $barr;

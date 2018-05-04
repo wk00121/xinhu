@@ -216,9 +216,7 @@ class upfileChajian extends Chajian{
 	//返回文件大小
 	public function formatsize($size)
 	{
-		$arr 	= array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB');
-		$e 		= floor(log($size)/log(1024));
-		return number_format(($size/pow(1024,floor($e))),2,'.','').' '.$arr[$e];
+		return $this->rock->formatsize($size);
 	}
 	
 	//获取扩展名

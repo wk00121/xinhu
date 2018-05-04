@@ -151,7 +151,7 @@ class wordClassModel extends Model
 		$sarr	= array(
 			'where' => $where,
 			'table' => '`[Q]word` a left join `[Q]file` b on a.`fileid`=b.`id`',
-			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.fileext,b.filepath,b.thumbpath,b.downci',
+			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.filesize,b.fileext,b.filepath,b.thumbpath,b.downci',
 			'order' => 'a.`type` desc,a.`sort`,a.id desc'
 		);
 		

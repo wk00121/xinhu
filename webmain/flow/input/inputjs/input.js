@@ -159,6 +159,11 @@ var c={
 			}
 		});
 	},
+	changisturn:function(){
+		var txt = '提交(S)';
+		if(!get('sysisturn').checked)txt='存草稿(S)';
+		get('AltS').value=txt;
+	},
 	savesss:function(){
 		if(js.ajaxbool||isedit==0)return false;
 		var len = arr.length,i,val,fid,flx,nas,j,j1,zbd,sda,zbs,zbmc;
@@ -225,7 +230,8 @@ var c={
 				}
 			}
 		}
-		if(firstrs.isbt==1){
+		var bo = form('istrun') && (d.istrun=='1'); //是否提交的判断
+		if(firstrs.isbt==1 && bo){
 			if(!d.sysnextoptid && form('sysnextopt')){
 				this.showtx('请指定['+firstrs.name+']处理人');
 				form('sysnextopt').focus();
@@ -233,7 +239,7 @@ var c={
 			}
 		}
 		
-		if(moders.iscs=='2' && isempt(d.syschaosongid)){
+		if(moders.iscs=='2' && isempt(d.syschaosongid) && bo){
 			this.showtx('请选择抄送对象');
 			return false;
 		}

@@ -43,4 +43,12 @@ class apiAction extends ActionNot
 		if($this->isempt($sv))$sv=$dev;
 		return $sv;
 	}
+	
+	public function getpostdata()
+	{
+		$postdata = '';
+		if(isset($GLOBALS['HTTP_RAW_POST_DATA']))$postdata = $GLOBALS['HTTP_RAW_POST_DATA'];
+		if($postdata=='')$postdata = trim(file_get_contents('php://input'));
+		return $postdata;
+	}
 }

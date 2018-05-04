@@ -399,7 +399,7 @@ class flowModel extends Model
 			$_logarr	 = array();
 			foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
 			//读取流程审核步骤信息
-			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 GROUP BY `courseid`','`courseid`,max(id)id');
+			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 GROUP BY `courseid`','`courseid`,max(id)id','id desc');
 			foreach($logrows as $k2=>$rs2){
 				$rs3 		= $_logarr[$rs2['id']];
 				$_coid 		= $rs2['courseid'];
@@ -2082,7 +2082,7 @@ class flowModel extends Model
 		}
 		
 		
-		if($this->iseditqx()==1){
+		if($this->iseditqx()==1 && $isreadbo){
 			$arr[] = array('name'=>'编辑','optnum'=>'edit','lx'=>'11','optmenuid'=>-11);
 		}
 		

@@ -96,6 +96,9 @@ var nwjs={
 	openurl:function(url){
 		this.runcmd(''+this.getpath()+'/images/start.bat '+url+'');
 	},
+	editoffice:function(cstr){
+		this.runcmd(''+this.getpath()+'/images/rockoffice.exe '+cstr+'');
+	},
 	winshow:function(){
 		if(!this.nw){
 			window.focus();
@@ -191,6 +194,7 @@ var nwjs={
 				for(k in bas)bst+=',"'+k+'":"'+bas[k]+'"';
 				if(bst!='')bst=bst.substr(1);
 				bstr= '{'+bst+'}';
+				if(typeof(barr)=='string')bstr = barr;
 				if(bas.callback)bstr=''+bas.callback+'({'+bst+'})';
 				}catch(e){}
 			}
@@ -235,5 +239,11 @@ var nwjs={
 			spth+=''+a1[i]+'/';
 			if(!this.fs.existsSync(spth))this.fs.mkdirSync(spth);
 		}
+	},
+	filetobase64:function(path){
+		var data = this.fs.readFileSync(path);  
+		data = new Buffer(data).toString('base64');
+		//this.fs.writeFileSync(path, data);
+		return data;
 	}
 };

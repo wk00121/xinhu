@@ -94,6 +94,9 @@ var reim = {
 		if(lx=='openchat')this.openchat(a.id,a.type);
 		if(lx=='getlogin')return {uid:adminid,uname:adminname,face:adminface};
 		if(lx=='getipmac')return nwjs.getipmac();
+		if(lx=='office')nwjs.editoffice(a.paramsstr);
+		if(lx=='upfile')return nwjs.filetobase64(a.path);
+		if(lx=='gpath')return nwjs.getpath();
 	},
 	shownotify:function(d1){
 		var d = js.apply({icon:'images/logo.png','title':'系统提醒',url:''}, d1);

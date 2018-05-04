@@ -19,6 +19,51 @@ class uploadClassAction extends apiAction
 	}
 	
 	/**
+	*	这个是用来在线编辑文档上传的
+	*/
+	public function upfilevbAction()
+	{
+		$fileid = $this->get('fileid','0');
+		if($fileid==0)exit('fileid=0');
+		
+		$data 	= $this->getpostdata();
+		if(isempt($data))return '没有数据';
+		$fileext= $this->get('fileext');
+		$uptype = '|doc|docx|xls|xlsx|ppt|pptx|';
+		if(!contain($uptype,'|'.$fileext.'|'))$fileext='doc';
+		$filepath = ''.UPDIR.'/'.date('Y-m').'/'.date('d_His').''.rand(10,99).'.'.$fileext.'';
+		$this->rock->createtxt($filepath, base64_decode($data));
+		
+		$filesize 			  	= filesize($filepath);
+		$filesizecn 		  	= $this->rock->formatsize($filesize);
+		
+		//更新文件
+		m('file')->update(array(
+			'filepath' 		=> $filepath,
+			'filesize' 		=> $filesize,
+			'filesizecn' 	=> $filesizecn,
+			'pdfpath' 		=> '',
+		),$fileid);
+		return 'ok,'.md5(URL).'_'.$filesize.'_'.$fileid.'.'.$fileext.'';
+		
+		return 'ok';
+		if(!$_FILES)exit('sorry!');
+		
+		$upimg	= c('upfile');
+		$upimg->initupfile($uptype, ''.UPDIR.'|'.date('Y-m').'', 20);
+		$upses	= $upimg->up('file');
+		if(!is_array($upses))exit($upses);
+		//更新文件
+		m('file')->update(array(
+			'filepath' 		=> $upses['allfilename'],
+			'filesize' 		=> $upses['filesize'],
+			'filesizecn' 	=> $upses['filesizecn'],
+			'pdfpath' 		=> '',
+		),$fileid);
+		return 'ok,'.md5(URL).'_'.$upses['filesize'].'_'.$fileid.'.'.$upses['fileext'].'';
+	}
+	
+	/**
 	*	上传时初始化看是不是存在文件
 	*/
 	public function initfileAction()

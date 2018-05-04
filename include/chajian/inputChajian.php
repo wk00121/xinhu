@@ -79,6 +79,9 @@ class inputChajian extends Chajian
 		$val 	= $a['dev'];
 		if(isset($a['value']))$val=$a['value'];
 		$attr 	= $a['attr'];
+		$styles = '';
+		$style  = arrvalue(explode(',', $a['attr']),1);
+		if(!isempt($style))$styles=' style="'.$style.'"';
 		$fnams 	= $this->rock->arrvalue($a,'name');$fieldname = $fnams;
 		if($a['isbt']==1)$fnams='*'.$fnams.'';
 		$val	= $this->rock->get('def_'.$fname.'', $val);
@@ -108,7 +111,7 @@ class inputChajian extends Chajian
 		
 		$onblue = ' onblur="c.inputblur(this, '.$iszb.')"';
 	
-		$str 	= '<input class="inputs" type="text" value="'.$val.'" '.$attr.''.$onblue.' name="'.$fname.'">';
+		$str 	= '<input class="inputs" type="text" value="'.$val.'" '.$attr.''.$onblue.''.$styles.' name="'.$fname.'">';
 		
 		
 		if($type=='fixed'||$type=='hidden'){
@@ -116,11 +119,11 @@ class inputChajian extends Chajian
 			$isasm=0;
 		}
 		if($type=='textarea'){
-			$str = '<textarea class="textarea" style="height:80px" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
+			$str = '<textarea class="textarea" style="height:80px;'.$style.'" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
 		}
 		if($type=='rockcombo' || $type=='select' || $type=='checkboxall' || $type=='radio'){
 			$attr.=' onchange="c.inputblur(this, '.$iszb.')"';
-			$str ='<select style="width:99%" '.$attr.' name="'.$fname.'" class="inputs">';
+			$str ='<select style="width:99%;'.$style.'" '.$attr.' name="'.$fname.'" class="inputs">';
 			$str.='<option value="">-请选择-</option>';
 			$str1= '';
 			$str2= '';
@@ -144,10 +147,10 @@ class inputChajian extends Chajian
 		}
 		
 		if($type=='datetime'||$type=='date'||$type=='time'||$type=='month'){
-			$str = '<input onclick="js.datechange(this,\''.$type.'\')" value="'.$val.'" '.$attr.''.$onblue.' class="inputs datesss" inputtype="'.$type.'" readonly name="'.$fname.'">';
+			$str = '<input onclick="js.datechange(this,\''.$type.'\')" value="'.$val.'" '.$attr.''.$onblue.''.$styles.' class="inputs datesss" inputtype="'.$type.'" readonly name="'.$fname.'">';
 		}
 		if($type=='number'){
-			$str 	= '<input class="inputs" '.$attr.' value="'.$val.'" type="number" onfocus="js.focusval=this.value" maxlength="10" onblur="js.number(this);c.inputblur(this,'.$iszb.')" name="'.$fname.'">';
+			$str 	= '<input class="inputs" '.$attr.''.$styles.' value="'.$val.'" type="number" onfocus="js.focusval=this.value" maxlength="10" onblur="js.number(this);c.inputblur(this,'.$iszb.')" name="'.$fname.'">';
 		}
 		if($type=='xuhao'){
 			$str = '<input class="inputs" '.$attr.' type="text" value="'.$val.'" name="'.$fname.'">';
@@ -156,20 +159,20 @@ class inputChajian extends Chajian
 		if($type=='changeusercheck'||$type=='changeuser'||$type=='changedept'||$type=='changedeptcheck'||$type=='changedeptusercheck'){
 			$_vals  = explode('|', $val);$_vals0 = $_vals[0];
 			$_vals1 = isset($_vals[1]) ? $_vals[1] : '';
-			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$data.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
+			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$data.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
 			$str   .= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\')" class="webbtn">选择</a></td></tr></table>';
 		}
 		if($type=='selectdatafalse' || $type=='selectdatatrue'){
-			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.' class="inputs" style="width:99%" value="'.$val.'" readonly type="text" name="'.$fname.'"></td>';
+			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.' class="inputs" style="width:99%" value="'.$val.'" readonly type="text" name="'.$fname.'"></td>';
 			$str   .= '<td nowrap><a href="javascript:;" onclick="c.selectdata(\''.$data.'\','.substr($type,10).',\''.$fname.'\',\''.$fieldname.'\','.$iszb.')" class="webbtn">选择</a></td></tr></table>';
 		}
 		if($type=='htmlediter'){
-			$str = '<textarea class="textarea" style="height:130px" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
+			$str = '<textarea class="textarea" style="height:130px;'.$style.'" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
 		}
 		if($type=='checkbox'){
 			$chk = '';
 			if($val=='1'||$val=='true')$chk='checked';
-			$str = '<input name="'.$fname.'" '.$chk.' '.$attr.' type="checkbox" value="1"> ';
+			$str = '<input name="'.$fname.'" '.$chk.' '.$attr.''.$styles.' type="checkbox" value="1"> ';
 		}
 		if($type=='uploadimg'){
 			$str = '<input name="'.$fname.'" type="hidden">';
