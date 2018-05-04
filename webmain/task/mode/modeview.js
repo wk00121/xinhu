@@ -47,6 +47,14 @@ var f={
 	}
 };
 
+//拨打电话
+function callPhone(o1){
+	if(appobj1('callPhone',$(o1).text())){
+		return false;
+	}else{
+		return true;
+	}
+}
 
 //提交处理
 function check(lx){
