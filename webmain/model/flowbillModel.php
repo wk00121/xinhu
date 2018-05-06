@@ -75,6 +75,21 @@ class flowbillClassModel extends Model
 			$where 	= m('admin')->getdownwheres('uid', $uid, 1);
 		}
 		
+		//抄送
+		if($lx=='flow_chaos'){
+			$where ='1=2';
+			$crows = $this->db->getall("select * from `[Q]flow_chao` where ".$this->rock->dbinstr('csnameid', $uid)."");
+			if($crows){
+				$modeids = '';
+				$mids 	 = '';
+				foreach($crows as $k1=>$rs1){
+					$modeids.=','.$rs1['modeid'].'';
+					$mids.=','.$rs1['mid'].'';
+				}
+				$where = "`modeid` in(".substr($modeids,1).") and `mid` in(".substr($mids,1).")";
+			}
+		}
+		
 		$key 	= $this->rock->post('key');
 		if(!isempt($key))$where.=" and (`optname` like '%$key%' or `modename` like '%$key%' or `sericnum` like '$key%')";
 		

@@ -230,7 +230,8 @@ var c={
 				}
 			}
 		}
-		var bo = form('istrun') && (d.istrun=='1'); //是否提交的判断
+		var bo = true;
+		if(form('istrun') && d.istrun=='0')bo=false; //是否提交的判断
 		if(firstrs.isbt==1 && bo){
 			if(!d.sysnextoptid && form('sysnextopt')){
 				this.showtx('请指定['+firstrs.name+']处理人');

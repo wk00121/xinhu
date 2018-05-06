@@ -8,7 +8,7 @@ $(document).ready(function(){
 			var o = get('btnss{rand}');
 			o.value='加载中...';
 			js.ajax(js.getajaxurl('gettotal','{mode}','{dir}'),false,function(ret){
-				var curl = '<?=URLY?>user_index_sms_a.html';
+				var curl = '';
 				if(ret.success){
 					$('#stotal{rand}').html(ret.data.smsinfo);
 					$('#typetext{rand}').html(ret.data.typetext);

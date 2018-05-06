@@ -121,5 +121,20 @@ class mode_userClassAction extends inputAction{
 		}
 		return $barr;
 	}
+	
+	//修改上级
+	public function editsuperAjax()
+	{
+		$sna	= $this->post('sna');
+		$sid	= $this->post('sid');
+		$xid	= $this->post('xid');
+		m('admin')->update(array(
+			'superid' => $sid,
+			'superman' => $sna,
+		),"`id` in($xid) and id not in($sid)");
+		
+		m('admin')->updateinfo(); //更新
+		return 'ok';
+	}
 }	
 			

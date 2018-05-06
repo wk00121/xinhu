@@ -101,6 +101,25 @@ class fworkClassAction extends Action
 			}
 		}
 		
+		$this->modeids	= false;
+		
+		//抄送的
+		if($lx=='chaosview'){
+			$where =' and 1=2';
+			$crows = $this->db->getall("select * from `[Q]flow_chao` where ".$this->rock->dbinstr('csnameid', $uid)."");
+			$this->modeids = '0';
+			if($crows){
+				$modeids = '';
+				$mids 	 = '';
+				foreach($crows as $k1=>$rs1){
+					$modeids.=','.$rs1['modeid'].'';
+					$mids.=','.$rs1['mid'].'';
+				}
+				$this->modeids = substr($modeids,1);
+				$where = " and a.`modeid` in(".$this->modeids.") and a.`mid` in(".substr($mids,1).")";
+			}
+		}
+		
 		if($zt!=''){
 			if($zt!='6'){
 				$where.=" and a.`status`='$zt'";
@@ -127,7 +146,11 @@ class fworkClassAction extends Action
 		$rows = m('flowbill')->getbilldata($rows);
 		$flowarr = array();
 		if($this->atypess!='error'){
-			$flowarr = m('mode')->getmodemyarr($this->adminid);
+			if($this->modeids===false){
+				$flowarr = m('mode')->getmodemyarr($this->adminid);
+			}else{
+				$flowarr = m('mode')->getmodemyarr(0,'and `id` in('.$this->modeids.')');
+			}
 		}else if($rows){
 			foreach($rows as $k=>$rs){
 				$errorsm	= '';
@@ -170,7 +193,7 @@ class fworkClassAction extends Action
 		
 		return array(
 			'where' => $where,
-			'order' => '`id` desc'
+			'order' => '`adddt` desc'
 		);
 	}
 	public function flowtodosafter($table, $rows)

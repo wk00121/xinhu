@@ -33,7 +33,7 @@ $(document).ready(function(){
 		},{
 			text:'说明',dataIndex:'explain',editor:true
 		},{
-			text:'排序号',dataIndex:'sort',editor:true
+			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
 			text:'列表页显示',dataIndex:'islb',type:'checkbox',editor:true,sortable:true
 		},{

@@ -235,6 +235,11 @@ class flowModel extends Model
 			$tos 	= $this->todosmodel->rows($this->mwhere);
 			if($tos>0)$bo=true;
 		}
+		//抄送表上的
+		if(!$bo){
+			$tos 	= $this->chaomodel->rows($this->mwhere.' and '.$this->rock->dbinstr('csnameid', $this->adminid).'');
+			if($tos>0)$bo=true;
+		}
 		if(!$bo)$bo = $this->flowisreadqx(); //自定义查看权限
 		//权限设置上的
 		if(!$bo){
@@ -1008,7 +1013,7 @@ class flowModel extends Model
 			
 			//特殊判断过滤
 			if(!isempt($rs['num'])){
-				$bo = $this->flowcoursejudge($rs['num']);
+				$bo = $this->flowcoursejudge($rs['num'], $rs);
 				if(is_bool($bo) && !$bo)continue;
 			}
 			
@@ -2185,6 +2190,10 @@ class flowModel extends Model
 		$inwhere		= '';
 		if(substr($lx,0,5)=='grant'){
 			$inwhere	= $this->viewmodel->viewwhere($this->moders, $this->adminid, $this->flowviewufieds, 1);
+		}
+		//抄送的
+		if($lx=='chaos'){
+			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
 		}
 		$_wehs			= '';
 		if(is_array($nas)){

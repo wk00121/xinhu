@@ -45,7 +45,8 @@ class sysClassAction extends runtAction
 	//命令就是：php task.php sys,dataup -runid=6
 	public function dataupAction()
 	{
-		m('admin')->updateinfo();
+		m('admin')->updateinfo(); //更新人员
+		m('imgroup')->updategall(); //更新会话组
 		$reim 	= m('reim');
 		if($reim->installwx(0))m('weixin:user')->getuserlist();
 		if($reim->installwx(1))m('weixinqy:user')->getuserlist();

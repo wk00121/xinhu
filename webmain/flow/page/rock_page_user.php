@@ -241,7 +241,8 @@ c.setcolumns('face',{
 	}
 });
 if(atype=='all'){
-
+	bootparams.checked=true;
+	$('#tdright_{rand}').prepend(c.getbtnstr('修改上级','editsuper')+'&nbsp;&nbsp;');
 	$('#tdright_{rand}').prepend(c.getbtnstr('修改头像','editface','','disabled')+'&nbsp;&nbsp;');
 	$('#tdright_{rand}').prepend(c.getbtnstr('更新数据','gengxin','success')+'&nbsp;&nbsp;');
 
@@ -259,6 +260,24 @@ if(atype=='all'){
 	}
 	bootparams.beforeload=function(){
 		get('btneditface_{rand}').disabled=true;
+	}
+	c.editsuper=function(){
+		var xid = a.getchecked();
+		if(xid==''){js.msg('msg','请先用复选框选择行');return;}
+		var cans = {
+			type:'usercheck',
+			title:'选择新的上级主管',
+			callback:function(sna,sid){
+				if(sna=='')return;
+				js.msg('wait','修改中...');
+				js.ajax(c.getacturl('editsuper'),{sna:sna,sid:sid,xid:xid}, function(ret){
+					js.msg('success', '修改成功');
+					a.reload();
+				},'post');
+				
+			}
+		};
+		js.getuser(cans);
 	}
 }
 

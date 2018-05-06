@@ -11,7 +11,7 @@ class adminClassModel extends Model
 		if(isempt($joinid))return '';
 		$joinid 	= strtolower($joinid);
 		if(contain($joinid, 'all'))return 'all';
-		if($blx!='where' && !contain($joinid,'u')
+		if($blx!='where' && $glx!='d' && !contain($joinid,'u')
 			&& !contain($joinid,'d') && !contain($joinid,'g'))return $joinid;
 		$narr 	= explode(',', $joinid);
 		$dwhe	= array();

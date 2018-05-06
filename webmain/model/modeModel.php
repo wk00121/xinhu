@@ -21,9 +21,10 @@ class modeClassModel extends Model
 		return $arr;
 	}
 	
-	public function getmodemyarr($uid=0)
+	public function getmodemyarr($uid=0, $whe='')
 	{
 		$where = '';
+		if($whe!='')$where = $whe;
 		if($uid>0)$where = m('admin')->getjoinstr('receid', $uid);
 		$arr = $this->getall('status=1 and isflow=1 '.$where.'','`id`,`name`,`type`','sort');
 		return $arr;
