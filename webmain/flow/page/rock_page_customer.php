@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'customer',modename='客户管理',isflow=0,modeid='7',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suoname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"type","name":"\u5ba2\u6237\u7c7b\u578b","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"laiyuan","name":"\u6765\u6e90","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u5ba2\u6237\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"mobile","name":"\u8054\u7cfb\u624b\u673a","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"sheng","name":"\u6240\u5728\u7701","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"0"},{"fields":"shi","name":"\u6240\u5728\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"email","name":"\u90ae\u7bb1","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"routeline","name":"\u4ea4\u901a\u8def\u7ebf","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"isstat","name":"\u662f\u5426\u6807\u2605","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgys","name":"\u4f9b\u5e94\u5546","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"linkname","name":"\u8054\u7cfb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"htshu","name":"\u5408\u540c\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyz","name":"\u9500\u552e\u603b\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyd","name":"\u5f85\u6536\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_customer_":"name,suoname,type,unitname,tel,mobile,address,isstat,htshu,moneyz,moneyd,caozuo","columns_customer_dist":"name,suoname,type,laiyuan,unitname,isgys,linkname","columns_customer_ghai":"name,suoname,type,unitname,sheng,shi,status,caozuo","columns_customer_gys":"name,suoname,type,unitname,tel,address,status,linkname,explain,caozuo","columns_customer_shate":"name,suoname,type,laiyuan,unitname,isstat,caozuo"};
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suoname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u5ba2\u6237\u7c7b\u578b","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"laiyuan","name":"\u6765\u6e90","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u5ba2\u6237\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"mobile","name":"\u8054\u7cfb\u624b\u673a","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"sheng","name":"\u6240\u5728\u7701","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"0"},{"fields":"shi","name":"\u6240\u5728\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"email","name":"\u90ae\u7bb1","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"routeline","name":"\u4ea4\u901a\u8def\u7ebf","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"isstat","name":"\u662f\u5426\u6807\u2605","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgys","name":"\u4f9b\u5e94\u5546","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"linkname","name":"\u8054\u7cfb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"htshu","name":"\u5408\u540c\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyz","name":"\u9500\u552e\u603b\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyd","name":"\u5f85\u6536\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_customer_":"name,suoname,type,unitname,tel,mobile,address,isstat,htshu,moneyz,moneyd,caozuo","columns_customer_dist":"name,suoname,type,laiyuan,unitname,isgys,linkname","columns_customer_ghai":"name,suoname,type,unitname,sheng,shi,status,caozuo","columns_customer_gys":"name,suoname,type,unitname,tel,address,status,linkname,explain,caozuo","columns_customer_shate":"name,suoname,type,laiyuan,unitname,isstat,caozuo"};
 	
 	var c = {
 		reload:function(){
@@ -32,7 +32,7 @@ $(document).ready(function(){
 		search:function(cans){
 			var s=get('key_{rand}').value,zt='';
 			if(get('selstatus_{rand}'))zt=get('selstatus_{rand}').value;
-			var canss = js.apply({key:s,keystatus:zt}, cans);
+			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
 		//高级搜索
@@ -46,8 +46,26 @@ $(document).ready(function(){
 		},
 		searchhighb:function(d){
 			d.key='';
+			d.search_value='';
 			get('key_{rand}').value='';
 			a.setparams(d,true);
+		},
+		searchuname:function(d){
+			js.getuser({
+				type:'deptusercheck',
+				title:'搜索'+d.name,
+				changevalue:this.search_value,
+				callback:function(sna,sid){
+					c.searchunames(d,sna,sid);
+				}
+			});
+		},
+		search_value:'',
+		searchunames:function(d,sna,sid){
+			get('key_{rand}').value=sna;
+			this.search_value = sid;
+			var cs = {key:'','search_fields':d.fields,'search_value':sid};
+			a.setparams(cs,true);
 		},
 		//导出
 		daochu:function(o1,lx,lx1,e){
@@ -94,8 +112,10 @@ $(document).ready(function(){
 			
 		},
 		loaddata:function(d){
+			this.setdownsodata(d.souarr);
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
+			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -104,6 +124,17 @@ $(document).ready(function(){
 			$('#changatype{rand}').html(str);
 			$('#changatype{rand}_'+atype+'').addClass('active');
 			js.initbtn(c);
+		},
+		setdownsodata:function(darr){
+			var ddata = [{name:'高级搜索',lx:0}],dsd,i;
+			if(darr)for(i=0;i<darr.length;i++){
+				dsd = darr[i];
+				dsd.lx=3;
+				ddata.push(dsd);
+			}
+			if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
+			ddata.push({name:'打印',lx:1});
+			this.soudownobj.setData(ddata);
 		},
 		setcolumns:function(fid, cnas){
 			var d = false,i,ad=bootparams.columns,len=ad.length,oi=-1;
@@ -194,7 +225,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y3VzdG9tZXI:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"客户名称",dataIndex:"name"},{text:"所属人",dataIndex:"suoname",sortable:true},{text:"客户类型",dataIndex:"type",sortable:true},{text:"客户单位",dataIndex:"unitname"},{text:"是否标★",dataIndex:"isstat",sortable:true},{text:"合同数",dataIndex:"htshu",sortable:true},{text:"销售总额",dataIndex:"moneyz",sortable:true},{text:"待收金额",dataIndex:"moneyd",sortable:true},{
+		columns:[{text:"客户名称",dataIndex:"name"},{text:"所属人",dataIndex:"suoname"},{text:"客户类型",dataIndex:"type",sortable:true},{text:"客户单位",dataIndex:"unitname"},{text:"是否标★",dataIndex:"isstat",sortable:true},{text:"合同数",dataIndex:"htshu",sortable:true},{text:"销售总额",dataIndex:"moneyz",sortable:true},{text:"待收金额",dataIndex:"moneyd",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -298,16 +329,14 @@ if(pnum=='gys'){
 	js.initbtn(c);
 	var a = $('#viewcustomer_{rand}').bootstable(bootparams);
 	c.init();
-	var ddata = [{name:'高级搜索',lx:0}];
-	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
-	ddata.push({name:'打印',lx:1});
-	$('#downbtn_{rand}').rockmenu({
+	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
-		data:ddata,
+		data:[{name:'高级搜索',lx:0}],
 		itemsclick:function(d, i){
 			if(d.lx==0)c.searchhigh();
 			if(d.lx==1)c.printlist();
 			if(d.lx==2)c.setfieldslist();
+			if(d.lx==3)c.searchuname(d);
 		}
 	});
 	
@@ -332,7 +361,7 @@ if(pnum=='gys'){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<span style="display:none" id="daoruspan_{rand}"><button class="btn btn-default" click="daoru,1" type="button">导入</button>&nbsp;&nbsp;&nbsp;</span><button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
+			<span style="display:none" id="daoruspan_{rand}"><button class="btn btn-default" click="daoru,1" type="button">导入</button>&nbsp;&nbsp;&nbsp;</span><button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

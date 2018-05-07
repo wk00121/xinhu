@@ -23,7 +23,7 @@ $(document).ready(function(){
 			}
 		},
 		submitcheck:function(d){
-			if(d.type!='1' && d.type!='4' && d.wherestr=='' && d.whereid=='0')return '必须设置输入相应条件';
+			if(d.type!='1' && d.type!='4' && d.type!='5' && d.wherestr=='' && d.whereid=='0')return '必须设置输入相应条件';
 			return {wherestr:jm.base64encode(d.wherestr)}
 		}
 	});
@@ -93,7 +93,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" width="15%" ><font color=red>*</font> 类型可：</td>
-			<td class="tdinput" width="35%" ><select name="type" class="form-control"><option value="0">查看</option><option value="1">添加</option><option value="2">编辑</option><option value="3">删除</option><option value="4">导入</option></select></td>
+			<td class="tdinput" width="35%" ><select name="type" class="form-control"><option value="0">查看</option><option value="1">添加</option><option value="2">编辑</option><option value="3">删除</option><option value="4">导入</option><option value="5">导出</option></select></td>
 			<td  align="right"  width="15%"></td>
 			<td class="tdinput" width="35%" ></td>
 		</tr>

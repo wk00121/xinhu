@@ -59,6 +59,13 @@ class viewClassModel extends Model
 		return $bo;
 	}
 	
+	//是否有导出权限
+	public function isdaochu($mid, $uid=0)
+	{
+		$this->getursss($mid, $uid);
+		$bo  = $this->getsswhere(5);
+		return $bo;
+	}
 	
 	//是否有编辑数据权限
 	public function editwhere($mid, $uid=0)
@@ -85,7 +92,7 @@ class viewClassModel extends Model
 		$rows 	= $this->getall('`type`='.$type.' and `modeid`='.$mid.' and `status`=1 '.$where.'','wherestr,whereid');
 		$wehs	= array();
 		$count  = $this->db->count;
-		if($type==1 || $type==4){
+		if($type==1 || $type==4 || $type==5){
 			return $count>0;
 		}
 		$qomss  = ($glx==0)?'':'{asqom}';

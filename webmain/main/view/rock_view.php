@@ -11,7 +11,7 @@ $(document).ready(function(){
 			text:'模块',dataIndex:'modename',sortable:true
 		},{
 			text:'类型',dataIndex:'type',sortable:true,renderer:function(oi){
-				var as=['查看','添加','编辑','删除','导入'];
+				var as=['查看','添加','编辑','删除','导入','导出'];
 				return '可'+as[oi]+'';
 			}
 		},{

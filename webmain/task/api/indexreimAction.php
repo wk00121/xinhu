@@ -148,4 +148,15 @@ class indexreimClassAction extends apiAction
 		}
 		
 	}
+	
+	public function loadinfoAction()
+	{
+		$type 	= $this->get('type');
+		$receid = $this->get('receid');
+		$arr 	= array();
+		if($type=='user'){
+			$arr 	= m('admin')->getuser(0, $receid);
+		}
+		$this->showreturn($arr);
+	}
 }

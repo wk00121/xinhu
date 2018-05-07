@@ -599,10 +599,12 @@ class inputAction extends Action
 		$barr['rows'] 		= $rows;
 		$barr['atypearr'] 	= $this->atypearr;
 		if($this->loadci==1){
-			$barr['isadd'] 		= m('view')->isadd($this->modeid, $this->adminid); //判断是否可添加
-			$barr['isdaoru'] 	= m('view')->isdaoru($this->modeid, $this->adminid); //判断是否可导入
+			$vobj	= m('view');
+			$barr['isadd'] 		= $vobj->isadd($this->modeid, $this->adminid); //判断是否可添加
+			$barr['isdaoru'] 	= $vobj->isdaoru($this->modeid, $this->adminid); //判断是否可导入
+			$barr['isdaochu'] 	= $vobj->isdaochu($this->modeid, $this->adminid); //判断是否可导入
 		}
-		
+		$barr['souarr']		= $this->flow->flowsearchfields();
 		$scarr 				= $this->storeafter($table, $rows);
 		if(is_array($scarr))foreach($scarr as $k=>$v)$barr[$k]=$v;
 		return $barr;

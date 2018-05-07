@@ -41,7 +41,9 @@ class adminClassModel extends Model
 		if($blx == 'where')return $where;
 		$guid = '';
 		if($where!=''){
-			$rows = $this->getall("`status`=1 and ($where)", '`id`');
+			$swhe = '`status`=1';
+			if($blx=='all')$swhe = '1=1';
+			$rows = $this->getall("$swhe and ($where)", '`id`');
 			foreach($rows as $k=>$rs)$guid.=','.$rs['id'].'';
 			if($guid !='')$guid = substr($guid, 1);
 		}
@@ -387,19 +389,23 @@ class adminClassModel extends Model
 	/**
 	*	获取人员数据
 	*/
-	public function getuser($lx=0)
+	public function getuser($lx=0, $uid=0)
 	{
-		$uid  	= $this->adminid;
-		$where	= m('view')->viewwhere('user', $uid, 'id');
-		$range 	= $this->rock->get('changerange'); //指定了人
-		$where1 = '';
-		if(!isempt($range)){
-			$where1 = $this->gjoin($range, '', 'where');
-			$where1 = 'and ('.$where1.')';
-		}
 		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`,`deptids`';
-		//读取我可查看权限
-		$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
+		if($uid==0){
+			$uid  	= $this->adminid;
+			$where	= m('view')->viewwhere('user', $uid, 'id');
+			$range 	= $this->rock->get('changerange'); //指定了人
+			$where1 = '';
+			if(!isempt($range)){
+				$where1 = $this->gjoin($range, '', 'where');
+				$where1 = 'and ('.$where1.')';
+			}
+			//读取我可查看权限
+			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
+		}else{
+			$rows = $this->getall("`id`='$uid'",$fields,'`sort`,`name`');
+		}
 		$py   = c('pingyin');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] = $rs['face'] = $this->getface($rs['face']);

@@ -3,6 +3,12 @@ class flow_userinfoClassModel extends flowModel
 {
 	public  $uidfields = 'id';
 	
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'部门/用户...','fields'=>'id');
+		return $arr;
+	}
+	
 	public function initModel()
 	{
 		//读取状态

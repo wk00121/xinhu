@@ -32,7 +32,7 @@ $(document).ready(function(){
 		search:function(cans){
 			var s=get('key_{rand}').value,zt='';
 			if(get('selstatus_{rand}'))zt=get('selstatus_{rand}').value;
-			var canss = js.apply({key:s,keystatus:zt}, cans);
+			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
 		//高级搜索
@@ -46,8 +46,26 @@ $(document).ready(function(){
 		},
 		searchhighb:function(d){
 			d.key='';
+			d.search_value='';
 			get('key_{rand}').value='';
 			a.setparams(d,true);
+		},
+		searchuname:function(d){
+			js.getuser({
+				type:'deptusercheck',
+				title:'搜索'+d.name,
+				changevalue:this.search_value,
+				callback:function(sna,sid){
+					c.searchunames(d,sna,sid);
+				}
+			});
+		},
+		search_value:'',
+		searchunames:function(d,sna,sid){
+			get('key_{rand}').value=sna;
+			this.search_value = sid;
+			var cs = {key:'','search_fields':d.fields,'search_value':sid};
+			a.setparams(cs,true);
 		},
 		//导出
 		daochu:function(o1,lx,lx1,e){
@@ -94,8 +112,10 @@ $(document).ready(function(){
 			
 		},
 		loaddata:function(d){
+			this.setdownsodata(d.souarr);
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
+			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -104,6 +124,17 @@ $(document).ready(function(){
 			$('#changatype{rand}').html(str);
 			$('#changatype{rand}_'+atype+'').addClass('active');
 			js.initbtn(c);
+		},
+		setdownsodata:function(darr){
+			var ddata = [{name:'高级搜索',lx:0}],dsd,i;
+			if(darr)for(i=0;i<darr.length;i++){
+				dsd = darr[i];
+				dsd.lx=3;
+				ddata.push(dsd);
+			}
+			if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
+			ddata.push({name:'打印',lx:1});
+			this.soudownobj.setData(ddata);
 		},
 		setcolumns:function(fid, cnas){
 			var d = false,i,ad=bootparams.columns,len=ad.length,oi=-1;
@@ -218,16 +249,14 @@ $(document).ready(function(){
 	js.initbtn(c);
 	var a = $('#viewhrdemand_{rand}').bootstable(bootparams);
 	c.init();
-	var ddata = [{name:'高级搜索',lx:0}];
-	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
-	ddata.push({name:'打印',lx:1});
-	$('#downbtn_{rand}').rockmenu({
+	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
-		data:ddata,
+		data:[{name:'高级搜索',lx:0}],
 		itemsclick:function(d, i){
 			if(d.lx==0)c.searchhigh();
 			if(d.lx==1)c.printlist();
 			if(d.lx==2)c.setfieldslist();
+			if(d.lx==3)c.searchuname(d);
 		}
 	});
 	
@@ -252,7 +281,7 @@ $(document).ready(function(){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
+			<button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

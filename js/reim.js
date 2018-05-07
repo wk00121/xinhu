@@ -359,7 +359,7 @@ var reim = {
 			this.showhistorys(a[i]);
 		}
 	},
-	showhistorys:function(d,pad){
+	showhistorys:function(d,pad, lex){
 		if(!d)return;
 		var s,ty,o=$('#historylist'),d1,st,attr,stst,cont,cls,nastr;
 		ty	= d.type;
@@ -368,6 +368,16 @@ var reim = {
 		if(d1){
 			d.name = d1.name;
 			d.face = d1.face;
+		}else if(!lex && ty=='user'){
+			this.ajax(this.apiurl('indexreim','loadinfo'),{type:ty,receid:d.receid}, function(ret){
+				if(!ret){
+					console.error('无法读取到'+ty+','+d.receid+'的信息');
+				}else{
+					reim.showuser(ret);
+					reim.showhistorys(d, pad, true);
+				}
+			});
+			return;
 		}
 		var num = ''+ty+'_'+d.receid+'';
 		$('#history_'+num+'').remove();
@@ -722,7 +732,7 @@ var reim = {
 	},
 	
 	//服务端接收到推送消息
-	receivemesb:function(d){
+	receivemesb:function(d, lob){
 		var lx=d.type,sendid=d.adminid,num,face,ops=false,msg='',ot,ots,garr,tits,gid;
 		if(!sendid)sendid = d.sendid;
 		if(lx=='offoline'){
@@ -737,6 +747,16 @@ var reim = {
 		if(a){
 			d.sendname=a.name;
 			d.face = a.face;
+		}else if(!lob){
+			this.ajax(this.apiurl('indexreim','loadinfo'),{type:'user',receid:sendid}, function(ret){
+				if(!ret){
+					console.error('无法读取到'+sendid+'的信息');
+				}else{
+					reim.showuser(ret);
+					reim.receivemesb(d, true);
+				}
+			});
+			return;
 		}
 		gid = d.gid;
 		if(lx == 'user' || lx == 'group'){

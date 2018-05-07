@@ -11,6 +11,12 @@ class flow_userClassModel extends flowModel
 		return $barr;
 	}
 	
+
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'部门/用户...','fields'=>'id');
+		return $arr;
+	}
 	
 	/**
 	*	用户显示展示

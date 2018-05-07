@@ -9,4 +9,10 @@ class flow_officiaClassModel extends flowModel
 
 		return $arr;
 	}
+	
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'拟办人...','fields'=>'uid');
+		return $arr;
+	}
 }

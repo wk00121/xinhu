@@ -103,7 +103,6 @@ class flowModel extends Model
 	//默认状态1时可以就算审核通过，默认是1
 	protected $flowstatusarr	= array(1);
 	
-	
 	public function echomsg($msg)
 	{
 		if(!isajax())exit($msg);
@@ -148,6 +147,19 @@ class flowModel extends Model
 			if($rs['islu']==1)$this->fieldsarr[] = $rs;
 		}
 		$this->fieldsarra	= $rows;
+	}
+	
+	/**
+	*	列表上要搜索的的，此方法仅用到在：webmain/flow/input/inputAction.php 行605上返回，模块接口可重写这个方法
+	*/
+	public function flowsearchfields()
+	{
+		$arr = array();
+		if($this->isflow==1){
+			$arr[] = array('name'=>'申请人...','fields'=>'uid');
+			$arr[] = array('name'=>'提交人...','fields'=>'optid');
+		}
+		return $arr;
 	}
 	
 	/**
@@ -2396,6 +2408,12 @@ class flowModel extends Model
 					$s.=" and {asqom}`$fields` like '%$val%'";
 				}
 			}
+		}
+		$ofied = $this->rock->post('search_fields');
+		$ofval = $this->rock->post('search_value');
+		if(!isempt($ofied) && !isempt($ofval)){
+			$ofval = $this->adminmodel->gjoin($ofval,'', 'all');
+			$s = " and {asqom}`$ofied` in($ofval)";
 		}
 		return $s;
 	}

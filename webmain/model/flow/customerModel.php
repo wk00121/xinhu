@@ -7,7 +7,13 @@ class flow_customerClassModel extends flowModel
 		$this->statarr		 = c('array')->strtoarray('否|#888888,是|#ff6600');
 	}
 	
-
+	//高级搜索下
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'所属人...','fields'=>'uid');
+		$arr[] = array('name'=>'创建人...','fields'=>'createid');
+		return $arr;
+	}
 	
 	public function flowrsreplace($rs, $lx=0)
 	{

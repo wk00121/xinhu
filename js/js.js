@@ -832,6 +832,7 @@ js.changeuser=function(na, lx, tits,ocans){
 		'changetype': lx,
 		'showview' 	: 'showuserssvie',
 		'titlebool'	:false,
+		'changevalue':'',
 		'oncancel'	:function(){
 			js.tanclose('changeaction');
 		}
@@ -842,8 +843,7 @@ js.changeuser=function(na, lx, tits,ocans){
 	}
 	for(var i in ocans)can[i]=ocans[i];
 	if(nibo){
-		var changevalue = '';
-		if(can.idobj)changevalue=can.idobj.value;
+		if(can.idobj)can.changevalue=can.idobj.value;
 		changcallback=function(sna,sid){
 			if(can.idobj)can.idobj.value = sid;
 			if(can.nameobj){
@@ -853,7 +853,7 @@ js.changeuser=function(na, lx, tits,ocans){
 			js.tanclose('changeaction');
 			if(can.callback)can.callback(sna,sid);
 		}
-		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+changevalue+'&callback=changcallback';
+		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+can.changevalue+'&callback=changcallback';
 		winiframe.location.href = url;
 	}else{
 		$('#showuserssvie').chnageuser(can);
