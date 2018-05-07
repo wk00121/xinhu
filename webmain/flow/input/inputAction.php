@@ -569,6 +569,7 @@ class inputAction extends Action
 	{
 		$this->atypearr	= false;
 		$this->modeid 	= (int)$this->get('modeid');
+		$pnum			= $this->get('pnum');
 		if($this->post('atype')=='grant'){
 			$this->atypearr = array();
 			$this->atypearr[] = array(
@@ -577,7 +578,15 @@ class inputAction extends Action
 				'name'  => ''.$this->flow->modename.'授权查看',
 			);
 		}else if($this->loadci==1 && $this->adminid>0){
-			$this->atypearr = m('where')->getmywhere($this->modeid, $this->adminid, $this->get('pnum'));
+			$this->atypearr = m('where')->getmywhere($this->modeid, $this->adminid, $pnum);
+			if(isempt($pnum)){
+				$mors = m('flow_set')->getone($this->modeid);
+				if((int)arrvalue($mors,'iscs','0')>0)$this->atypearr[] = array(
+					'id'	=> 0,
+					'num'	=> 'chaos',
+					'name'  => '抄送给我',
+				);
+			}
 		}
 		return $this->storebefore($table);
 	}

@@ -2983,7 +2983,7 @@ CREATE TABLE `xinhu_flow_where` (
   `syrname` varchar(200) DEFAULT NULL COMMENT '此条件可适用对象',
   PRIMARY KEY (`id`),
   KEY `setid` (`setid`)
-) ENGINE=MyISAM AUTO_INCREMENT=207 DEFAULT CHARSET=utf8 COMMENT='单据条件';
+) ENGINE=MyISAM AUTO_INCREMENT=206 DEFAULT CHARSET=utf8 COMMENT='单据条件';
 
 -- ----------------------------
 -- Records of xinhu_flow_where
@@ -3189,7 +3189,6 @@ INSERT INTO `xinhu_flow_where` VALUES ('202', '78', 'all', 'all', '所有需求'
 INSERT INTO `xinhu_flow_where` VALUES ('203', '79', 'my', null, '我的安排', 'YHVpZGA9e3VpZH0:', null, null, '0', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('204', '79', 'myms', null, '我的面试', 'e21zdXNlcmlkLHVpZGlufQ::', null, null, '1', null, null, null, null, null, '1', '1', null, null);
 INSERT INTO `xinhu_flow_where` VALUES ('205', '79', 'all', 'all', '所有面试', 'MT0x', null, null, '0', null, null, null, null, null, '1', '1', null, null);
-INSERT INTO `xinhu_flow_where` VALUES ('206', '3', 'chaos', null, '抄送给我', 'MT0x', null, null, '3', null, null, null, null, null, '1', '1', null, null);
 
 -- ----------------------------
 -- Table structure for `xinhu_godepot`
