@@ -6,7 +6,8 @@ class gerenClassAction extends Action
 		$uid = $this->adminid;
 		
 		return array(
-			'gerentodo' => $this->option->getval('gerennotodo_'.$uid.'')
+			'gerentodo' => $this->option->getval('gerennotodo_'.$uid.''),
+			'qmimgstr' 	=> $this->option->getval('qmimgstr_'.$uid.'')
 		);
 	}
 	
@@ -14,6 +15,24 @@ class gerenClassAction extends Action
 	{
 		$uid = $this->adminid;
 		$this->option->setval('gerennotodo_'.$uid.'', $this->get('gerentodo','0'));
+	}
+	
+	//保存图片
+	public function qmimgsaveAjax()
+	{
+		$uid = $this->adminid;
+		$str = '';
+		$qmimgstr = $this->post('qmimgstr');
+		if(!isempt($qmimgstr)){
+			if(contain($qmimgstr,'.')){
+				$str = $qmimgstr;
+			}else{
+				$qma = explode(',', $qmimgstr);
+				$str = ''.UPDIR.'/'.date('Y-m').'/'.$uid.'qming_'.rand(1000,9999).'.png';
+				$this->rock->createtxt($str, base64_decode($qma[1]));
+			}
+		}
+		$this->option->setval('qmimgstr_'.$uid.'', $str);
 	}
 	
 	public function filebefore($table)

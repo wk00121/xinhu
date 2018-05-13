@@ -789,6 +789,7 @@ class inputAction extends Action
 		
 		return $str;
 	}
+	
 }
 
 class inputClassAction extends inputAction{}

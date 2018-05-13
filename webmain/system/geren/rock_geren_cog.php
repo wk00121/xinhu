@@ -8,13 +8,18 @@ $(document).ready(function(){
 		init:function(){
 			js.ajax(js.getajaxurl('getinit','{mode}','{dir}'),false,function(ret){
 				get('gerentodo{rand}').checked = (ret.gerentodo=='1');
+				var imgs = ret.qmimgstr;
+				if(imgs){
+					var s = '<br><img id="imgqianming" src="'+imgs+'"  height="90">';
+					$('#qianmingshow').append(s);
+				}
 			},'get,json');
 			$("input[name='_stylechange']:eq("+valchange+")")[0].checked=true;
 		},
 		savecog:function(){
 			js.msg('wait','保存中...');
 			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),{
-				gerentodo:get('gerentodo{rand}').checked ? 1 : 0,
+				gerentodo:get('gerentodo{rand}').checked ? 1 : 0
 			},function(ret){
 				js.msg('success','保存成功');
 			},'get');
@@ -75,18 +80,83 @@ $(document).ready(function(){
 			$('#tablstal0{rand}').hide();
 			$('#tablstal1{rand}').hide();
 			$('#tablstal2{rand}').hide();
+			$('#tablstal3{rand}').hide();
 			
 			$('#tablstal'+lx+'{rand}').show();
+			if(lx==3)js.importjs('mode/plugin/jquery-signature.js');
 		},
 		savestyle:function(){
 			adminstyle = valchange;
 			js.ajax(js.getajaxurl('changestyle','geren','system'),{style:valchange},function(s){
 				js.msg('success','保存成功');
 			});
+		},
+		qmimgstr:'',
+		qianming:function(o1){
+			this.qianmingbo=false;
+			js.tanbody('qianming','请在空白区域写上你的姓名',500,300,{
+				html:'<div data-width="480" data-height="220" data-border="1px dashed #cccccc" data-line-color="#000000" data-auto-fit="true" id="qianmingdiv" style="margin:10px;height:220px;cursor:default"></div>',
+				btn:[{text:'确定签名'},{text:'重写'}]
+			});
+			$('#qianmingdiv').jqSignature().on('jq.signature.changed', function() {
+				c.qianmingbo=true;
+			});
+
+		
+			$('#qianming_btn0').click(function(){
+				c.qianmingok();
+			});
+			$('#qianming_btn1').click(function(){
+				$('#imgqianming').remove();
+				$('#qianmingdiv').jqSignature('clearCanvas');
+				c.qianmingbo = false;
+				c.qmimgstr	 = '';
+			});
+		},
+		qianmingok:function(){
+			if(!this.qianmingbo)return;
+			$('#imgqianming').remove();
+			var dataUrl = $('#qianmingdiv').jqSignature('getDataURL');
+			var s = '<br><img id="imgqianming" src="'+dataUrl+'"  height="90">';
+			c.qmimgstr = dataUrl;
+			$('#qianmingshow').append(s);
+			js.tanclose('qianming');
+		},
+		saveqian:function(){
+			this.saveqians(false);
+		},
+		saveqians:function(bo){
+			if(this.qmimgstr=='' && !bo){
+				js.msg('msg','没有修改无需保存');
+				return;
+			}
+			js.msg('wait','保存中...');
+			js.ajax(js.getajaxurl('qmimgsave','{mode}','{dir}'),{
+				qmimgstr:this.qmimgstr
+			},function(ret){
+				js.msg('success','保存成功');
+			},'post');
+		},
+		saveqians1:function(){
+			this.qmimgstr = '';
+			$('#imgqianming').remove();
+			this.saveqians(true);
+		},
+		qianup:function(){
+			js.upload('upimg{rand}',{maxup:'2',thumbnail:'150x150','title':'上传签名图片',uptype:'image'});	
 		}
 	};
 	js.initbtn(c);
 	c.init();
+	
+	upimg{rand}=function(a){
+		var f = a[0];
+		$('#imgqianming').remove();
+		var dataUrl = f.filepath;
+		var s = '<br><img id="imgqianming" src="'+dataUrl+'"  height="90">';
+		c.qmimgstr = dataUrl;
+		$('#qianmingshow').append(s);
+	}
 	
 	$("input[name='_stylechange']").click(function(){
 		var val = this.value;
@@ -108,7 +178,9 @@ $(document).ready(function(){
 	 <li click="tesgs,2">
 		<a><i class="icon-magic"></i> 切换皮肤</a>
 	  </li>
-	  
+	  <li click="tesgs,3">
+		<a><i class="icon-edit"></i> 签名图片</a>
+	  </li>
 	</ul>
 
 	<div style="padding-top:20px">
@@ -176,6 +248,19 @@ $(document).ready(function(){
 		
 		<tr>
 			<td style="padding-left:20px"><input class="btn btn-success" click="savestyle" name="submitbtn" value="保存修改" type="button"></td>
+		</tr>
+	</table>
+	
+	<table  id="tablstal3{rand}" style="display:none;margin-left:70px">
+		
+		<tr>
+			<td align="center" style="padding:15px">
+			<div id="qianmingshow" align="left"><input type="button" click="qianming" class="btn btn-default btn-xs"  value="手写签名">&nbsp;&nbsp;<input type="button" click="qianup" class="btn btn-default btn-xs"  value="上传签名图片"></div>
+			</td>
+		</tr>
+		
+		<tr>
+			<td style="padding-left:15px"><input class="btn btn-success" click="saveqian" value="保存签名图片" type="button"> <input class="btn btn-default btn-xs" click="saveqians1"  value="清空签名" type="button"></td>
 		</tr>
 	</table>
 

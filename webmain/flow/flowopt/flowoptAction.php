@@ -98,4 +98,19 @@ class flowoptClassAction extends Action
 		$msg 	= m('flow')->opt('checkerror', $modenum, $mid, $sm);
 		return $msg;
 	}
+	
+	
+	/**
+	*	引用签名图片
+	*/
+	public function qianyinAjax()
+	{
+		$path = $this->option->getval('qmimgstr_'.$this->adminid.'');
+		if(isempt($path))return returnerror('你并没有设置签名图片，可到[个人设置]下添加签名图片');
+		if(!file_exists($path)){
+			return returnerror('签名图片不存在了，可到[个人设置]下重新设置签名图片');
+		}
+	
+		return returnsuccess($path);
+	}
 }

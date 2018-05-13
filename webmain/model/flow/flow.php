@@ -150,7 +150,7 @@ class flowModel extends Model
 	}
 	
 	/**
-	*	列表上要搜索的的，此方法仅用到在：webmain/flow/input/inputAction.php 行605上返回，模块接口可重写这个方法
+	*	列表上要搜索的的，此方法仅用到在：webmain/flow/input/inputAction.php 行607上返回，模块接口可重写这个方法
 	*/
 	public function flowsearchfields()
 	{
@@ -797,21 +797,32 @@ class flowModel extends Model
 			if(contain($rs['statusname'],'不'))$col='red';
 			$rows[$k]['color'] 		= $col;
 			$rows[$k]['checkdt'] 	= $rs['optdt'];
-			$rows[$k]['sm']  		= $rs['explain'];
+			$rows[$k]['sm']  		= $rs['explain'];	
 			if(!isempt($rs['qmimg'])){
-				$qmimg 	= ''.UPDIR.'/'.date('Y-m').'/qmimg'.$rs['id'].'.png';
-				$bo 	= true;
-				if(!file_exists($qmimg)){
-					$bar= explode(',', $rs['qmimg']);
-					$bo = $this->rock->createtxt($qmimg, base64_decode($bar[1]));
-				}
-				if(!$bo){
-					$qmimg = $rs['qmimg'];
+				//签名是手写的
+				if(!contain($rs['qmimg'],'.')){
+					$qmimg 	= ''.UPDIR.'/'.date('Y-m').'/qmimg'.$rs['id'].'.png';
+					$bo 	= true;
+					if(!file_exists($qmimg)){
+						$bar= explode(',', $rs['qmimg']);
+						$bo = $this->rock->createtxt($qmimg, base64_decode($bar[1]));
+					}
+					if(!$bo){
+						$qmimg = $rs['qmimg'];
+					}else{
+						$qmimg = ''.URL.''.$qmimg.'';
+					}
 				}else{
-					$qmimg = ''.URL.''.$qmimg.'';
+					$qmimg	= $rs['qmimg'];
+					if(!file_exists($qmimg)){
+						$qmimg = '';
+					}else{
+						$qmimg = ''.URL.''.$qmimg.'';
+					}
 				}
 				$rows[$k]['qmimg']  = $qmimg;
-				$rows[$k]['explain']= '<img height="24" width="56" src="'.$qmimg.'">'.$rs['explain'].'';	
+				if(!isempt($qmimg))$rows[$k]['explain']= '<img height="24" src="'.$qmimg.'">'.$rs['explain'].'';	
+				
 			}				
 		}
 		//读取相关文件

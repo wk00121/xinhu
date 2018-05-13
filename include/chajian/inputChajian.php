@@ -94,7 +94,6 @@ class inputChajian extends Chajian
 		}
 		if($type=='num'){
 			if($this->flow != null)$val = $this->flow->createbianhao($data, $fid);
-			$attr='';
 		}
 		
 		//读默认值

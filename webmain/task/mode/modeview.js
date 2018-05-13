@@ -366,6 +366,23 @@ var c={
 		$('#qianmingshow').append(s);
 		js.tanclose('qianming');
 	},
+	qianyin:function(){
+		js.msg('wait','引入中...');
+		js.ajax(c.gurl('qianyin'),{},function(a){
+			if(a.success){
+				js.msg('success', '引入成功');
+				$('#imgqianming').remove();
+				var dataUrl = a.data;
+				var s = '<br><img id="imgqianming" src="'+dataUrl+'"  height="90">';
+				qmimgstr = dataUrl;
+				$('#qianmingshow').append(s);
+			}else{
+				js.msg('msg', a.msg);
+			}
+		},'get,json',function(s){
+			js.msg('msg','操作失败');
+		});
+	},
 	optmenu:function(o1){
 		var o = $(o1);
 		var issm = o.attr('issm'),optmenuid = o.attr('optmenuid');
