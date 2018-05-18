@@ -5,7 +5,7 @@ $(document).ready(function(){
 	var atype=params.atype;
 	var a = $('#view_{rand}').bootstable({
 		tablename:'kqdkjl',celleditor:true,fanye:true,modenum:'kqdkjl',sort:'id',dir:'desc',
-		modedir:'{mode}:{dir}',params:{'atype':atype},storebeforeaction:'kqdkjlbeforeshow',
+		modedir:'{mode}:{dir}',params:{'atype':atype},storeafteraction:'kqdkjlaftershow',
 		columns:[{
 			text:'部门',dataIndex:'deptname',align:'left'
 		},{
@@ -39,6 +39,17 @@ $(document).ready(function(){
 		},
 		beforeload:function(){
 			btn(true);
+		},
+		load:function(d){
+			if(d.qybo || d.ddbo){
+				var o = $('#huoqbtsn{rand}');
+				o.parent().show();
+				var str = '';
+				if(d.qybo)str='企业微信';
+				if(d.ddbo && d.qybo)str+='/';
+				if(d.ddbo)str+='钉钉';
+				o.val('从'+str+'获取打卡数据');
+			}
 		}
 	});
 	
@@ -98,6 +109,17 @@ $(document).ready(function(){
 				nowtabssettext('我的打卡记录');
 			}
 			a.setparams({atype:atype}, true);
+		},
+		huqodidn:function(){
+			js.msg('wait','获取中...');
+			var dt1 = get('dt1_{rand}').value;
+			var dt2 = get('dt2_{rand}').value;
+			js.ajax(js.getajaxurl('getdkjl','{mode}', '{dir}'),{dt1:dt1,dt2:dt2,atype:atype}, function(d){
+				if(d.success){
+					js.msg('success', d.data);
+					a.reload();
+				}
+			},'post,json');
 		}
 	};
 	if(atype=='all')$('#btnss{rand}').show();
@@ -134,6 +156,9 @@ $(document).ready(function(){
 	</td>
 	<td style="padding-left:10px">
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+	</td>
+	<td style="padding-left:10px;display:none">
+		<input class="btn btn-default" id="huoqbtsn{rand}" click="huqodidn" value="从企业微信获取打卡数据" type="button">
 	</td>
 	<td style="padding-left:10px" width="80%">
 		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属记录" type="button">

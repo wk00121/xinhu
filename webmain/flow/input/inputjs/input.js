@@ -555,7 +555,7 @@ var c={
 			items : [
 				'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
 			'removeformat','|','fontname', 'fontsize','quickformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
-			'insertunorderedlist', '|', 'link','unlink','|','undo','source','clearhtml','fullscreen'
+			'insertunorderedlist', '|','image', 'link','unlink','|','undo','source','clearhtml','fullscreen'
 			]	
 		};
 		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
@@ -693,6 +693,11 @@ var c={
 			return;
 		}
 		this.insertrow(xu);
+	},
+	//子表表单对象,na名称,zb第几个子表,hs第几行
+	getforms:function(na,zb,hs){
+		var fid = ''+na+''+zb+'_'+hs+'';
+		return form(fid);
 	},
 	getsubtabledata:function(){
 		

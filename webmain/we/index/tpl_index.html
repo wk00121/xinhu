@@ -77,7 +77,7 @@ function initbody(){
 	
 	try{
 	var site = sessionStorage.getItem('nowtabs');
-	if(!site)site=0;
+	if(!site)site=0; //修改默认显示哪个选择卡
 	var url = location.href;
 	if(url.indexOf('#list')>0)site=0;
 	if(url.indexOf('#ying')>0)site=1;

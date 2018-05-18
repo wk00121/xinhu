@@ -18,8 +18,8 @@ class mode_officiaClassAction extends inputAction{
 	public function getfilenumAjax()
 	{
 		$type 	= $this->post('type');
-		$num 	= ''.$type.'【Year】';
-		return $this->db->sericnum($num,'[Q]official','num', 3);
+		$num 	= ''.$type.'〔Year〕';
+		return $this->db->sericnum($num,'[Q]official','num', 1).'号';
 	}
 }	
 			

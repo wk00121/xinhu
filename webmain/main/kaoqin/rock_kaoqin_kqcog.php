@@ -50,4 +50,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">人员必须设置打卡IP，IP一般是内网Ip196.168的，或者电脑的物理MAC地址，才可以在线打卡，多个用,分开。</div>
+<div class="tishi">人员必须设置打卡IP，IP一般是内网Ip196.168的，或者电脑的物理MAC地址，才可以在线打卡，多个用,分开，不限制IP就写*。</div>

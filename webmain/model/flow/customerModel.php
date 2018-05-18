@@ -45,7 +45,7 @@ class flow_customerClassModel extends flowModel
 		//详情时，移动端
 		if($lx==1 && $this->rock->ismobile()){
 			if(!isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
-			if(!isempt($rs['tel']))$rs['tel']='<a  onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
+			if(!isempt($rs['tel']))$rs['tel']='<a onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
 		}
 		
 		return $rs;

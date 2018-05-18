@@ -121,6 +121,7 @@ class asynrunClassAction extends apiAction
 	{
 		$id    	= (int)$this->get('id');
 		$type 	= $this->get('type','html');
+		$status = $this->get('status','1'); //转化状态
 		$frs 	= m('file')->getone($id);
 		$pdfpath= str_replace('.'.$frs['fileext'].'','.'.$type.'', $frs['filepath']);
 		if(!file_exists($pdfpath))return;
@@ -153,5 +154,14 @@ class asynrunClassAction extends apiAction
 		$recename 	= $this->jm->base64decode($this->get('recename'));
 		$flow = m('flow')->initflow('subscribeinfo');
 		return $flow->subscribe($id, $uid, $receid, $recename);
+	}
+	
+	//获取打卡记录
+	public function wxdkjlAction()
+	{
+		$dt1 		= $this->get('dt1');
+		$dt2 		= $this->get('dt2');
+		$page 		= (int)$this->get('page','2');
+		return m('weixinqy:daka')->getrecord('', $dt1, $dt2, $page);
 	}
 }

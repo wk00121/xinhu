@@ -106,7 +106,15 @@ class JPushChajian extends Chajian{
 			$runurl = c('xinhu')->geturlstr('jpushplat', $arr);
 			return c('curl')->getcurl($runurl);
 		}else{
-			return $this->sendMessage($alias, $title, $cont);
+			$barr['jpush'] = $this->sendMessage($alias, $title, $cont);
+			//小米推送的
+			if($xmalias){
+				$xmpush = c('xiaomiPush');
+				if(method_exists($xmpush,'push'))
+					$barr['xmpush'] = $xmpush->push($xmalias,  $title, $this->rock->jm->base64decode($desc), $cont);
+			}
+			$this->rock->debugs(json_encode($barr),'jpush');
+			return $barr;
 		}	
 	}
 	

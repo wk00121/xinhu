@@ -281,8 +281,17 @@ class kaoqinClassModel extends Model
 					continue;
 				}
 				$fs  = substr($ssid, 0, 1);
-				$sid = str_replace('u','', $ssid);
-				$sid = str_replace('d','', $sid);
+				$sid = str_replace(array('u','d','g'), array('','',''), $ssid);
+				if($fs=='g'){
+					$guar = $this->admindb->getgrouptouid($sid);
+					if($guar!=''){
+						$guara = explode(',', $guar);
+						foreach($guara as $guid){
+							$utid[$guid][]= $rs;
+						}
+					}
+					continue;
+				}
 				if($fs=='d'){
 					$dtid[$sid][]= $rs;
 				}else{

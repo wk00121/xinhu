@@ -54,7 +54,8 @@ var nwjs={
 		var kjj=js.getoption('kuaijj','Q');
 		this.addShortcut(kjj);
 		this.addfile();
-		try{this.udpserver();}catch(e){}
+		var llq = navigator.userAgent.toLowerCase();
+		try{if(llq.indexOf('windows nt 5')<0)this.udpserver();}catch(e){}
 	},
 	addShortcut:function(v){
 		var option = {

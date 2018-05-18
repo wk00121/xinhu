@@ -50,4 +50,10 @@ class kaoqinClassAction extends runtAction
 		m('flow:leave')->autoaddleave(); //年假自动添加
 		echo 'success';
 	}
+	
+	//定时从企业微信/钉钉上获取打卡记录，一般30分钟获取一次
+	public function wxddAction()
+	{
+		
+	}
 }

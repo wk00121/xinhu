@@ -2,31 +2,49 @@
 class kaoqinClassAction extends Action
 {
 	
-	//定位打卡的
-	/*
-	public function locationbeforeshow($table)
+
+	public function kqdkjlaftershow($table, $rows)
 	{
-		$atype	= $this->post('atype');
+		$reimbo = m('reim');
+		return array(
+			'rows' => $rows,
+			'qybo' => $reimbo->installwx(1),
+			'ddbo' => $reimbo->installwx(2),
+		);
+	}
+	
+	//获取打卡记录
+	public function getdkjlAjax()
+	{
+		$reimbo = m('reim');
+		$uids	= $this->adminid;
+		if($this->post('atype')=='all')$uids = '';//全部
 		$dt1	= $this->post('dt1');
 		$dt2	= $this->post('dt2');
-		$key	= $this->post('key');
-		$s 		= '';
-		if($atype=='my')$s.=' and b.id='.$this->adminid.'';
-		if(!isempt($dt1))$s.=" and a.`optdt`>='$dt1'";
-		if(!isempt($dt2))$s.=" and a.`optdt`<='$dt2 23:59:59'";
-		if(!isempt($key))$s.=m('admin')->getkeywhere($key, 'b.');
-		$fields = 'a.*,b.name,b.deptname';
-		$table  = '[Q]'.$table.' a left join `[Q]admin` b on a.uid=b.id';
-		return array('where'=>$s,'table'=>$table, 'fields'=>$fields);
-	}
-	public function locationaftershow($table, $rows)
-	{
-		$dtobj = c('date');
-		foreach($rows as $k=>$rs){
-			$rows[$k]['week'] = $dtobj->cnweek($rs['optdt']);
+		$msg 	= '获取成功';
+		if($reimbo->installwx(1)){
+			$barr 	= m('weixinqy:daka')->getrecord($uids, $dt1, $dt2, 1);
+			//加入异步
+			if($uids=='' && $barr['maxpage']>1){
+				for($i=1;$i<=$barr['maxpage'];$i++){
+					if($i>1)$reimbo->asynurl('asynrun','wxdkjl', array(
+						'dt1' 		=> $dt1,
+						'dt2' 		=> $dt2,
+						'page' 		=> $i
+					));
+				}
+			}
+			if($barr['errcode']!=0)$msg .= ',企业微信('.$barr['msg'].')';
 		}
-		return array('rows'=>$rows);
-	}*/
+		
+		//钉钉(待开发)
+		if($reimbo->installwx(2)){
+			$barr = m('dingding:daka')->getrecord($uids, $dt1, $dt2);
+			if($barr['errcode']!=0)$msg .= ',钉钉('.$barr['msg'].')';
+		}
+		return returnsuccess($msg);
+	}
+	
 	
 	public function kqdwbefore($table)
 	{

@@ -143,7 +143,7 @@ $(document).ready(function(){
 			this.saveqians(true);
 		},
 		qianup:function(){
-			js.upload('upimg{rand}',{maxup:'2',thumbnail:'150x150','title':'上传签名图片',uptype:'image'});	
+			js.upload('upimg{rand}',{maxup:'1',thumbnail:'150x150','title':'上传签名图片',uptype:'image'});	
 		}
 	};
 	js.initbtn(c);

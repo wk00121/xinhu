@@ -7,7 +7,10 @@ defined('HOST') or die ('not access');
 ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-	<h3  class="panel-title"><i class="icon-time"></i> 考勤打卡</h3>
+	<h3 class="panel-title">
+	<i class="icon-time"></i> 考勤打卡
+		<a style="float:right" href="javascript:;" onclick="moredakajili()">考勤表&gt;&gt;</a>
+	</h3>
   </div>
   <div class="panel-body">
 	<table>
@@ -95,5 +98,8 @@ homeobject.show_kqdk_list=function(a){
 	if(s!='')s=s.substr(1);
 	$('#dktime{rand}').html(s);
 	get('dabtn{rand}').value='第'+oi+'次打卡';
+}
+moredakajili=function(){
+	addtabs({url:'main,kaoqin,geren',name:'我的考勤表',num:'mykqbiao'});
 }
 </script>

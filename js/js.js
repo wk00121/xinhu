@@ -95,6 +95,7 @@ js.request=function(name,dev,url){
 	if(!name)return dev;
 	if(!url)url=location.href;
 	if(url.indexOf('\?')<0)return dev;
+	if(url.indexOf('#')>0)url = url.split('#')[0];
 	var neurl=url.split('\?')[1];
 	neurl=neurl.split('&');
 	var value=dev,i,val;
@@ -938,6 +939,11 @@ js.cliendsend=function(at, cans, fun,ferr){
 	var url = unescape('http%3A//127.0.0.1%3A2829/%3Fatype');
 	if(!cans)cans={};if(!fun)fun=function(){};if(!ferr)ferr=function(){return false;}
 	url+='='+at+'&callback=?';
+	var llq = navigator.userAgent.toLowerCase();
+	if(llq.indexOf('windows nt 5')>0){
+		if(!ferr())js.msg('msg','XP的系统不支持哦');
+		return;
+	}
 	var i,v,bo=typeof(jm);
 	for(i in cans){
 		v = cans[i];
