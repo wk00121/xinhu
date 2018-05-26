@@ -502,7 +502,7 @@ class ActionNot extends Action
 		$uid 	= $this->adminid;
 		$agid	= $this->rock->get('agentid');
 		if($agid!='')$this->rock->savesession(array('wxqyagentid' => $agid));
-		$uid 	= m('login')->autologin($this->get('adminid'), $this->get('token'));
+		$uid 	= m('login')->autologin((int)$this->get('adminid','0'), $this->get('token'));
 		if($uid==0){
 			$this->loginnot($ismo);
 		}else{

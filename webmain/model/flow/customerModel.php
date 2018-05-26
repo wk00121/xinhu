@@ -135,6 +135,7 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> 'admin@rockoa.com',
 			'address' 		=> '福建厦门思明区软件园',
 			'linkname' 		=> '磐石',
+			'isgh' 		=> '是',
 		);
 		$barr1 = array(
 			'name' 		=> '百度',
@@ -146,6 +147,7 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> 'admin@baidu.com',
 			'address' 		=> '北京软件园百度大厦',
 			'linkname' 		=> '李彦宏',
+			'isgh' 		=> '否',
 		);
 		$barr2 = array(
 			'name' 		=> '陈先生',
@@ -157,8 +159,21 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> '1111@qq.com',
 			'address' 		=> '福建厦门火车站',
 			'linkname' 		=> '',
+			'isgh' 			=> '否',
 		);
 		return array($barr,$barr1,$barr2);
 	}
 
+	public function flowdaorubefore($data)
+	{
+		foreach($data as $k=>$rs){
+			$isgh 	= (arrvalue($rs,'isgh')=='是') ? 1: 0 ;
+			$isstat = (arrvalue($rs,'isstat')=='是') ? 1: 0 ;
+			
+			$data[$k]['isgh'] 	= $isgh;
+			$data[$k]['isstat'] = $isstat;
+			if($isgh==1)$data[$k]['uid'] = 0; 
+		}
+		return $data;
+	}
 }

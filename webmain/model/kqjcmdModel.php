@@ -48,6 +48,7 @@ class kqjcmdClassModel extends Model
 	{
 		$snrs = $this->getsninfo($snid);
 		if(!$snrs)return returnerror('设备不存在,请添加');
+		if(arrvalue($snrs,'pinpai')=='1')return returnerror('暂不支持中控发送命令');
 		if(isempt($snrs['name']))return returnerror('请设置设备名称');
 		if(isempt($snrs['company']))return returnerror('请设置设备显示公司名称');
 		$id = 0;

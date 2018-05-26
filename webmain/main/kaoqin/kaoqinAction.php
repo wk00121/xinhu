@@ -37,7 +37,7 @@ class kaoqinClassAction extends Action
 			if($barr['errcode']!=0)$msg .= ',企业微信('.$barr['msg'].')';
 		}
 		
-		//钉钉(待开发)
+		//钉钉
 		if($reimbo->installwx(2)){
 			$barr = m('dingding:daka')->getrecord($uids, $dt1, $dt2);
 			if($barr['errcode']!=0)$msg .= ',钉钉('.$barr['msg'].')';

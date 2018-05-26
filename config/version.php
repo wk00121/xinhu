@@ -1,3 +1,3 @@
 <?php
-//不知不觉到了这个版本了
-return '1.7.3';
+//插播一条广告，信呼OA云平台政务版体验地址：http://www.zhengwuoa.com/
+return '1.7.5';

@@ -1115,9 +1115,38 @@ class flowModel extends Model
 		if($rows){
 			//读取flow_checks是否比审核状态(退回的)
 			$checksa = $this->checksmodel->getrows($this->mwhere.' and `addlx`=3');
-			$coursea = array();
+			$coursea = $nrows = array();
 			foreach($checksa as $k=>$rs)$coursea[$rs['courseid']]='1';
+			$nrows 	 = array();
+			
+			//获取审核人
+			$allcheckid= '';
 			foreach($rows as $k=>$rs){
+				$uarr 	= $this->getcheckname($rs);
+				$rows[$k]['checkid'] 	= $uarr[0];
+				$rows[$k]['checkname'] 	= $uarr[1];
+				$allcheckid .= ','.$uarr[0].'';
+			}
+
+			foreach($rows as $k=>$rs){
+				$nrows[] = $rs;
+				
+				//全部直属上级
+				if($rs['checktype']=='superall'){
+					$suparr 		 = $this->adminmodel->getsuperarr($this->urs['id']);
+					if($suparr)foreach($suparr as $k1=>$surs){
+						if(!contain(','.$allcheckid.',', ','.$surs['id'].',')){
+							$rs['id']		 = $rs['id'] * 99999 + $surs['id'];
+							$rs['checkid']   = $surs['id'];
+							$rs['checkname'] = $surs['name'];
+							$nrows[] = $rs;
+							$allcheckid .= ','.$surs['id'].'';
+						}
+					}
+				}
+			}
+	
+			foreach($nrows as $k=>$rs){
 				$whereid 	= (int)$rs['whereid'];
 				$checkshu 	= $rs['checkshu'];
 				
@@ -1137,9 +1166,9 @@ class flowModel extends Model
 				*/
 				
 				$zongsetp++;
-				$uarr 		= $this->getcheckname($rs);
-				$checkid	= $uarr[0];
-				$checkname	= $uarr[1];
+				//$uarr 		= $this->getcheckname($rs);
+				$checkid	= $rs['checkid'];
+				$checkname	= $rs['checkname'];
 				$ischeck 	= 0;
 				$checkids	= $checknames = '';
 				
@@ -1297,11 +1326,11 @@ class flowModel extends Model
 			}
 		}
 		
-		if($type=='super'){
+		if($type=='super' || $type=='superall'){
 			$cuid = $this->urs['superid'];
 			$name = $this->urs['superman'];
 		}
-		if($type=='dept' || $type=='super'){
+		if($type=='dept' || $type=='super' || $type=='superall'){
 			if($this->isempt($cuid) && $this->drs){
 				$cuid = $this->drs['headid'];
 				$name = $this->drs['headman'];

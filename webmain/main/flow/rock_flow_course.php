@@ -36,7 +36,7 @@ $(document).ready(function(){
 		},{
 			text:'分支条件',dataIndex:'whereid'
 		},{
-			text:'编号',dataIndex:'num'
+			text:'编号',dataIndex:'num',editor:true
 		},{
 			text:'审核人类型',dataIndex:'checktype'
 		},{

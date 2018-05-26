@@ -221,6 +221,7 @@ class htmlChajian extends Chajian{
 			$barr 	= array();
 			foreach($farr as $k=>$fid){
 				$barr[$fid] = isset($dars[$k]) ?  $dars[$k] : '';
+				$barr[$fid] = str_replace('[XINHUBR]', "\n", $barr[$fid]);
 			}
 			$bos 	= true;
 			foreach($fars as $fids){

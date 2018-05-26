@@ -52,8 +52,36 @@ class kaoqinClassAction extends runtAction
 	}
 	
 	//定时从企业微信/钉钉上获取打卡记录，一般30分钟获取一次
-	public function wxddAction()
+	public function getdkAction()
 	{
+		$h 		= (int)date('H');
+		if($h>=2 && $h<=6)return '凌晨2-6点暂停读取';
 		
+		$reimbo = m('reim');
+		$uids 	= '';//全部
+		$dt1	= '';
+		$dt2	= '';
+		$msg 	= 'success';
+		if($reimbo->installwx(1)){
+			$barr 	= m('weixinqy:daka')->getrecord($uids, $dt1, $dt2, 1);
+			//加入异步
+			if($uids=='' && $barr['maxpage']>1){
+				for($i=1;$i<=$barr['maxpage'];$i++){
+					if($i>1)$reimbo->asynurl('asynrun','wxdkjl', array(
+						'dt1' 		=> $dt1,
+						'dt2' 		=> $dt2,
+						'page' 		=> $i
+					));
+				}
+			}
+			if($barr['errcode']!=0)$msg .= ',企业微信('.$barr['msg'].')';
+		}
+		
+		//钉钉
+		if($reimbo->installwx(2)){
+			$barr = m('dingding:daka')->getrecord($uids, $dt1, $dt2);
+			if($barr['errcode']!=0)$msg .= ',钉钉('.$barr['msg'].')';
+		}
+		echo $msg;
 	}
 }

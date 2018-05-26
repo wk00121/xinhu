@@ -24,14 +24,15 @@ class apiAction extends ActionNot
 		$this->adminname = '';
 		$boss = (M == 'login|api');
 		if(!$boss){
-			if($this->isempt($this->token))$this->showreturn('','token invalid', 299);
-			$to = m('logintoken')->rows("`token`='$this->token' and `uid`='$this->adminid' and `online`=1");
+			if($this->isempt($this->token))$this->showreturn('','token invalid', 199);
+			$to = m('logintoken')->rows("`uid`='$this->adminid' and `token`='$this->token' and `online`=1");
 			if($to==0)$this->showreturn('','登录失效，请重新登录', 199);
 		}
 		$this->userrs = m('admin')->getone("`id`='$this->adminid' and `status`=1", '`name`,`user`,`id`,`ranking`,`deptname`,`deptid`');
 		if(!$this->userrs && !$boss){
-			$this->showreturn('', 'not found user', 199);
+			$this->showreturn('', '用户已经不存在了，请重新登录', 199);
 		}
+		
 		$this->adminname 		= $this->userrs['name'];
 		$this->rock->adminid	= $this->adminid;
 		$this->rock->adminname 	= $this->adminname;

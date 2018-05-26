@@ -192,6 +192,33 @@ class adminClassModel extends Model
 		return $s;
 	}
 	
+	/**
+	*	递归获取人员全部上级
+	*/
+	public function getsuperarr($uid, $lx=0)
+	{
+		if($lx==0)$this->getsuperarrba = array();
+		$sql 		= "select a.id,a.name,b.`headid`,a.`superid` from `[Q]admin` a left join `[Q]dept` b on a.`deptid`=b.`id` where a.`id`='$uid'";
+		$rows	 	= $this->db->getall($sql);
+		$superid 	= '';
+		if($rows){
+			$urs = $rows[0];
+			$superid = $urs['superid'];
+			if(isempt($superid))$superid = $urs['headid'];
+		}
+		if(!isempt($superid) && $lx<20){
+			$superida = explode(',', $superid);
+			foreach($superida as $sid){
+				if($sid != $uid){
+					$sna = $this->getmou('name', $sid);
+					$this->getsuperarrba[] = array('id'=>$sid,'name'=>$sna);
+					$this->getsuperarr($sid, $lx+1);
+				}
+			}
+		}
+		return $this->getsuperarrba;
+	}
+	
 	private $deptarr = array();
 	public function getpath($did, $sup,$dids='')
 	{
@@ -203,13 +230,13 @@ class adminClassModel extends Model
 		$deptnames	= '';
 		
 		$superpath	= '';
-		if(!$this->rock->isempt($sup)){
+		if(!isempt($sup)){
 			$sua = explode(',', $sup);
 			foreach($sua as $suas){
 				$sss1 	= $this->db->getpval('[Q]admin', 'superid', 'id' ,$suas, '],[');
 				if($sss1 != '')$superpath.=',['.$sss1.']';
 				$sss2	= $this->db->getmou('[Q]admin', 'name', "`id`='$suas'");
-				if(!$this->rock->isempt($sss2))$supername.=','.$sss2;
+				if(!isempt($sss2))$supername.=','.$sss2;
 			}
 			if($superpath!='')$superpath=substr($superpath,1);
 			if($supername!='')$supername=substr($supername,1);

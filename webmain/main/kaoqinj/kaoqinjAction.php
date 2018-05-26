@@ -83,15 +83,17 @@ class kaoqinjClassAction extends Action
 		$type 	= $this->get('type');
 		$ida 	= explode(',', $ids);
 		$oi 	= 0;
+		$msg 	= '';
 		foreach($ida as $id1){
 			$barr = m('kqjcmd')->send($id1, $type);
 			if($barr['success']){
 				$oi++;
 			}else{
 				if(substr($type,0,6)=='advert')return $barr;
+				$msg .= ''.$barr['msg'].';';
 			}
 		}
-		return returnsuccess('成功发送'.$oi.'条命令，可到[考勤机命令查看]下查看结果');
+		return returnsuccess('成功发送'.$oi.'条命令，可到[考勤机命令查看]下查看结果<font color=red>'.$msg.'</font>');
 	}
 	
 	

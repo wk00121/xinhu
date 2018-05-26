@@ -241,7 +241,8 @@ class loginClassModel extends Model
 				'web'	=> $web,
 				'online'=> '1'
 			);
-			$this->insert($larr);
+			$bo = $this->insert($larr);
+			if(!$bo)return '数据库无法写入,不能登录';
 			return array(
 				'uid' 	=> $uid,
 				'name' 	=> $name,
@@ -292,7 +293,7 @@ class loginClassModel extends Model
 		$cfrom = $this->rock->request('cfrom', $cfrom);
 		$this->rock->clearcookie('mo_adminid');
 		$this->rock->clearsession('adminid,adminname,adminuser');
-		$this->update("`online`=0", "`cfrom`='$cfrom' and `token`='$token'");
+		$this->update("`online`=0", "`token`='$token'");
 	}
 	
 	public function setsession($uid, $name,$token, $user='')
@@ -311,14 +312,21 @@ class loginClassModel extends Model
 		$this->rock->savecookie('mo_adminid', $this->rock->jm->encrypt($token));
 	}
 	
+	//更新token最后时间
+	private function uptokendt($id)
+	{
+		$this->update("moddt='".$this->rock->now."'", $id);
+	}
+	
 	//自动快速登录
 	public function autologin($aid=0, $token='', $ism=0)
 	{
 		$baid  = $this->adminid;
 		if($aid>0 && $token!=''){
-			$rs = $this->getone("`uid`='$aid' and `token`='$token' and `online`=1",'`name`');
-			if(!$rs)exit('illegal request2');
+			$rs = $this->getone("`uid`='$aid' and `token`='$token' and `online`=1",'`name`,`id`');
+			if(!$rs)exit('请求信息登录已失效，请重新登录');
 			$this->setsession($aid, $rs['name'], $token);
+			$this->uptokendt($rs['id']);
 			$baid	= $aid;
 		}
 		if($baid==0){
@@ -328,7 +336,7 @@ class loginClassModel extends Model
 				if($onrs){
 					$uid= $onrs['uid'];
 					$this->setsession($uid, $onrs['name'], $onrs['token']);
-					$this->update("moddt='".$this->rock->now."'", $onrs['id']);
+					$this->uptokendt($onrs['id']);
 				}else{
 					$uid = 0;
 				}

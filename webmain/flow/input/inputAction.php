@@ -731,6 +731,7 @@ class inputAction extends Action
 			$xi   = 0;
 			foreach($rs as $k1=>$v1){
 				if($xi>0)$str1.='	';
+				$v1 	= str_replace("\n", '[XINHUBR]', $v1); //有\n转
 				$str1.=''.$v1.'';
 				$xi++;
 			}

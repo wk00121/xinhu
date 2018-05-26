@@ -18,6 +18,10 @@ $(document).ready(function(){
 			d.sysuser 	= get('sysuser_{rand}').value;
 			d.syspass 	= get('syspass_{rand}').value;
 			d.receyumi 	= get('receyumi_{rand}').value;
+			if(!js.email(d.sysuser)){
+				js.msg('msg','发邮件邮箱帐号的格式不对，请填写正确邮箱格式');
+				return;
+			}
 			js.msg('wait','保存中...');
 			js.ajax(js.getajaxurl('setsave','{mode}','{dir}'), d, function(s){
 				js.msg('success','保存成功');

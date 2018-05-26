@@ -41,7 +41,7 @@ class loginClassAction extends apiAction
 	
 	public function loginexitAction()
 	{
-		m('login')->exitlogin();
+		m('login')->exitlogin('', $this->token);
 		$this->showreturn('');
 	}
 	

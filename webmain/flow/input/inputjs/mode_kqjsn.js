@@ -2,3 +2,10 @@
 function initbodys(){
 	
 }
+
+function changesubmit(d){
+	if(d.pinpai=='1'){
+		if(d.snip=='')return '中控的需要填写分配的ip';
+		if(d.snport=='')return '中控的需要填写分配端口号';
+	}
+}

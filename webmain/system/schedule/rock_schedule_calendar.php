@@ -19,7 +19,7 @@ $(document).ready(function(){
 				for(var d1 in da){
 					var s='',s1,d=da[d1],i;
 					for(i=0;i<d.length;i++){
-						s+='<div style="height:20px;line-height20px;overflow:hidden">'+(i+1)+'.['+d[i].time.substr(11,5)+']'+d[i].title+'</div>';
+					s+='<div onclick="openreng_{rand}('+d[i].id+')" style="height:20px;line-height20px;overflow:hidden;cursor:pointer">'+(i+1)+'.['+d[i].time.substr(11,5)+']'+d[i].title+'</div>';
 					}
 					$('#s'+d1+'_{rand}').html('<div style="border-top:1px #eeeeee solid;margin-top:3px;">'+s+'</div>');
 				}
@@ -31,6 +31,9 @@ $(document).ready(function(){
 	};
 	wfhoew{rand}=function(){
 		c.loadschedule();
+	}
+	openreng_{rand}=function(id1){
+		openxiangs('日程','schedule', id1);
 	}
 	var mobj = $('#veiw_{rand}').rockcalendar({
 		height:viewheight-80,

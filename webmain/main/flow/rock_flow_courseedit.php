@@ -249,7 +249,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" nowrap ><a href="<?=URLY?>view_checklx.html" target="_blank">?审核人员类型</a>：</td>
-			<td class="tdinput"><select class="form-control" name="checktype"><option value="">-类型-</option><option value="super">直属上级</option><option value="rank">职位</option><option value="user">指定人员</option><option value="dept">部门负责人</option><option value="auto">自定义(写代码上)</option><option value="apply">申请人</option><option value="opt">操作人</option><option value="change">由上步指定</option><option value="cname">审核人员组</option><option value="field">主表上元素</option></select></td>
+			<td class="tdinput"><select class="form-control" name="checktype"><option value="">-类型-</option><option value="super">直属上级</option><option value="superall">直属上级逐级审批</option><option value="rank">职位</option><option value="user">指定人员</option><option value="dept">部门负责人</option><option value="auto">自定义(写代码上)</option><option value="apply">申请人</option><option value="opt">操作人</option><option value="change">由上步指定</option><option value="cname">审核人员组</option><option value="field">主表上元素</option></select></td>
 			
 			<td align="right" id="checktext_{rand}" nowrap></td>
 			<td class="tdinput" id="checkname_{rand}" style="display:none">
@@ -315,8 +315,10 @@ $(document).ready(function(){
 			<td  align="right" nowrap >审核人数：</td>
 			<td class="tdinput"><select class="form-control" name="checkshu"><option value="0">需全部审核</option><option value="1" selected>至少一人</option><option value="2">至少2人</option></select></td>
 			
+			<!--
 			<td  align="right" nowrap >审批方式：</td>
 			<td class="tdinput"><select class="form-control" name="coursetype"><option value="0">顺序审批</option><option value="1">前置审批(前面有审批后面出现就跳过)</option><option value="2">后置审批(如后面步骤有出现就跳过)</option></select></td>
+			-->
 		</tr>
 		
 		<tr>
