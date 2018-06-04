@@ -110,7 +110,8 @@
 				var bl=a[i].blankText,bt='',attr = a[i].attr;
 				if(!bl)bl='';if(!attr)attr='';
 				if(a[i].required)bt='<font color="red">*</font>';
-				if(a[i].readOnly)attr+=' readonly ';
+				if(a[i].readOnly)attr+=' readonly';
+				if(a[i].repEmpty)attr+=' onblur="this.value=strreplace(this.value)"';
 				if(a[i].type=='number')attr+=' onfocus="js.focusval=this.value" onblur="js.number(this)"';
 				var inp = '<input placeholder="'+bl+'" '+attr+' type="'+a[i].type+'" value="'+a[i].value+'" name="'+a[i].name+'" class="form-control">';
 				if(a[i].type=='checkbox'){

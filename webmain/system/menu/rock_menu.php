@@ -9,7 +9,7 @@ $(document).ready(function(){
 		},{
 			text:'编号',dataIndex:'num'	,editor:true
 		},{
-			text:'URL',dataIndex:'url',editor:true,renderstyle:function(v,d){
+			text:'URL',dataIndex:'url',editor:true,repEmpty:true,renderstyle:function(v,d){
 				return 'word-wrap:break-word;word-break:break-all;white-space:normal;width:200px';
 			}
 		},{
@@ -58,13 +58,13 @@ $(document).ready(function(){
 				params:{int_filestype:'ispir,status,sort,pid,ishs'},
 				submitfields:'num,name,url,icons,ispir,status,sort,pid,ishs,color',
 				items:[{
-					labelText:'编号',name:'num'
+					labelText:'编号',name:'num',repEmpty:true
 				},{
 					labelText:'菜单名称',name:'name',required:true
 				},{
-					labelText:'URL地址',name:'url'
+					labelText:'URL地址',name:'url',repEmpty:true
 				},{
-					labelText:'图标',name:'icons'
+					labelText:'图标',name:'icons',repEmpty:true
 				},{
 					labelText:'上级ＩＤ',name:'pid',required:true,value:'0',type:'number'
 				},{
@@ -74,7 +74,7 @@ $(document).ready(function(){
 				},{
 					name:'ishs',labelBox:'显示在首页',type:'checkbox'
 				},{
-					labelText:'颜色',name:'color'
+					labelText:'颜色',name:'color',repEmpty:true
 				},{
 					labelText:'序号',name:'sort',type:'number',value:'0'
 				}],

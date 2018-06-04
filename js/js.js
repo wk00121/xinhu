@@ -32,8 +32,10 @@ $(document).ready(function(){
 	js.setoption('openfrom', openfrom, true);
 	//移动端添加返回
 	if(ismobile==1 && history.length>1 && openfrom=='' && typeof(grouparr)=='undefined' && !get('header_title')){
-		//var s = '<div onclick="js.back()" style="position:fixed;left:5px;top:40%;width:30px;height:30px; background:rgba(0,0,0,0.3);z-index:9;border-radius:50%;font-size:14px;color:white;text-align:center;line-height:30px">&lt;</div>';
-		//$('body').append(s);
+		//if(navigator.userAgent.indexOf('iPhone')>0){
+			//var s = '<div onclick="js.back()" style="position:fixed;left:5px;top:40%;width:30px;height:30px; background:rgba(0,0,0,0.3);z-index:9;border-radius:50%;font-size:14px;color:white;text-align:center;line-height:30px">&lt;</div>';
+			//$('body').append(s);
+		//}
 	}
 });
 var js={path:'index',url:'',bool:false,login:{},initdata:{},openarr:{},scroll:function(){}};

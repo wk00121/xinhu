@@ -196,4 +196,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">提示：对应表请使用数据库管理工具管理，如phpMyadmin,Navicat等，模块列表页面会生成到webmian/flow/page下<div>
+<div class="tishi">提示：对应表请使用数据库管理工具管理，如phpMyadmin,Navicat等，模块列表页面会生成到webmain/flow/page下<div>

@@ -52,4 +52,38 @@ class sysClassAction extends runtAction
 		if($reim->installwx(1))m('weixinqy:user')->getuserlist();
 		echo 'success';
 	}
+	
+	/**
+	*	清理数据
+	*/
+	public function clearAction()
+	{
+		$date1 	= date('Y-m-d', time()-30*24*3600); //30天前
+		$date2 	= date('Y-m-d', time()-6*30*24*3600); //半年前
+		$date3 	= date('Y-m-d', time()-3*30*24*3600); //3个月
+		$month3 	= date('Y-m', time()-3*30*24*3600); //3个月
+		$kqclear	= (int)$this->option->getval('kqcleartime','0');
+		$alltabls 	= $this->db->getalltable();
+		if($kqclear>0){
+			$date4 = date('Y-m-d', time()-$kqclear*30*24*3600);
+			if(in_array(''.PREFIX.'kqdkjl', $alltabls))
+				m('kqdkjl')->delete("`dkdt`<='$date4 23:59:9'"); //打卡记录
+		}
+		m('log')->delete("`optdt`<'$date3 23:59:59'"); // 日志3个月
+		
+		m('logintoken')->delete("`moddt`<'$date1 23:59:59'"); // token1个月
+		
+		if(in_array(''.PREFIX.'kqjcmd', $alltabls))
+			m('kqjcmd')->delete("`optdt`<'$date1 23:59:59'");  //考勤机命令
+		
+		if(in_array(''.PREFIX.'kqanay', $alltabls))
+			m('kqanay')->delete("`dt`<'$date3'"); //考勤分析
+		
+		if(in_array(''.PREFIX.'dailyfx', $alltabls))
+			m('dailyfx')->delete("`month`<'$month3'"); //日志分析
+		
+		//更多清理自己添加
+		
+		echo 'success';
+	}
 }

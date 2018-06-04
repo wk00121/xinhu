@@ -90,4 +90,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="veiw_{rand}"></div>
-<div class="tishi">组织结构必须只能有一个最顶级的，ID必须为1，且不允许删除</div>
+<div class="tishi">组织结构必须只能有一个最顶级的，ID必须为1，且不允许删除，不要问为什么，我们也不知道为什么。</div>

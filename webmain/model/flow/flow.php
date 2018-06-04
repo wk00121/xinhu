@@ -1518,6 +1518,11 @@ class flowModel extends Model
 			if($this->isflow==1)$cont.='，单号“'.$this->sericnum.'”';
 			$gname= '';
 		}
+		//评论
+		if($type=='pinglun'){
+			$cont  = ''.$this->adminname.''.$act.'你的['.$this->modename.']单据，说明:'.$sm.'';
+			$gname = '';
+		}
 		if($cont!='')$this->push($nuid, $gname, $cont);
 	}
 	
@@ -1911,7 +1916,9 @@ class flowModel extends Model
 			}
 			//企业微信提醒
 			if($reim->installwx(1)){
-				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gname.',办公助手', $wxarr);
+				$gnames = $gname;
+				if($gname != $modename)$gnames =''.$modename.','.$gname.'';
+				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gnames.',办公助手', $wxarr);
 				m('log')->todolog('企业微信提醒', $barr);
 			}
 		}
@@ -2171,10 +2178,15 @@ class flowModel extends Model
 		}else if($czid==-14){
 			$msg = $this->addschedule($sm);	
 		}else if($czid==-15){
+			$actname = $this->rock->post('name');
 			$this->addlog(array(
 				'explain' 	=> $sm,
-				'name'		=> $this->rock->post('name'),
+				'name'		=> $actname,
 			));
+			//评论时提醒给相关人员
+			$uids = arrvalue($this->rs,'uid','0');
+			if(isset($this->rs['optid']))$uids.=','.$this->rs['optid'].'';
+			$this->nexttodo($uids, 'pinglun', $sm, $actname);
 		}else if($czid==-16){
 			$this->zuofeibill($sm); //撤销申请也就是作废了
 		}else if($czid==-17){

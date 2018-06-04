@@ -74,7 +74,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right">系统URL地址：</td>
-			<td class="tdinput"><input id="url_{rand}" class="form-control"></td>
+			<td class="tdinput"><input id="url_{rand}" class="form-control"><font color="#888888">可以为空不用设置的，<a onclick="get('url_{rand}').value=''" href="javascript:;">[清空]</a></font></td>
 		
 			<td  align="right">系统本地地址：</td>
 			<td class="tdinput"><input id="localurl_{rand}" class="form-control">

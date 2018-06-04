@@ -269,6 +269,7 @@
 			var flx = b.type,attr=b.editorattr;
 			if(!flx)flx='text';
 			if(!attr)attr='';
+			if(b.repEmpty)attr+=' onblur="this.value=strreplace(this.value)" ';
 			if(flx=='checkbox'){
 				if(v=='1')at='checked';
 				s+='<div><label><input type="checkbox" id="inputedit_'+rand+'" '+at+' value="1"> '+b.text+'</label></div>';

@@ -3,6 +3,7 @@
 class kqjcmdClassModel extends Model
 {
 	private $snrs;
+	private $pinpai = 0;
 	
 	public function initModel()
 	{
@@ -46,12 +47,17 @@ class kqjcmdClassModel extends Model
 	*/
 	public function send($snid, $type, $ohter='')
 	{
-		$snrs = $this->getsninfo($snid);
+		$snrs 	= $this->getsninfo($snid);
 		if(!$snrs)return returnerror('设备不存在,请添加');
-		if(arrvalue($snrs,'pinpai')=='1')return returnerror('暂不支持中控发送命令');
+		$pinpai	= (int)arrvalue($snrs,'pinpai', 0);
+		$this->pinpai = $pinpai;
 		if(isempt($snrs['name']))return returnerror('请设置设备名称');
 		if(isempt($snrs['company']))return returnerror('请设置设备显示公司名称');
-		$id = 0;
+		$id 	= 0;
+		
+		//中控支持命令类型
+		$zkarr	= array('reboot','config','user','dept','getuser','getinfo','deluser','delsuser','getclockin','delclockin'); 
+		if($pinpai==1 && !in_array($type, $zkarr))return returnerror('中控考勤机不支持['.$type.'.'.$this->cmdtype($type).']命令发送');
 		
 		//判断是不是有重复
 		$arrpda = array('reboot','config','getuser','getinfo','advert');
@@ -98,9 +104,11 @@ class kqjcmdClassModel extends Model
 		
 		//获取所有人员
 		if($type=='getuser'){
-			$id = $this->savedata($snid, $type, array(
+			$data 	= array('user');
+			if($pinpai==1)$data = 'user';
+			$id 	= $this->savedata($snid, $type, array(
 				'do' 	=> 'upload',
-				'data' 	=> array('user'),
+				'data' 	=> $data,
 			));
 		}
 		
@@ -221,6 +229,22 @@ class kqjcmdClassModel extends Model
 		$company 	= arrvalue($snrs,'company','信呼云考勤');
 		$snid 		= arrvalue($snrs,'id','0');
 		
+		if($this->pinpai==1){
+			$dtarr	= explode('.', date('Y.m.d.H.i.s'));
+			return array(
+				'id' 		=> 0,
+				'do' 		=> 'update',
+				'data' 		=> 'config',
+				'name' 		=> $name,
+				'y0'		=> (int)$dtarr[0],
+				'm0'		=> (int)$dtarr[1],
+				'd0'		=> (int)$dtarr[2],
+				'h0'		=> (int)$dtarr[3],
+				'i0'	=> (int)$dtarr[4],
+				's0'	=> (int)$dtarr[5],
+				'systime'	=> $this->rock->now
+			);
+		}
 		return array(
 			'id' 		=> 0,
 			'do' 		=> 'update',
@@ -314,7 +338,7 @@ class kqjcmdClassModel extends Model
 	}
 	
 	//上传完成回调处理
-	private function returnchuli($mids, $snid)
+	public function returnchuli($mids, $snid)
 	{
 		$clarr = $this->getall("`id` in($mids) and `status`=1");//处理成功的
 		$detpids= $userids= $useridsdel = '';
@@ -380,15 +404,15 @@ class kqjcmdClassModel extends Model
 		), $snid);
 	}
 	
-	//添加打卡记录
-	private function adddkjl($snid, $rs)
+	//添加打卡记录$rs = {time,ccid,pic,verify}
+	public function adddkjl($snid, $rs, $type=1, $ddbs=null)
 	{
 		$dkdt 	= $rs['time'];
 		$uid 	= $rs['ccid']; //用户ID
 		$pic	= arrvalue($rs,'pic');	 //现成照片
 		$sntype = $rs['verify'];//打卡方式
-		$where 	= "`uid`='$uid' and `dkdt`='$dkdt' and `type`=1";
-		$ddbs	= m('kqdkjl');
+		$where 	= "`uid`='$uid' and `dkdt`='$dkdt' and `type`='$type'";
+		if($ddbs==null)$ddbs	= m('kqdkjl');
 		$to 	= $ddbs->rows($where);
 		$datype = array('密码','指纹','刷卡');
 		
@@ -397,7 +421,7 @@ class kqjcmdClassModel extends Model
 		$uarr['optdt']  = $this->rock->now;
 		$uarr['explain']  = '在['.$this->snrs['name'].']使用('.arrvalue($datype, $sntype).')打卡';
 		if($to==0){
-			$uarr['type'] 	= 1;
+			$uarr['type'] 	= $type;
 			$uarr['uid'] 	= $uid;
 			$uarr['dkdt'] 	= $dkdt;
 			$where = '';
@@ -409,6 +433,10 @@ class kqjcmdClassModel extends Model
 			$uarr['imgpath'] 	= $imgpath;
 		}
 		$ddbs->record($uarr, $where);
+		
+		$dkdta = explode(' ', $dkdt);
+		$fenxiarr[''.$dkdta[0].'|'.$uid] = $uid;
+		return $fenxiarr;
 	}
 	
 	//保存设备用户
@@ -423,7 +451,7 @@ class kqjcmdClassModel extends Model
 	}
 	
 	//保存指纹
-	private function savefingerprint($snid, $uid, $finge)
+	public function savefingerprint($snid, $uid, $finge)
 	{
 		$where = "`snid`='$snid' and `uid`='$uid'";
 		$arr['fingerprint1'] = str_replace("\n",'', arrvalue($finge, 0));
@@ -608,6 +636,10 @@ class kqjcmdClassModel extends Model
 			'ccid' => $ccid,
 			'others' => join(',', $ccid)
 		);
+		if($this->pinpai==1){
+			$data['data'] = $data['data'][0];
+			$data['ccid'] = $data['others'];
+		}
 		
 		return $data;
 	}
@@ -660,7 +692,11 @@ class kqjcmdClassModel extends Model
 			'ccid' 	=> $ccid,
 			'others' => join(',', $ccid)
 		);
-		
+		//中控
+		if($this->pinpai==1){
+			$data['data'] = 'deluser';
+			$data['ccid'] = join(',', $ccid);
+		}
 		return $data;
 	}
 	//删除不存在的
@@ -674,7 +710,11 @@ class kqjcmdClassModel extends Model
 			'ccid' 	=> $ccid,
 			'others' => join(',', $ccid)
 		);
-		
+		//中控
+		if($this->pinpai==1){
+			$data['data'] = 'deluser';
+			$data['ccid'] = join(',', $ccid);
+		}
 		return $data;
 	}
 	
@@ -709,7 +749,7 @@ class kqjcmdClassModel extends Model
 		
 		$ccid 		= array();
 		if($uids!='0'){
-			$uarr = m('admin')->getall('`id` in('.$userids.')');
+			$uarr = m('admin')->getall('`id` in('.$userids.') and `id` in('.$uids.')');
 			if(!$uarr)return '没有选中人员没在此设备上';
 			
 			$ccid = array();
@@ -733,6 +773,10 @@ class kqjcmdClassModel extends Model
 		$data['from'] = ''.$startdt.' 00:00:00';
 		$data['to']   = ''.$endddt.' 23:59:59';
 		
+		if($this->pinpai==1){
+			$data['data'] = $data['data'][0];
+			$data['ccid'] = join(',', $ccid);
+		}
 		return $data;
 	}
 	

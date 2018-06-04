@@ -93,6 +93,7 @@ class kaoqinjClassAction extends Action
 				$msg .= ''.$barr['msg'].';';
 			}
 		}
+		if($oi==0 && $msg!='')return returnerror($msg);
 		return returnsuccess('成功发送'.$oi.'条命令，可到[考勤机命令查看]下查看结果<font color=red>'.$msg.'</font>');
 	}
 	
