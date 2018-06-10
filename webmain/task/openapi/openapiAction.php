@@ -36,4 +36,46 @@ class openapiAction extends ActionNot
 		if($this->isempt($sv))$sv=$dev;
 		return $sv;
 	}
+	
+	/**
+	*	获取提交的数据
+	*/
+	public function getpostarr()
+	{
+		$str = $this->postdata;
+		if(isempt($str))return false;
+		$arr 	= json_decode($str, true);
+		return $arr;
+	}
+	
+	/**
+	*	根据关键字获取用户
+	*/
+	public function getuserid($id, $sur=true)
+	{
+		if(isempt($id))return 0;
+		$where = "`user`='$id'";
+		$check = c('check');
+		if($check->iscnmobile($id)){
+			$where = "`mobile`='$id'";
+		}elseif($check->isemail($id)){
+			$where = "`email`='$id'";
+		}elseif($check->isincn($id)){
+			$where = "`name`='$id'";
+		}elseif($check->isnumber($id)){
+			$where = "`id`='$id'";
+		}
+		$urs = $this->db->getall("select `id`,`name` from `[Q]admin` where $where and `status`=1");
+		if($this->db->count!=1)return 0;
+		$urs = $urs[0];
+		$uid = (int)$urs['id'];
+		
+		if($sur){
+			$this->adminid 			= $uid;
+			$this->adminname		= $urs['name'];
+			$this->rock->adminid	= $uid; //用户Id
+			$this->rock->adminname 	= $urs['name'];
+		}
+		return $uid;
+	}
 }

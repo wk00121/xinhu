@@ -7,7 +7,9 @@ yingyonginit = function(){
 		selbgcolor:'#DEF7F2',
 		changemonth:function(y, m){
 			var dt = ''+y+'年'+xy10(m)+'月';
-			$('#header_title').html(dt);
+			setTimeout(function(){
+				yy.settitle(dt);
+			},10);
 		},
 		align:'center',
 		valign:'center',

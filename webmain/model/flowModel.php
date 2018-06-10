@@ -107,4 +107,34 @@ class flowClassModel extends Model
 		$dbs->update('`isturn`=1','`status`=1');
 		return $str;
 	}
+	
+	/**
+	*	往一个模块新增单据数据
+	*	返回单据id
+	*	调用方法m('flow')->querydata('模块编号', array());
+	*/
+	public function querydata($num, $cans, $sm='')
+	{
+		$flow 		= $this->initflow($num);
+		$allfields 	= $this->db->getallfields('[Q]'.$flow->mtable.'');
+		if(in_array('uid', $allfields) && !isset($cans['uid']))$cans['uid'] = $this->adminid;
+		if(in_array('optid', $allfields))$cans['optid'] = $this->adminid;
+		if(in_array('createid', $allfields))$cans['createid'] = $this->adminid;
+		if(in_array('createname', $allfields))$cans['createname'] = $this->adminname;
+		if(in_array('optname', $allfields))$cans['optname'] = $this->adminname;
+		if(in_array('optdt', $allfields))$cans['optdt'] = $this->rock->now;
+		if(in_array('createdt', $allfields))$cans['createdt'] = $this->rock->now;
+		if(in_array('adddt', $allfields))$cans['adddt'] = $this->rock->now;
+		if(in_array('applydt', $allfields) && !isset($cans['applydt']))$cans['applydt'] = $this->rock->date;
+		if(in_array('status', $allfields) && !isset($cans['status']))$cans['status'] = 0;
+		if(in_array('isturn', $allfields) && !isset($cans['isturn']))$cans['isturn'] = 1;//是否提交
+		foreach($cans as $k=>$v)if(!in_array($k, $allfields))unset($cans[$k]);
+		$mid 		= $flow->insert($cans);
+		$isturn		= isset($cans['isturn']) ? $cans['isturn'] : 1;
+		$na 		= '';
+		if($isturn==0)$na = '保存';
+		$flow->loaddata($mid, false);
+		$flow->submit($na, $sm);
+		return $mid;
+	}
 }

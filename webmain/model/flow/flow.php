@@ -2347,10 +2347,14 @@ class flowModel extends Model
 					}
 				}
 				
+				/*
 				if($check->isnumber($key)){
 					$_kearr[] = "{asqom}`id`='$key'";
 					if($temsao==1)$_kearr[] = "b.`uid`='$key'";
 				}else if($temsao==1){
+					
+				}*/
+				if($temsao==1){
 					$_kearr[] = "b.`uname` like '%".$key."%'";
 					$_kearr[] = "b.`udeptname` like '%".$key."%'";
 					$_kearr[] = "b.`sericnum` = '$key'";

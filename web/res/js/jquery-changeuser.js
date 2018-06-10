@@ -34,7 +34,7 @@
 	
 			this.userarr = [];
 			this.deptarr = [];
-			if(isempt(this.changerange)){
+			if(isempt(this.changerange) && isempt(this.changerangeno)){
 				var us = js.getoption('userjson');
 				if(us)this.userarr = js.decode(us);
 				
@@ -216,7 +216,7 @@
 		this._loaddata=function(){
 			var o1 = $('#showdiv'+rand+'_0'),url;
 			o1.html('<div align="center" style="padding:30px"><img src="images/mloading.gif"></div>');
-			var url = 'index.php?a=deptuserjson&m=dept&d=system&ajaxbool=true&changerange='+this.changerange+'&gtype=change';
+			var url = 'index.php?a=deptuserjson&m=dept&d=system&ajaxbool=true&changerange='+this.changerange+'&changerangeno='+this.changerangeno+'&gtype=change';
 			$.getJSON(url, function(ret){
 				if(ret.code==200){
 					ret = ret.data;
@@ -227,7 +227,7 @@
 			});
 		};
 		this._loaddatashow=function(ret){
-			if(isempt(this.changerange)){
+			if(isempt(this.changerange) && isempt(this.changerangeno)){
 				js.setoption('deptjson', ret.deptjson);
 				js.setoption('userjson', ret.userjson);
 				js.setoption('groupjson', ret.groupjson);
@@ -442,6 +442,7 @@
 			'titlebool':true,
 			'showview':'',
 			'changerange':'', //从哪些人员中选择
+			'changerangeno':'', //不从哪些人选择
 			'changetype' : 'user',
 			'idobj':false,'nameobj':false,
 			'onselect':function(){},

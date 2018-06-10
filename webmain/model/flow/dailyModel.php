@@ -58,6 +58,9 @@ class flow_dailyClassModel extends flowModel
 				'mark' => $fenshu
 			), $this->id);
 		}
+		if($a['name'] == '点评'){
+			$this->nexttodo($this->uid, 'pinglun', $a['explain'], '点评');
+		}
 	}
 	
 	protected function flowdatalog($arr)
@@ -75,7 +78,7 @@ class flow_dailyClassModel extends flowModel
 	
 	protected function flowgetoptmenu($opt)
 	{
-		if($this->uid==$this->adminid)return false;
+		//if($this->uid==$this->adminid)return false;
 		$to = m('log')->isread($this->mtable, $this->id);
 		return $to<=0;
 	}

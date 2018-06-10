@@ -35,11 +35,11 @@ $(document).ready(function(){
 			}
 		},{
 			text:'编号',dataIndex:'num',editor:true
-		},{
+		}/*,{
 			text:'变化字段',dataIndex:'changefields'
 		},{
 			text:'处理步骤Id',dataIndex:'changecourse'
-		},{
+		}*/,{
 			text:'说明',dataIndex:'explain',editor:true
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true

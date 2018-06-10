@@ -81,7 +81,8 @@ class inputAction extends Action
 			$subna = '编辑';
 		}
 		if($oldrs)$this->rs = $oldrs;
-		$uaarr = $farrs 	= array();
+		$uaarr  = $farrs 	= array();
+		$lvls	= array('textarea','htmlediter');
 		foreach($fieldsarr as $k=>$rs){
 			$fid = $rs['fields'];
 			if(substr($fid, 0, 5)=='temp_')continue;
@@ -90,6 +91,7 @@ class inputAction extends Action
 			if(!isempt($val) && $rs['fieldstype']=='email'){
 				if(!$checkobj->isemail($val))$this->backmsg(''.$rs['name'].'格式不对');
 			}
+			//if(!in_array($rs['fieldstype'], $lvls))$val = htmlspecialchars($val);
 			$uaarr[$fid] = $val;
 			$farrs[$fid] = array('name' => $rs['name']);
 		}

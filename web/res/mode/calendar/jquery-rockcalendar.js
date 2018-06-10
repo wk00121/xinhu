@@ -59,9 +59,10 @@
 		this.init = function(){
 			var id   = obj.attr('id');
 			this.mid = id;
-			var s	= '';
+			var s	= '',bo1r='0';
+			if(can.bordercolor!='')bo1r='1';
 			s+='<div id="calmain_div'+this.mid+'" style="height:'+can.height+'px" class="jquery-calendar">';
-			s+='<table width="100%" border="0" style="border-collapse:collapse" height="100%" cellspacing="0"  cellpadding="0">';
+			s+='<table width="100%" border="'+bo1r+'" style="border-collapse:collapse;border-color:'+can.bordercolor+'" height="100%" cellspacing="0"  cellpadding="0">';
 			s+='<tr>';
 			for(var i=0;i<7;i++){
 				s+='<td class="thtext" style="background-color:'+can.headerbgcolor+'" align="center">'+this.week[i]+'</td>';
@@ -219,7 +220,7 @@
 			}
 			lx	= this.marr[lm-1];
 			if(lY%4==0 && lm==2)lx++;//闰年2月29天
-			for(var i=this.w;i>=1;i--){
+			if(can.overShow)for(var i=this.w;i>=1;i--){
 				var day	= ''+lY+'-'+this.sa(lm)+'-'+this.sa(lx)+'';
 				
 				var lun	= lunar.iconv(lY,lm,lx);
@@ -245,7 +246,7 @@
 				lY	= lY+1;
 				lm	= 1;
 			}
-			for(var i=j1+1+this.w;i<=42; i++){
+			if(can.overShow)for(var i=j1+1+this.w;i<=42; i++){
 				lxu++;
 				var day	= ''+lY+'-'+this.sa(lm)+'-'+this.sa(lxu)+'';
 				var lun	= lunar.iconv(lY,lm,lxu);
@@ -299,6 +300,7 @@
 			var d 	= parseFloat($(o1).attr('temp'));
 			var dc	= d-this.w;
 			var da	= $(this.obj[d]).find('span[dt]:eq(0)').html();
+			if(!da)return;
 				da 	= da.split(',');
 			this.nd	= parseFloat(da[0]);
 			if(dc<=0){
@@ -415,6 +417,8 @@
 			height:400,selbgcolor:'#D3FFF6',month:'',
 			fillot:true,renderer:function(){return ''},align:'left',valign:'top',
 			changemonth:function(){},boofan:true,onclick:function(){},jierixiuxi:'',jierishangban:'',headerbgcolor:'',
+			bordercolor:'',
+			overShow:true,
 			changemonthbefore:function(){}
 		};
 		var can		= $.extend({}, defaultVal, options);

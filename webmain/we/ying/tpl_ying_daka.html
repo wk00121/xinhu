@@ -186,6 +186,7 @@ function addbeizhu(o1){
 function changetab(lx){
 	var url='?d=we&m=ying&a=location';
 	if(lx==2)url='?m=ying&d=we&num=kqtotal';
+	if(lx==3)url='?m=ying&d=we&num=kqpai';
 	js.location(url);
 }
 </script>
@@ -253,6 +254,12 @@ function changetab(lx){
 			<i class="icon-bar-chart"></i>
 		</div>
 		<p class="weui_tabbar_label">考勤统计</p>
+	</a>
+	<a href="javascript:;" onclick="changetab(3)" class="weui_tabbar_item">
+		<div class="weui_tabbar_icon">
+			<i class="icon-list-alt"></i>
+		</div>
+		<p class="weui_tabbar_label">我的排班</p>
 	</a>
 </div>
 </body>

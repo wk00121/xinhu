@@ -423,13 +423,18 @@ class adminClassModel extends Model
 			$uid  	= $this->adminid;
 			$where	= m('view')->viewwhere('user', $uid, 'id');
 			$range 	= $this->rock->get('changerange'); //指定了人
-			$where1 = '';
+			$rangeno 	= $this->rock->get('changerangeno'); //no指定了人
+			$where1 = '';$where2 = '';
 			if(!isempt($range)){
 				$where1 = $this->gjoin($range, '', 'where');
 				$where1 = 'and ('.$where1.')';
 			}
+			if(!isempt($rangeno)){
+				$where2 = $this->gjoin($rangeno, '', 'where');
+				$where2 = 'and not('.$where2.')';
+			}
 			//读取我可查看权限
-			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1",$fields,'`sort`,`name`');
+			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
 			$rows = $this->getall("`id`='$uid'",$fields,'`sort`,`name`');
 		}
