@@ -2259,6 +2259,10 @@ class flowModel extends Model
 		if($lx=='chaos'){
 			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
 		}
+		//经我处理
+		if($lx=='mychuli'){
+			$inwhere	= "and {asqom}`id` in(select bill.`mid` from `[Q]flow_bill` as `bill` where bill.`modeid`='{$this->modeid}' and ".$this->rock->dbinstr('bill.`allcheckid`', $this->adminid).")";
+		}
 		$_wehs			= '';
 		if(is_array($nas)){
 			if(isset($nas['where']))$_wehs = $nas['where'];

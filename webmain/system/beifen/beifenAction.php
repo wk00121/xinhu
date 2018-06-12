@@ -201,8 +201,11 @@ class beifenClassAction extends Action
 		$users	= "'diaochan','zhangfei','daqiao','xiaoqiao','zhaozl','rock','xinhu'";
 		$dbs	= m('admin');
 		$dba	= m('dept');
-		if($dbs->rows("`user` in($users)")==0)return '不能操作，可能你已初始化过用户和部门了';
-
+		
+		//默认可以多次初始化
+		if($this->option->getval('sysuserinit', '是') != '是')
+			if($dbs->rows("`user` in($users)")==0)return '可能你已初始化过用户和部门了，要开启可到【流程模块→数据选项】系统选项下开启';
+		
 		$dbs->delete('id>1');
 		$this->db->query('alter table `[Q]admin` AUTO_INCREMENT=2', false);
 		

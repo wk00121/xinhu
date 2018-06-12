@@ -582,12 +582,19 @@ class inputAction extends Action
 		}else if($this->loadci==1 && $this->adminid>0){
 			$this->atypearr = m('where')->getmywhere($this->modeid, $this->adminid, $pnum);
 			if(isempt($pnum)){
-				$mors = m('flow_set')->getone($this->modeid);
+				$mors = $this->flow->moders;
 				if((int)arrvalue($mors,'iscs','0')>0)$this->atypearr[] = array(
 					'id'	=> 0,
 					'num'	=> 'chaos',
-					'name'  => '抄送给我',
+					'name'  => ''.$mors['name'].'抄送给我',
 				);
+				if($mors['isflow']==1){
+					$this->atypearr[] = array(
+						'id'	=> 0,
+						'num'	=> 'mychuli',
+						'name'  => ''.$mors['name'].'经我处理',
+					);
+				}
 			}
 		}
 		return $this->storebefore($table);

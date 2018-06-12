@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50610
 File Encoding         : 65001
 
-Date: 2018-06-10 17:30:17
+Date: 2018-06-12 09:36:20
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -339,8 +339,8 @@ CREATE TABLE `xinhu_chargems` (
 -- ----------------------------
 -- Records of xinhu_chargems
 -- ----------------------------
-INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2018-06-10 17:30:09', null, '1');
-INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2018-06-10 17:30:09', null, '0');
+INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2018-06-12 09:36:05', null, '1');
+INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2018-06-12 09:36:05', null, '0');
 
 -- ----------------------------
 -- Table structure for `xinhu_city`
@@ -5121,7 +5121,7 @@ CREATE TABLE `xinhu_option` (
   PRIMARY KEY (`id`),
   KEY `num` (`num`),
   KEY `pid` (`pid`)
-) ENGINE=MyISAM AUTO_INCREMENT=401 DEFAULT CHARSET=utf8 COMMENT='系统选项';
+) ENGINE=MyISAM AUTO_INCREMENT=403 DEFAULT CHARSET=utf8 COMMENT='系统选项';
 
 -- ----------------------------
 -- Records of xinhu_option
@@ -5417,6 +5417,8 @@ INSERT INTO `xinhu_option` VALUES ('381', '调拨入库', '0', '78', null, '3', 
 INSERT INTO `xinhu_option` VALUES ('382', '调拨出库', '0', '79', null, '3', '0', null, '1', null, '0', null, null, null);
 INSERT INTO `xinhu_option` VALUES ('383', '模块列定义', '0', '-1007', 'columns_customer_ghai', 'name,suoname,type,unitname,sheng,shi,status,caozuo', '0', null, '1', '2018-03-06 14:22:28', '1', null, null, null);
 INSERT INTO `xinhu_option` VALUES ('387', '生日短信提醒', '0', '154', 'smsbirthday', null, '0', null, '1', null, '0', null, null, '对应值设置：短信模版编号为空不提醒');
+INSERT INTO `xinhu_option` VALUES ('401', '系统选项', '0', '1', 'sysoption', null, '-1', null, '1', null, '0', null, null, null);
+INSERT INTO `xinhu_option` VALUES ('402', '用户初始化', '0', '401', 'sysuserinit', '否', '0', null, '1', null, '0', null, null, '对应值写:是，就可以多次初始化用户。');
 
 -- ----------------------------
 -- Table structure for `xinhu_project`
