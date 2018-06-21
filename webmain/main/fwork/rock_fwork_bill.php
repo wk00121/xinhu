@@ -24,6 +24,8 @@ $(document).ready(function(){
 		},{
 			text:'摘要',dataIndex:'summary',align:'left',width:300
 		},{
+			text:'操作人',dataIndex:'optname',sortable:true
+		},{
 			text:'状态',dataIndex:'status',sortable:true
 		},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'

@@ -33,7 +33,7 @@ class flowbillClassModel extends Model
 	public function getrecord($uid, $lx, $page, $limit, $glx=0)
 	{
 		$srows	= array();
-		$where	= 'uid='.$uid.'';
+		$where	= '(`uid`='.$uid.' or `optid`='.$uid.')';
 		$isdb	= 0;
 		//未通过
 		if($lx=='flow_wtg'){
@@ -240,6 +240,7 @@ class flowbillClassModel extends Model
 				'id' 		=> $rs['mid'],
 				'optdt' 	=> $rs['optdt'],
 				'applydt' 	=> $rs['applydt'],
+				'optname' 	=> arrvalue($rs,'optname'),
 				'name' 		=> $rs['name'],
 				'deptname' 	=> $rs['deptname'],
 				'sericnum' 	=> $rs['sericnum'],

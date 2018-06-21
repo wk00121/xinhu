@@ -188,7 +188,7 @@ class inputChajian extends Chajian
 			$datanum = $data;
 			if(!isempt($datanum)){
 				if($objs!=null && method_exists($objs, $datanum)){
-					$str = $objs->$datanum($fid, $this->mid);
+					$str = $objs->$datanum($this->mid, $this->flow);
 				}
 			}
 		}

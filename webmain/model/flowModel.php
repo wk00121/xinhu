@@ -128,6 +128,14 @@ class flowClassModel extends Model
 		if(in_array('applydt', $allfields) && !isset($cans['applydt']))$cans['applydt'] = $this->rock->date;
 		if(in_array('status', $allfields) && !isset($cans['status']))$cans['status'] = 0;
 		if(in_array('isturn', $allfields) && !isset($cans['isturn']))$cans['isturn'] = 1;//是否提交
+		
+		if(isset($cans['uid'])){
+			$urs = $flow->adminmodel->getone($cans['uid']);
+			in_array('uname', $allfields) and $cans['uname'] = $urs['name'];
+			in_array('applyname', $allfields) and $cans['applyname'] = $urs['name'];
+			in_array('applydeptname', $allfields) and $cans['applydeptname'] = $urs['deptname'];
+		}
+		
 		foreach($cans as $k=>$v)if(!in_array($k, $allfields))unset($cans[$k]);
 		$mid 		= $flow->insert($cans);
 		$isturn		= isset($cans['isturn']) ? $cans['isturn'] : 1;

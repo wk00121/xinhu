@@ -38,8 +38,8 @@ final class rockClass
 		$this->unarr	= explode(',','1,2');
 		$this->now		= $this->now();
 		$this->date		= date('Y-m-d');
-		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,outfile,eval(,phpinfo(),select*from,select*,select%20,delete%20,drop%20,and%20');
-		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
+		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,/*,*/,union,sleep ,outfile,eval(,phpinfo(),select*from,select*,union%20,sleep%20,select%20,delete%20,drop%20,and%20');
+		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,/*,*/,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
 		$this->lvlarab	= array();
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
 	}
@@ -140,6 +140,7 @@ final class rockClass
 			$s = $this->jm->base64decode($s);
 		}
 		$s=str_replace("'", '&#39', $s);
+		$s=str_replace('%20', '', $s);
 		if($lx==2)$s=str_replace(array('{','}'), array('[H1]','[H2]'), $s);
 		$str = strtolower($s);
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){

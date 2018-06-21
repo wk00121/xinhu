@@ -156,6 +156,11 @@ abstract class Model{
 	{
 		return $this->db->getLastSql();
 	}
+	
+	public function count($where='1=1')
+	{
+		return $this->rows($where);
+	}
 }
 
 class sModel extends Model{}

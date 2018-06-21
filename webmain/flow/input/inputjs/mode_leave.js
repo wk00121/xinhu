@@ -1,6 +1,8 @@
 var daytime = 8;//每天上班默认8个小时
 function initbodys(){
-	
+	$(form('uname')).blur(function(){
+		getdeptsutr();
+	});
 }
 function oninputblur(na){
 	if(na=='stime' || na=='etime'){
@@ -9,6 +11,14 @@ function oninputblur(na){
 	if(na=='totals'){
 		changedays();
 	}
+}
+function getdeptsutr(){
+	if(!form('base_deptname'))return;
+	var uid = form('uid').value;
+	if(!uid)return;
+	js.ajax(geturlact('getuinfo'),{uid:uid}, function(ret){
+		form('base_deptname').value = ret.deptname;
+	},'get,json');
 }
 function changesubmit(d){
 	if(d.etime<=d.stime)return '截止时间必须大于开始时间';
@@ -30,7 +40,9 @@ function changetotal(){
 		js.setmsg('不允许跨月申请');
 		return;
 	}
-	js.ajax(geturlact('total'),{stime:st,etime:et}, function(a){
+	var uid = '';
+	if(form('uid'))uid = form('uid').value;
+	js.ajax(geturlact('total'),{stime:st,etime:et,uid:uid}, function(a){
 		form('totals').value=a[0];
 		daytime = parseFloat(a[2]);
 		js.setmsg(a[1]);

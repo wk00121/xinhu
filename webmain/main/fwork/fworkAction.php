@@ -64,7 +64,7 @@ class fworkClassAction extends Action
 		$zt 	= $this->post('zt');
 		$modeid = (int)$this->post('modeid','0');
 		$uid 	= $this->adminid;
-		$where	= 'and a.uid='.$uid.'';
+		$where	= 'and (a.`uid`='.$uid.' or a.`optid`='.$uid.')';
 		//待办
 		if($lx=='daib'){
 			$where	= 'and a.`status` not in(1,2) and '.$this->rock->dbinstr('a.nowcheckid', $uid);

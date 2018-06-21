@@ -634,8 +634,9 @@ class kaoqinClassModel extends Model
 	}
 	
 	//总统计显示
-	public function getqjsytimestr($uid, $dt='', $id=0)
+	public function getqjsytimestr($uid=0, $dt='', $id=0)
 	{
+		if($uid==0)$uid = $this->adminid;
 		$rows = $this->db->getall("select `kind` from `[Q]kqinfo` where `uid`='$uid' and `status`=1 and `kind` like '增加%' group by `kind`");
 		$tx   = $this->getqjsytime($uid, '调休', $dt, $id);
 		$str  = '可调休('.$tx.'小时)';

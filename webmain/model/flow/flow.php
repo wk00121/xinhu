@@ -270,7 +270,7 @@ class flowModel extends Model
 	{
 		$bo = 0;
 		if($bo==0 && $this->isflow==1){
-			if($this->billrs && $this->uid == $this->adminid){
+			if($this->billrs && ($this->uid == $this->adminid || $this->optid==$this->adminid)){
 				if($this->billrs['nstatus']==0 || $this->billrs['nstatus']==2){
 					$bo = 1;
 				}
@@ -292,7 +292,7 @@ class flowModel extends Model
 	{
 		$bo = 0;
 		if($bo==0 && $this->isflow==1){
-			if($this->billrs && $this->uid == $this->adminid){
+			if($this->billrs && ($this->uid == $this->adminid || $this->optid==$this->adminid)){
 				if($this->billrs['nstatus']==0 || $this->billrs['nstatus']==2){
 					$bo = 1;
 				}
@@ -1448,11 +1448,11 @@ class flowModel extends Model
 			'applydt'	=> $this->rs['applydt'],
 			'modename'  => $this->modename,
 			'uname'  	=> $this->rs['base_name'],
-			'udeptname' => $this->rs['base_deptname']
+			'udeptname' => $this->rs['base_deptname'],
+			'uid' 		=> $this->uid,
 		);
 		foreach($oarr as $k=>$v)$arr[$k]=$v;
 		if($biid==0){
-			$arr['uid'] 	= $this->uid;
 			$arr['isdel'] 	= '0';
 			$arr['status'] 	= $arr['nstatus'];
 			$arr['createdt']= $arr['optdt'];
@@ -2101,6 +2101,7 @@ class flowModel extends Model
 		
 		$status 	= (int)arrvalue($this->rs,'status','0');
 		$isturn 	= (int)arrvalue($this->rs, 'isturn','0');
+		$ismy 		= ($this->uid == $this->adminid or $this->optid == $this->adminid);
 		
 		$isreadbo 	= $this->isreadqx(1);
 		//菜单上参数说明lx 标识类型,nup是否不显示上传框,optmenuid菜单Id负数，issm是否需要说明
@@ -2111,11 +2112,11 @@ class flowModel extends Model
 				$arr[] = array('name'=>'追加说明...','lx'=>1,'issm'=>1,'optmenuid'=>-12);
 			}
 			
-			if(!in_array($status, array(1,5)) && $this->uid == $this->adminid){
+			if(!in_array($status, array(1,5)) && $ismy){
 				$arr[] = array('name'=>'作废申请...','lx'=>16,'issm'=>1,'nup'=>1,'optmenuid'=>-16); //可直接作废
 			}
 			
-			if(!in_array($status, array(1,2,5)) && $this->uid == $this->adminid){
+			if(!in_array($status, array(1,2,5)) && $ismy){
 				$arr[] = array('name'=>'催办...','lx'=>13,'issm'=>1,'nup'=>1,'optmenuid'=>-13);
 				if($this->option->getval('sms_iscb')=='1')$arr[] = array('name'=>'短信催办...','lx'=>17,'issm'=>1,'nup'=>1,'optmenuid'=>-17);
 			}

@@ -85,7 +85,8 @@ class inputAction extends Action
 		$lvls	= array('textarea','htmlediter');
 		foreach($fieldsarr as $k=>$rs){
 			$fid = $rs['fields'];
-			if(substr($fid, 0, 5)=='temp_')continue;
+			$fi1 = substr($fid, 0, 5);
+			if($fi1=='temp_' || $fi1=='base_')continue;
 			$val = $this->post($fid);
 			if($rs['isbt']==1 && isempt($val))$this->backmsg(''.$rs['name'].'不能为空');
 			if(!isempt($val) && $rs['fieldstype']=='email'){
@@ -122,7 +123,15 @@ class inputAction extends Action
 		if(in_array('uid', $allfields) && $addbo){
 			$uaarr['uid'] = $this->post('uid', $this->adminid);
 		}
-		if(in_array('applydt', $allfields) && $id==0)$uaarr['applydt'] = $this->post('applydt', $this->date);
+		if(isset($uaarr['uid'])){
+			$urs = $this->flow->adminmodel->getone($uaarr['uid']);
+			in_array('uname', $allfields) and $uaarr['uname'] = $urs['name'];
+			in_array('applyname', $allfields) and $uaarr['applyname'] = $urs['name'];
+			in_array('applydeptname', $allfields) and $uaarr['applydeptname'] = $urs['deptname'];
+		}
+		
+		if(in_array('applydt', $allfields) && $id==0)
+			$uaarr['applydt'] = $this->post('applydt', $this->date);
 		if($addbo){
 			if(in_array('createdt', $allfields))$uaarr['createdt'] = $this->now;
 			if(in_array('adddt', $allfields))$uaarr['adddt'] = $this->now;
@@ -800,6 +809,14 @@ class inputAction extends Action
 		return $str;
 	}
 	
+	public function getuinfoAjax()
+	{
+		$uid = $this->post('uid', $this->adminid);
+		$rs	 = m('admin')->getone($uid,'id,name,deptname,deptallname,ranking,workdate,pingyin');
+		$unrs= m('userinfo')->getone($uid, 'syenddt,positivedt');
+		if($unrs)foreach($unrs as $k=>$v)$rs[$k] =$v;
+		return $rs;
+	}
 }
 
 class inputClassAction extends inputAction{}

@@ -42,6 +42,7 @@ $config		= array(
 	'sqllog'	=> false,
 	'checksign'	=> false,			//列表请求是否验证
 	'memory_limit'	=> '',			//运行内存大小
+	'timeout'		=> -1,			//抄送时间(秒),-1默认的
 	'db_drive'		=> 'mysqli',	//数据库操作驱动
 	'db_engine'		=> 'MyISAM',	//数据库默认引擎
 	'debug'			=> true,	//默认debug模式
@@ -56,7 +57,9 @@ if(file_exists($_confpath)){
 	$_tempconf	= require($_confpath);
 	foreach($_tempconf as $_tkey=>$_tvs)$config[$_tkey] = $_tvs;
 	if(isempt($config['url']))$config['url'] = $rock->url();
-	if(!isempt($config['memory_limit']) && function_exists('ini_set'))ini_set('memory_limit', $config['memory_limit']);
+	if(!isempt($config['memory_limit']) && function_exists('ini_set'))
+		ini_set('memory_limit', $config['memory_limit']);
+	if($config['timeout']>-1 && function_exists('set_time_limit'))set_time_limit($config['timeout']);	
 }
 
 define('DEBUG', $config['debug']);

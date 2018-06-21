@@ -587,7 +587,9 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			$tablessa = explode(',', $mrs['tables']);
 			if(isset($tablessa[$iszb-1]))$tables = $tablessa[$iszb-1];
 		}
-		if(!isempt($tables) && substr($fields,0,5)!='temp_' && $cans['islu']==1){
+		$fiesss = substr($fields,0,5);
+		if($fiesss != 'base_' || $fiesss != 'temp_')return;
+		if(!isempt($tables) && $cans['islu']==1){
 			$allfields = $this->db->getallfields('[Q]'.$tables.'');
 			$this->createfields($allfields, $tables, $fields, $type, $lens, $dev, $name);
 			if(substr($type,0,6)=='change' && !isempt($data)){
