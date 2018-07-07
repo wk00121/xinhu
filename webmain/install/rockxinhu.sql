@@ -5525,7 +5525,7 @@ INSERT INTO `xinhu_option` VALUES ('401', '系统选项', '0', '1', 'sysoption',
 INSERT INTO `xinhu_option` VALUES ('402', '用户初始化', '0', '401', 'sysuserinit', '否', '0', null, '1', null, '0', null, null, '对应值写:是，就可以多次初始化用户。');
 INSERT INTO `xinhu_option` VALUES ('403', '短信平台', '0', '401', 'syssmsplat', null, '0', null, '1', null, '0', null, null, null);
 INSERT INTO `xinhu_option` VALUES ('405', '阿里云(短信服务)', '0', '403', null, 'alisms', '0', null, '1', null, '0', null, null, null);
-INSERT INTO `xinhu_option` VALUES ('408', '自动放入公海', '0', '50', 'crmaddghai', '3', '1', null, '1', null, '0', null, null, '对应值0不限制,7天未根据自动放入公海');
+INSERT INTO `xinhu_option` VALUES ('408', '自动放入公海', '0', '50', 'crmaddghai', '0', '1', null, '1', null, '0', null, null, '对应值0不限制,7天未根据自动放入公海');
 INSERT INTO `xinhu_option` VALUES ('409', '模块列定义', '0', '-1007', 'columns_customer_all', 'name,suoname,type,unitname,isstat,isgys,htshu,moneyz,moneyd,lastdt,caozuo', '0', null, '1', '2018-07-07 10:21:00', '1', null, null, null);
 
 -- ----------------------------
