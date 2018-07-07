@@ -41,7 +41,7 @@ class flowbillClassModel extends Model
 		}
 		
 		if($lx=='flow_dcl'){
-			$where .= ' and `status`=0';
+			$where .= ' and `status` not in(1,5)';
 		}
 		
 		//已完成
@@ -95,39 +95,38 @@ class flowbillClassModel extends Model
 		
 		$arr 	= $this->getlimit('`isdel`=0 and '.$where, $page,'*','`optdt` desc', $limit);
 		$rows 	= $arr['rows'];
-		$flow 	= m('flow:user');
 		$modeids= '0';
 		foreach($rows as $k=>$rs)$modeids.=','.$rs['modeid'].'';
 		$modearr= array();
 		if($modeids!='0'){
-			$moders = m('flow_set')->getall("`id` in($modeids)",'id,num,name,summary,statusstr');
+			$moders = m('flow_set')->getall("`id` in($modeids)");
 			foreach($moders as $k=>$rs)$modearr[$rs['id']] = $rs;
 		}
 		foreach($rows as $k=>$rs){
 			$modename	= $rs['modename'];
 			$summary	= '';
+			$summarx 	= '';
 			$modenum 	= '';
 			$statustext	= '记录不存在';
+			$statusstr	= '不存在';
 			$statuscolor= '#888888';
 			$ishui		= 0;
+			$optdt 		= $rs['optdt'];
 			if(isset($modearr[$rs['modeid']])){
-				$mors 	= $modearr[$rs['modeid']];
-				$modename 	= $mors['name'];
-				$summary 	= $mors['summary'];
+				$mors 		= $modearr[$rs['modeid']];
 				$modenum 	= $mors['num'];
+				$flow 		= m('flow:'.$modenum.'')->initdata($mors);
+				$modename 	= $mors['name'];
 				$rers 		= $this->db->getone('[Q]'.$rs['table'].'', $rs['mid']);
-				$summary	= $this->rock->reparr($summary, $rers);
 				if($rers){
-					$wdst		 = $rers['status'];
-					if($rers['isturn']==0)$wdst=-1;
-					$nowsets	 = '<font color="blue">'.$rs['nowcheckname'].'</font>';
-					if($glx==0)$nowsets = $rs['nowcheckname'];
-					//if($wdst!=0)$nowsets = '';
-					
-					$ztarr 		 = $flow->getstatus($rers, $mors['statusstr'], $nowsets);
+					$tihsrs  = $flow->flowrsreplace($rers, 2);
+					$summary = $this->rock->reparr($mors['summary'], $tihsrs);
+					$summarx = $this->rock->reparr($mors['summarx'], $tihsrs);
+	
+					$ztarr 	 = $flow->getstatus($rers, $mors['statusstr'], $rs['nowcheckname']);
 					$statustext  = $ztarr[0];
 					$statuscolor = $ztarr[1];
-					
+					$statusstr	 = $ztarr[3];
 					if($rers['status']==5)$ishui = 1;
 				}else{
 					$this->update('isdel=1', $rs['id']);
@@ -138,8 +137,24 @@ class flowbillClassModel extends Model
 			$cont 		= '申请人：'.$rs['optname'].'<br>单号：'.$rs['sericnum'].'';
 			$cont.='<br>申请日期：'.$rs['applydt'].'';
 			if(!isempt($summary))$cont.='<br>摘要：'.$summary.'';
-			if(!isempt($rs['nstatustext']))$cont.='<br>状态：'.$rs['nstatustext'].'';
+			//if(!isempt($rs['nstatustext']))$cont.='<br>状态：'.$rs['nstatustext'].'';
 			if(!isempt($rs['checksm']))$cont.='<br>处理说明：'.$rs['checksm'].'';
+			
+			//应用摘要
+			if(!isempt($summarx)){
+				$suarr  = $this->zhaiyaoar($summarx);
+				foreach($suarr as $f=>$nr){
+					$str  		= $this->rock->reparr($nr, $rers);
+					if($f=='cont')$str = $this->contreplaces($str);
+					$$f 	= $str;
+				}
+				if(isset($suarr['cont'])){
+					if(isset($suarr['title']))
+						$cont 	= '模块：'.$modename.'<br>申请人：'.$rs['optname'].'<br>'.$cont;
+					//if(!isempt($rs['nstatustext']))$cont.='<br>状态：'.$rs['nstatustext'].'';
+					if(!isempt($rs['checksm']))$cont.='<br>处理说明：'.$rs['checksm'].'';
+				}
+			}
 			
 			$srows[]= array(
 				'title' => $title,
@@ -147,11 +162,12 @@ class flowbillClassModel extends Model
 				'ishui' => $ishui,
 				'id' 	=> $rs['mid'],
 				'uid' 	=> $rs['uid'],
-				'optdt' 	=> $rs['optdt'],
+				'optdt' 	=> $optdt,
 				'sericnum' 	=> $rs['sericnum'],
 				'applydt' 	=> $rs['applydt'],
 				'statustext' 	=> $statustext,
 				'statuscolor' 	=> $statuscolor,
+				'statusstr' 	=> $statusstr,
 				'modenum'		=> $modenum,
 				'modename'		=> $modename
 			);
@@ -159,6 +175,36 @@ class flowbillClassModel extends Model
 		$arr['rows'] 	= $srows;
 		
 		return $arr;
+	}
+	
+	private function zhaiyaoar($str)
+	{
+		$stra = explode("\n", $str);
+		$arr  = array();
+		foreach($stra as $nr){
+			if(strpos($nr,'title:')===0)$arr['title'] = substr($nr, 6);
+			if(strpos($nr,'optdt:')===0)$arr['optdt'] = substr($nr, 6);
+			if(strpos($nr,'cont:')===0)$arr['cont'] = substr($nr, 5);
+		}
+		if(!$arr)$arr['cont'] = $str;
+		return $arr;
+	}
+	
+	private function contreplaces($str)
+	{
+		$stra 	= explode('[br]', $str);
+		$s1 	= '';
+		foreach($stra as $s){
+			$a1 = explode('：', $s);
+			if(isset($a1[1]) && $a1[1]==''){
+			}else{
+				$s1.='$%#'.$s.'';
+			}
+		}
+		if($s1!=''){
+			$s1 = str_replace('$%#', "\n", substr($s1, 3));
+		}
+		return $s1;
 	}
 	
 	//获取待办处理数字
@@ -200,7 +246,7 @@ class flowbillClassModel extends Model
 		foreach($rows as $k=>$rs)$modeids.=','.$rs['modeid'].'';
 		$modearr= array();
 		if($modeids!='0'){
-			$moders = m('flow_set')->getall("`id` in($modeids)",'id,num,name,summary,statusstr');
+			$moders = m('flow_set')->getall("`id` in($modeids)");
 			foreach($moders as $k=>$rs)$modearr[$rs['id']] = $rs;
 		}
 		$flow = m('flow:user');
@@ -210,8 +256,8 @@ class flowbillClassModel extends Model
 			$modenum 	= '';
 			$statustext	= '记录不存在';
 			$statuscolor= '#888888';
-			$wdst 		= 0;
 			$ishui 		= 0;
+			$statusstr	= '不存在';
 			if(isset($modearr[$rs['modeid']])){
 				$mors 		= $modearr[$rs['modeid']];
 				$modename 	= $mors['name'];
@@ -220,21 +266,16 @@ class flowbillClassModel extends Model
 				$rers 		= $this->db->getone('[Q]'.$rs['table'].'', $rs['mid']);
 				$summary	= $this->rock->reparr($summary, $rers);
 				if($rers){
-					$wdst		 = $rers['status'];
-					if($rers['isturn']==0)$wdst=-1;
-					$nowsets	 = '<font color="blue">'.$rs['nowcheckname'].'</font>';
-					//if($wdst!=0)$nowsets = '';
+					$nowsets	 = $rs['nowcheckname']; //当前审核人
 					$ztarr 		 = $flow->getstatus($rers, $mors['statusstr'], $nowsets);
 					$statustext  = $ztarr[0];
 					$statuscolor = $ztarr[1];
 					if($rers['status']==5)$ishui = 1;
+					$statusstr	 = $ztarr[3];
 				}else{
 					$this->update('isdel=1', $rs['id']); //记录已经不存在了
 				}
 			}
-			
-			$status = '<font color="'.$statuscolor.'">'.$statustext.'</font>';
-			if($wdst==0)$status= $statustext;
 			
 			$srows[]= array(
 				'id' 		=> $rs['mid'],
@@ -250,7 +291,7 @@ class flowbillClassModel extends Model
 				'modename' 	=> $modename,
 				'modenum' 	=> $modenum,
 				'summary' 	=> $summary,
-				'status'	=> $status
+				'status'	=> $statusstr
 			);
 		}
 		return $srows;
@@ -265,12 +306,7 @@ class flowbillClassModel extends Model
 		$rows  	= $arr['rows'];
 		$arows 	= array();
 		foreach($rows as $k=>$rs){
-			$cont = '【'.$rs['modename'].'】单号:'.$rs['sericnum'].',日期:'.$rs['applydt'].'，';
-			if(!contain($rs['statustext'],'<font')){
-				$cont.= '<font color="'.$rs['statuscolor'].'">'.$rs['statustext'].'</font>';
-			}else{
-				$cont.= $rs['statustext'];
-			}
+			$cont = '【'.$rs['modename'].'】单号:'.$rs['sericnum'].',日期:'.$rs['applydt'].'，'.$rs['statusstr'].'';
 			$arows[] = array(
 				'cont' 		=> $cont,
 				'modename' 	=> $rs['modename'],

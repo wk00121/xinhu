@@ -132,13 +132,13 @@ select{font-size:12px}
 <table width="100%">
 <tr>
 	<td  bgcolor="#f5f5f5">
-		<div style="width:210px;">
+		<div style="width:270px;">
 			<div class="yangss"><h1>&nbsp;<?=$da['rs']['name']?>(元素)</h1></div>
 			<div id="page_left" style="overflow:auto">
 				<?php
 				foreach($da['fleft'] as $k=>$rs){
 					$str = '<div fields="'.$rs[0].'" fname="'.$rs[1].'" iszb="'.$rs[2].'">';
-					$str.= ''.($k+1).'. '.$rs[1].'';
+					$str.= ''.($k+1).'. '.$rs[1].'('.$rs[0].')';
 					if($rs[0]){
 						$str.= ' <a href="javascript:" onclick="c.insert1(this,0)">＋</a> <a href="javascript:" onclick="c.insert1(this,1)">⊥</a>';
 					}else{

@@ -158,7 +158,9 @@ class inputChajian extends Chajian
 		if($type=='changeusercheck'||$type=='changeuser'||$type=='changedept'||$type=='changedeptcheck'||$type=='changedeptusercheck'){
 			$_vals  = explode('|', $val);$_vals0 = $_vals[0];
 			$_vals1 = isset($_vals[1]) ? $_vals[1] : '';
-			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$data.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
+			$zbnae	= $data;
+			if($iszb>0)$zbnae = $data.''.($iszb-1).''.$leox.'';
+			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$zbnae.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
 			$str   .= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\')" class="webbtn">选择</a></td></tr></table>';
 		}
 		if($type=='selectdatafalse' || $type=='selectdatatrue'){

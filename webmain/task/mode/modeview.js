@@ -32,6 +32,11 @@ function initbody(){
 	}
 	js.tanstyle=1;
 	if(document.myform && typeof(initbodys)=='function')initbodys();
+	
+	if(receiptrs){
+		var s = '<div style="position:fixed;top:40%;right:5px;padding:10px;border-radius:4px;z-index:5px;background:#555555;color:white" id="receiptrsdiv"><div>此单据需要回执确认<br>请将页面拉到最后</div><div style="margin-top:5px"><input type="button"  onclick="c.receiptque()" value="回执确认" class="webbtn btn-danger"></div></div>';
+		$('body').append(s);
+	}
 }
 function showchayue(opt, st){
 	alert('总查阅:'+st+'次\n最后查阅：'+opt+'');
@@ -82,12 +87,14 @@ function check(lx){
 		}
 	}
 	if(!da.zynameid && da.zt!='2'){
-		var fobj=$('span[fieidscheck]'),i,fid,fiad;
+		var fobj=$('span[fieidscheck]'),i,fid,flx,fiad,val;
+		var subdat = js.getformdata();
 		for(i=0;i<fobj.length;i++){
 			fiad = $(fobj[i]);
 			fid	 = fiad.attr('fieidscheck');
-			da['cfields_'+fid]=form(fid).value;
-			if(da['cfields_'+fid]==''){js.setmsg(''+fiad.text()+'不能为空');return;}
+			val  = subdat[fid];
+			da['cfields_'+fid]=val;
+			if(val==''){js.setmsg(''+fiad.text()+'不能为空');return;}
 		}
 	}
 	var ostr=othercheck(da);
@@ -100,7 +107,7 @@ function check(lx){
 	var url = c.gurl('check');
 	js.ajax(url,da,function(a){
 		if(a.success){
-			js.setmsg(a.msg,'green');
+			js.setmsg(a.data,'green');
 			c.callback();
 			if(get('autocheckbox'))if(get('autocheckbox').checked)c.close();
 		}else{
@@ -193,6 +200,7 @@ var c={
 			$('#recordss').remove();
 			$('#checktablediv').remove();
 			$('#recordsss').remove();
+			$('.statustext').remove();
 		}
 		window.print();
 	},
@@ -310,7 +318,9 @@ var c={
 			return false;
 		}
 		if(ismobile==1){
-			if(appobj1('openfile', id))return;
+			var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
+			if(docsx.indexOf(','+ext+',')==-1)
+				if(appobj1('openfile', id))return;
 			js.location(url);
 		}else{
 			js.winiframe('文件预览',url);
@@ -451,7 +461,7 @@ var c={
 		$.selectdata({
 			data:this.selectdatadata[fid],title:tit,
 			fid:fid,
-			url:geturlact('getselectdata',{act:a1[0],sysmodenum:modenum}),
+			url:geturlact('getselectdata',{act:a1[0],sysmodenum:modenum,sysmid:mid}),
 			checked:ced, nameobj:form(fid),idobj:idobj,
 			onloaddata:function(a){
 				c.selectdatadata[fid]=a;
@@ -460,5 +470,23 @@ var c={
 				if(c.onselectdata[this.fid])c.onselectdata[this.fid](seld,sna,sid);
 			}
 		});
+	},
+	
+	
+	//回执确认
+	receiptque:function(){
+		$('#receiptrsdiv').remove();
+		js.prompt('回执确认','确认说明(选填)', function(jg,txt){
+			if(jg=='yes'){
+				c.receiptqueok(txt);
+			}
+		});
+	},
+	receiptqueok:function(sm){
+		js.msg('wait','回执确认确认提交中...');
+		var da = {'mid':mid,'modenum':modenum,'sm':sm,'receiptid':receiptrs.id};
+		js.ajax(c.gurl('receiptcheck'),da,function(a){
+			js.msg('success','回执确认提交成功');
+		},'post');
 	}
 };

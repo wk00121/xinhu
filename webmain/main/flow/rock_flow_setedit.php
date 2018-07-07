@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_set',
 		url:publicsave('{mode}','{dir}'),url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'optdt={now}'},aftersaveaction:'flowsetsaveafter',beforesaveaction:'flowsetsavebefore',
-		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isflowlx,isgbcy,isbxs,lbztxs,iscs,zfeitime',
+		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,ispl,ishz,istxset,isup,isflowlx,isgbcy,isbxs,lbztxs,iscs,zfeitime',
 		requiredfields:'name,type,num,table',
 		success:function(){
 			closenowtabs();
@@ -185,7 +185,12 @@ cont:
 			<td class="tdinput" colspan="3">
 				<label><input name="isgbjl" value="1" type="checkbox"> 不显示操作记录</label>&nbsp; &nbsp; 
 				<label><input name="isgbcy" value="1" type="checkbox"> 不显示查阅记录</label>&nbsp; 
-				<label><input name="isscl" value="1" type="checkbox"> 标识已生成列表页</label>
+				<label><input name="isscl" value="1" type="checkbox"> 标识已生成列表页</label>&nbsp; 
+				<label><input name="ispl" value="1" checked type="checkbox"> 开启可评论</label>
+				&nbsp; 
+				<label><input name="istxset" value="1" type="checkbox"> 开启单据提醒设置</label>
+				&nbsp; 
+				<label><input name="ishz" value="1" type="checkbox"> 开启回执确认</label>
 			</td>
 		</tr>
 		

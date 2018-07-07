@@ -121,22 +121,23 @@ $(document).ready(function(){
 			var bo = (modeid==0);
 			btnsss(bo);
 		},
+		//录入
 		lulu:function(o1,lx){
 			if(lx==1){
 				var url = js.getajaxurl('@lum','input','flow',{num:moders.num});
 				js.open(url, 380,500);
 			}else{
 				var url = js.getajaxurl('@lu','input','flow',{num:moders.num});
-				js.open(url, 700,450);
+				js.open(url, 800,450);
 			}
 		},
 		inputs:function(o1,lx){
 			var url='?m=flow&d=main&a=input&setid='+moders.id+'&atype=0';
-			js.open(url,900,500);
+			js.open(url,970,500);
 		},
 		zhanshi:function(o1,lx){
 			var url='?m=flow&d=main&a=inputzs&setid='+moders.id+'&atype='+lx+'';
-			js.open(url,900,500);
+			js.open(url,970,500);
 		},
 		rexuhao:function(){
 			if(modeid==0)return;

@@ -20,8 +20,6 @@ $(document).ready(function(){
 		},{
 			text:'申请日期',dataIndex:'applydt',sortable:true
 		},{
-			text:'操作时间',dataIndex:'optdt',sortable:true
-		},{
 			text:'摘要',dataIndex:'summary',align:'left',width:300
 		},{
 			text:'操作人',dataIndex:'optname',sortable:true

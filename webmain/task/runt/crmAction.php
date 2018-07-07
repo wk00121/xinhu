@@ -1,10 +1,14 @@
 <?php
 class crmClassAction extends runtAction
 {
-	//客户合同到期，每天运行
+	//每天运行
 	public function runAction()
 	{
+		//客户合同到期
 		m('flow')->initflow('custract')->custractdaoqi();
+		
+		//自动放入公海
+		m('flow')->initflow('customer')->addgonghai();
 		echo 'success';
 	}
 	

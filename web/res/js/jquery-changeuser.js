@@ -99,7 +99,7 @@
 		};
 		this.showlist=function(pid,oi){
 			var type=this.inputtype,hw=24;
-			var a=this.deptarr,len=a.length,i,s='',ssu='',wjj,s2='';
+			var a=this.deptarr,len=a.length,i,s='',ssu='',wjj,s2='',sids;
 			var s1='<div style="width:'+(hw*oi)+'px"></div>';
 			var dob=this.changetype.indexOf('dept')==-1;
 			var uob=this.changetype.indexOf('user')>=0;
@@ -120,7 +120,8 @@
 				a=this.userarr;
 				len=a.length;
 				for(i=0;i<len;i++){
-					if(a[i].deptid==pid){
+					sids = ','+a[i].deptids+',';
+					if(a[i].deptid==pid || sids.indexOf(','+pid+',')>=0){
 						ssu+='<div class="listsss">';
 						ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
 						ssu+='</div>';

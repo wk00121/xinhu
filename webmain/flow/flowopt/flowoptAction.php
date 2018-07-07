@@ -38,7 +38,7 @@ class flowoptClassAction extends Action
 		$sm 	= $this->post('sm');
 		$msg 	= m('flow')->opt('check', $modenum, $mid, $zt, $sm);
 		if($msg=='ok'){
-			return returnsuccess();
+			return returnsuccess('处理成功');
 		}else{
 			return returnerror($msg);
 		}
@@ -112,5 +112,19 @@ class flowoptClassAction extends Action
 		}
 	
 		return returnsuccess($path);
+	}
+	
+	/**
+	*	回执确认
+	*/
+	public function receiptcheckAjax()
+	{
+		$mid 		= (int)$this->post('mid');
+		$modenum	= $this->post('modenum');
+		$sm 		= $this->post('sm');
+		$receiptid 	= (int)$this->post('receiptid','0');
+		$flow 		= m('flow')->initflow($modenum, $mid);
+		
+		return $flow->receiptcheck($receiptid, $sm);
 	}
 }

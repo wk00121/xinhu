@@ -43,7 +43,7 @@ class installClassAction extends ActionNot{
 		$user 		= $this->post('user');
 		$pass 		= $this->post('pass');
 		$base 		= $this->post('base');
-		$perfix 	= $this->post('perfix');
+		$perfix 	= strtolower($this->post('perfix','xinhu_'));
 		$engine 	= $this->post('engine','MyISAM');
 		$title 		= '信呼协同办公系统';
 		$qom 		= 'xinhu_';

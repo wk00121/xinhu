@@ -36,6 +36,12 @@ $(document).ready(function(){
 				
 				get('chong{rand}').href=curl;
 				o.value='刷新';
+				var arr = ret.pingtarr;
+				if(arr.length>0){
+					var oo2 = get('sms_dirtype_{rand}');
+					oo2.length=1;
+					js.setselectdata(oo2, arr,'value');
+				}
 			},'get,json');
 		},
 		ceshi:function(){
@@ -85,7 +91,7 @@ $(document).ready(function(){
 			js.msg('wait','保存中...');
 			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),da,function(ret){
 				js.msg('success','保存成功');
-			},'get');
+			},'post');
 		},
 		changetype:function(o1){
 			var val = o1.value;
@@ -138,7 +144,7 @@ $(document).ready(function(){
 	
 	<tr style="display:none" id="tessh{rand}">
 		<td  align="right">短信APIKEY：</td>
-		<td class="tdinput"><input id="sms_apikey_{rand}"  style="width:250px" class="form-control">&nbsp;<a href="<?=URLY?>view_smsapi.html" target="_blank">如何获取?</a></td>
+		<td class="tdinput"><input id="sms_apikey_{rand}" placeholder="这是从短信平台上获取，可不用写" style="width:250px" class="form-control">&nbsp;<a href="<?=URLY?>view_smsapi.html" target="_blank">如何获取?</a></td>
 	</tr>
 	
 	<tr>

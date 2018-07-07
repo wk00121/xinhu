@@ -62,6 +62,7 @@ class weixinClassAction extends apiAction{
 				'lat'=> $arr['location_x'],
 				'lng'=> $arr['location_y'],
 				'accuracy'=> $arr['precision'],
+				'explain'=> $arr['explain'],
 				'ip'	=> $ip,
 				'type'	=> 2
 			));

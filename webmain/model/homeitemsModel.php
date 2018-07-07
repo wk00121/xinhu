@@ -45,8 +45,10 @@ class homeitemsClassModel extends Model
 		$arr['email']	= m('emailm')->wdtotal($uid);
 		$arr['flowtodo']= m('flowtodo')->getwdtotals($uid);
 		$arr['cropt']	= m('goods')->getdaishu(); //出入库操作数
+		$arr['receiptmy']	= m('flow:receipt')->getweitotal($uid);
 		return $arr;
 	}
+	
 	
 	//我的申请
 	public function get_apply_arr()

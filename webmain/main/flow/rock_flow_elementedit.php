@@ -15,7 +15,9 @@ $(document).ready(function(){
 			try{guanelementedit.reload();}catch(e){}
 		},
 		submitcheck:function(d){
-			
+			if(d.fieldstype.indexOf('change')==0){
+				if(d.data=='')return '此字段元素类型时，数据源必须填写用来存储选择来的Id，如填写为：'+d.fields+'id';
+			}
 		}
 	});
 	h.forminit();

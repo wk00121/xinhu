@@ -142,4 +142,23 @@ class goodsClassModel extends Model
 		}
 		return $rows;
 	}
+	
+	/**
+	*	根据主表Id获取申请物品信息, $glx 0原始数组,1字符串
+	*/
+	public function getgoodninfo($mid, $glx=0, $mgx=5)
+	{
+		$rows 	= $this->db->getall("select a.`count`,a.couns,a.`price`,b.`unit`,b.`num`,b.`name`,b.`guige`,b.`xinghao` from `[Q]goodn` a left join `[Q]goods` b on a.`aid`=b.`id` where a.`mid`='$mid' order by a.`sort`");
+		$str 	= '';
+		if($glx==1){
+			foreach($rows as $k1=>$rs1){
+				if($k1>$mgx)break;
+				$str.=''.$rs1['name'].'';
+				if(!isempt($rs1['xinghao']))$str.='('.$rs1['xinghao'].')';
+				$str .=':'.$rs1['count'].''.$rs1['unit'].';';
+			}
+			return $str;
+		}
+		return $rows;
+	}
 }

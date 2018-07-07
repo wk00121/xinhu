@@ -18,7 +18,7 @@ if($stype==''){
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script>
-var mid = '<?=$da['arr']['mid']?>',modenum='<?=$da['arr']['modenum']?>',ismobile=0;
+var mid = '<?=$da['arr']['mid']?>',modenum='<?=$da['arr']['modenum']?>',ismobile=0,receiptrs=<?=json_encode($da['arr']['receiptrs'])?>;
 </script>
 <?php 
 }
@@ -56,6 +56,8 @@ td.tdys1{border:1px #e5e5e5 solid;text-align:center;padding:0px 5px}
 .tableblack .ys0,.tableblack .ys1,.tableblack .ys2{border:1px #000000 solid;color:#000000;}
 
 .btn-danger{background-color:#d9534f;}
+.printtable td,.printborder{border:1px #000000 solid}
+.printtable td{padding:0px 3px}
 <?php
 if($stype!=''){
 ?>
@@ -84,7 +86,7 @@ if($stype!=''){
 	<?php
 	//显示状态
 	if($da['arr']['isflow']==1 && $stype==''){
-		echo '<div class="statustext" style="color:'.$da['arr']['statuscolor'].';border-color:'.$da['arr']['statuscolor'].'">'.$da['arr']['statustext'].'</div>';
+		echo '<div class="statustext" onclick="$(this).remove()" style="color:'.$da['arr']['statuscolor'].';border-color:'.$da['arr']['statuscolor'].'">'.$da['arr']['statustext'].'</div>';
 	}
 	
 	if(!isempt($da['title'])){
@@ -200,7 +202,7 @@ if($stype!=''){
 				$s = '';
 				$tuiname = '';
 				foreach($flowinfor['courseact'] as $k=>$act){
-					if($k>0)$s.='<label><input name="check_status" onclick="c.changecheck_status(this)" type="radio" value="'.$k.'">'.$act[0].'</label> &nbsp; ';
+					if($k>0 && $act[0])$s.='<label><input name="check_status" onclick="c.changecheck_status(this)" type="radio" value="'.$k.'">'.$act[0].'</label> &nbsp; ';
 					if($k==2)$tuiname = $act[0];
 				}
 				echo $s;

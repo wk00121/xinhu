@@ -84,6 +84,7 @@ class htmlChajian extends Chajian{
 		}
 		$txt	 = '';
 		$style	 = "padding:3px;border:1px ".$bor." solid";
+		if($lx=='print')$style	 = "border:1px #000000 solid";
 		$txt	.= '<table width="100%" class="createrows" border="0" cellspacing="0" cellpadding="0" align="center" style="border-collapse:collapse;" >';
 		$txt	.= '<tr>';
 		for($h=0; $h<$thead; $h++){

@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_todo',
 		url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'setid='+mid+''},
-		submitfields:'explain,status,num,name,whereid,changefields,changecourse,boturn,boedit,bochang,bodel,bozuofei,botong,bobutong,bozhui,receid,recename,setid,toturn,tocourse,bofinish,bozhuan,todofields,summary,botask',
+		submitfields:'explain,status,num,name,whereid,changefields,changecourse,boturn,boedit,bochang,bodel,bozuofei,botong,bobutong,bozhui,receid,recename,setid,toturn,tocourse,bofinish,bozhuan,todofields,summary,botask,boping',
 		success:function(){
 			closenowtabs();
 			try{guanflowtodolist.reload();}catch(e){}
@@ -123,6 +123,7 @@ $(document).ready(function(){
 			<label><input  name="bozhuan" type="checkbox" value="1">转办时</label>&nbsp; 
 			<label><input  name="bozhui" type="checkbox" value="1">追加说明时</label>&nbsp; 
 			<label><input  name="botask" type="checkbox" value="1">计划任务</label>&nbsp; 
+			<label><input  name="boping" type="checkbox" value="1">评论时</label>&nbsp; 
 			</td>
 		</tr>
 		

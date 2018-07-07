@@ -305,6 +305,15 @@ var myScroll=false,yy={
 			yy.showmenu(yy.temparr.oi);
 		});
 	},
+	getupgurl:function(str){
+		if(str.substr(0,4)=='http')return str;
+		var a1 = str.split('|'),lx = a1[0],mk = a1[1],cs=a1[2];
+		var url= '';
+		if(lx=='add')url='?a=lum&m=input&d=flow&num='+mk+'';
+		if(lx=='xiang')url='task.php?a=x&num='+mk+'';
+		if(cs)url+='&'+cs;
+		return url;
+	},
 	showmenuclick:function(d){
 		d.num=this.num;d.mid=this.tempid;
 		d.modenum = this.tempnum;
@@ -324,6 +333,17 @@ var myScroll=false,yy={
 			});
 			return;
 		}
+		//打开新窗口
+		if(lx==5){
+			var upg = d.upgcont;
+			if(isempt(upg)){
+				js.msg('msg','没有设置打开的操作地址');
+			}else{
+				var url = this.getupgurl(upg);
+				js.location(url);
+			}
+			return;
+		}
 		if(lx==1 || lx==9 || lx==10 || lx==13 || lx==15 || lx==16 || lx==17){
 			var bts = (d.issm==1)?'必填':'选填';
 			js.wx.prompt(d.name,'请输入['+d.name+']说明('+bts+')：',function(text){
@@ -338,6 +358,12 @@ var myScroll=false,yy={
 		//添加提醒设置
 		if(lx==14){
 			var url='index.php?a=lum&m=input&d=flow&num=remind&mid='+d.djmid+'&def_modenum='+d.modenum+'&def_mid='+d.mid+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'&show=we';
+			js.location(url);
+			return;
+		}
+		//回执
+		if(lx==18){
+			var url='index.php?a=lum&m=input&d=flow&num=receipt&mid='+d.djmid+'&def_modenum='+d.modenum+'&def_mid='+d.mid+'&def_modename=basejm_'+jm.base64encode(d.modename)+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'&show=we';
 			js.location(url);
 			return;
 		}

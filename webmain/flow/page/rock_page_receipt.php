@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：customer.客户管理，
+*	模块：receipt.回执确认，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.客户管理]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.回执确认]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'customer',modename='客户管理',isflow=0,modeid='7',atype = params.atype,pnum=params.pnum;
+	var modenum = 'receipt',modename='回执确认',isflow=0,modeid='80',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suoname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u5ba2\u6237\u7c7b\u578b","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"laiyuan","name":"\u6765\u6e90","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u5ba2\u6237\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"mobile","name":"\u8054\u7cfb\u624b\u673a","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"email","name":"\u90ae\u7bb1","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"shi","name":"\u6240\u5728\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"sheng","name":"\u6240\u5728\u7701","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"0"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"routeline","name":"\u4ea4\u901a\u8def\u7ebf","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"isstat","name":"\u662f\u5426\u6807\u2605","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgys","name":"\u4f9b\u5e94\u5546","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"linkname","name":"\u8054\u7cfb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"htshu","name":"\u5408\u540c\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyz","name":"\u9500\u552e\u603b\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyd","name":"\u5f85\u6536\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgh","name":"\u653e\u5165\u516c\u6d77","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"lastdt","name":"\u6700\u540e\u8ddf\u8fdb","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_customer_":"name,suoname,type,unitname,mobile,isstat,htshu,moneyz,moneyd,lastdt,caozuo","columns_customer_all":"name,suoname,type,unitname,isstat,isgys,htshu,moneyz,moneyd,lastdt,caozuo","columns_customer_dist":"name,suoname,type,laiyuan,unitname,isgys,linkname","columns_customer_ghai":"name,suoname,type,unitname,sheng,shi,status,caozuo","columns_customer_gys":"name,suoname,type,unitname,tel,address,status,linkname,explain,caozuo","columns_customer_shate":"name,suoname,type,laiyuan,unitname,isstat,caozuo"};
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"modenum","name":"\u5bf9\u5e94\u6a21\u5757\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"modename","name":"\u6a21\u5757\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"table","name":"\u5bf9\u5e94\u4e3b\u8868","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"mid","name":"\u4e3b\u8868Id","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u9700\u56de\u6267\u4eba","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"ushuz","name":"\u603b\u4eba\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"ushuy","name":"\u5df2\u786e\u8ba4","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"optdt","name":"\u64cd\u4f5c\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -87,14 +87,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'客户管理('+nowtabs.name+')',
-				cont:'客户管理('+nowtabs.name+')的列表的',
-				explain:'订阅[客户管理]的列表',
+				title:'回执确认('+nowtabs.name+')',
+				cont:'回执确认('+nowtabs.name+')的列表的',
+				explain:'订阅[回执确认]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_customer|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_receipt|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -151,8 +151,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistcustomer = a;
-			addtabs({num:'daorucustomer',url:'flow,input,daoru,modenum=customer',icons:'plus',name:'导入客户管理'});
+			window.managelistreceipt = a;
+			addtabs({num:'daorureceipt',url:'flow,input,daoru,modenum=receipt',icons:'plus',name:'导入回执确认'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -222,10 +222,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y3VzdG9tZXI:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('cmVjZWlwdA::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"客户名称",dataIndex:"name"},{text:"所属人",dataIndex:"suoname"},{text:"客户类型",dataIndex:"type",sortable:true},{text:"客户单位",dataIndex:"unitname"},{text:"是否标★",dataIndex:"isstat",sortable:true},{text:"合同数",dataIndex:"htshu",sortable:true},{text:"销售总额",dataIndex:"moneyz",sortable:true},{text:"待收金额",dataIndex:"moneyd",sortable:true},{text:"最后跟进",dataIndex:"lastdt",sortable:true},{
+		columns:[{text:"模块名称",dataIndex:"modename"},{text:"需回执人",dataIndex:"recename"},{text:"说明",dataIndex:"explain"},{text:"总人数",dataIndex:"ushuz",sortable:true},{text:"已确认",dataIndex:"ushuy",sortable:true},{text:"操作时间",dataIndex:"optdt",sortable:true},{text:"状态",dataIndex:"status",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -242,92 +242,18 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-var chengsuid = '';
-if(atype!='my')$('#daoruspan_{rand}').remove();
-if(pnum==''){
-	bootparams.checked = true;
-
-	c.move=function(){
-		var s= a.getchecked();
-		if(s==''){js.msg('msg','没有选择记录');return;}
-		chengsuid=s;
-		js.confirm('是否客户转移给其他人，并客户下的合同和待收付款单和销售机会同时转移？', function(jg){
-			if(jg=='yes')c.moveto();
-		});
-	}
-	c.movetoss=function(sna,toid){
-		js.ajax(js.getajaxurl('movecust',modenum,'main'),{'toid':toid,'sid':chengsuid},function(s){
-			a.reload();
-		},'post',false,'转移给:'+sna+'...,转移成功');
-	}
-	c.moveto=function(sid){
-		var cans = {
-			type:'user',
-			title:'转移给...',
-			callback:function(sna,sid){
-				if(sid)c.movetoss(sna,sid);
-			}
-		}
-		setTimeout(function(){js.getuser(cans);},10);
-	}
-	$('#tdright_{rand}').append('&nbsp; '+c.getbtnstr('客户转移','move'));
-}else{
-	if(pnum!='gys')$('#tdleft_{rand}').hide();
-	if(pnum=='dist'){
-		bootparams.checked = true;
-		c.distss=function(o1,lx){
-			var s = a.getchecked();
-			if(s==''){js.msg('msg','没有选中行');return;}
-			if(lx==0){
-				js.confirm('确定要将选中标为未分配吗？',function(jg){
-					if(jg=='yes')c.distssok(s, '','', 0);
-				});
-				return;
-			}
-			var cans = {
-				type:'user',
-				title:'选中分配给...',
-				callback:function(sna,sid){
-					if(sna=='')return;
-					setTimeout(function(){
-						js.confirm('确定要将选中记录分配给：['+sna+']吗？',function(jg){
-							if(jg=='yes')c.distssok(s, sna,sid,1);
-						});
-					},10);
-				}
-			};
-			js.getuser(cans);
-		}
-		c.distssok=function(s, sna,sid, lx){
-			js.ajax(js.getajaxurl('distcust',modenum,'main'),{sid:s,sname:sna,snid:sid,lx:lx},function(s){
-				a.reload();
-			},'post','','处理中...,处理成功');
-		}
-		$('#tdright_{rand}').prepend(c.getbtnstr('标为未分配','distss,0')+'&nbsp;');
-		$('#tdright_{rand}').prepend(c.getbtnstr('选中分配给','distss,1')+'&nbsp;&nbsp;');
-	}
+c.clickwin=function(){
+	js.alert('回执确认的添加在各个模块操作列下，需要[流程模块列表]下开启的。');
 }
-
-if(pnum!='gys' && pnum!='ghai'){
-	$('#tdright_{rand}').prepend(c.getbtnstr('重新统计金额','retotal')+'&nbsp;');
-
-	c.retotal=function(){
-		js.ajax(js.getajaxurl('retotal',modenum,'main'),{},function(s){
-			a.reload();
-		},'get',false,'统计中...,统计完成')
-	}
-}
-if(pnum=='gys'){	
-	modename = '供应商管理';
-	c.clickwin=function(o1,lx){
-		openinput(modename,modenum,'0&def_isgys=1','opegs{rand}');
-	}
+c.view=function(){
+	var d=a.changedata;
+	openxiangs('详情',d.modenumshow,d.mid,'opegs{rand}');
 }
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewcustomer_{rand}').bootstable(bootparams);
+	var a = $('#viewreceipt_{rand}').bootstable(bootparams);
 	c.init();
 	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
@@ -352,7 +278,7 @@ if(pnum=='gys'){
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -361,11 +287,11 @@ if(pnum=='gys'){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<span style="display:none" id="daoruspan_{rand}"><button class="btn btn-default" click="daoru,1" type="button">导入</button>&nbsp;&nbsp;&nbsp;</span><button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
+			<button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewcustomer_{rand}"></div>
+<div id="viewreceipt_{rand}"></div>
 <!--HTMLend-->

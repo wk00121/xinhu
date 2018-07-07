@@ -16,6 +16,7 @@ class adminClassModel extends Model
 		$narr 	= explode(',', $joinid);
 		$dwhe	= array();
 		foreach($narr as $sid){
+			if(isempt($sid))continue;
 			$lx 	= substr($sid, 0, 1);
 			$ssid 	= str_replace(array('u','d','g'), array('','',''), $sid);
 			if($lx == 'd' || $glx=='d'){

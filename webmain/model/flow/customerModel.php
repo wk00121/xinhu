@@ -176,4 +176,53 @@ class flow_customerClassModel extends flowModel
 		}
 		return $data;
 	}
+	
+	
+	/**
+	*	自动放入公海
+	*/
+	public function addgonghai()
+	{
+		$tshu	= (int)$this->option->getval('crmaddghai','0');
+		if($tshu<=0)return;
+		$sneuar	= array();
+		$rows 	= $this->getall('`uid`>0 and `htshu`=0 and `isgys`=0','lastdt,optdt,id,name,uid,unitname');
+		$dtobj 	= c('date');
+		$addghs = array();
+		foreach($rows as $k=>$rs){
+			$lastdt = $rs['lastdt'];
+			if(isempt($lastdt))$lastdt = $rs['optdt'];
+			$jg   = $dtobj->datediff('d', $lastdt, $this->rock->now);
+			
+			if($jg > $tshu){
+				$sneuar[$rs['uid']][] = '['.$rs['name'].']超'.$jg.'天未跟进已放入公海库';
+				$addghs[] = $rs['id'];
+			}else{
+				//要放入之前2天提醒
+				$ts = $tshu - $jg;
+				if($ts<3)$sneuar[$rs['uid']][] = '['.$rs['name'].']将'.$ts.'天后放入公海库';
+			}
+		}
+		
+		//通知给对应人
+		$maxlen = 5;
+		foreach($sneuar as $uid=>$ursa){
+			$str = '';
+			foreach($ursa as $k1=>$s1){
+				if($str!='')$str.="\n";
+				if($k1>=$maxlen){
+					$str.='还有'.(count($ursa)-$maxlen).'条，点击查看更多';
+					break;
+				}
+				$str.="".$s1."";
+			}
+			$this->pushs($uid, $str, '客户未跟进提醒', array(
+				'wxurl' => $this->getwxurl()
+			));
+		}
+		if($addghs){
+			$sid = join(',', $addghs);
+			$this->update("`uid`=0,`isgh`=1", "`id` in($sid)");
+		}
+	}
 }

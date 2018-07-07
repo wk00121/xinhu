@@ -34,7 +34,11 @@ class flow_custsaleClassModel extends flowModel
 				'optname' 	=> $cname
 			), $this->id);
 			$this->push($cnameid, '客户销售', ''.$this->adminname.'将一个客户【{custname}】的一个销售单转移给你');
-		}	
+		}
+		
+		if($num=='genjin' || $num=='ztqh'){
+			m('crm')->update('`lastdt`=now()', $this->rs['custid']);
+		}
 	}
 	
 	protected function flowbillwhere($uid, $lx)

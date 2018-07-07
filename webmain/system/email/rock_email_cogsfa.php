@@ -114,7 +114,7 @@ $(document).ready(function(){
 		</td>
 		</tr>
 		
-
+		</table>
 	
 </div>
 </div>

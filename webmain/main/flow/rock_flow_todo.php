@@ -9,7 +9,7 @@ $(document).ready(function(){
 		get('del_{rand}').disabled = bo;
 	}
 	
-	var changearr={'boturn':'提交时','boedit':'编辑时','bochang':'字段改变时','bodel':'删除时','bozuofei':'作废时','botong':'步骤处理通过时','bobutong':'步骤处理不通过时','bofinish':'处理完成时','bozhui':'追加说明时','bozhuan':'转办时','botask':'计划任务'};
+	var changearr={'boturn':'提交时','boedit':'编辑时','bochang':'字段改变时','bodel':'删除时','bozuofei':'作废时','botong':'步骤处理通过时','bobutong':'步骤处理不通过时','bofinish':'处理完成时','bozhui':'追加说明时','bozhuan':'转办时','botask':'计划任务','boping':'评论时','bohuiz':'回执确认时'};
 	
 	var a = $('#view_{rand}').bootstable({
 		tablename:'flow_todo',celleditor:true,modedir:'{mode}:{dir}',

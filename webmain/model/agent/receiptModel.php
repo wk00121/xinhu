@@ -1,11 +1,10 @@
 <?php
-//公文查阅
-class agent_officicClassModel extends agentModel
+//回执确认
+class agent_receiptClassModel extends agentModel
 {
 	
 	protected $showuface	= false; //不显示人员头像
-	
-	
+
 	
 	public function gettotal()
 	{
@@ -17,11 +16,7 @@ class agent_officicClassModel extends agentModel
 	//未读统计
 	private function getwdtotal($uid)
 	{
-		$ydid 	= m('log')->getread('official', $uid);
-		$where	= "id not in($ydid) and `status`=1";
-		$meswh	= m('admin')->getjoinstr('receid', $uid, 0, 1);
-		$where .= $meswh;
-		$stotal	= m('official')->rows($where);
+		$stotal	= m('flow:receipt')->getweitotal($uid);
 		return $stotal;
 	}
 	
@@ -29,9 +24,19 @@ class agent_officicClassModel extends agentModel
 	protected function agenttotals($uid)
 	{
 		$a = array(
-			'mywcy' => $this->getwdtotal($uid)
+			'mywei' => $this->getwdtotal($uid)
 		);
 		return $a;
 	}
 	
+	protected function agentrows($rows, $rowd, $uid){
+		if($rows){
+			foreach($rowd as $k=>$rs){
+				$rows[$k]['ishui']		= $rs['ishui'];
+				$rows[$k]['modenum']	= $rs['modenumshow'];
+				$rows[$k]['id']			= $rs['mid'];
+			}
+		}
+		return $rows;
+	}
 }

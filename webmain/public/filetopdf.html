@@ -68,6 +68,7 @@ function doanpdf(){
 function downxia(id){
 	var url = 'index.php?a=down&id='+id+'';
 	if(ismobile==1)url='api.php?m=upload&a=down&id='+id+'&adminid=<?=$da['adminid']?>&token=<?=$xhrock->admintoken?>';
+	if(appobj1('openfile', id))return;
 	js.location(url);
 }
 </script>

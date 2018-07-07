@@ -177,6 +177,15 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.openedit=function(){
 		openinput(this.modename,this.modenum,this.mid, this.callbackstr);
 	};
+	this.getupgurl=function(str){
+		if(str.substr(0,4)=='http')return str;
+		var a1 = str.split('|'),lx = a1[0],mk = a1[1],cs=a1[2];
+		var url= '';
+		if(lx=='add')url='?a=lu&m=input&d=flow&num='+mk+'';
+		if(lx=='xiang')url='task.php?a=p&num='+mk+'';
+		if(cs)url+='&'+cs;
+		return url;
+	};
 	this.showmenuclick=function(d){
 		d.num=this.modenum;d.mid=this.id;
 		d.modenum = this.modenum;
@@ -190,6 +199,17 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		if(lx==2 || lx==3){
 			var clx='user';if(lx==3)clx='usercheck';
 			js.getuser({type:clx,title:d.name,callback:function(na,nid){me.changeuser(na,nid);}});
+			return;
+		}
+		//打开新窗口
+		if(lx==5){
+			var upg = d.upgcont;
+			if(isempt(upg)){
+				js.msg('msg','没有设置打开的操作地址');
+			}else{
+				var url = this.getupgurl(upg);
+				openxiangs(d.name, url,'', this.callbackstr);
+			}
 			return;
 		}
 		var nwsh = 'showfielsv_'+js.getrand()+'';
@@ -215,6 +235,11 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		//提醒
 		if(lx==14){
 			openinput('提醒设置','remind',''+d.djmid+'&def_modenum='+this.modenum+'&def_mid='+this.mid+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'', this.callbackstr);
+			return;
+		}
+		//回执
+		if(lx==18){
+			openinput(d.name,'receipt',''+d.djmid+'&def_modenum='+this.modenum+'&def_mid='+this.mid+'&def_modename=basejm_'+jm.base64encode(d.modename)+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'', this.callbackstr);
 			return;
 		}
 		if(lx==4){

@@ -125,7 +125,6 @@ class inputAction extends Action
 		}
 		if(isset($uaarr['uid'])){
 			$urs = $this->flow->adminmodel->getone($uaarr['uid']);
-			in_array('uname', $allfields) and $uaarr['uname'] = $urs['name'];
 			in_array('applyname', $allfields) and $uaarr['applyname'] = $urs['name'];
 			in_array('applydeptname', $allfields) and $uaarr['applydeptname'] = $urs['deptname'];
 		}
@@ -239,7 +238,7 @@ class inputAction extends Action
 		if($oi<=0)return $arr;
 		$modeid		= $this->moders['id'];
 		$iszb		= $xu+1;
-		$farr		= m('flow_element')->getrows("`mid`='$modeid' and `islu`=1 and `iszb`=$iszb",'`name`,`fields`,`isbt`,`savewhere`,`dev`','`sort`');
+		$farr		= m('flow_element')->getrows("`mid`='$modeid' and `islu`=1 and `iszb`=$iszb",'`name`,`fields`,`isbt`,`fieldstype`,`savewhere`,`dev`,`data`','`sort`');
 		$sort 		= 0;
 		for($i=0; $i<$oi; $i++){
 			$sid  = (int)$this->post('sid'.$xu.'_'.$i.'');
@@ -247,11 +246,18 @@ class inputAction extends Action
 			$uaarr['id'] = $sid;
 			foreach($farr as $k=>$rs){
 				$fid= $rs['fields'];
+				$flx= $rs['fieldstype'];
 				if(substr($fid,0,5)=='temp_')continue;
 				$na = ''.$fid.''.$xu.'_'.$i.'';
 				$val= $this->post($na);
 				if($rs['isbt']==1&&$this->isempt($val))$bos=false;
 				$uaarr[$fid] = $val;
+				
+				if(substr($flx,0,6)=='change' && !isempt($rs['data'])){
+					$na = ''.$rs['data'].''.$xu.'_'.$i.'';
+					$val= $this->post($na);
+					$uaarr[$rs['data']] = $val;
+				}
 			}
 			if(!$bos)continue;
 			$uaarr['sort'] 	= $sort;
@@ -352,6 +358,10 @@ class inputAction extends Action
 		$moders		= $this->flow->moders;
 		$modename 	= $moders['name'];
 		if($moders['status']=='0')exit('模块['.$modename.']已停用了;');
+		
+		$apaths		= ''.P.'/flow/input/mode_'.$moders['num'].'Action.php';
+		if(!file_exists($apaths))exit('没有创建布局录入页面，无法打开，请到【流程模块→表单元素管理】下的点按钮“PC端录入页面布局”，更多查看'.c('xinhu')->helpstr('bwb3mf').'。');
+		
 		$this->smartydata['moders']	= array(
 			'num' 	=> $moders['num'],
 			'id' 	=> $moders['id'],

@@ -17,20 +17,23 @@ class smsClassAction extends Action
 		$barr['sms_qmnum'] 	= $this->option->getval('sms_qmnum');
 		$barr['sms_dirtype'] 	= $this->option->getval('sms_dirtype');
 		$barr['sms_yanzm'] 	= $this->option->getval('sms_yanzm');
+		$barr['pingtarr'] 	= $this->option->getdata('syssmsplat');
 		return $barr;
 	}
 	
 	//保存设置
 	public function cogsaveAjax()
 	{
-		$this->option->setval('sms_iscb', $this->get('sms_iscb','0'));
-		$this->option->setval('sms_cbnum', $this->get('sms_cbnum')); //催办编号
-		$this->option->setval('sms_apikey', $this->get('sms_apikey'));
-		$this->option->setval('sms_txnum', $this->get('sms_txnum')); //审批提醒模块编号
-		$this->option->setval('sms_mknum', $this->get('sms_mknum'));  //要提醒的模块编号
-		$this->option->setval('sms_qmnum', $this->get('sms_qmnum')); //签名
-		$this->option->setval('sms_dirtype', $this->get('sms_dirtype'));
-		$this->option->setval('sms_yanzm', $this->get('sms_yanzm'));//验证码的短信编号
+		$sms_dirtype	= $this->post('sms_dirtype');
+		if(isempt($sms_dirtype) || $sms_dirtype=='null')$sms_dirtype = '';
+		$this->option->setval('sms_iscb', $this->post('sms_iscb','0'));
+		$this->option->setval('sms_cbnum', $this->post('sms_cbnum')); //催办编号
+		$this->option->setval('sms_apikey', $this->post('sms_apikey'));
+		$this->option->setval('sms_txnum', $this->post('sms_txnum')); //审批提醒模块编号
+		$this->option->setval('sms_mknum', $this->post('sms_mknum'));  //要提醒的模块编号
+		$this->option->setval('sms_qmnum', $this->post('sms_qmnum')); //签名
+		$this->option->setval('sms_dirtype', $sms_dirtype);
+		$this->option->setval('sms_yanzm', $this->post('sms_yanzm'));//验证码的短信编号
 	}
 	
 	//测试

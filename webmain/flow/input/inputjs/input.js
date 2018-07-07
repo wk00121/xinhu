@@ -133,6 +133,7 @@ var c={
 	},
 	selectdatadata:{},
 	onselectdata:{},
+	onselectdataall:function(){},
 	selectdata:function(s1,ced,fid,tit,zbis){
 		if(isedit==0)return;
 		if(!tit)tit='请选择...';
@@ -149,12 +150,13 @@ var c={
 		$.selectdata({
 			data:this.selectdatadata[fid],title:tit,
 			fid:fid,
-			url:geturlact('getselectdata',{'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num}),
+			url:geturlact('getselectdata',{'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num,'sysmid':mid}),
 			checked:ced, nameobj:form(fid),idobj:idobj,
 			onloaddata:function(a){
 				c.selectdatadata[fid]=a;
 			},
 			onselect:function(seld,sna,sid){
+				c.onselectdataall(this.fid,seld,sna,sid);
 				if(c.onselectdata[this.fid])c.onselectdata[this.fid](seld,sna,sid);
 			}
 		});

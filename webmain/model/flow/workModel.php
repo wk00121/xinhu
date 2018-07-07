@@ -178,4 +178,17 @@ class flow_workClassModel extends flowModel
 			if($str != '')$this->push($uid, '', $str, '任务到期提醒');
 		}
 	}
+	
+	//任务待办格式推送
+	protected function flownexttodo($type)
+	{
+		if($type=='daiban'){
+			return array(
+				'cont' => '标题：{title}\n创建人：{optname}\n任务类型：{type}\n等级：{grade}',
+				'title'=> '任务待处理'
+			);
+		}
+		
+	}
+	
 }

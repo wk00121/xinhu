@@ -113,7 +113,7 @@ abstract class mysql{
 	public function query($sql, $ebo=true)
 	{
 		if($this->conn == null)$this->connect();
-		if($this->conn == null)exit('数据库的帐号/密码有错误!');
+		if($this->conn == null)exit('数据库的帐号/密码有错误!'.$this->errormsg.'');
 		$sql	= trim($sql);
 		$sql	= str_replace(array('[Q]','[q]'), array($this->perfix, $this->perfix), $sql);
 		$this->countsql++;

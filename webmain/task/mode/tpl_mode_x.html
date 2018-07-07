@@ -14,7 +14,7 @@
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script>
-var mid = '<?=$da['arr']['mid']?>',adminid='<?=$da['adminid']?>',admintoken='',modenum='<?=$da['arr']['modenum']?>',ismobile=1;
+var mid = '<?=$da['arr']['mid']?>',adminid='<?=$da['adminid']?>',admintoken='',modenum='<?=$da['arr']['modenum']?>',ismobile=1,receiptrs=<?=json_encode($da['arr']['receiptrs'])?>;
 js.changeuser=function(na,lx, cans){
 	var can = {
 		'changetype':lx,
@@ -46,6 +46,8 @@ td.tdys1{border:1px #e5e5e5 solid;text-align:center;padding:0px 5px}
 .datesss{background:url(mode/icons/date.png) no-repeat right;cursor:pointer;}
 
 .statustext{position: absolute;right:5px;top:5px;width:60px;height:60px;overflow:hidden; border:2px red solid;border-radius:50%;font-size:16px;text-align:center;line-height:60px;color:red;transform:rotate(-45deg);-o-transform:rotate(-45deg);-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg);}
+
+.btn-danger{background-color:#d9534f;}
 </style>
 
 </head>
@@ -123,7 +125,7 @@ if($da['arr']['optmenu']){
 			$s = '';
 			$tuiname = '';
 			foreach($flowinfor['courseact'] as $k=>$act){
-				if($k>0)$s.='<label><input name="check_status"  onclick="c.changecheck_status(this)" type="radio" value="'.$k.'">'.$act[0].'</label> &nbsp; ';
+				if($k>0 && $act[0])$s.='<label><input name="check_status"  onclick="c.changecheck_status(this)" type="radio" value="'.$k.'">'.$act[0].'</label> &nbsp; ';
 				if($k==2)$tuiname = $act[0];
 			}
 			echo $s;

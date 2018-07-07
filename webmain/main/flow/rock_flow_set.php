@@ -36,6 +36,10 @@ $(document).ready(function(){
 		},{
 			text:'同步更新',dataIndex:'isup',type:'checkbox',editor:true,sortable:true
 		},{
+			text:'开评论',dataIndex:'ispl',type:'checkbox',editor:true,sortable:true
+		},{
+			text:'提醒设置',dataIndex:'istxset',type:'checkbox',editor:true,sortable:true
+		},{
 			text:'编号规则',dataIndex:'sericnum'
 		},{
 			text:'ID',dataIndex:'id'

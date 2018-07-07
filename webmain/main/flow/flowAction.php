@@ -422,7 +422,9 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 }	
 			';
 			$this->rock->createtxt($apaths, $stra);
+			
 		}
+		if(!file_exists($apath))echo '<div style="background:red;color:white;padding:10px">无法创建文件：'.$apaths.'，会导致录入数据无法保存，请手动创建！代码内容如下：</div><div style="background:#caeccb">&lt;?php<br>class mode_'.$modenum.'ClassAction extends inputAction<br>{<br>}</div>';
 	}
 	
 	public function pagesaveAjax()
@@ -512,6 +514,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$arr 	= array();
 		$flow 	= m('flow')->initflow($this->moders['num']);
+		$mbil 	= m('flowbill');
 		foreach($rows as $k=>$rs){
 			$zt 	= '';
 			if(isset($rs['status']))$zt = $rs['status'];
@@ -523,7 +526,12 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			$narr['table'] 		= $this->moders['table'];
 			$narr['optdt'] 		= arrvalue($rs,'optdt');
 			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $rs);
-			$narr['status']		= $flow->getstatus($rs,'','',1);
+			$otehsr = '';
+			if($flow->isflow==1){
+				$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");
+				$otehsr = arrvalue($billrs, 'nowcheckname');
+			}
+			$narr['status']		= $flow->getstatus($rs,'',$otehsr,1);
 			$narr['chushu']		= $flow->flogmodel->rows("`table`='".$flow->mtable."' and `mid`='".$rs['id']."'");
 			
 			$arr[] = $narr;
@@ -568,7 +576,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		}
 	}
 	
-	//保存字段判断
+	//保存字段判断，自动创建字段
 	public function elemensavefields($table, $cans)
 	{
 		$fields = $cans['fields'];
@@ -588,7 +596,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			if(isset($tablessa[$iszb-1]))$tables = $tablessa[$iszb-1];
 		}
 		$fiesss = substr($fields,0,5);
-		if($fiesss != 'base_' || $fiesss != 'temp_')return;
+		if($fiesss == 'base_' || $fiesss == 'temp_')return;
 		if(!isempt($tables) && $cans['islu']==1){
 			$allfields = $this->db->getallfields('[Q]'.$tables.'');
 			$this->createfields($allfields, $tables, $fields, $type, $lens, $dev, $name);
@@ -672,7 +680,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$mrs = m('flow_set')->getone($id);
 		if(!$mrs)return '模块不存在';
 		$num 	= $mrs['num'];
-		if($mrs['type']=='系统')return '系统模块不能删除清空';
+		if($mrs['type']=='系统')return '系统类型模块不能删除清空';
 	
 		$table 	= $mrs['table'];
 		m('flow_bill')->delete("`modeid`='$id'");
@@ -707,6 +715,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		m('editrecord')->delete($dehwhe);
 		m('todo')->delete($dehwhe);
 		m('reads')->delete($dehwhe);
+		m('receipt')->delete($dehwhe);
 		m('flow_log')->delete($dehwhe);
 		m('flow_checks')->delete($dehwhe);
 		m('flow_remind')->delete($dehwhe);
