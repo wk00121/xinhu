@@ -69,17 +69,20 @@ function check(lx){
 	if(da.zt==''){js.setmsg('请选择处理动作');return;}if(da.zt=='2'&&isempt(da.sm)){js.setmsg('此动作必须填写说明');return;}
 	var isqm = form('isqianming').value;
 	var qbp  = true;
-	//手写签名判断
-	if(isqm=='1' && qmimgstr=='')qbp=false;
-	if(isqm=='2' && da.zt=='1' && qmimgstr=='')qbp=false;
-	if(isqm=='3' && da.zt=='2' && qmimgstr=='')qbp=false;
-	if(!qbp){js.setmsg('此动作必须手写签名');return;}
 	
 	if(form('zhuanbanname')){
 		da.zyname 	= form('zhuanbanname').value;
 		da.zynameid = form('zhuanbannameid').value;
 	}
-	if(form('nextnameid') && da.zt=='1'){
+	
+	//手写签名判断
+	if(isqm=='1' && qmimgstr=='')qbp=false;
+	if(isqm=='2' && da.zt=='1' && qmimgstr=='')qbp=false;
+	if(isqm=='3' && da.zt=='2' && qmimgstr=='')qbp=false;
+	if(!qbp && !da.zynameid){js.setmsg('此动作必须手写签名');return;}
+	
+	
+	if(form('nextnameid') && da.zt=='1' && !da.zynameid){
 		da.nextname 	= form('nextname').value;
 		da.nextnameid 	= form('nextnameid').value;
 		if(da.nextnameid==''){

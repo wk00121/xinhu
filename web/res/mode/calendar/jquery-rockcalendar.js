@@ -192,7 +192,7 @@
 				}
 				if(i1%7==0)col1='#ff6600';
 				if((i1-1)%7==0)col1='#ff6600';
-				this.obj[i1].innerHTML=this.getSpanAcc(j1,s2,col1,col2,day, i1);
+				this.obj[i1].innerHTML=this.getSpanAcc(j1,s2,col1,col2,day, i1, false);
 				
 				//是不是休息的
 				var xiuval = '';
@@ -220,12 +220,12 @@
 			}
 			lx	= this.marr[lm-1];
 			if(lY%4==0 && lm==2)lx++;//闰年2月29天
-			if(can.overShow)for(var i=this.w;i>=1;i--){
+			for(var i=this.w;i>=1;i--){
 				var day	= ''+lY+'-'+this.sa(lm)+'-'+this.sa(lx)+'';
 				
 				var lun	= lunar.iconv(lY,lm,lx);
 				var s2	= lun[2];
-				this.obj[i].innerHTML=this.getSpanAcc(lx,s2,'#cccccc','#cccccc', day,i);	
+				this.obj[i].innerHTML=this.getSpanAcc(lx,s2,'#cccccc','#cccccc', day,i, true);	
 				this.obj[i].style.backgroundColor='';
 				
 				//是不是休息的
@@ -246,12 +246,12 @@
 				lY	= lY+1;
 				lm	= 1;
 			}
-			if(can.overShow)for(var i=j1+1+this.w;i<=42; i++){
+			for(var i=j1+1+this.w;i<=42; i++){
 				lxu++;
 				var day	= ''+lY+'-'+this.sa(lm)+'-'+this.sa(lxu)+'';
 				var lun	= lunar.iconv(lY,lm,lxu);
 				var s2	= lun[2];
-				this.obj[i].innerHTML=this.getSpanAcc(lxu,s2,'#cccccc','#cccccc', day,i);	
+				this.obj[i].innerHTML=this.getSpanAcc(lxu,s2,'#cccccc','#cccccc', day,i, true);	
 				this.obj[i].style.backgroundColor='';
 				
 				//是不是休息的
@@ -317,7 +317,7 @@
 			this.changetoday(dc);
 		};
 
-		this.getSpanAcc=function(s1,s2,col1,col2, day, oi)
+		this.getSpanAcc=function(s1,s2,col1,col2, day, oi, lbo)
 		{
 			if(s2.indexOf('国际')==0 || s2.indexOf('世界')==0)col2='#419900';
 			var s = '<div><font color='+col1+'>'+s1+'</font><font style="font-size:11px" color='+col2+'>,'+s2+'</font></div>';
@@ -325,6 +325,7 @@
 			if(sq)s = sq;
 				  s+= '<span style="display:none" dt="'+s1+'">'+s1+','+day+'</span>';
 			this.dayobj[oi]={day:day,d:s1}; 
+			if(!can.overShow && lbo)return '';
 			return s;
 		};
 		this.getFistdt	= function(){

@@ -198,7 +198,7 @@ class flowModel extends Model
 		$uisfield 		= property_exists($this, 'uidfields') ? $this->uidfields : 'optid';
 		if($this->uid==0 && isset($this->rs[$uisfield]))$this->uid = $this->rs[$uisfield];
 		$this->optid 	= isset($this->rs['optid']) ? $this->rs['optid'] : $this->uid;
-		$this->urs 		= $this->adminmodel->getone($this->uid,'id,name,deptid,deptname,deptallname,face,ranking,superid,superpath,superman,deptpath');
+		$this->urs 		= $this->adminmodel->getone($this->uid,'id,name,user,deptid,deptname,deptallname,face,ranking,superid,superpath,superman,deptpath');
 		if($this->isempt($this->rs['applydt'])&&isset($this->rs['optdt']))$this->rs['applydt']=substr($this->rs['optdt'],0,10);
 		if($this->urs){
 			$this->drs		= $this->db->getone('[Q]dept',"`id`='".$this->urs['deptid']."'");
@@ -939,6 +939,7 @@ class flowModel extends Model
 			
 			//每次编辑判断是否重新开始走审批。
 			if(arrvalue($this->moders,'isflowlx')=='1'){
+				$this->checksmodel->delete($this->mwhere);
 				$this->flogmodel->update('`valid`=0', ''.$this->mwhere.' and `courseid`>0 and `valid`=1');
 			}
 			$farr = $this->getflow();
@@ -1097,7 +1098,15 @@ class flowModel extends Model
 			
 			$xuhao++;
 			
-			if($defix==0 && (isempt($receid) || contain($receid,'all')))$defix = $xuhao;
+			if($defix==0 && (isempt($receid) || contain($receid,'all'))){
+				$defix = $xuhao;
+			}
+			
+			//当有设置审核条件满足时就用这个做默认，2018-07-10 新增，如果是多个满足就取最后一个
+			if(isempt($receid) && (!isempt($wherestr) || $whereid > 0)){
+				$defix = $xuhao;
+			}
+			
 			$rs['xuhao'] = $xuhao;
 			$shiyong[] 	 = $rs;
 		}
@@ -1368,7 +1377,7 @@ class flowModel extends Model
 			}
 		}
 		
-		$cheorws= $this->checksmodel->getall($this->mwhere.' and courseid='.$courseid.' and `status`=0','checkid,checkname');
+		$cheorws= $this->checksmodel->getall($this->mwhere.' and courseid='.$courseid.'','checkid,checkname');
 		if($cheorws){
 			foreach($cheorws as $k=>$rs){
 				$cuid.=','.$rs['checkid'].'';
@@ -1632,6 +1641,7 @@ class flowModel extends Model
 			$zyarr['checkname'] = $uname;
 			$this->checksmodel->insert($zyarr);
 		}
+		if($addlx==4)$this->checksmodel->delete($this->mwhere.' and `checkid`='.$this->adminid.' and `courseid`='.$courseid.'');//删除别人转给我的
 	}
 	
 		
@@ -1789,15 +1799,20 @@ class flowModel extends Model
 		$nzt		= $act[2];//处理后对应状态
 		$courseid	= $nowcourse['id'];
 		
-		$this->checksmodel->delete($this->mwhere.' and `checkid`='.$this->adminid.' and `courseid`='.$courseid.'');
+		$this->checksmodel->update('`status`='.$zt.'', $this->mwhere.' and `checkid`='.$this->adminid.' and `courseid`='.$courseid.'');
 		if($iszhuanyi == 1){
 			$this->addcheckname($courseid, $zynameid, $zyname, false, 4);
 			$nowcourse['id'] = 0;
 		}
+		
+		//指定下步审核
 		if($ischangenext==1){
-			$_nesta = explode(',', $nextnameid);
-			$_nestb = explode(',', $nextname);
-			foreach($_nesta as $_i=>$_nes)$this->addcheckname($nextcourse['id'], $_nesta[$_i], $_nestb[$_i]);
+			
+			$this->addcheckname($nextcourse['id'], $nextnameid, $nextname, true, 1);
+			
+			//$_nesta = explode(',', $nextnameid);
+			//$_nestb = explode(',', $nextname);
+			//foreach($_nesta as $_i=>$_nes)$this->addcheckname($nextcourse['id'], $_nesta[$_i], $_nestb[$_i]);
 		}
 		
 		//读取退回记录
@@ -2827,6 +2842,7 @@ class flowModel extends Model
 		if(!contain(','.$receid.',', ','.$uid .','))return;
 		
 		$reaa 	= explode(',', $receids);
+		if(!$reaa)$reaa = array();
 		if(!in_array($reaa, $uid)){
 			if($receids!='')$receids.=',';
 			$receids.=''.$uid.'';

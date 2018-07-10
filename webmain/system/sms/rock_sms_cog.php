@@ -25,7 +25,7 @@ $(document).ready(function(){
 				get('sms_txnum_{rand}').value=ret.sms_txnum;
 				get('sms_mknum_{rand}').value=ret.sms_mknum;
 				get('sms_qmnum_{rand}').value=ret.sms_qmnum;
-				get('sms_dirtype_{rand}').value=ret.sms_dirtype;
+				
 				get('sms_yanzm_{rand}').value=ret.sms_yanzm;
 				if(ret.sms_dirtype!=''){
 					$('#stotal{rand}').html('请到对应短信平台下查看');
@@ -42,6 +42,10 @@ $(document).ready(function(){
 					oo2.length=1;
 					js.setselectdata(oo2, arr,'value');
 				}
+				
+				//短信驱动
+				get('sms_dirtype_{rand}').value=ret.sms_dirtype;
+				
 			},'get,json');
 		},
 		ceshi:function(){

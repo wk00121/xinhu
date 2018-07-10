@@ -92,6 +92,7 @@ class xinhuapiChajian extends Chajian{
 	{
 		if(isempt($qiannum))$qiannum = $this->qiannum;
 		if(!isempt($this->sendtype)){
+			if(!isset($params['url']))$params['url'] = $url;
 			$barr 	= c($this->sendtype)->send($tomobile, $qiannum, $tplnum, $params);
 		}else{
 			$para['sys_tomobile'] = $tomobile;

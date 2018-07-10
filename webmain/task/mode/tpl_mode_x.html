@@ -186,7 +186,7 @@ if($da['arr']['optmenu']){
 		<tr style="display:none" id="zhuangdiv">
 			<td class="tdys1"><div  align="right" style="color:#555555">转给：</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
-			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser')" class="webbtn">选择</a></td></tr></table>
+			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeusercheck')" class="webbtn">选择</a></td></tr></table>
 			</div></td>
 		</tr>
 		
@@ -197,7 +197,7 @@ if($da['arr']['optmenu']){
 		<tr style="display:none" id="nextxuandiv">
 			<td class="tdys1"><div  align="right" style="color:#555555"><font color=red>*</font>下一步处理人：</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
-			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" name="nextname"><input name="nextnameid" id="nextname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeuser',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
+			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" value="<?=$flowinfor['nextcourse']['checkname']?>" name="nextname"><input name="nextnameid" id="nextname_id" value="<?=$flowinfor['nextcourse']['checkid']?>" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
 			</div></td>
 		</tr>
 		<?php }?>
