@@ -1749,7 +1749,7 @@ class flowModel extends Model
 		$qmimgstr	= $this->rock->post('qmimgstr'); //签名图片
 		$tuiid		= (int)$this->rock->post('tuiid'); //退回到哪个flowlog.id上
 		$iszhuanyi	= $ischangenext = 0;
-		if($zt==1 && $this->rock->arrvalue($nextcourse,'checktype')=='change'){
+		if($zt==1 && isempt($zynameid) && $this->rock->arrvalue($nextcourse,'checktype')=='change'){
 			if($nextnameid=='')return '请选择下一步处理人';
 			$ischangenext = 1;
 		}
@@ -2337,6 +2337,7 @@ class flowModel extends Model
 				if($uarrs)$this->update($uarrs, $this->id);
 			}
 			$upgcont		= $ors['upgcont'];
+			//需要判断当前用户有没有编辑权限
 			if(!isempt($upgcont)){
 				$upgcont	= $this->rock->jm->base64decode($upgcont);
 				$upgcont 	= str_replace(array('{now}','{date}','{uid}','{adminid}','{admin}','{sm}','{cname}','{cnameid}'),array($this->rock->now,$this->rock->date, $this->adminid, $this->adminid, $this->adminname, $sm, $cname, $cnameid), $upgcont);

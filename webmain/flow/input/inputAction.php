@@ -69,9 +69,16 @@ class inputAction extends Action
 		if($id==0){
 			$where = '';
 			$addbo = true;
+			$isadd = m('view')->isadd($modeid, $uid);
+			if(!$isadd)$this->backmsg('无权添加['.$this->moders['name'].']的数据1;');
 		}else{
 			$oldrs = $db->getone($id);
 			if(!$oldrs)$this->backmsg('记录不存在');
+			
+			$this->flow->loaddata($id);
+			if(!$this->flow->iseditqx())
+				$this->backmsg('无权编辑['.$this->moders['name'].']的数据;');
+			
 			if($isflow==1){
 				$bos = false;
 				if($oldrs['uid']==$uid||$oldrs['optid']==$uid)$bos=true;
@@ -726,7 +733,21 @@ class inputAction extends Action
 			if(!isset($rs['applydt']) && in_array('applydt', $allfields))$rs['applydt'] = $this->date;
 			
 			
-			$bo = $flow->insert($rs);
+			$id 	= (int)arrvalue($rs,'id','0');
+			$where 	= '';
+			if($id>0){
+				if($flow->rows($id)>0){
+					$where='`id`='.$id.'';
+				}else{
+					$id = 0;
+				}
+			}
+			if($id==0){
+				$bo = $flow->insert($rs);
+			}else{
+				$bo = $id;
+				$flow->update($rs, $where);
+			}
 			if($bo){
 				$rs['id'] = $bo;
 				$dorudat[]= $rs;

@@ -208,6 +208,7 @@ class Action extends mainAction
 		$where			= '1=1 ';
 		$beforea		= $this->request('storebeforeaction');
 		$tables 		= $this->T($table);
+		
 		if($modenum != ''){
 			$this->flow = m('flow')->initflow($modenum);
 			$nas		= $this->flow->billwhere($this->adminid, $atype);
@@ -238,6 +239,7 @@ class Action extends mainAction
 				}
 			}
 		}
+		if($tables==PREFIX)exit('无效的访问');
 		$arr	= $this->limitRows($tables, $fields, $where, $order, array(
 			'group' => $group
 		));

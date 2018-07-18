@@ -201,6 +201,11 @@ class fileClassModel extends Model
 		if($this->rock->contain($filepath,'http')){
 			header('location:'.$filepath.'');
 		}else{
+			//2018-07-18只能下载upload/images下的文件
+			$ielx  = substr($filepath,0,strlen(UPDIR));
+			$ielx1 = substr($filepath,0,6);
+			if($ielx!=UPDIR && $ielx1!='upload' && $ielx1!='images')exit('无效操作1');
+			
 			if(!file_exists($filepath))exit('404 Not find files');
 			if(!contain($filename,'.'.$fileext.''))$filename .= '.'.$fileext.'';
 			$this->fileheader($filename, $fileext);
@@ -224,6 +229,11 @@ class fileClassModel extends Model
 		if(!$rs)exit('504 Not find files');
 		$this->update("`downci`=`downci`+1", $id);
 		$filepath	= $rs['filepath'];
+		
+		$ielx  = substr($filepath,0,strlen(UPDIR));
+		$ielx1 = substr($filepath,0,6);
+		if($ielx!=UPDIR && $ielx1!='upload' && $ielx1!='images')exit('无效操作2');
+		
 		if(!file_exists($filepath))exit('404 Not find files');
 		$filename	= $rs['filename'];
 		$filesize 	= $rs['filesize'];

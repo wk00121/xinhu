@@ -34,29 +34,6 @@ class uploadClassAction extends Action{
 	}
 	
 	
-	/**
-	*	最新的保存
-	*/
-	public function saveupfileAjax()
-	{
-		$uarr['filenum'] = $this->post('filenum');
-		$uarr['filename'] = $this->post('filename');
-		$uarr['filesize'] = $this->post('filesize');
-		$uarr['filesizecn'] = $this->post('filesizecn');
-		$uarr['fileext'] = $this->post('fileext');
-		$uarr['filetype'] = $this->post('filetype');
-		$uarr['filepath'] = $this->post('filepath');
-		$uarr['thumbpath'] = $this->post('thumbpath');
-		if($uarr['thumbpath']=='null')$uarr['thumbpath']='';
-		$uarr['ip'] = $this->rock->ip;
-		$uarr['optid'] = $this->adminid;
-		$uarr['optname'] = $this->adminname;
-		$uarr['adddt'] 	= $this->rock->now;
-		$uarr['web'] 	= $this->rock->web;
-		$uarr['id']		= m('file')->insert($uarr);
-		
-		return $uarr;
-	}
 	
 	/**
 	*	获取文件

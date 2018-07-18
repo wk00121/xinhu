@@ -121,4 +121,66 @@ class flow_userinfoClassModel extends flowModel
 		}
 		
 	}
+	
+	
+	//导入数据的测试显示
+	public function flowdaorutestdata()
+	{
+		return array(
+			'name' 		=> '张三',
+			'state'		=> '正式',
+			'mobile' 	=> '15812345678',
+			'ranking' 	=> '程序员',
+			'idnum' 	=> '1001111111',
+			'housedizhi'=> '福建',
+			'nowdizhi' 	=> '福建',
+			'hunyin' 	=> '未婚',
+			'birthday' 	=> '2017-01-17',
+			'xueli' 	=> '博士后',
+			'minzu' 	=> '汉族',
+			'email' 	=> 'zhangsan@rockoa.com',
+			'workdate' 	=> '2017-01-17',
+			'syenddt' 	=> '2017-03-17',
+			'positivedt'=> '2017-04-01',
+			'jiguan' 	=> '福建',
+		);
+	}
+	
+	//导入之前判断
+	public function flowdaorubefore($rows)
+	{
+		$inarr	= array();
+		//根据手机号关联用户
+		foreach($rows as $k=>$rs){
+			
+			$arr 	= $rs;
+			$mobile = $rs['mobile'];
+			$state 	= $rs['state'];
+			$zt 	= 0; //默认人员状态
+			$urs 	= $this->adminmodel->getone("`mobile`='$mobile'");
+			if(!$urs)return '行'.($k+1).'的手机号('.$mobile.')找不对应用户，请先添加用户';
+			$arr['id'] 			= $urs['id'];
+			$arr['ranking'] 	= $urs['ranking'];
+			$arr['deptname'] 	= $urs['deptname'];
+			
+			foreach($this->statearrs as $k1=>$rs1){
+				if($rs1['name']==$state){
+					$zt = $rs1['id'];
+					break;
+				}
+			}
+			$arr['state'] 		= $zt;
+			
+			$inarr[] = $arr;
+		}
+		
+		return $inarr;
+	}
+	
+	//导入之后
+	public function flowdaoruafter()
+	{
+		
+		$this->adminmodel->updateinfo();
+	}
 }

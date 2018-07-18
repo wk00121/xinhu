@@ -32,6 +32,7 @@ class groupClassAction extends Action
 		$dbs 	= m('sjoin');
 		$dbs->delete("`mid`='$gid' and `type`='gu' and `sid` in($sid)");
 		$this->db->insert('[Q]sjoin','`type`,`mid`,`sid`', "select 'gu','$gid',`id` from `[Q]admin` where `id` in($sid)", true);
+		m('admin')->updateinfo('and `id` in('.$sid.')');
 		echo 'success';
 	}
 	
@@ -42,6 +43,7 @@ class groupClassAction extends Action
 		$dbs 	= m('sjoin');
 		$dbs->delete("`mid`='$gid' and `type`='gu' and `sid`='$sid'");
 		$dbs->delete("`sid`='$gid' and `type`='ug' and `mid`='$sid'");
+		m('admin')->updateinfo('and `id` in('.$sid.')');
 		echo 'success';
 	}
 }

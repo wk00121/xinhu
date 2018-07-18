@@ -28,7 +28,7 @@ $(document).ready(function(){
 			openinput('印章','seal');
 		}
 	};
-
+	bootstableobj['seal']=a;
 	js.initbtn(c);
 });
 </script>
