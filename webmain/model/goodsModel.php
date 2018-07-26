@@ -107,10 +107,10 @@ class goodsClassModel extends Model
 			$rsone 	= $this->db->getone('[Q]goodn','`mid`='.$id.'','sum(`count`)count,sum(`couns`)couns');
 			$count 	= floatval($rsone['count']);
 			$couns 	= floatval($rsone['couns']);
-			if($couns==0){
-				$zt = 0;
-			}else if($couns>=$count){
+			if($couns>=$count){
 				$zt = 1;
+			}else if($couns==0){
+				$zt = 0;
 			}else{
 				$zt = 2;
 			}

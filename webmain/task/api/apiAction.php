@@ -25,8 +25,10 @@ class apiAction extends ActionNot
 		$boss = (M == 'login|api');
 		if(!$boss){
 			if($this->isempt($this->token))$this->showreturn('','token invalid', 199);
-			$to = m('logintoken')->rows("`uid`='$this->adminid' and `token`='$this->token' and `online`=1");
-			if($to==0)$this->showreturn('','登录失效，请重新登录', 199);
+			$lodb = m('login');
+			$onto = $lodb->getone("`uid`='$this->adminid' and `token`='$this->token' and `online`=1");
+			if(!$onto)$this->showreturn('','登录失效，请重新登录', 199);
+			$lodb->update("`moddt`='{$this->rock->now}'", $onto['id']);
 		}
 		$this->userrs = m('admin')->getone("`id`='$this->adminid' and `status`=1", '`name`,`user`,`id`,`ranking`,`deptname`,`deptid`');
 		if(!$this->userrs && !$boss){

@@ -12,7 +12,13 @@ $(document).ready(function(){
 			text:'操作人',dataIndex:'optname',sortable:true
 		},{
 			text:'备注',dataIndex:'remark',align:'left',renderer:function(v,d){
-				if(d.url && d.level==2)v+='<br>'+d.url+'';
+				if(d.url && d.level==2){
+					if(d.url.indexOf('http')==0){
+						v+='<br>'+d.url+'';
+					}else{
+						v+='<br><a href="'+d.url+'" target="_blank">查看详情</a>';
+					}
+				}
 				return v;
 			},renderstyle:function(){
 				return 'word-wrap:break-word;word-break:break-all;white-space:normal;';

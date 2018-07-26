@@ -26,6 +26,7 @@ abstract class mysql{
 	public 	$perfix		= PREFIX;
 	public  $errorbool	= false;
 	public  $errormsg	= '';
+	public  $errorlast	= '';
 	public  $nowerror	= false;
 	public  $basename;
 	
@@ -126,18 +127,33 @@ abstract class mysql{
 			$rsbool		= false;
 			$this->errormsg = $e->getMessage();
 		}
+		
 		$this->nowerror	= false;
 		if(!$rsbool)$this->nowerror = true;
-		if(!$rsbool && (DEBUG || $this->rock->adminid==1) && $ebo){
-			$txt	= '【错误SQL】'.chr(10).''.$sql.''.chr(10).''.chr(10).'【原因】'.chr(10).''.$this->error().''.chr(10).'';
-			$this->rock->debug($txt,'mysql_sqlerr');
-		}
+		
+		$stabs  = ''.$this->perfix.'log';
+		if(!contain($sql, $stabs) && !$rsbool)$this->errorlast = $this->error(); //最后错误信息
+		
+		//记录错误sql
 		if(!$rsbool && $ebo){
-			$stabs  = ''.$this->perfix.'log';
+			$txt	= '[ERROR SQL]'.chr(10).''.$sql.''.chr(10).''.chr(10).'[Reason]'.chr(10).''.$this->error().''.chr(10).'';
+			$efile 	= $this->rock->debug($txt,'mysql_sqlerr', true);
 			$errmsg = str_replace("'",'&#39;', $this->error());
-			if(!contain($sql, $stabs))m('log')->addlogs('错误SQL','《'.$sql.'》'.$errmsg.'', 2); //写入日志中方便查看
+			if(!contain($sql, $stabs)){
+				m('log')->addlogs('错误SQL',''.$errmsg.'', 2, array(
+					'url' => $efile
+				)); //写入日志中方便查看
+			}
 		}
 		return $rsbool;
+	}
+	
+	/**
+	*	返回最后错误信息
+	*/
+	public function lasterror()
+	{
+		return $this->errorlast;
 	}
 	
 	public function execsql($sql)

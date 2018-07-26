@@ -65,8 +65,7 @@ cd '.$ljth.'
 		echo '</div>';
 		
 
-		$str1 = 'cd '.ROOT_PATH.'
-php '.ROOT_PATH.'/task.php runt,task';
+		$str1 = 'cd '.ROOT_PATH.''.chr(10).'php '.ROOT_PATH.'/task.php runt,task';
 		$spath= ''.UPDIR.'/cli/xinhutaskrun.sh';
 		$this->rock->createtxt($spath, $str1);	
 		echo '<br>二、<b>Linux服务器</b>，可用根据以下设置定时任务<br>';

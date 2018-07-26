@@ -225,9 +225,9 @@ class loginClassModel extends Model
 		if($msg==''){
 			$this->db->update('[Q]admin',"`loginci`=`loginci`+1", $uid);
 			$moddt	= date('Y-m-d H:i:s', time()-10*3600);
-			$lastd	= date('Y-m-d H:i:s', time()-24*3600*2);
+			$lastd	= date('Y-m-d H:i:s', time()-24*3600*7);
 			$this->delete("`uid`='$uid' and `cfrom`='$cfrom' and `moddt`<'$moddt'");
-			$this->delete("`moddt`<'$lastd'"); //删除2天前记录
+			$this->delete("`moddt`<'$lastd'"); //删除7天前未登录的记录
 			$token 	= $this->db->ranknum('[Q]logintoken','token', 8);
 			$larr	= array(
 				'token'	=> $token,
@@ -284,7 +284,7 @@ class loginClassModel extends Model
 		$token = $this->rock->request('token', $token);
 		$cfrom = $this->rock->request('cfrom', $cfrom);
 		$now = $this->rock->now;
-		$this->update("moddt='$now',`online`=1", "`cfrom`='$cfrom' and `token`='$token'");
+		$this->update("moddt='$now',`online`=1", "`token`='$token' and `cfrom`='$cfrom'");
 	}
 	
 	public function exitlogin($cfrom='', $token='')

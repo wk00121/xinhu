@@ -312,6 +312,7 @@ class kaoqinClassModel extends Model
 	}
 	
 	//返回条件
+	private $limitfenqxi = 20;//一次分析20人
 	public function kqanayallfirst($month,$glx=0)
 	{
 		$month	= substr($month, 0, 7);
@@ -322,7 +323,7 @@ class kaoqinClassModel extends Model
 		if($glx==0)return $s;
 		
 		$count 	= $this->admindb->rows('1=1 '.$s.'');
-		$limit	= 50;
+		$limit	= $this->limitfenqxi;
 		$maxpage= ceil($count/$limit);
 		
 		return array(
@@ -339,7 +340,7 @@ class kaoqinClassModel extends Model
 		$s 		= $this->kqanayallfirst($month).' '.$where.'';
 		$max 	= $this->dtobj->getmaxdt($month);
 		$sql 	= "select `id`,`workdate`,`quitdt` from `[Q]admin` where 1=1 ".$s."";
-		$limit	= 50;
+		$limit	= $this->limitfenqxi;
 		if($page>0){
 			$sql.=" limit ".($page-1)*$limit.",".$limit."";
 		}

@@ -100,4 +100,17 @@ class runtClassAction extends runtAction
 		$runtime = $this->get('runtime',time());
 		echo m('task')->runjsonlist($runtime);
 	}
+	
+	/**
+	*	初始化计划任务linux
+	*	php task.php runt,taskinit
+	*/
+	public function taskinitAction()
+	{
+		$str1 = 'cd '.ROOT_PATH.''.chr(10).'php '.ROOT_PATH.'/task.php runt,task';
+		$spath= ''.UPDIR.'/cli/xinhutaskrun.sh';
+		file_put_contents($spath, $str1);
+		if(function_exists('exec'))exec('chmod 777 '.$spath.'');
+		echo 'xinhu taskinit success';
+	}
 }

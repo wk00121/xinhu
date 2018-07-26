@@ -18,7 +18,13 @@ class pdoClass extends mysql{
 	
 	protected function querysql($sql)
 	{
-		return $this->conn->query($sql);
+		try {
+			$bo = $this->conn->query($sql);
+		} catch (PDOException $e) {
+			$bo = false;
+			$this->errormsg = $e->getMessage();
+		}
+		return $bo;
 	}
 	
 	public function fetch_array($result, $type = 0)
@@ -48,7 +54,8 @@ class pdoClass extends mysql{
 		
 	public function error()
 	{
-		return 'Error:'.$this->errormsg.'';
+		$str = $this->conn->errorInfo();
+		return 'pdoError('.$str[0].'):'.$str[2].''.$this->errormsg.'';
 	}
 	
 	public function close()

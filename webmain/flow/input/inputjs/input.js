@@ -827,6 +827,7 @@ var c={
 		for(j=0;j<blarr.length;j++){
 			nams	= ''+blarr[j]+''+nae2+'';
 			val 	= form(nams) ? form(nams).value : '0';
+			if(val==='')val='0';
 			ogs = ogs.replace('{'+blarr[j]+'}', val);
 		}
 		if(blx)return '('+ogs+')';

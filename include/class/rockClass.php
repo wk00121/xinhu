@@ -150,18 +150,21 @@ final class rockClass
 	
 		return $s;
 	}
-	public function debug($txt, $lx)
+	public function debug($txt, $lx, $dabo=false)
 	{
-		if(!DEBUG)return;
-		$txt	= ''.$txt.''.chr(10).'【URL】'.chr(10).''.$this->nowurl().'';
+		if(!DEBUG && !$dabo)return;
+		$txt	= ''.$txt.''.chr(10).'[URL]'.chr(10).''.$this->nowurl().'';
 		if($_POST){
 			$pstr = '';
 			foreach($_POST as $k=>$v)$pstr.=''.chr(10).'['.$k.']：'.$v.'';
-			$txt.=''.chr(10).''.chr(10).'【POST】'.$pstr.'';
+			$txt.=''.chr(10).''.chr(10).'[POST]'.$pstr.'';
 		}
-		$txt.=''.chr(10).''.chr(10).'【IP】'.chr(10).''.$this->ip.'';
-		$txt.=''.chr(10).''.chr(10).'【浏览器】'.chr(10).''.$this->HTTPweb.'';
-		$this->createtxt(''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log', $txt);
+		$txt.=''.chr(10).''.chr(10).'[IP]'.chr(10).''.$this->ip.'';
+		$txt.=''.chr(10).''.chr(10).'[datetime]'.chr(10).''.$this->now().'';
+		$txt.=''.chr(10).''.chr(10).'[Browser]'.chr(10).''.$this->HTTPweb.'';
+		$file = ''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log';
+		$this->createtxt($file, $txt);
+		return $file;
 	}
 	
 	private function isjm($s)
@@ -578,7 +581,9 @@ final class rockClass
 	public function nowurl()
 	{
 		if(!isset($_SERVER['HTTP_HOST']))return '';
-		$url = 'http://'.$_SERVER['HTTP_HOST'];
+		$qz  = 'http';
+		if($_SERVER['SERVER_PORT']==443)$qz='https';
+		$url = ''.$qz.'://'.$_SERVER['HTTP_HOST'];
 		if(isset($_SERVER['REQUEST_URI']))$url.= $_SERVER['REQUEST_URI'];
 		return $url;
 	}

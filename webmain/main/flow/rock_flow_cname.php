@@ -76,8 +76,8 @@ $(document).ready(function(){
 		clickwin:function(o1,lx){
 			var h = $.bootsform({
 				title:'审核人员组下规则',height:400,width:400,
-				tablename:'flow_cname',isedit:lx,
-				params:{int_filestype:'sort,pid'},
+				tablename:'flow_cname',isedit:lx,beforesaveaction:'savebeforecname',
+				params:{int_filestype:'sort,pid'},url:publicsave('{mode}','{dir}'),
 				submitfields:'sort,num,checkid,checkname,recename,receid,pid',
 				items:[{
 					labelText:'编号',name:'num',required:true
@@ -109,8 +109,8 @@ $(document).ready(function(){
 		},
 		clickwins:function(o1, lx){
 			var h = $.bootsform({
-				title:'审核人员组',height:400,width:400,
-				tablename:'flow_cname',isedit:lx,
+				title:'审核人员组',height:400,width:400,beforesaveaction:'savebeforecname',
+				tablename:'flow_cname',isedit:lx,url:publicsave('{mode}','{dir}'),
 				params:{int_filestype:'sort'},
 				submitfields:'name,sort,num,checkid,checkname',
 				items:[{
@@ -188,7 +188,7 @@ $(document).ready(function(){
 	</div>
 	<div class="blank10"></div>
 	<div id="view_{rand}"></div>
-	<div class="tishi">编号作用可关联到对应【流程模块条件】的编号。</div>
+
 	
 </td>
 </tr>

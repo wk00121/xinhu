@@ -28,7 +28,7 @@ function gettourl(s){
 var queue = {
 	addqueuearr:[],
 	yunoi:0,
-	maxxu:10, //每次最多运行进程
+	maxxu:1, //每次最多运行进程
 	yunshu:0,
 	start:function(){
 		setInterval('queue.starts()', 1000);

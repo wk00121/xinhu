@@ -216,6 +216,8 @@ class flowModel extends Model
 				$this->savebill();
 			}
 			if($this->billrs['status']!=$this->rs['status'])$this->billmodel->update('`status`='.$this->rs['status'].'', $this->billrs['id']);//状态不一样更新一下
+			if(isempt($this->rs['base_name']))$this->rs['base_name'] = $this->billrs['uname'];
+			if(isempt($this->rs['base_deptname']))$this->rs['base_deptname'] = $this->billrs['udeptname'];
 		}else{
 			if($this->isflow==1)$this->savebill();
 		}
@@ -2641,6 +2643,7 @@ class flowModel extends Model
 			$wherestr = $this->rock->covexec($wherestr);
 			$where .= ' and '.$wherestr;
 		}
+		$where	= str_replace('{asqom}','', $where);
 		$rows 	= $this->getall('1=1 '.$where.'');
 		foreach($rows as $k=>$rs){
 			$rows[$k] = $this->flowrsreplace($rs, 1);

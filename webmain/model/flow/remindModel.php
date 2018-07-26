@@ -145,6 +145,7 @@ class flow_remindClassModel extends flowModel
 				}
 			}
 		}
+		//$this->flowtodosettx(8);
 		if($modenums=='')return false;
 		$modenums	= substr($modenums, 1);
 		$modrs 		= m('flow_set')->getall("`num` in ($modenums) and `status`=1");
@@ -197,7 +198,7 @@ class flow_remindClassModel extends flowModel
 		//订阅的处理(建议用异步的)
 		if($subscribid){
 			if(getconfig('asynsend')){
-				print_r($subscribid);
+				
 				$reim	= m('reim');
 				foreach($subscribid as $subo){
 					$reim->asynurl('asynrun','subscribe', array(
@@ -215,7 +216,7 @@ class flow_remindClassModel extends flowModel
 				}
 			}
 		}
-		
+
 		return $sarr;
 	}
 	
@@ -223,13 +224,14 @@ class flow_remindClassModel extends flowModel
 	private function flowtodosettx($tids)
 	{
 		$rows = $this->db->getall('select a.*,b.num as modenum from `[Q]flow_todo` a left join `[Q]flow_set` b on a.`setid`=b.`id` where a.`id` in('.$tids.') and b.`status`=1 and a.`status`=1 and a.`botask`=1 and a.whereid>0');
-		
+		//print_r($rows);
 		//有设置了提醒
 		foreach($rows as $rk=>$rs){
 			
 			$modenum 	= $rs['modenum'];
 			$flow		= m('flow')->initflow($modenum);
 			$flowrows 	= $flow->gettodorows($rs['whereid']);
+		
 			$tostr 		= '';//提醒的内容
 			$todofields	= array();
 			if(!isempt($rs['todofields']))$todofields = explode(',', $rs['todofields']);

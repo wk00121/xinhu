@@ -276,14 +276,18 @@ class flowbillClassModel extends Model
 					$this->update('isdel=1', $rs['id']); //记录已经不存在了
 				}
 			}
+			$name 	= $rs['name'];
+			if(isempt($name))$name = $rs['uname'];
+			$deptname 	= $rs['deptname'];
+			if(isempt($deptname))$deptname = $rs['udeptname'];
 			
 			$srows[]= array(
 				'id' 		=> $rs['mid'],
 				'optdt' 	=> $rs['optdt'],
 				'applydt' 	=> $rs['applydt'],
 				'optname' 	=> arrvalue($rs,'optname'),
-				'name' 		=> $rs['name'],
-				'deptname' 	=> $rs['deptname'],
+				'name' 		=> $name,
+				'deptname' 	=> $deptname,
 				'sericnum' 	=> $rs['sericnum'],
 				'nowcheckid'=> $rs['nowcheckid'],
 				'nowcourseid'=> $rs['nowcourseid'], //当前步骤

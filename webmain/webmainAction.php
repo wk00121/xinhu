@@ -410,7 +410,8 @@ class Action extends mainAction
 		$idadd 	= false;
 		if($msg == ''){
 			if($id>0 && $editrecord=='true')$oldrs = $db->getone($id);
-			if($db->record($uaarr, $where)){
+			$sbo	= $db->record($uaarr, $where);
+			if($sbo){
 				$msg	= '处理成功';
 				$success= true;
 				if($id == 0){
@@ -429,7 +430,7 @@ class Action extends mainAction
 					m('edit')->recordstr($flow->fieldsarr,$flow->mtable, $id, $oldrs, $newrs, 2);
 				}
 			}else{
-				$msg = 'Error:'.$this->db->error();
+				$msg = 'mysqlerr:'.$this->db->lasterror();
 			}
 		}
 		

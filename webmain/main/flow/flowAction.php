@@ -922,4 +922,11 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		}
 		return $arr;
 	}
+	
+	public function savebeforecname($table, $arr, $id)
+	{
+		$num = $arr['num'];
+		$to  = m('flowcname')->rows("`id`<>'$id' and `num`='$num'");
+		if($to>0)return '编号['.$num.']已存在';
+	}
 }
