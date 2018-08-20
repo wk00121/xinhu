@@ -11,7 +11,7 @@ class crmClassModel extends Model
 	{
 		if(isempt($id))$id = 0;
 		$s		= $this->rock->dbinstr('shateid', $uid);
-		$rows 	= $this->getrows("`status`=1 and ((`uid`='$uid') or (`id`=$id) or (".$s."))",'id as value,name,id','`name`');
+		$rows 	= $this->getrows("`status`=1 and ((`uid`='$uid') or (`id`=$id) or (".$s."))",'id as value,name,id,unitname as subname','`name`');
 		return $rows;
 	}
 	

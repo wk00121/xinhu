@@ -31,6 +31,7 @@ class flow_leaveClassModel extends flowModel
 	{
 		$type = 0; //根据哪个类型计算年：0根据入职日期，1根据转正日期
 		$hour = (int)m('option')->getval('kqsbtime', 8); //默认一天8小时(请自己设定)
+		if($hour<=0)$hour = 8;
 		if($ndate=='')$ndate = $this->rock->date;
 		if($ndate > $this->rock->date)return array();
 		$Y  	= substr($ndate,0,4);
@@ -49,7 +50,6 @@ class flow_leaveClassModel extends flowModel
 		$usea = $this->db->getall("select `uid` from `[Q]kqinfo` where `kind`='增加年假' and `status`=1 and `optname`='系统' and `stime` like '".$Y."-%'"); //系统已经自动添加过
 		$uids = '0';
 		foreach($usea as $k=>$rs)$uids.=','.$rs['uid'].'';
-		
 		$rows = $this->db->getall("select a.`id`,a.`name`,a.`workdate`,b.`positivedt` from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.`status`=1 and a.id not in($uids) and b.`state`<>5");
 		$barr 	= array();
 		foreach($rows as $k=>$rs){
@@ -97,7 +97,31 @@ class flow_leaveClassModel extends flowModel
 			$uarr['explain'] = ''.$rs['dt'].''.$adln[$type].'年限满'.$rs['nyear'].'年添加年假'.$rs['nianday'].'天';
 			$dbs->insert($uarr);
 		}
-		
+		$this->updateenddt();
 		return $barr;
+	}
+	
+	/**
+	*	更新年假/加班单的截止时间
+	*/
+	public function updateenddt()
+	{
+		$dbs 	= m('option');
+		$jbuse 	= (int)$dbs->getval('kqjiabanuse', 0); //加班
+		$njuse 	= (int)$dbs->getval('kqnianjiause', 0);
+		$db 	= m('kqinfo');
+		if($jbuse==0){
+			$db->update('enddt=null',"`kind`='加班'");
+		}else{
+			$key  = "CONCAT(date_format(date_add(stime,interval ".$jbuse." month),'%Y-%m-%d'),' ','23:59:59')";
+			$db->update('enddt='.$key.'',"`kind`='加班'"); //兑换调休的
+		}
+		
+		if($njuse==0){
+			$db->update('enddt=null',"`kind`='增加年假'");
+		}else{
+			$key  = "CONCAT(date_format(date_add(stime,interval ".$njuse." month),'%Y-%m-%d'),' ','23:59:59')";
+			$db->update('enddt='.$key.'',"`kind`='增加年假'");
+		}
 	}
 }

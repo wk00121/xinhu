@@ -61,6 +61,9 @@ var reim = {
 		$(window).blur(function(){windowfocus=false});
 		//数秒
 		setInterval('reim.timeload()', 1000);
+		
+		document.ondragover=function(e){e.preventDefault();};
+		document.ondrop=function(e){e.preventDefault();};
 	},
 	openrecord:function(){
 		var url = '?homeurl=cmVpbSxyZWNvcmQsYXR5cGU9bXk:&homename=5oiR55qE5Lya6K!d6K6w5b2V&menuid=MjI3';

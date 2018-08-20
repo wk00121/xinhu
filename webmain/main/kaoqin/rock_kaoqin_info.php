@@ -57,6 +57,18 @@ $(document).ready(function(){
 				js.msg('success', s);
 				a.reload();
 			});
+		},
+		updateenddt:function(bo){
+			js.confirm('更新截止日期是当加班设置有效期或年假设置有效期就需要更新，未在规定截止时间内使用就清0', function(jg){
+				if(jg=='yes')c.updateenddts();
+			});
+		},
+		updateenddts:function(){
+			js.msg('wait','处理中...');
+			js.ajax(js.getajaxurl('updateenddt','{mode}','{dir}'),false,function(s){
+				js.msg('success', s);
+				a.reload();
+			});
 		}
 	};
 	
@@ -87,10 +99,15 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
 	<td  style="padding-left:10px">
-		<button class="btn btn-default" click="addnianjia" type="button">添加年假</button>
+		<button class="btn btn-default" click="addnianjia" type="button">一键添加年假</button>
+	</td>
+	<td  style="padding-left:10px">
+		<button class="btn btn-default" click="updateenddt" type="button">更新截止日期</button>
 	</td>
 	
-	<td width="80%"></td>
+	<td width="80%">
+	&nbsp;&nbsp;<a href="<?=URLY?>view_jiaqi.html"target="_blank">帮助</a>
+	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>

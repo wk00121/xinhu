@@ -14,5 +14,10 @@ class mode_leavehrClassAction extends inputAction{
 		$sbtime = $kq->getworktime($uid, $start); //一天上班小时
 		return array($sj, '', $sbtime);
 	}
+	
+	
+	protected function saveafter($table, $cans, $id, $addbo){
+		m('flow:leave')->updateenddt();
+	}
 }	
 			

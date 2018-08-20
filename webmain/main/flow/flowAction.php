@@ -666,6 +666,16 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		return array('rows'=>$rows);
 	}
 	
+	public function setcourselistbefore($table)
+	{
+		$where 	= '';
+		$key 	= $this->post('key');
+		if(!isempt($key)){
+			$where = "and (`type`='$key' or `name` like '%$key%' or `table` like '$key%' or `num` like '$key%' or `sericnum` like '$key%')";
+		}
+		return $where;
+	}
+	
 	
 	//删除模块
 	public function delmodeAjax()

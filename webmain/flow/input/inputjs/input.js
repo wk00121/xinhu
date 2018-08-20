@@ -94,12 +94,11 @@ js.apiurl = function(m,a,cans){
 }
 
 var c={
-	callback:function(cs){
+	callback:function(cs, msg){
 		var calb = js.request('callback');
-		var msg  = (mid=='0')?'新增':'编辑'
 		if(!calb){
 			if(ismobile==0){
-				try{parent.js.msg('success',''+msg+'保存成功');}catch(e){}
+				try{parent.js.msg('success', msg);}catch(e){}
 				try{parent.bootstableobj[moders.num].reload();}catch(e){}
 				try{parent.js.tanclose('winiframe');}catch(e){}
 			}
@@ -107,7 +106,7 @@ var c={
 		}
 		try{parent[calb](cs);}catch(e){}
 		try{opener[calb](cs);}catch(e){}
-		try{parent.js.msg('success',''+msg+'保存成功');}catch(e){}
+		try{parent.js.msg('success', msg);}catch(e){}
 		try{parent.js.tanclose('winiframe');}catch(e){}
 	},
 	
@@ -234,6 +233,14 @@ var c={
 		}
 		var bo = true;
 		if(form('istrun') && d.istrun=='0')bo=false; //是否提交的判断
+		if(get('sysisturn')){
+			if(get('sysisturn').checked){
+				d.istrun = 1;
+			}else{
+				d.istrun = 0;
+				bo=false;
+			}
+		}
 		if(firstrs.isbt==1 && bo){
 			if(!d.sysnextoptid && form('sysnextopt')){
 				this.showtx('请指定['+firstrs.name+']处理人');
@@ -272,15 +279,15 @@ var c={
 	backsave:function(a,str){
 		var msg = a.msg;
 		if(a.success){
-			var msgs  = (mid=='0')?'新增':'编辑'
-			var sumsg = ''+msgs+'保存成功';
+			//var msgs  = (mid=='0')?'新增':'编辑'
+			var sumsg = ''+a.msg+'成功';
 			js.setmsg(sumsg,'green');
 			js.msg('success',sumsg);
 			this.formdisabled();
-			$('#AltS').hide();
+			$('#AltSspan').hide();
 			form('id').value=a.data;
 			isedit=0;
-			this.callback(a.data);
+			this.callback(a.data, sumsg);
 			try{
 			js.sendevent('reload', 'yingyong_mode_'+moders.num+'');
 			js.backla();}catch(e){}
@@ -291,11 +298,18 @@ var c={
 			this.showtx(msg);//错误提醒
 		}
 	},
+	changeturn:function(){
+		if(get('sysisturn').checked){
+			get('AltS').value='提交';
+		}else{
+			get('AltS').value='保存草稿';
+		}
+	},
 	showdata:function(){
 		var smid=form('id').value;
 		if(smid=='0'||smid==''){
 			isedit=1;
-			$('#AltS').show();
+			$('#AltSspan').show();
 			c.initdatelx();
 			c.initinput();
 			initbodys(smid);
@@ -511,7 +525,7 @@ var c={
 				this.formdisabled();
 				js.setmsg('无权编辑，查看<a href="http://www.rockoa.com/view_wqbj.html" target="_blank" class="blue">[帮助]</a>');
 			}else{
-				$('#AltS').show();
+				$('#AltSspan').show();
 				c.initdatelx();
 			}
 			if(da.isflow==1){

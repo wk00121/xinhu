@@ -215,10 +215,18 @@ class flowbillClassModel extends Model
 		return $to;
 	}
 	
+	//待提提交
+	public function daiturntotal($uid)
+	{
+		$where	= '(`uid`='.$uid.' or `optid`='.$uid.') and `status` not in(5) and `isturn`=0 and isdel=0';
+		$to 	= $this->rows($where);
+		return $to;
+	}
+	
 	//未通过的
 	public function applymywgt($uid)
 	{
-		$where	= '`status`=2 and isdel=0 and `uid`='.$uid.'';
+		$where	= '`status`=2 and isdel=0 and (`uid`='.$uid.' or `optid`='.$uid.')';
 		$to 	= $this->rows($where);
 		return $to;
 	}
@@ -370,7 +378,9 @@ class flowbillClassModel extends Model
 		if($dats)foreach($dats as $cid=>$rs)$custids.=','.$cid.'';
 		if($custids=='')return;
 		$custids	= substr($custids, 1);
-		$rows 		= $this->getall('`isturn`=1 and `status`=0 and `nowcourseid` in('.$custids.')');
+		$mxxus		= 99999;
+		$rows 		= $this->getall('`isturn`=1 and `status`=0 and ((`nowcourseid` in('.$custids.')) or (`nowcourseid`>'.$mxxus.' and ((`nowcourseid`-`nowcheckid`)/'.$mxxus.') in('.$custids.')) )');
+		//echo $this->db->nowsql;
 		if(!$rows)return;
 		$modeids 	= '';
 		foreach($rows as $k=>$rs)$modeids.=','.$rs['modeid'].'';
@@ -378,7 +388,10 @@ class flowbillClassModel extends Model
 		
 		foreach($rows as $k=>$rs){
 			if(isempt($rs['nowcheckid']))continue;
-			$cusrs 	= arrvalue($dats,$rs['nowcourseid'], false);
+			$nowcourseid = $rs['nowcourseid'];
+			if($nowcourseid>$mxxus)$nowcourseid = ($nowcourseid-$rs['nowcheckid'])/$mxxus;
+			
+			$cusrs 	= arrvalue($dats,$nowcourseid, false);
 			$modrs 	= arrvalue($modearr, $rs['modeid'], false);
 			if(!$modrs || !$cusrs)continue;
 			$dtfei	= time()-(int)$cusrs['zshtime']*60;
@@ -392,10 +405,18 @@ class flowbillClassModel extends Model
 			
 			//超时了
 			if(strtotime($updt)<$dtfei){
-				$sm = '超'.$cusrs['zshtime'].'分钟未处理自动审核';
-				$zt = 1;
-				if($cusrs['zshstate']=='2')$zt = 2;
-				m('flow')->opt('check', $modrs['num'], $rs['mid'], $zt, $sm);//审核
+				$sm = '超'.$cusrs['zshtime'].'分钟未处理自动';
+				$zt = (int)$cusrs['zshstate'];
+				
+				if($zt==1 || $zt==2){
+					m('flow')->opt('check', $modrs['num'], $rs['mid'], $zt, $sm.'审核');//审核
+				}else{
+					$this->rock->adminid 	= 0;
+					$this->rock->adminname 	= '系统';
+					$flow = m('flow')->initflow($modrs['num'], $rs['mid'], false);
+					if($zt==3)$flow->zuofeibill($sm.'作废');
+					if($zt==4)$flow->deletebill($sm.'删除', false);
+				}
 			}
 		}
 		

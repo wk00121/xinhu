@@ -15,7 +15,7 @@ $(document).ready(function(){
 		text:'人员状态',dataIndex:'state'
 	}];
 	var col2 = [{
-		text:'调休',dataIndex:'tiaoxiu'
+		text:'调休(时)',dataIndex:'tiaoxiu'
 	}];
 	function getcolumns(a1,a2,a3){
 		var a4 = [].concat(a1,a2,a3);
@@ -31,10 +31,13 @@ $(document).ready(function(){
 		loadbefore:function(d){
 			var cs4=[],i;
 			for(i=0;i<d.kqkind.length;i++){
-				cs4.push({text:d.kqkind[i].name.substr(2),dataIndex:'total'+i+''});
+				cs4.push({text:d.kqkind[i].name.substr(2)+'(时)',dataIndex:'total'+i+''});
 			}
 			if(cs4.length>0){
 				var cols = getcolumns(col1,col2,cs4);
+				cols.push({text:'',dataIndex:'xingxid',renderer:function(v,d){
+					return '<a href="javascript:;" onclick="show{rand}mx('+d.id+',\''+d.name+'\')">明细</a>';
+				}});
 				a.setColumns(cols);
 			}
 		}
@@ -61,6 +64,10 @@ $(document).ready(function(){
 	};
 	
 	js.initbtn(c);
+	
+	show{rand}mx=function(id,na){
+		addtabs({name:'假期统计明细('+na+')',url:'main,kaoqin,totalmx,uid='+id+'',num:'totalmx'+id+''});
+	}
 });
 </script>
 <div>
@@ -93,4 +100,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">人员是从档案表里读取的，根据截止日期来统计的，是统计表kqinfo上字段status为0,1。</div>
+<div class="tishi">人员是从档案表里读取仅显示需要考勤的，根据截止日期来统计的，是统计表kqinfo上字段status为0,1。</div>

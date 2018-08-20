@@ -18,7 +18,8 @@ class openzktimeClassAction extends openapiAction
 			if($snid==0)$snid = $dbs->insert(array(
 				'num' 		=> $num,
 				'optdt' 	=> $this->rock->now,
-				'status' 	=> 1
+				'status' 	=> 1,
+				'pinpai'	=> '1'
 			));
 			$this->snid = $snid;
 			$this->snrs	= $dbs->getone($snid);

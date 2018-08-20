@@ -7,7 +7,8 @@ class mode_userClassAction extends inputAction{
 	
 	protected function savebefore($table, $cans, $id, $addbo){
 		if(getconfig('systype')=='demo' && $id>0)return '演示请勿编辑';
-		$user = strtolower(trimstr($cans['user']));
+		//$user = strtolower(trimstr($cans['user']));
+		$user = trimstr($cans['user']);
 		$name = trimstr($cans['name']);
 		$num  = trimstr($cans['num']);
 		$email= trimstr($cans['email']);

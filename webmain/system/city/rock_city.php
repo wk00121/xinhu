@@ -17,6 +17,8 @@ $(document).ready(function(){
 		},{
 			text:'ID',dataIndex:'id',sortable:true	
 		},{
+			text:'上级ID',dataIndex:'pid'
+		},{
 			text:'',dataIndex:'opt',renderer:function(v,d){
 				return '<a href="javascript:;" onclick="opensho{rand}('+d.id+')">打开</a>';
 			}
@@ -91,6 +93,11 @@ $(document).ready(function(){
 					js.msg('msg', ret.msg);
 				}
 			},'get,json');
+		},
+		clearchahe:function(){
+			js.ajax(js.getajaxurl('clearchahe','{mode}','{dir}'),false,function(ret){
+				js.msg('success', '已清除');
+			});
 		}
 	};
 	
@@ -120,6 +127,7 @@ $(document).ready(function(){
 	</td>
 	<td align="right" nowrap>
 
+		<button class="btn btn-default" click="clearchahe" type="button">清除城市数据缓存</button> &nbsp; 
 		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
 	</td>

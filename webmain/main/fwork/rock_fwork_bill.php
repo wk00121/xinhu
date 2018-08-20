@@ -142,7 +142,7 @@ $(document).ready(function(){
 	
 	$('#state{rand}_'+zt+'').addClass('active');
 	
-	if(atype=='mywtg'){
+	if(atype=='mywtg' || atype=='daiturn'){
 		$('#stewwews{rand}').hide();
 	}
 	if(atype!='daib'){

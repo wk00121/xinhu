@@ -77,6 +77,12 @@
 		var bo  = (lxs=='input' || lxs=='textarea');
 		if(e.keyCode==8 && !bo)return false;
 	});
+	try{
+		history.pushState(null, null, document.URL);
+		window.addEventListener('popstate', function (){
+			history.pushState(null, null, document.URL);
+		});
+	}catch(e){}
 	
 	//开启js异步队列
 	try{queue.start();}catch(e){console.error('无法使用js队列');}
@@ -91,6 +97,7 @@
 			d.objs.click();
 		}
 	});
+	
 }
 
 

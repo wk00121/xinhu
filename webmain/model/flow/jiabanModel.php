@@ -44,4 +44,11 @@ class flow_jiabanClassModel extends flowModel
 			'where' => $where
 		);
 	}
+	
+	
+	protected function flowcheckfinsh($zt)
+	{
+		if($zt==1)m('flow:leave')->updateenddt();
+	}
+	
 }

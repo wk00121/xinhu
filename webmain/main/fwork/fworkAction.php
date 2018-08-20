@@ -85,6 +85,11 @@ class fworkClassAction extends Action
 			$where.=" and a.status=2";
 		}
 		
+		//待提交
+		if($lx=='daiturn'){
+			$where.=" and a.`status` not in(5) and a.`isturn`=0 "; //未提交
+		}
+		
 		//异常
 		if($lx=='error'){
 			$whers = m('flowbill')->errorwhere('a.');

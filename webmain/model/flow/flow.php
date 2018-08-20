@@ -221,7 +221,7 @@ class flowModel extends Model
 		}else{
 			if($this->isflow==1)$this->savebill();
 		}
-		
+		$this->getlogrows	= array();
 		if($ispd)$this->isreadqx();
 
 		$this->rssust	= $this->rs;
@@ -435,16 +435,26 @@ class flowModel extends Model
 			$_logarr	 = array();
 			foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
 			//读取流程审核步骤信息
-			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 GROUP BY `courseid`','`courseid`,max(id)id','id desc');
+			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 and `valid`=1');
 			foreach($logrows as $k2=>$rs2){
 				$rs3 		= $_logarr[$rs2['id']];
 				$_coid 		= $rs2['courseid'];
 				if(!isempt($rs3['qmimg']))$rs3['name'] = '<img height="30" width="70" src="'.$rs3['qmimg'].'">';
-				$data['course'.$_coid.'_name'] 	= $rs3['name'];
-				$data['course'.$_coid.'_zt'] 	= '<font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
-				if(isempt($rs3['sm']))$rs3['sm'] = $rs3['statusname'];
-				$data['course'.$_coid.'_sm'] 	= $rs3['sm'];
-				$data['course'.$_coid.'_dt'] 	= $rs3['checkdt'];
+				$key1 = 'course'.$_coid.'';
+				if(isempt($rs3['sm']))$rs3['sm']= $rs3['statusname'];
+				
+				
+				if(!isset($data[''.$key1.'_name'])){
+					$data[''.$key1.'_name'] = $rs3['name'];
+					$data[''.$key1.'_zt'] 	= '<font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
+					$data[''.$key1.'_sm'] 	= $rs3['sm'];
+					$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
+				}else{
+					$data[''.$key1.'_name'] .= ','.$rs3['name'];
+					$data[''.$key1.'_sm'] 	.= ','.$rs3['sm'];
+					$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
+				}					
+				
 			}
 			$contview 	 	= $this->rock->reparr($contview, $data);
 		}
@@ -794,7 +804,7 @@ class flowModel extends Model
 
 		$statusar  	= c('array')->strtoarray($statusstr);
 		foreach($statusar as $k=>$v){
-			if($v[0]==$v[1])$v[1]= $colorsa[$k];
+			if($v[0]==$v[1])$v[1]= arrvalue($colorsa, $k);
 			$statusara[$k] = $v;
 		}
 		$statusara[5] 	= array('已作废','#888888');
@@ -921,6 +931,7 @@ class flowModel extends Model
 		if($logfileid!='')m('file')->addfile($logfileid, $this->mtable, $this->id);
 		$addarr['id'] 	= $ssid;
 		$this->flowaddlog($addarr);
+		$this->getlogrows	= array();
 		return $ssid;
 	}
 	
@@ -1199,16 +1210,24 @@ class flowModel extends Model
 				
 				//全部直属上级
 				if($rs['checktype']=='superall'){
-					$suparr 		 = $this->adminmodel->getsuperarr($this->urs['id']);
-					if($suparr)foreach($suparr as $k1=>$surs){
-						if(!contain(','.$allcheckid.',', ','.$surs['id'].',')){
-							$rs['id']		 = $rs['id'] * 99999 + $surs['id'];
-							$rs['checkid']   = $surs['id'];
-							$rs['checkname'] = $surs['name'];
-							$nrows[] = $rs;
-							$allcheckid .= ','.$surs['id'].'';
+					$ids1 			= $rs['id'];
+					$suparr 		= $this->adminmodel->getsuperarr($this->uid);
+					if($suparr){
+						$logdsar		= $this->getlog();
+						foreach($logdsar as $k1=>$rs1)
+							if($rs1['courseid']>0)$allcheckid .= ','.$rs1['checkid'].'';	
+						foreach($suparr as $k1=>$surs){
+							if(!contain(','.$allcheckid.',', ','.$surs['id'].',')){
+								$rs['oldid']	 = $ids1;
+								$rs['id']		 = $ids1 * 99999 + $surs['id'];
+								$rs['checkid']   = $surs['id'];
+								$rs['checkname'] = $surs['name'];
+								$nrows[] = $rs;
+								$allcheckid .= ','.$surs['id'].'';
+							}
 						}
 					}
+					
 				}
 			}
 	
@@ -2010,7 +2029,9 @@ class flowModel extends Model
 			if($reim->installwx(1)){
 				$gnames = $gname;
 				if($gname != $modename)$gnames =''.$modename.','.$gname.'';
-				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gnames.',办公助手', $wxarr);
+				$devagent  = $this->option->getval('weixinqy_devagent');
+				if(isempt($devagent))$devagent = '办公助手';
+				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gnames.','.$devagent.'', $wxarr);
 				m('log')->todolog('企业微信提醒', $barr);
 			}
 		}

@@ -121,7 +121,7 @@ class flow_emailmClassModel extends flowModel
 			$where 		= $dbs->gettowhere($uid, 4);
 		}
 		
-		if(!isempt($key))$where.=" and (a.`title` like '%$key%' or a.`recename` like '%$key%')";
+		if(!isempt($key))$where.=" and (a.`title` like '%$key%' or a.`recename` like '%$key%' or a.`sendname` like '%$key%')";
 		if(!isempt($dt))$where.=" and a.`senddt` like '$dt%'";
 		
 		return array(

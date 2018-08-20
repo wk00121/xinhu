@@ -86,6 +86,13 @@ var im={
 				im.clickmenuss(d);
 			}
 		});
+		this.initupfile();
+		document.ondragover=function(e){e.preventDefault();};
+		document.ondrop=function(e){e.preventDefault();};
+		document.addEventListener('drop', function(e) {
+			var files = e.dataTransfer;
+			im.filedrop(files);
+		}, false);
 	},
 	resethie:function(){
 		var h = winHb()-40-30-80-40;
@@ -363,8 +370,7 @@ var im={
 		var val = this.inputobj.val()+s;
 		this.inputobj.val(val).focus();
 	},
-	sendfile:function(bo){
-		if(!this.sendbool())return;
+	initupfile:function(){
 		if(typeof(uploadobj)=='undefined')uploadobj = $.rockupload({
 			inputfile:'allfileinput',
 			initpdbool:true,
@@ -383,7 +389,14 @@ var im={
 			}
 		});
 		strformat.upobj = uploadobj;
+	},
+	sendfile:function(bo){
+		if(!this.sendbool())return;
 		if(bo)uploadobj.click();
+	},
+	filedrop:function(fobj){
+		if(!this.sendbool())return;
+		uploadobj.change(fobj);
 	},
 	//上传的文件预览显示
 	sendfileshow:function(f, snr){
@@ -453,7 +466,7 @@ var im={
 			var oatg = this.getpath();
 			nw.Shell.openItem(''+oatg+'/images/reimcaptScreen.exe');
 		}else{
-			js.msg('msg','无法截屏，请使用PC客户端/第三方快捷键，<a href="http://www.rockoa.com/view_client.html" target="_blank">[去下载]</a>');
+			js.msg('msg','无法截屏，请使用REIM客户端/第三方快捷键，<a href="http://www.rockoa.com/view_client.html" target="_blank">[去下载]</a>');
 			return;
 		}
 	},

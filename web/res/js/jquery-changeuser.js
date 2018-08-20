@@ -369,7 +369,6 @@
 			var s='',len=a.length,s1='';
 			if(len==0){
 				s='<div align="center" style="margin-top:30px;color:#cccccc;font-size:16px">无记录</div>';
-				if(!inb)this.loaddata();
 			}else{
 				s = this.showhtml(a);
 				s1='共'+len+'条';
@@ -377,6 +376,7 @@
 			this._getobj('count').html(s1);
 			var o = $('#selectlist_'+rand+'');
 			o.html(s);
+			if(!inb && len==0)this.loaddata();
 		};
 		this.showhtml=function(a){
 			this.nowdata = a;
@@ -391,11 +391,14 @@
 				d = a[i];
 				if(!isempt(d.value) && oldvel.indexOf(','+d.value+',')>-1)ched='checked';
 				s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+d.name+'" value="'+d.value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
+				if(d.disabled)s2='';
 				atr = '';
 				if(d.padding)atr='style="padding-left:'+d.padding+'px"';
 				if(!d.iconswidth)d.iconswidth=18;
 				if(d.iconsimg)s2+=' <img align="absmiddle" src="'+d.iconsimg+'" height="'+d.iconswidth+'" width="'+d.iconswidth+'">';
-				s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+d.name+'</label></div>';
+				s+='<div class="listsss" '+atr+'><label>'+s2+'&nbsp;'+d.name+'';
+				if(d.subname)s+='&nbsp;<span style="font-size:12px;color:#888888">('+d.subname+')</span>';
+				s+='</label></div>';
 			}
 			return s;
 		};
@@ -416,12 +419,13 @@
 			},500);
 		};
 		this._searchkey = function(bo){
-			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],len,i,oi=0,s;
+			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],d1,len,i,oi=0,s;
 			a=this.data;
 			len=a.length;if(len==0)return;
 			if(key!='')for(i=0;i<len;i++){
-				if(a[i].name.indexOf(key)>-1 || a[i].value==key){
-					d.push(a[i]);
+				d1 = a[i];
+				if(d1.name.indexOf(key)>-1 || d1.value==key || (d1.subname && d1.subname.indexOf(key)>-1)){
+					d.push(d1);
 					oi++;
 					if(oi>20)break;//最多显示搜索
 				}

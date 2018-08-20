@@ -12,9 +12,10 @@ class cityClassAction extends Action
 		$patha	= $dbs->getpath($id);
 		$type 	= $dbs->getmou('type', $id);
 		if(isempt($type))$type=-1;
-		
+		$ntype	= (int)$type+1;
+		if($ntype==0)$id = 0; //顶级
 		return array(
-			'type' => (int)$type+1,
+			'type' => $ntype,
 			'pid'  => $id,
 			'rows' => $rows,
 			'path' => $patha,
@@ -34,6 +35,12 @@ class cityClassAction extends Action
 	//从官网获取城市数据
 	public function initdataAjax()
 	{
+		c('cache')->del('cityalldata');
 		return m('city')->daorudata();
+	}
+	
+	public function clearchaheAjax()
+	{
+		c('cache')->del('cityalldata');
 	}
 }

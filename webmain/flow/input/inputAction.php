@@ -59,6 +59,7 @@ class inputAction extends Action
 		$isflow			= $this->moders['isflow'];
 		$flownum		= $this->moders['num'];
 		$table			= $this->moders['table'];
+		$sysisturn		= (int)$this->post('istrun','1');
 		$checkobj		= c('check');
 		if($this->isempt($table))$this->backmsg('模块未设置表名');
 		$fieldsarr		= $this->flow->fieldsarr;
@@ -146,6 +147,10 @@ class inputAction extends Action
 		}
 		if($isflow==1){
 			$uaarr['status']= '0';
+			if($sysisturn==0){
+				$uaarr['isturn']= '0';
+				$subna = '保存';
+			}
 		}else{
 			if(in_array('status', $allfields))$uaarr['status'] = (int)$this->post('status', '1');
 			if(in_array('isturn', $allfields))$uaarr['isturn'] = (int)$this->post('isturn', '1');
@@ -228,7 +233,7 @@ class inputAction extends Action
 		$this->flow->loaddata($id, false);
 		$this->flow->submit($subna);
 		
-		$this->backmsg('', $msg, $id);
+		$this->backmsg('', $subna, $id);
 	}
 	
 	private function getsavenarr($nsrr, $bos=false)
@@ -502,6 +507,7 @@ class inputAction extends Action
 		$this->smartydata['gongsiarr']	= $this->gongsiarr;
 		$this->smartydata['subfielsa']	= $this->subfielsa;
 		$this->smartydata['mid']		= $mid;
+		$this->smartydata['isflow']		= $moders['isflow'];
 		$this->smartydata['course']		= $course;
 		$this->smartydata['zbnamearr']	= $nameaas;
 		$this->smartydata['zbshu']		= $zbshu;//子表数

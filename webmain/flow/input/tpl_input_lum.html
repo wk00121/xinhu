@@ -19,7 +19,7 @@
 <script type="text/javascript" src="web/res/js/jquery-changeuser.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script type="text/javascript">
-var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gongsiarr=<?=json_encode($da['gongsiarr'])?>,subfielsa=<?=json_encode($da['subfielsa'])?>,zbnamearr=<?=json_encode($da['zbnamearr'])?>,isedit=0,mid='<?=$da['mid']?>',data={};
+var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gongsiarr=<?=json_encode($da['gongsiarr'])?>,subfielsa=<?=json_encode($da['subfielsa'])?>,zbnamearr=<?=json_encode($da['zbnamearr'])?>,isedit=0,mid='<?=$da['mid']?>',isinput=1,data={};
 ismobile=1;
 js.changeuser=function(na,lx, cans){
 	var can = {
@@ -141,7 +141,11 @@ if($showheader==1)echo '<div id="header_title" class="header"><span onclick="js.
 		</div>
 	</form>
 	<div class="padding10">
-		<input type="button" style="display:none" id="AltS" onclick="c.save()" class="btn" value="保存">
+		<span id="AltSspan" style="display:none" >
+		<?php
+		if($da['isflow']=='1')echo '<label><input onclick="c.changeturn(this)" value="1" checked type="checkbox" id="sysisturn">直接提交</label>&nbsp;';
+		?>
+		<input id="AltS" type="button" onclick="return c.save()" value="提交" class="btn"></span>
 		<div id="msgview"></div>
 	</div>
 </div>

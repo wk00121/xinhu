@@ -1,4 +1,5 @@
 function initbodys(){
+	if(!form('applydt'))return;
 	$.getScript('js/rmb.js');
 	form('applydt').readOnly=true;
 	form('money').readOnly=true;

@@ -40,6 +40,7 @@ class homeitemsClassModel extends Model
 		$arr['todo']	= $todo;
 		$arr['daiban']	= $bidb->daibanshu($uid);
 		$arr['applywtg']= $bidb->applymywgt($uid);
+		$arr['daiturn'] = $bidb->daiturntotal($uid);
 		$arr['danerror']= $bidb->errortotal();
 		$arr['workwwc']	= m('work')->getwwctotals($uid);
 		$arr['email']	= m('emailm')->wdtotal($uid);

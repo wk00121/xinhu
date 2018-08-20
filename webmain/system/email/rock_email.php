@@ -180,7 +180,7 @@ $(document).ready(function(){
 			</div>	
 		</td>
 		<td>
-		<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="标题/发件人">
+		<input class="form-control" style="width:200px" id="key_{rand}" placeholder="主题/收件人/发件人">
 		</td>
 		<td style="padding-left:10px">
 			<button class="btn btn-default" click="search" type="button">搜索</button> 

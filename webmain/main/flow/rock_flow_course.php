@@ -5,7 +5,7 @@ $(document).ready(function(){
 	var num = params.num,setid,optlx=0,maxpid = 0,courseobj={};
 	var at = $('#optionview_{rand}').bootstable({
 		tablename:'flow_set',defaultorder:'`sort`',where:'and isflow=1 and status=1',
-		modedir:'{mode}:{dir}',storeafteraction:'setcourselistafter',
+		modedir:'{mode}:{dir}',storeafteraction:'setcourselistafter',storebeforeaction:'setcourselistbefore',
 		columns:[{
 			text:'名称',dataIndex:'name'
 		},{
@@ -279,6 +279,9 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('courseflowdel','{mode}','{dir}'), {id:id}, function(s){
 				c.reload();
 			},'get',false,'删除中...,删除成功');
+		},
+		search:function(){
+			at.setparams({'key':get('key_{rand}').value}, true);
 		}
 	};
 	js.initbtn(c);
@@ -299,6 +302,14 @@ $(document).ready(function(){
 	<div class="panel panel-info" style="margin:0px">
 	  <div class="panel-heading">
 		<h3 class="panel-title">流程模块(双击显示步骤)</h3>
+	  </div>
+	  <div>
+		<div class="input-group" style="width:200px">
+			<input class="form-control" id="key_{rand}" placeholder="模块名称/编号">
+			<span class="input-group-btn">
+				<button class="btn btn-default" click="search" type="button"><i class="icon-search"></i></button>
+			</span>
+		</div>
 	  </div>
 	  <div id="optionview_{rand}" style="height:400px;overflow:auto"></div>
 	</div>

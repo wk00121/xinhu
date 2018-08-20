@@ -161,6 +161,7 @@ class upfileChajian extends Chajian{
 		}
 		
 		$save_path	= ''.str_replace('|','/',$this->path);
+		//if(!is_writable($save_path))return '目录'.$save_path.'无法写入不能上传';
 		$allfilename= $save_path.'/'.$file_newname.'';
 		$uptempname	= $save_path.'/'.$randname.'.uptemp';
 

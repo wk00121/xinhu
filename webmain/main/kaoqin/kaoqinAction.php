@@ -111,6 +111,10 @@ class kaoqinClassAction extends Action
 			$totday			= floatval(arrvalue($rs,'totday','0'));
 			if($totday>0)$rows[$k]['totals'].='('.$totday.'天)';
 			$rows[$k]['jiatype'] = $jiatype;
+			if(!isempt($rs['enddt'])){
+				$rows[$k]['etime'] = $rs['enddt']; //截止时间
+				if($rs['enddt']<$this->rock->now)$rows[$k]['ishui'] = 1;
+			}
 		}
 		$month	= $this->post('dt1', date('Y-m'));
 		$str = '';
@@ -747,7 +751,7 @@ class kaoqinClassAction extends Action
 	public function addnianjiaAjax()
 	{
 		$dt 	= $this->get('dt');
-		$barr	= m('flow:leave')->autoaddleave();
+		$barr	= m('flow:leave')->autoaddleave($dt);
 		return '共添加'.count($barr).'人';
 	}
 	
@@ -776,6 +780,62 @@ class kaoqinClassAction extends Action
 		return array(
 			'rows'=> $rows,
 			'kqkind'=> $kqkind,
+		);
+	}
+	
+	public function updateenddtAjax()
+	{
+		$to	= m('flow:leave')->updateenddt();
+		return '更新成功';
+	}
+	
+	public function kqtotalmxbefore($table)
+	{
+		$uid 	= (int)$this->post('uid');
+		$qjkind = $this->post('qjkind');
+		$this->optuid 		= $uid;
+		$this->optqjkind 	= $qjkind;
+		$where 	= 'and `uid`='.$uid.'';
+		$this->optkind		= '';
+		if($qjkind=='调休'){
+			$this->optkind = '加班';
+			$where .= " and ((`qjkind`='$qjkind' and `status` in(0,1)) or (`kind`='$this->optkind' and `status`=1 and `jiatype`=0))";
+		}else{
+			$this->optkind = '增加'.$qjkind.'';
+			$where .= " and ((`qjkind`='$qjkind' and `status` in(0,1)) or (`kind`='$this->optkind' and `status`=1))";
+		}
+		return array(
+			'where' => $where,
+			'order' => '`stime`'
+		);
+	}
+	
+	public function kqtotalmxafter($table, $rows)
+	{
+		$urs = m('userinfo')->getone($this->optuid);
+		foreach($rows as $k=>$rs){
+			if($urs){
+				$rows[$k]['uname'] = $urs['name'];
+				$rows[$k]['deptname'] = $urs['deptname'];
+			}
+			
+			if(!isempt($rs['enddt'])){
+				$rows[$k]['etime'] = $rs['enddt']; //截止时间
+				if($rs['enddt']<$this->rock->now)$rows[$k]['ishui'] = 1;
+			}else{
+				if($rs['kind']==$this->optkind)$rows[$k]['etime'] = '';
+			}
+		}
+		$kqkind	= $this->option->getmnum('kqkind');
+		if($rows){
+			$rows[] = array(
+				'deptname' => '合计',
+				'totals1'	=> m('kaoqin')->getqjsytime($this->optuid, $this->optqjkind)
+			);
+		}
+		return array(
+			'rows' 		=> $rows,
+			'kqkind' 	=> $kqkind,
 		);
 	}
 }

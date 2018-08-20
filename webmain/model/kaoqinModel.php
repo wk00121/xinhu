@@ -627,11 +627,28 @@ class kaoqinClassModel extends Model
 			$wehe = 'and `jiatype`=0'; //只有可调休才能用
 		}
 		if($dt=='')$dt = $this->rock->now;
-		$to1	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`uid`='$uid' and `kind`='请假' and `qjkind`='$type' and `status` not in(5) and `id`<>$id ");
-		$zto	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`uid`='$uid' and `kind`='$types' $wehe and `status`=1 and `stime`<='$dt'");
-		if(is_null($to1))$to1=0;
-		if(is_null($zto))$zto=0;
-		return floatval($zto) - floatval($to1);
+		$zto	= $to1 = 0;
+		$enddt 	= '';//截止
+		
+		//总共的
+		$zrs	= $this->db->getone('[Q]kqinfo', "`uid`='$uid' and `kind`='$types' $wehe and `status`=1 and `stime`<='$dt' and (`enddt` is null or `enddt`>='$dt')","sum(totals)totals,min(stime)stime");
+		if($zrs){
+			$zto 	= floatval($zrs['totals']);
+			if(!isempt($zrs['stime']))$enddt="and `stime`>='".$zrs['stime']."'";
+		}
+		
+		//echo $this->db->nowsql;
+		//echo '<br>';
+		
+		//已使用了
+		if($zto>0){
+			$to1	= $this->db->getmou('[Q]kqinfo',"sum(totals)", "`uid`='$uid' and `kind`='请假' and `qjkind`='$type' $enddt and `status` not in(5) and `id`<>$id "); 
+			if(is_null($to1))$to1=0;
+		}
+		
+		$wjg 	= $zto - floatval($to1);
+
+		return $wjg;
 	}
 	
 	//总统计显示

@@ -45,6 +45,7 @@ class indexClassAction extends Action{
 	{
 		$this->menuwhere = '';
 		$myext	= $this->getsession('adminallmenuid');
+		if(isempt($myext))$myext = '0';
 		if($myext != '-1'){	
 			$this->menuwhere	= ' and `id` in('.str_replace(array('[',']'), array('',''), $myext).')';
 		}

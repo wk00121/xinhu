@@ -12,7 +12,7 @@ class cityClassModel extends Model
 	private function getpaths($id)
 	{
 		$rs = $this->getone($id);
-		if($rs){
+		if($rs && $rs['pid']!=$id){
 			$this->getpaths($rs['pid']);
 			$this->pathss[] = $rs;
 		}
@@ -71,5 +71,51 @@ class cityClassModel extends Model
 			);
 		}
 		return $barr;
+	}
+	
+	/**
+	*	全部城市数据，3级
+	*/
+	public function alldata()
+	{
+		$chche = c('cache');
+		$cdata = $chche->get('cityalldata');
+		if(!$cdata){
+			$this->drowsa = $this->getall('1=1','*','`sort`');
+			$this->datass = array();
+			$this->alldatas($this->drowsa, '1', 0,'');
+			
+			$chche->set('cityalldata', $this->datass);
+			return $this->datass;
+		}else{
+			return $cdata;
+		}
+	}
+	private function alldatas($rows, $pid, $xu, $sub, $sheng='', $city='')
+	{
+		$keya = array('shengname','cityname','xianname');
+		$zxij = 0;
+		foreach($rows as $k=>$rs){
+			if($rs['pid']==$pid){
+				$zxij++;
+				$sar	= array(
+					'name' 	=> $sub.$rs['name'],
+					'value' => $rs['name'],
+					'padding'=> 30*$xu,
+					'shengname' => $sheng,
+					'cityname' => $city,
+					'xianname' => '',
+				);
+				$keysas 	  = $keya[$xu];
+				$sar[$keysas] = $rs['name'];
+				$this->datass[] = $sar;
+				
+				unset($this->drowsa[$k]);
+				if($xu==0)$sheng = $rs['name'];
+				if($xu==1)$city  = $rs['name'];
+				$xiji 	= $this->alldatas($this->drowsa, $rs['id'], $xu+1, $sub.$rs['name'], $sheng, $city);
+			}
+		}
+		return $zxij;
 	}
 }
