@@ -22,6 +22,7 @@ class xinhuClassAction extends Action
 		echo json_encode($arr);
 	}
 	
+	//测试地址
 	public function yibutestAjax()
 	{
 		$rand 	= time();
@@ -29,7 +30,7 @@ class xinhuClassAction extends Action
 		$runurl	= m('base')->getasynurl('asynrun','asyntest', $arr);
 		m('reim')->asynurl('asynrun','asyntest', $arr);
 		$msg 	= '<font color="green">测试成功可以使用</font>';
-		sleep(6);
+		sleep(10);
 		$mkey 	= $this->option->getval('asyntest');
 		if($mkey!=$rand)$msg 	= '<font color="red">测试失败不能使用，说明你服务端上是不能访问这地址的</font>';
 		echo '异步地址【'.$runurl.'】'.$msg.'';
