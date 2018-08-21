@@ -66,6 +66,12 @@ $(document).ready(function(){
 			get('push_{rand}').value='';
 			get('host_{rand}').value='';
 			get('receid_{rand}').value='';
+		},
+		testays:function(){
+			js.wait('<span id="yibutestabc">测试异步是否可用中...</span>');
+			js.ajax(js.getajaxurl('yibutest', '{mode}', '{dir}'),false,function(str){
+				$('#yibutestabc').html(str);			
+			});
 		}
 	};
 	
@@ -117,13 +123,14 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td  align="right"></td>
-			<td style="padding:15px 0px" colspan="3" align="left"
+			
+			<td style="padding:15px 0px;padding-left:150px" colspan="3" align="left"
 			>
 			<a href="javascript:;" click="qingkong">清空</a>&nbsp;
 			<button click="save" class="btn btn-success" type="button"><i class="icon-save"></i>&nbsp;保存</button>&nbsp; 
 			<button click="testsss" class="btn btn-primary" type="button">测试通信地址</button>&nbsp; 
 			<button click="testss" class="btn btn-primary" type="button">测试推送地址</button>&nbsp; 
+			<button click="testays" class="btn btn-default" type="button">测试异步</button>&nbsp; 
 			<span id="msgview_{rand}"><font color=red>测试地址前，请先保存！</font></span>
 		</td>
 		</tr>

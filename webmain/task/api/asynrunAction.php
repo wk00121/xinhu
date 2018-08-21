@@ -15,6 +15,12 @@ class asynrunClassAction extends apiAction
 		if($urs)$this->setNowUser($urs['id'], $urs['name'], $urs['user']);
 	}
 	
+	public function asyntestAction()
+	{
+		$krand = $this->get('krand');
+		m('option')->setval('asyntest', $krand);
+	}
+	
 	//测试
 	public function indexAction()
 	{

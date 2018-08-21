@@ -525,7 +525,8 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			$narr['modename'] 	= $this->moders['name'];
 			$narr['table'] 		= $this->moders['table'];
 			$narr['optdt'] 		= arrvalue($rs,'optdt');
-			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $rs);
+			$nors 	= $flow->flowrsreplace($rs, 2);
+			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $nors);
 			$otehsr = '';
 			if($flow->isflow==1){
 				$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");

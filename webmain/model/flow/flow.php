@@ -109,6 +109,9 @@ class flowModel extends Model
 	//子表样式，可以改成print打印
 	protected $subsubdatastyle	= '';
 	
+	//关联其他模块
+	protected $wherejoin		= array();
+	
 	//默认排序如：id,desc
 	public $defaultorder	= '';
 	
@@ -2098,7 +2101,39 @@ class flowModel extends Model
 		if(!isempt($sm))$dels.=',说明:'.$sm.'';
 		
 		m('log')->addlogs('删除单据', $dels, 3);
+		
+		foreach($this->wherejoin as $num=>$fields){
+			$this->deletebilljoin($num, "`$fields`='$this->id'", $sm);
+		}
 		return 'ok';
+	}
+	
+	/**
+	*	关联删除
+	*/
+	public function deletebilljoin($num, $where, $sm='')
+	{
+		$flow = m('flow')->initflow($num);
+		$rows = $flow->getall($where);
+		foreach($rows as $k1=>$rs1){
+			$mid = $rs1['id'];
+			$flow->loaddata($mid, false);
+			$flow->deletebill($sm, false);
+		}
+	}
+	
+	/**
+	*	关联作废
+	*/
+	public function zuofeibilljoin($num, $where, $sm='')
+	{
+		$flow = m('flow')->initflow($num);
+		$rows = $flow->getall($where);
+		foreach($rows as $k1=>$rs1){
+			$mid = $rs1['id'];
+			$flow->loaddata($mid, false);
+			$flow->zuofeibill($sm);
+		}
 	}
 	
 	/**
@@ -2129,6 +2164,10 @@ class flowModel extends Model
 		}
 		$this->flowzuofeibill($sm);
 		$this->gettodosend('bozuofei','', $sm);
+		
+		foreach($this->wherejoin as $num=>$fields){
+			$this->zuofeibilljoin($num, "`$fields`='$this->id'", $sm);
+		}
 		return 'ok';
 	}
 	

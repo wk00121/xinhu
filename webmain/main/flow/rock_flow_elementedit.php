@@ -81,8 +81,8 @@ $(document).ready(function(){
 			<td  align="right" width="15%" nowrap ><font color=red>*</font> <a target="_blank" href="<?=URLY?>view_element.html">?字段元素类型</a>：</td>
 			<td width="35%"  class="tdinput"><select name="fieldstype" class="form-control"><option value="">-字段-</option></select></td>
 			
-			<td  width="15%" align="right" nowrap>默认值：</td>
-			<td width="35%"  class="tdinput"><input name="dev" class="form-control"></td>
+			<td  width="15%" align="right" nowrap>默认值：<br><a target="_blank" href="<?=URLY?>view_xinhudev.html">看帮助</a>&nbsp;&nbsp;</td>
+			<td width="35%"  class="tdinput"><input name="dev" placeholder="不会设置?看帮助吧" class="form-control"></td>
 		</tr>
 		
 		<tr>

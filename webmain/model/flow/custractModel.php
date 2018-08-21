@@ -8,6 +8,8 @@ class flow_custractClassModel extends flowModel
 		$this->statearr		= c('array')->strtoarray('待生效|blue,生效中|green,已过期|#888888');
 		$this->dtobj		= c('date');
 		$this->crmobj		= m('crm');
+		
+		$this->wherejoin['custfina'] = 'htid';
 	}
 
 	
