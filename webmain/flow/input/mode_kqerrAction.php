@@ -12,7 +12,7 @@ class mode_kqerrClassAction extends inputAction{
 		if($cshu>0){
 			$uid = $arr['uid'];
 			$dt  = substr($arr['dt'],0,7);
-			$to  = m($table)->rows("`uid`='$uid' and `dt` like '".$dt."%'");
+			$to  = m($table)->rows("`uid`='$uid' and `id`<>'$id' and `dt` like '".$dt."%'")+1;
 			if($to>$cshu)return ''.$dt.'月份已申请超过'.$cshu.'次，不能在申请了';
 		}
 	}

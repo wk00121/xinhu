@@ -416,10 +416,11 @@ class adminClassModel extends Model
 	
 	/**
 	*	获取人员数据
+	*	$lx=0 通讯录，1选择人员
 	*/
 	public function getuser($lx=0, $uid=0)
 	{
-		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`,`deptids`';
+		$fields = '`id`,`name`,`deptid`,`deptname`,`deptpath`,`groupname`,`deptallname`,`mobile`,`ranking`,`tel`,`face`,`sex`,`email`,`pingyin`,`deptids`,`isvcard`';
 		if($uid==0){
 			$uid  	= $this->adminid;
 			$where	= m('view')->viewwhere('user', $uid, 'id');
@@ -434,6 +435,7 @@ class adminClassModel extends Model
 				$where2 = $this->gjoin($rangeno, '', 'where');
 				$where2 = 'and not('.$where2.')';
 			}
+			if($lx==0)$where.=' and `isvcard`=1'; //通讯录宣誓
 			//读取我可查看权限
 			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
@@ -442,11 +444,11 @@ class adminClassModel extends Model
 		$py   = c('pingyin');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] = $rs['face'] = $this->getface($rs['face']);
-			if($lx==1){
-				if(isempt($rs['pingyin'])){
-					$rows[$k]['pingyin'] = $rs['pingyin'] = $py->get($rs['name'],1);
-				}
-			}
+			//if($lx==1){
+			//	if(isempt($rs['pingyin'])){
+			//		$rows[$k]['pingyin'] = $rs['pingyin'] = $py->get($rs['name'],1);
+			//	}
+			//}
 			$deptidss = ','.$rs['deptid'].',';
 			if(!isempt($rs['deptids']))$deptidss.=''.$rs['deptids'].',';
 			$rows[$k]['deptidss'] = $deptidss;

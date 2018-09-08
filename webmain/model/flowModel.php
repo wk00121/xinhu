@@ -73,7 +73,7 @@ class flowClassModel extends Model
 	
 	public function repipei($whe='')
 	{
-		$srows 	= $this->db->getrows('[Q]flow_set','status=1 and isflow=1 '.$whe.'','`num`,`name`,`table`,id,`where`','sort');
+		$srows 	= $this->db->getrows('[Q]flow_set','status=1 and isflow>0 '.$whe.'','`num`,`name`,`table`,id,`where`','sort');
 		$str 	= '';
 		$dbs 	= m('flow_bill');
 		foreach($srows as $k=>$rs){

@@ -56,23 +56,31 @@ class flowbillClassModel extends Model
 		
 		//待办
 		if($lx=='daiban_daib' || $lx=='daiban_def'){
-			$where	= '`status` not in(1,2) and '.$this->rock->dbinstr('nowcheckid', $uid);
+			$where	= '`status` not in(1,2) and `isturn`=1 and '.$this->rock->dbinstr('nowcheckid', $uid);
 			$isdb	= 1;
 		}
 		
 		//经我处理
 		if($lx=='daiban_jwcl'){
-			$where	= $this->rock->dbinstr('allcheckid', $uid);
+			$where	= '`isturn`=1 and '.$this->rock->dbinstr('allcheckid', $uid);
+		}else if(contain($lx,'_jwcl')){//经我处理跟进模块编号搜索，$lx= 模块编号_jcwl
+			$where	= '`isturn`=1 and ';
+			$wnum	= str_replace('_jwcl','', $lx);
+			$mrs 	= m('mode')->getone("`num`='$wnum'");
+			if($mrs){
+				$where	.= '`modeid`='.$mrs['id'].' and ';
+			}
+			$where .= $this->rock->dbinstr('allcheckid', $uid);
 		}
 		
 		//我全部下级申请
 		if($lx=='daiban_myxia'){
-			$where 	= m('admin')->getdownwheres('uid', $uid, 0);
+			$where 	= '`isturn`=1 and '.m('admin')->getdownwheres('uid', $uid, 0);
 		}
 		
 		//我直属下级申请
 		if($lx=='daiban_mydown'){
-			$where 	= m('admin')->getdownwheres('uid', $uid, 1);
+			$where 	= '`isturn`=1 and '.m('admin')->getdownwheres('uid', $uid, 1);
 		}
 		
 		//抄送
@@ -86,7 +94,7 @@ class flowbillClassModel extends Model
 					$modeids.=','.$rs1['modeid'].'';
 					$mids.=','.$rs1['mid'].'';
 				}
-				$where = "`modeid` in(".substr($modeids,1).") and `mid` in(".substr($mids,1).")";
+				$where = "`isturn`=1 and `modeid` in(".substr($modeids,1).") and `mid` in(".substr($mids,1).")";
 			}
 		}
 		
@@ -210,7 +218,7 @@ class flowbillClassModel extends Model
 	//获取待办处理数字
 	public function daibanshu($uid)
 	{
-		$where	= '`status` not in(1,2) and isdel=0 and '.$this->rock->dbinstr('nowcheckid', $uid);
+		$where	= '`status` not in(1,2) and `isdel`=0 and `isturn`=1 and '.$this->rock->dbinstr('nowcheckid', $uid);
 		$to 	= $this->rows($where);
 		return $to;
 	}
@@ -356,7 +364,7 @@ class flowbillClassModel extends Model
 	public function autocheck()
 	{
 		//要作废的流程模块
-		$rows = $this->db->getall('select `id`,`zfeitime`,`num` from `[Q]flow_set` where `status`=1 and `isflow`=1 and `zfeitime`>0');
+		$rows = $this->db->getall('select `id`,`zfeitime`,`num` from `[Q]flow_set` where `status`=1 and `isflow`>0 and `zfeitime`>0');
 		$this->rock->adminid 	= 0;
 		$this->rock->adminname 	= '系统';
 		foreach($rows as $k=>$rs){

@@ -27,6 +27,7 @@ class flowModel extends Model
 	public $isflow	= 0;		//当前模块是否有流程审核步骤
 	public $ismobile= 0;		//是否移动的页面请求的
 	public $minwidth	= 100;	//录入页面子表最小宽度
+	public $atype	= '';
 	
 	
 	//当初始化模块后调用
@@ -175,7 +176,7 @@ class flowModel extends Model
 	public function flowsearchfields()
 	{
 		$arr = array();
-		if($this->isflow==1){
+		if($this->isflow>0){
 			$arr[] = array('name'=>'申请人...','fields'=>'uid');
 			$arr[] = array('name'=>'提交人...','fields'=>'optid');
 		}
@@ -222,7 +223,7 @@ class flowModel extends Model
 			if(isempt($this->rs['base_name']))$this->rs['base_name'] = $this->billrs['uname'];
 			if(isempt($this->rs['base_deptname']))$this->rs['base_deptname'] = $this->billrs['udeptname'];
 		}else{
-			if($this->isflow==1)$this->savebill();
+			if($this->isflow>0)$this->savebill();
 		}
 		$this->getlogrows	= array();
 		if($ispd)$this->isreadqx();
@@ -254,7 +255,7 @@ class flowModel extends Model
 		$bo = false;
 		if($this->adminid==1)$bo=true;//为1的超级管理员可查看
 		if($this->uid==$this->adminid && $this->adminid>0)$bo=true;
-		if(!$bo && $this->isflow==1){
+		if(!$bo && $this->isflow>0){
 			if($this->billrs){
 				$allcheckid = $this->billrs['allcheckid'];
 				if(contain(','.$allcheckid.',',','.$this->adminid.','))$bo = true;
@@ -274,15 +275,32 @@ class flowModel extends Model
 			$tos 	= $this->chaomodel->rows($this->mwhere.' and '.$this->rock->dbinstr('csnameid', $this->adminid).'');
 			if($tos>0)$bo=true;
 		}
+		//todo表里
+		if(!$bo){
+			$tos 	= $this->db->rows('[Q]todo', "`uid`='$this->adminid' and ".$this->mwhere."");
+			if($tos>0)$bo=true;
+		}
+		
 		if(!$bo)$bo = $this->flowisreadqx(); //自定义查看权限
 		//权限设置上的
 		if(!$bo){
-			$where 	= $this->viewmodel->viewwhere($this->moders, $this->adminid, $this->flowviewufieds);
-			$tos 	= $this->rows("`id`='$this->id' $where ");
-			if($tos>0)$bo=true;
+			$bo 	= $this->isreadqxs();
 		}
 		if($glx==1)return $bo;
 		if(!$bo)$this->echomsg('无权限查看模块['.$this->modenum.'.'.$this->modename.']'.$this->uname.'的数据，'.c('xinhu')->helpstr('cxqx').'');
+	}
+	
+	/**
+	*	从权限上看是否有查看权限
+	*/
+	public function isreadqxs()
+	{
+		$bo		= false;
+		$where 	= $this->viewmodel->viewwhere($this->moders, $this->adminid, $this->flowviewufieds);
+		$where	= str_replace('{asqom}','', $where);
+		$tos 	= $this->rows("`id`='$this->id' $where ");
+		if($tos>0)$bo=true;
+		return $bo;
 	}
 	
 	/**
@@ -291,7 +309,7 @@ class flowModel extends Model
 	public function iseditqx()
 	{
 		$bo = 0;
-		if($bo==0 && $this->isflow==1){
+		if($bo==0 && $this->isflow>0){
 			if($this->billrs && ($this->uid == $this->adminid || $this->optid==$this->adminid)){
 				if($this->billrs['nstatus']==0 || $this->billrs['nstatus']==2){
 					$bo = 1;
@@ -301,6 +319,7 @@ class flowModel extends Model
 		}
 		if($bo==0){
 			$where 	= $this->viewmodel->editwhere($this->moders, $this->adminid);
+			$where	= str_replace('{asqom}','', $where);
 			$tos 	= $this->rows("`id`='$this->id'  $where ");
 			if($tos>0)$bo=1;
 		}
@@ -313,7 +332,7 @@ class flowModel extends Model
 	public function isdeleteqx()
 	{
 		$bo = 0;
-		if($bo==0 && $this->isflow==1){
+		if($bo==0 && $this->isflow>0){
 			if($this->billrs && ($this->uid == $this->adminid || $this->optid==$this->adminid)){
 				if($this->billrs['nstatus']==0 || $this->billrs['nstatus']==2){
 					$bo = 1;
@@ -323,6 +342,7 @@ class flowModel extends Model
 		}
 		if($bo==0){
 			$where 	= $this->viewmodel->deletewhere($this->moders, $this->adminid);
+			$where	= str_replace('{asqom}','', $where);
 			$tos 	= $this->rows("`id`='$this->id'  $where ");
 			if($tos>0)$bo=1;
 		}
@@ -437,8 +457,8 @@ class flowModel extends Model
 			$contview 	 = file_get_contents($path);
 			$_logarr	 = array();
 			foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
-			//读取流程审核步骤信息
-			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 and `valid`=1');
+			//读取流程审核步骤信息，只显示同意的
+			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 and `status`<>2 and `valid`=1');
 			foreach($logrows as $k2=>$rs2){
 				$rs3 		= $_logarr[$rs2['id']];
 				$_coid 		= $rs2['courseid'];
@@ -465,7 +485,7 @@ class flowModel extends Model
 		if($this->isempt($contview)){
 			$arr['isdefaultview'] = 1;
 			$_fields		 = array();
-			if($this->isflow==1){
+			if($this->isflow>0){
 				$_fields['base_sericnum'] 	= '单号';
 				$_fields['base_name'] 		= '申请人';
 				$_fields['base_deptname'] 	= '申请人部门';
@@ -484,7 +504,7 @@ class flowModel extends Model
 			//移动默认展示
 			if($lx==1){
 				$contview	= '';
-				if($this->isflow=='1'){
+				if($this->isflow>0){
 					$contview.='<div class="r-border-b">
 					<div class="blank5"></div>
 					<table><tr>
@@ -548,7 +568,7 @@ class flowModel extends Model
 		$arr['readunarr']	= array(); //未读人员
 		$arr['receiptrs']	= $receiptrs; //回执确认
 		
-		if($this->isflow==1)$arr['flowinfor']= $this->getflowinfor();
+		if($this->isflow>0)$arr['flowinfor']= $this->getflowinfor();
 		if(isset($data['title']))$arr['title'] = $data['title'];
 		$_oarr 			 = $this->flowdatalog($arr);
 		if(is_array($_oarr))foreach($_oarr as $k=>$v)$arr[$k]=$v;
@@ -675,16 +695,23 @@ class flowModel extends Model
 		$sarr['ischeck'] 		= $ischeck;
 		$sarr['ischange'] 		= $ischange;
 		$sarr['nowcourse'] 		= $nowcur;
-		$sarr['iszhuanban'] 	= arrvalue($nowcur,'iszf',0);
+		$sarr['iszhuanban'] 	= (int)arrvalue($nowcur,'iszf',0);
 		$sarr['nextcourse'] 	= $this->nextcourse;
 		$sarr['nstatustext'] 	= $arr['nstatustext'];
+		if($sarr['iszhuanban']>0){
+			$sarr['zbrangeid'] = $this->rock->repempt(arrvalue($nowcur,'zbrangeid'));
+			$sarr['zbrangelx'] = 'check';
+			if($sarr['iszhuanban']==2)$sarr['zbrangelx']='';//转办单选
+		}
 		if($isturn==0)$sarr['nstatustext'] = '<font color="#ff6600">待提交</font>';
 		
-		//读取当前审核表单
+		//读取当前审核表单，必填字段|选填字段
 		$_checkfields	= arrvalue($nowcur,'checkfields');
 		$checkfields	= array();
 		if($ischeck == 1 && !isempt($_checkfields)){
-			
+			$_checkfieldsa		= explode('|', $_checkfields);
+			$_checkfields		= join(',',$_checkfieldsa);
+			$_checkxuant		= arrvalue($_checkfieldsa, 1);
 			$inputobj			= c('input');
 			$inputobj->flow 	= $this;
 			$inputobj->mid 		= $this->id;
@@ -694,14 +721,18 @@ class flowModel extends Model
 			foreach($infeidss as $_fs=>$fsva){
 				$_sfes = $fsva['fields'];
 				$_type = $fsva['fieldstype'];
-				$showinpus = 1;
+				$showinpus 	= 1;
+				$isbt 		= 1;
+				if($_checkxuant && contain(','.$_checkxuant.',',','.$_sfes.','))$isbt=0;
 				if($_type=='hidden' || $_type=='fixed')$showinpus=2;
 				$_val  = arrvalue($this->rssust, $_sfes);
 				$cheo  = (substr($_type,0,6)=='change' && !isempt($fsva['data']));
 				if($cheo)$_val.='|'.arrvalue($this->rssust, $fsva['data']).''; //默认值
+				
 				$checkfields[$_sfes] = array(
 					'inputstr' 	=> $inputobj->getfieldcontval($_sfes, $_val),
 					'name' 		=> $fsva['name'],
+					'isbt' 		=> $isbt,
 					'fieldstype'=> $_type,
 					'fieldsarr' => $fsva,
 					'showinpus' => $showinpus
@@ -710,6 +741,7 @@ class flowModel extends Model
 					$_sfes = $fsva['data'];
 					$checkfields[$_sfes] = array(
 						'inputstr' 	=> '',
+						'isbt' 		=> $isbt,
 						'name' 		=> $fsva['name'].'id',
 						'fieldstype'=> $_type,
 						'fieldsarr' => false,
@@ -763,7 +795,7 @@ class flowModel extends Model
 		foreach($act as $k=>$as1)if($k>0 && $as1[0]==$as1[1])$act[$k][1]='';
 		$sarr['courseact'] 		= $act;
 		$nowstatus				= $this->rs['status'];
-		if($this->isflow==1 && $this->rs['isturn']==0)$nowstatus=3;
+		if($this->isflow>0 && $this->rs['isturn']==0)$nowstatus=3;
 		$sarr['nowstatus']		= $nowstatus;
 		
 		//不同意退回可选择人员
@@ -947,7 +979,7 @@ class flowModel extends Model
 			'name' 		=> $na,
 			'explain' 	=> $sm
 		));
-		if($this->isflow == 1){
+		if($this->isflow>0){
 			$marr['isturn'] = $isturn;
 			$marr['status'] = 0;
 			$this->rs['status'] = 0;
@@ -1032,7 +1064,7 @@ class flowModel extends Model
 			'status'	=> 1,
 		));
 		$zt = $this->rs['status'];
-		if($zt==2 && $this->isflow==1 && $this->adminid==$this->uid){
+		if($zt==2 && $this->isflow>0 && $this->adminid==$this->uid){
 			$marr['status'] 	= 0;
 			$this->rs['status'] = 0;
 			$this->update($marr, $this->id);
@@ -1169,9 +1201,13 @@ class flowModel extends Model
 		$this->nextcourse	= array();
 		$this->flowisend	= 0;
 		
-		$curs 	= $this->flogmodel->getrows("$this->mwhere and `courseid`>0",'checkid,checkname,courseid,`valid`,`status`,`statusname`,`name`','id desc');
+		$curs 	= $this->flogmodel->getrows($this->mwhere,'checkid,checkname,courseid,`valid`,`status`,`statusname`,`name`,`iszb`','id desc');
 		$cufss  =  $ztnas  = $chesarr	= array();
 		foreach($curs as $k=>$rs){
+			
+			if($rs['iszb']=='1' && !in_array($rs['checkid'], $allcheckids))$allcheckids[] = $rs['checkid']; //转办也记录到经我处理的
+			
+			if($rs['courseid']=='0')continue;
 			$_su  = ''.$rs['courseid'].'';
 			$_su1 = ''.$rs['courseid'].'_'.$rs['checkid'].'';
 			//$rs['status']为1就一走下一步
@@ -1230,13 +1266,33 @@ class flowModel extends Model
 							}
 						}
 					}
-					
 				}
+			}
+			
+			$yisheh	= '';
+			if($this->isflow==2){
+				$logdsar		= $this->getlog();
+				foreach($logdsar as $k1=>$rs1)
+					if($rs1['courseid']>0)$yisheh .= ','.$rs1['checkid'].'';	
 			}
 	
 			foreach($nrows as $k=>$rs){
 				$whereid 	= (int)$rs['whereid'];
 				$checkshu 	= $rs['checkshu'];
+				
+				$checkid	= $rs['checkid'];
+				$checkname	= $rs['checkname'];
+				$checktype	= $rs['checktype'];
+				
+				//顺序前缀审批，申请人提交人不参与审批
+				if($this->isflow==2 && !isempt($checkid) && isempt($rs['checkfields'])){
+					if(($checkid==$this->uid || $checkid==$this->optid) )continue; //申请人
+					
+					//已经处理就不处理
+					if(contain(','.$yisheh.',',','.$checkid.','))continue;	
+				}
+				
+				if(!isempt($checkid))$yisheh .= ','.$checkid.'';
 				
 				//不在审核人子表中
 				/*
@@ -1254,9 +1310,6 @@ class flowModel extends Model
 				*/
 				
 				$zongsetp++;
-				//$uarr 		= $this->getcheckname($rs);
-				$checkid	= $rs['checkid'];
-				$checkname	= $rs['checkname'];
 				$ischeck 	= 0;
 				$checkids	= $checknames = '';
 				
@@ -1321,23 +1374,7 @@ class flowModel extends Model
 			}
 		}
 		
-		//前置后置审批的处理(比较麻烦，先不做了，怕有问题)
-		if($coutye==133){
-			$nsarr	= array();
-			$qzar	= $hzrr = array();
-			foreach($this->flowarr as $k=>$rs){
-				if($rs['ischeck'] == 1)continue;
-				$coursetype = $rs['coursetype'];
-				//前置审批
-				if($coursetype=='1'){
-					$qzar[$k] = $rs;
-				}
-				//后置
-				if($coursetype=='2'){
-					$hzrr[$k] = $rs;
-				}
-			}
-		}
+
 		
 		if($zongsetp>-1)$this->flowarr[$zongsetp]['islast']=1;
 		if($nowstep == -1){
@@ -1605,7 +1642,7 @@ class flowModel extends Model
 		if($type == 'chao'){
 			$cont = ''.$this->adminname.''.$sm.'了“'.$this->modename.'”';
 			if(!isempt($summary))$cont.='，摘要“'.$summary.'”';
-			if($this->isflow==1)$cont.='，单号“'.$this->sericnum.'”';
+			if($this->isflow>0)$cont.='，单号“'.$this->sericnum.'”';
 			$gname= '';
 		}
 		//评论
@@ -1792,7 +1829,7 @@ class flowModel extends Model
 		if($iszhuanyi == 0 && $zt!=2){
 			foreach($flowinfor['checkfields'] as $chef=>$chefv){
 				$ufied[$chef] = $this->rock->post('cfields_'.$chef.'');
-				if(isempt($ufied[$chef]))$this->echomsg(''.$chefv['name'].'不能为空');
+				if(isempt($ufied[$chef]) && $chefv['isbt']=='1')$this->echomsg(''.$chefv['name'].'不能为空');
 				$_str = $this->savedatastr($ufied[$chef], $chefv['fieldsarr'], $this->rs);
 				if($_str!='')$this->echomsg($_str);
 			}
@@ -1857,6 +1894,7 @@ class flowModel extends Model
 			'statusname'=> $statusname,
 			'color'		=> $statuscolor,
 			'explain'	=> $sm,
+			'iszb'		=> $iszhuanyi,
 			'qmimg'		=> $qmimgstr
 		));
 		
@@ -2087,6 +2125,7 @@ class flowModel extends Model
 		$this->billmodel->delete($this->mwhere);
 		$this->todosmodel->delete($this->mwhere);
 		$this->checksmodel->delete($this->mwhere);
+		$this->chaomodel->delete($this->mwhere);
 		m('remind')->delete($this->mwhere); //单据提醒的
 		m('todo')->delete($this->mwhere);
 		m('receipt')->delete($this->mwhere); //回执
@@ -2177,7 +2216,7 @@ class flowModel extends Model
 	public function smschuiban($sm='')
 	{
 		//有流程和是我催办
-		if($this->isflow==1 && $this->adminid==$this->uid){
+		if($this->isflow>0 && $this->adminid==$this->uid){
 			$farr 		= $this->getflow(true);
 			$nowcheckid = $farr['nowcheckid']; //当前处理人
 			$tplnum		= $this->option->getval('sms_cbnum','defnum');//短信模版
@@ -2264,7 +2303,7 @@ class flowModel extends Model
 		
 		$isreadbo 	= $this->isreadqx(1);
 		//菜单上参数说明lx 标识类型,nup是否不显示上传框,optmenuid菜单Id负数，issm是否需要说明
-		if($this->isflow==1 && $isturn==1){
+		if($this->isflow>0 && $isturn==1){
 			
 			//流程参与人都可以追加说明
 			if(!in_array($status, array(1,5)) && $isreadbo){
@@ -2453,7 +2492,7 @@ class flowModel extends Model
 	
 		$table 			= $arr['table'];
 		$temsao			= 0;
-		if(!contain($table, ' ') && $this->isflow==1){
+		if(!contain($table, ' ') && $this->isflow>0){
 			$arr['table'] = '`[Q]'.$this->mtable.'` a left join `[Q]flow_bill` b on a.`id`=b.`mid` and b.`table`=\''.$this->mtable.'\'';
 			$arr['asqom'] = 'a.';
 			$arr['fields']= 'a.*,b.`uname` as base_name,b.`udeptname` as base_deptname,b.`sericnum`,b.`nowcheckname`';
@@ -2592,7 +2631,7 @@ class flowModel extends Model
 					}
 				}
 			}
-			if($this->isflow==1){
+			if($this->isflow>0){
 				if(!contain($fields,'`status`'))$fields.=',{asqom}`status`';
 			}
 			$fields = str_replace('{asqom}', $arr['asqom'], $fields);
@@ -2778,6 +2817,7 @@ class flowModel extends Model
 	private $gettodolistarr = null;
 	public function gettodolist($act)
 	{
+		if(is_array($act))return $act;
 		if($this->gettodolistarr === null){
 			$rows = $this->todomodel->getrows("`setid`='".$this->modeid."' and `status`=1");
 			$barr = array();
@@ -2808,8 +2848,8 @@ class flowModel extends Model
 		$barr = $this->gettodolist($act);
 		if(!$barr)return;
 		$changearr	= array('boturn'=>'提交','boedit'=>'编辑','bozhuan'=>'转办','bochang'=>'修改字段','bodel'=>'删除','bozuofei'=>'作废','botong'=>'处理同意','bobutong'=>'处理不同意','bofinish'=>'全部处理完成','bozhui'=>'追加说明','boping'=>'评论','bohuiz'=>'回执确认');
-		if($actname=='')$actname = $this->rock->arrvalue($changearr, $act);
-		if(isempt($actname))return; //没有动作名就不
+		if($actname=='' && is_string($act))$actname = $this->rock->arrvalue($changearr, $act);
+		if(isempt($actname))return;
 		$cheo	= c('check');
 		foreach($barr as $k=>$rs){
 			$receid = $rs['receid'];
@@ -2843,6 +2883,16 @@ class flowModel extends Model
 			}
 			$this->push($receid, '', $cont, '');
 		}
+	}
+	
+	/**
+	*	根据编号发送通知
+	*/
+	public function numtodosend($num, $actname='',$sm='')
+	{
+		$rows = $this->todomodel->getrows("`setid`='".$this->modeid."' and `num`='$num' and `status`=1");
+		if(!$rows)return;
+		$this->gettodosend($rows, $actname, $sm);
 	}
 	
 	

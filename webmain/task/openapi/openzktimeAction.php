@@ -51,7 +51,6 @@ class openzktimeClassAction extends openapiAction
 			}
 			$data = join('ROCKZK', $batr);
 		}
-		
 		return $data;
 	}
 	

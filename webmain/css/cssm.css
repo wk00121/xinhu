@@ -10,7 +10,7 @@ body{color:#000000;margin:0px;border:0;font-size:14px; background-color:white}
 td,button{ font-size:14px}
 a,.cursor{cursor:pointer;}
 p{text-indent:24pt; margin:12px 0px;line-height:25px}
-input,textarea,select{resize: none;outline:none;font-size:14px;}
+input,textarea,select,button{resize: none;outline:none;font-size:14px;}
 .zhu{ color:#1389D3}
 .hui{ color:#888888}
 .red{ color:#ff0000}
@@ -78,7 +78,7 @@ a.btn{padding:5px 8px}
 
 a.webbtn:link,a.webbtn:visited,.webbtn{color:#ffffff;opacity:0.8; background-color:#1389D3; padding:8px 10px; border:none; cursor:pointer;font-size:14px}
 .webbtn:disabled{background-color:#aaaaaa; color:#eeeeee}
-a.webbtn:hover{box-shadow:0px 0px 5px rgba(0,0,0,0.3);opacity:1}
+.webbtn:hover{box-shadow:0px 0px 5px rgba(0,0,0,0.3);opacity:1}
 .radius5{border-radius:5px;}
 
 .upload_items{border:1px #cccccc solid;height:60px;overflow:hidden;float:left;margin-top:5px;margin-bottom:5px;margin-right:10px;cursor:pointer;position:relative}

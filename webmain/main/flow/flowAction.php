@@ -64,7 +64,7 @@ class flowClassAction extends Action
 		$cobj= c('check');
 		if(!$cobj->iszgen($tab))return '表名格式不对';
 		if($cobj->isnumber($num))return '编号不能为数字';
-		if($cans['isflow']==1 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
+		if($cans['isflow']>0 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
 		$rows['num']= $this->rock->xssrepstr($num); 
 		$rows['name']= $name; 
 		return array(
@@ -317,7 +317,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 				$fleft[]= array('subdata'.$k.'', $namesa[$k], 0);
 			}
 		}
-		if($rs['isflow']==1){
+		if($rs['isflow']>0){
 			$fleft[]= array('', '<font color=#ff6600>↓流程审核步骤</font>', 0);
 			$rows 	= m('flow_course')->getrows('setid='.$setid.' and `status`=1','id,name','pid,sort');
 			foreach($rows as $k=>$rs){
@@ -528,7 +528,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			$nors 	= $flow->flowrsreplace($rs, 2);
 			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $nors);
 			$otehsr = '';
-			if($flow->isflow==1){
+			if($flow->isflow>0){
 				$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");
 				$otehsr = arrvalue($billrs, 'nowcheckname');
 			}
@@ -691,7 +691,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$mrs = m('flow_set')->getone($id);
 		if(!$mrs)return '模块不存在';
 		$num 	= $mrs['num'];
-		if($mrs['type']=='系统')return '系统类型模块不能删除清空';
+		if($num!='demo' && $mrs['type']=='系统')return '系统类型模块不能删除清空';
 	
 		$table 	= $mrs['table'];
 		m('flow_bill')->delete("`modeid`='$id'");
@@ -729,6 +729,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		m('receipt')->delete($dehwhe);
 		m('flow_log')->delete($dehwhe);
 		m('flow_checks')->delete($dehwhe);
+		m('flow_chao')->delete($dehwhe);
 		m('flow_remind')->delete($dehwhe);
 		$name 	= $mrs['name'];
 		if($dm){
@@ -939,5 +940,22 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$num = $arr['num'];
 		$to  = m('flowcname')->rows("`id`<>'$id' and `num`='$num'");
 		if($to>0)return '编号['.$num.']已存在';
+	}
+	
+	public function copymodeAjax()
+	{
+		$id 	= $this->post('id','0');
+		$nmode 	= trim($this->post('nmode'));
+		if(isempt($nmode))return '新模块编号不能为空';
+		$dbs 	= m('mode');
+		$mrs 	= $dbs->getone($id);
+		if(!$mrs)return '模块不存在';
+		unset($mrs['id']);
+		$mrs['name'].='复制';
+		$mrs['num']  =$nmode;
+		$mrs['num']  =$nmode;
+		
+		
+		echo 'eee'.$nmode.'';
 	}
 }

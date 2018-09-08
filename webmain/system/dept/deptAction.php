@@ -114,7 +114,7 @@ class deptClassAction extends Action
 	
 	public function deptuserjsonAjax()
 	{
-		$udarr 		= m('dept')->getdeptuserdata();
+		$udarr 		= m('dept')->getdeptuserdata(1);
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
 		$grouparr 	= $udarr['garr'];

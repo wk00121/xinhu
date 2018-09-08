@@ -625,4 +625,17 @@ final class rockClass
 		$s = ''.$qz.''.$s.'';
 		return $s;
 	}
+
+	/**
+	*	获取外网地址
+	*/
+	public function getouturl($dz='')
+	{
+		if($dz=='')$dz = URL;
+		$xurl	= URL;
+		$xurl1	= getconfig('outurl');
+		if(!isempt($xurl1))$xurl = $xurl1;
+		if(substr($xurl,-1)!='/')$xurl.='/';
+		return $xurl;
+	}	
 }

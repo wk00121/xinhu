@@ -61,10 +61,11 @@ class deptClassModel extends Model
 	
 	/**
 	*	获取部门和人员数据
+	*	$lx=0 通讯录，1选择人员
 	*/
-	public function getdeptuserdata()
+	public function getdeptuserdata($lx=0)
 	{
-		$userarr 	= m('admin')->getuser(1);
+		$userarr 	= m('admin')->getuser($lx);
 		$deptarr 	= $this->getdata($userarr);
 		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
 		$grouparr	= m('group')->getall('id >0','id,name','`sort`');

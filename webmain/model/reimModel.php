@@ -356,17 +356,28 @@ class reimClassModel extends Model
 		if($uid==0)$uid = $this->adminid;
 		$yylx	= '2';
 		if($this->rock->get('cfrom')=='reim')$yylx='1';
-		$where	= m('admin')->getjoinstr('receid', $this->adminid);
+		$dboaj	= m('admin');
+		$where	= $dboaj->getjoinstr('receid', $this->adminid);
 		$rows 	= $this->db->getrows('[Q]im_group',"`valid`=1 and `type`=2 and `yylx` in(0,".$yylx.") $where $whe",'`id`,`name`,`url`,`face`,`num`,`pid`,`iconfont`,`iconcolor`,`types`,`urlpc`,`urlm`','`sort`');
 		$dbs 	= m('im_menu');
 		$mdbs 	= m('menu');
 		$barr	= $carr = array();
 		$mids 	= '0';
 		foreach($rows as $k=>$rs)$mids.=','.$rs['id'].'';
+		$allmenu  = $cmenu	 = array();
+		$allmenua = $dbs->getall("`mid` in($mids)",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`,`receid`','`sort`');
+	
+		foreach($allmenua as $k1=>$rs1){
+			if(isempt($rs1['receid'])){
+				$allmenu[] = $rs1;
+			}else{
+				$bo = $dboaj->containjoin($rs1['receid'], $uid);
+				if($bo)$allmenu[] = $rs1;
+			}
+		}
 		
-		$allmenu = $dbs->getall("`mid` in($mids)",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`','`sort`');
-		$cmenu	 = array();
 		foreach($allmenu as $k=>$rs){
+			
 			if($rs['pid']=='0'){
 				$submenu	= array();
 				foreach($allmenu as $k1=>$rs1){

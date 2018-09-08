@@ -63,10 +63,26 @@ function callPhone(o1){
 
 //提交处理
 function check(lx){
-	var da = {'sm':form('check_explain').value,'tuiid':'0','fileid':'','mid':mid,'modenum':modenum,'zt':_getaolvw('check_status'),'qmimgstr':qmimgstr};
+	var sm = form('check_explain')?form('check_explain').value:'';
+	var da = {'sm':sm,'tuiid':'0','fileid':'','mid':mid,'modenum':modenum,'zt':_getaolvw('check_status'),'qmimgstr':qmimgstr};
 	if(form('fileid'))da.fileid=form('fileid').value;
 	if(form('check_tuiid'))da.tuiid=form('check_tuiid').value;
-	if(da.zt==''){js.setmsg('请选择处理动作');return;}if(da.zt=='2'&&isempt(da.sm)){js.setmsg('此动作必须填写说明');return;}
+	var smlx = form('check_smlx').value,wjlx=form('check_wjlx').value;
+	
+	if(da.zt==''){
+		js.setmsg('请选择处理动作');
+		return;
+	}
+	if(((smlx=='0' && da.zt=='2') || (smlx=='1')) && isempt(da.sm)){
+		js.setmsg('此动作必须填写说明');
+		return;
+	}
+	
+	if($('#filedivview').html()=='' && ((wjlx=='1') || (wjlx=='2' && da.zt=='1') )){
+		js.setmsg('此动作必须选择上传相关文件');
+		return;
+	}
+	
 	var isqm = form('isqianming').value;
 	var qbp  = true;
 	
@@ -90,20 +106,22 @@ function check(lx){
 		}
 	}
 	if(!da.zynameid && da.zt!='2'){
-		var fobj=$('span[fieidscheck]'),i,fid,flx,fiad,val;
+		var fobj=$('span[fieidscheck]'),i,fid,flx,fiad,val,isbt;
 		var subdat = js.getformdata();
 		for(i=0;i<fobj.length;i++){
 			fiad = $(fobj[i]);
 			fid	 = fiad.attr('fieidscheck');
+			isbt = fiad.attr('isbt');
 			val  = subdat[fid];
 			da['cfields_'+fid]=val;
-			if(val==''){js.setmsg(''+fiad.text()+'不能为空');return;}
+			if(val=='' && isbt=='1'){js.setmsg(''+fiad.text()+'不能为空');return;}
 		}
 	}
 	var ostr=othercheck(da);
 	if(typeof(ostr)=='string'&&ostr!=''){js.setmsg(ostr);return;}
 	if(typeof(ostr)=='object')for(var csa in ostr)da[csa]=ostr[csa];
 	js.setmsg('处理中...');
+	
 	var o1 = get('check_btn');
 	o1.disabled = true;
 	if(lx==0 && f.fileobj && f.fileobj.start())return js.setmsg('上传相关文件中...');//有上传相关文件
@@ -111,7 +129,7 @@ function check(lx){
 	js.ajax(url,da,function(a){
 		if(a.success){
 			js.setmsg(a.data,'green');
-			c.callback();
+			c.callback(a.data);
 			if(get('autocheckbox'))if(get('autocheckbox').checked)c.close();
 		}else{
 			js.setmsg(a.msg);
@@ -154,12 +172,14 @@ function _submitother(nae,zt,ztid,ztcol,ocan,las){
 	return false;
 }
 var c={
-	callback:function(cs){
+	callback:function(cs,cbo){
+		if(ismobile==1 && js.msgok)js.msgok(cs, function(){js.back()},1);
 		var calb = js.request('callback');
 		if(!calb)return;
 		try{parent[calb](cs);}catch(e){}
 		try{opener[calb](cs);}catch(e){}
 		try{parent.js.tanclose('openinput');}catch(e){}
+		if(cbo)this.close();
 	},
 	gurl:function(a){
 		var url=js.getajaxurl(a,'flowopt','flow');
@@ -203,7 +223,7 @@ var c={
 			$('#recordss').remove();
 			$('#checktablediv').remove();
 			$('#recordsss').remove();
-			$('.statustext').remove();
+			//$('.statustext').remove();
 		}
 		window.print();
 	},

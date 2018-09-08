@@ -15,7 +15,7 @@ if($stype==''){
 <link rel="stylesheet" type="text/css" href="<?=$da['p']?>/css/css.css">
 <script type="text/javascript" src="<?=$jqurl?>"></script>
 <script type="text/javascript" src="js/js.js"></script>
-<script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js"></script>
+<script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js?<?=$da['logintime']?>"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script>
 var mid = '<?=$da['arr']['mid']?>',modenum='<?=$da['arr']['modenum']?>',ismobile=0,receiptrs=<?=json_encode($da['arr']['receiptrs'])?>,isinput=0;
@@ -85,7 +85,7 @@ if($stype!=''){
 	
 	<?php
 	//显示状态
-	if($da['arr']['isflow']==1 && $stype==''){
+	if($da['arr']['isflow']>0 && $stype==''){
 		echo '<div class="statustext" onclick="$(this).remove()" style="color:'.$da['arr']['statuscolor'].';border-color:'.$da['arr']['statuscolor'].'">'.$da['arr']['statustext'].'</div>';
 	}
 	
@@ -159,7 +159,7 @@ if($stype!=''){
 		</div>
 		<?php }
 		
-		if($da['arr']['isflow']==1 && $stype==''){
+		if($da['arr']['isflow']>0 && $stype==''){
 			$flowinfor = $da['arr']['flowinfor'];
 		?>
 		
@@ -169,11 +169,11 @@ if($stype!=''){
 			<form name="myform">
 			<table border="0" width="90%" class="tabled1" style="border-collapse:collapse;" cellspacing="0" cellpadding="0">
 			<tr height="40" bgcolor="#E1F4F0">
-				<td width="130" class="tdys1"><div align="right" style="color:#555555">状态：</div></td>
+				<td width="130" class="tdys1"><div align="right" style="color:#555555">状态</div></td>
 				<td class="tdys1"><div align="left"><?=$flowinfor['nstatustext']?></div></td>
 			</tr>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555">处理流程：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555">处理流程</div></td>
 				<td class="tdys1"><div align="left" style="padding:5px 0px"><?=$flowinfor['flowcoursestr']?></div></td>
 			</tr>
 			<?php
@@ -181,7 +181,7 @@ if($stype!=''){
 			if($da['arr']['ischehui']>0){
 			?>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555">撤回：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555">撤回</div></td>
 				<td class="tdys1"><div align="left"><input class="webbtn" onclick="c.chehui(this)"  value="撤回上步处理" type="button"></div></td>
 			</tr>
 			<?php 
@@ -191,12 +191,12 @@ if($stype!=''){
 				$cheikbo = true;
 			?>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理人：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理人</div></td>
 				<td class="tdys1"><div align="left"><?=$flowinfor['nowcourse']['name']?>(<?=$flowinfor['nowcourse']['nowcheckname']?>)</div></td>
 			</tr>
 			
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理动作：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理动作</div></td>
 				<td class="tdys1"><div align="left">
 				<?php
 				$s = '';
@@ -215,7 +215,7 @@ if($stype!=''){
 			if((int)$flowinfor['nowcourse']['isqm']>0){
 			?>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555">手写签名：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555">手写签名</div></td>
 				<td class="tdys1"><div id="qianmingshow" style="padding:5px 0px" align="left"><input type="button" onclick="c.qianming(this)" style="padding:2px" value="写签名">&nbsp;&nbsp;<input type="button" onclick="c.qianyin(this)" style="padding:2px" value="引用签名"></div></td>
 			</tr>
 			
@@ -226,7 +226,7 @@ if($stype!=''){
 			if($tuiname != ''){
 			?>
 			<tr style="display:none" id="tuihuidiv">
-				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font><?=$tuiname?>退回：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font><?=$tuiname?>退回</div></td>
 				<td class="tdys1" style="padding:5px"><div align="left">
 				<select class="inputs" name="check_tuiid" style="width:200px"><option value="0">退回到提交人</option>
 				<?php 
@@ -248,21 +248,21 @@ if($stype!=''){
 			if($chefv['showinpus']==1){
 			?>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font><span fieidscheck="<?=$chef?>"><?=$chefv['name']?></span>：</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555"><?php if($chefv['isbt']=='1')echo '<font color=red>*</font>';?><span isbt="<?=$chefv['isbt']?>" fieidscheck="<?=$chef?>"><?=$chefv['name']?></span></div></td>
 				<td class="tdys1"><div align="left"><?=$chefv['inputstr']?></div></td>
 			</tr>
 			<?php
 			}else if($chefv['showinpus']==2){
-				echo '<tr style="display:none"><td><span fieidscheck="'.$chef.'">'.$chefv['name'].'</span></td><td>'.$chefv['inputstr'].'</td></tr>';
+				echo '<tr style="display:none"><td><span isbt="'.$chefv['isbt'].'" fieidscheck="'.$chef.'">'.$chefv['name'].'</span></td><td>'.$chefv['inputstr'].'</td></tr>';
 			}}
 			//是否可转办显示
-			if($flowinfor['iszhuanban']==1){
+			if($flowinfor['iszhuanban']>0){
 			?>
 			
 			<tr style="display:none" id="zhuangdiv">
-				<td class="tdys1"><div  align="right" style="color:#555555">转给：</div></td>
+				<td class="tdys1"><div  align="right" style="color:#555555">转给</div></td>
 				<td class="tdys1" style="padding:5px"><div align="left">
-				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeusercheck')" class="webbtn">选择</a></td></tr></table>
+				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser<?=$flowinfor['zbrangelx']?>','',{changerange:'<?=$flowinfor['zbrangeid']?>'})" class="webbtn">选择</a></td></tr></table>
 				</div></td>
 			</tr>	
 			<?php 
@@ -270,26 +270,38 @@ if($stype!=''){
 			if($flowinfor['ischange']==1){
 			?>
 			<tr style="display:none" id="nextxuandiv">
-				<td class="tdys1"><div  align="right" style="color:#555555"><font color=red>*</font>下一步处理人：</div></td>
+				<td class="tdys1"><div  align="right" style="color:#555555"><font color=red>*</font>下一步处理人</div></td>
 				<td class="tdys1" style="padding:5px"><div align="left">
 				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" value="<?=$flowinfor['nextcourse']['checkname']?>" name="nextname"><input name="nextnameid" id="nextname_id" value="<?=$flowinfor['nextcourse']['checkid']?>" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck','选择下一步处理人',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
 				</div></td>
 			</tr>
-			<?php }?>
-			
+			<?php }
+			$smlx = (int)$flowinfor['nowcourse']['smlx'];
+			$wjlx = (int)$flowinfor['nowcourse']['wjlx'];
+			echo '<tr style="display:none"><td><input name="check_smlx" value="'.$smlx.'"><input name="check_wjlx" value="'.$wjlx.'"></td></tr>';
+			if($smlx!=3){
+			?>
 			<tr>
-				<td class="tdys1"><div  align="right" style="color:#555555">说明：</div></td>
+				<td class="tdys1"><div  align="right" style="color:#555555"><?php if($smlx==1)echo '<font color=red>*</font>';?>说明</div></td>
 				<td class="tdys1" style="padding:5px"><div align="left"><textarea class="textarea" name="check_explain" style="width:95%;height:60px"></textarea></div></td>
 			</tr>
 			
+			<?php
+			}
+			if($wjlx!=3){
+			?>
 			<tr>
-			<td class="tdys1" nowrap><div  align="right" style="color:#555555">相关文件</div></td>
+			<td class="tdys1" nowrap><div align="right" style="color:#555555"><?php if($wjlx==1)echo '<font color=red>*</font>';?>相关文件</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
 				<input name="fileid" type="hidden">
 				<div id="filedivview" style="height:60px;overflow:auto;width:96%" class="inputs"></div>
 				<div><input style="width:150px" onchange="f.change(this)" type="file"></div>
 			</div></td>
 			</tr>
+			
+			<?php
+			}
+			?>
 			
 			<tr>
 				<td class="tdys1">&nbsp;</td>
@@ -312,7 +324,7 @@ if($stype!=''){
 		<div class="stitle zhu"><span onclick="location.reload()">查阅记录</span> <a temp="clo" href="javascript:;" onclick="$('#recordsss').remove();">×</a></div>
 		<div><ul class="ydullist"><?php
 			foreach($da['arr']['readarr'] as $k=>$rs){
-				echo '<li title="共查阅'.$rs['stotal'].'次&#13;最后查阅：'.$rs['optdt'].'" ><img src="'.$rs['face'].'" align="absmiddle"><br><span>'.$rs['name'].'</span></li>';
+				echo '<li title="共查阅'.$rs['stotal'].'次&#13;最后查阅'.$rs['optdt'].'" ><img src="'.$rs['face'].'" align="absmiddle"><br><span>'.$rs['name'].'</span></li>';
 			}
 		?></ul></div>
 		</div>

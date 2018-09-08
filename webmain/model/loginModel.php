@@ -302,7 +302,8 @@ class loginClassModel extends Model
 			'adminid'	=> $uid,
 			'adminname'	=> $name,
 			'adminuser'	=> $user,
-			'admintoken'=> $token
+			'admintoken'=> $token,
+			'logintime'	=> time()
 		));
 		$this->rock->adminid	= $uid;
 		$this->rock->adminname	= $name;

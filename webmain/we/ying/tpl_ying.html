@@ -32,7 +32,7 @@ body,html{background-color:#f1f1f1;overflow:hidden}
 .contlist .xq span{float:right}
 .contlist .cont{font-size:14px;padding:10px 0px}
 .contlist .imgs{height:130px;overflow:hidden;margin:5px 0px}
-.contlist .zt{font-size:10px;position:absolute;top:1px;right:0px;padding:1px 3px;background-color:red;color:white}
+.contlist .zt{font-size:10px;position:absolute;top:2px;right:1px;padding:1px 3px;background-color:red;color:white}
 .contlist .face{font-size:14px;padding:5px 0px;height:30px;overflow:hidden;}
 .contlist .face img{border-radius:15px;height:24px;width:24px;margin-right:5px}
 .contlist .opt{font-size:10px;position:absolute;bottom:1px;right:1px;padding:1px 3px;color:#aaaaaa}
@@ -40,7 +40,7 @@ body,html{background-color:#f1f1f1;overflow:hidden}
 .showblank{color:#aaaaaa;font-size:14px;padding-bottom:15px;text-align:center}
 .showblanks{padding:10px;color:#aaaaaa;font-size:12px;text-align:center}
 .notrecord{text-align:center;font-size:20px;padding-top:50px;color:#aaaaaa}
-
+.r-border:after{border-radius:5px}
 </style>
 <script>
 var json = <?=json_encode($arr)?>;
@@ -85,12 +85,12 @@ function callPhone(o1){
 	<form onclick="yy.searchuser()" class="weui_search_outer" onsubmit="yy.sousousou();return false;">
 		<div class="weui_search_inner">
 			<i class="weui_icon_search"></i>
-			<input type="search" class="weui_search_input" id="search_input" placeholder="输入关键词搜索" >
+			<input type="search" class="weui_search_input" id="search_input" placeholder="<?=$searchmsg?>" >
 			<a onclick="yy.souclear()" class="weui_icon_clear"></a>
 		</div>
 		<label for="search_input" class="weui_search_text" id="search_text">
 			<i class="weui_icon_search"></i>
-			<span>输入关键词搜索</span>
+			<span><?=$searchmsg?></span>
 		</label>
 	</form>
 	<a onclick="yy.searchcancel()" style="color:#1389D3" class="weui_search_cancel">取消</a>

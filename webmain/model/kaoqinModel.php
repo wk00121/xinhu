@@ -815,7 +815,13 @@ class kaoqinClassModel extends Model
 			$s	= $rs['states'];
 		}
 		
-		if($state != '正常' && $iswork==1)$s='<font color=red>'.$s.'</font>';
+		if($state != '正常' && $iswork==1){
+			if($s=='未打卡'){
+				$s='<font color=red>'.$s.'</font>';
+			}else{
+				$s='<font color=blue>'.$s.'</font>';
+			}
+		}
 		if($s=='休息日')$s='<font color=#888888>'.$s.'</font>';
 		
 		return $s;

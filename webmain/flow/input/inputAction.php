@@ -80,7 +80,7 @@ class inputAction extends Action
 			if(!$this->flow->iseditqx())
 				$this->backmsg('无权编辑['.$this->moders['name'].']的数据;');
 			
-			if($isflow==1){
+			if($isflow>0){
 				$bos = false;
 				if($oldrs['uid']==$uid||$oldrs['optid']==$uid)$bos=true;
 				if($oldrs['status']==1)$bos=false;
@@ -145,7 +145,7 @@ class inputAction extends Action
 			if(in_array('createid', $allfields))$uaarr['createid'] = $this->adminid;
 			if(in_array('createname', $allfields))$uaarr['createname'] = $this->adminname;
 		}
-		if($isflow==1){
+		if($isflow>0){
 			$uaarr['status']= '0';
 			if($sysisturn==0){
 				$uaarr['isturn']= '0';
@@ -486,7 +486,7 @@ class inputAction extends Action
 		
 		$course			= array();
 		$nowcourseid	= 0;
-		if($moders['isflow']==1 && $lutype==0 && $moders['isbxs']==0){
+		if($moders['isflow']>0 && $lutype==0 && $moders['isbxs']==0){
 			$course[]= array('name'=>'提交','id'=>0);
 			$courses	= $this->flow->getflowpipei($this->adminid);
 			if($mid>0){
@@ -620,7 +620,7 @@ class inputAction extends Action
 					'num'	=> 'chaos',
 					'name'  => ''.$mors['name'].'抄送给我',
 				);
-				if($mors['isflow']==1){
+				if($mors['isflow']>0){
 					$this->atypearr[] = array(
 						'id'	=> 0,
 						'num'	=> 'mychuli',

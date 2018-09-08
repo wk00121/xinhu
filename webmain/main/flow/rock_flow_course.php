@@ -4,7 +4,7 @@ $(document).ready(function(){
 	{params};
 	var num = params.num,setid,optlx=0,maxpid = 0,courseobj={};
 	var at = $('#optionview_{rand}').bootstable({
-		tablename:'flow_set',defaultorder:'`sort`',where:'and isflow=1 and status=1',
+		tablename:'flow_set',defaultorder:'`sort`',where:'and isflow>0 and status=1',
 		modedir:'{mode}:{dir}',storeafteraction:'setcourselistafter',storebeforeaction:'setcourselistbefore',
 		columns:[{
 			text:'名称',dataIndex:'name'
@@ -291,7 +291,7 @@ $(document).ready(function(){
 		c.righmenu(o1,e);
 	}
 	
-	$('#optionview_{rand}').css('height',''+(viewheight-62)+'px');
+	$('#optionview_{rand}').css('height',''+(viewheight-102)+'px');
 });
 </script>
 

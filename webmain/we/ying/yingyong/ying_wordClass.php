@@ -21,6 +21,7 @@ class ying_wordClass extends yingClassAction{
 		$worcarr	= m('worc')->getmywroc();
 		
 		$this->mobj->assign('worcarr', $worcarr);
-		//$this->mobj->assign('searchtool', $this->searchtool);
+		$this->mobj->assign('searchtool', $this->searchtool);
+		$this->mobj->assign('searchmsg', '文件名/文件夹');
 	}
 }

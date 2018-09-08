@@ -20,7 +20,14 @@ $(document).ready(function(){
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true
 		},{
-			text:'有流程',dataIndex:'isflow',type:'checkbox',sortable:true
+			text:'流程模式',dataIndex:'isflow',sortable:true,renderer:function(v){
+				var s = '&nbsp;';
+				if(v=='1')s='顺序流程';
+				if(v=='2')s='顺序前置';
+				if(v=='3')s='自由流程';
+				if(v=='4')s='自定义流程';
+				return s;
+			}
 		},{
 			text:'PC端提醒',dataIndex:'pctx',type:'checkbox',editor:true,sortable:true
 		},{
@@ -56,6 +63,7 @@ $(document).ready(function(){
 	});
 	function btn(bo, d){
 		get('edit_{rand}').disabled = bo;
+		//get('copy_{rand}').disabled = bo;
 		get('downbtn_{rand}').disabled = bo;
 		get('biaoge_{rand}').disabled = bo;
 		get('biaoges_{rand}').disabled = bo;
@@ -143,6 +151,23 @@ $(document).ready(function(){
 			if(!table)return;
 			var name=''+qianss+''+table+'';
 			addtabs({num:'tablefields'+name+'',url:'system,table,fields,table='+name+'',name:'['+name+']字段管理'});
+		},
+		copyss:function(){
+			js.msg('msg','由于关联过多，无法复制');return;
+			js.prompt('输入新模块编号','输入模块编号和主表表名,只能用英文，不能用数字中文，随意写系统将出错：', function(jg,txt){
+				if(jg=='yes'){
+					c.copysss(txt);
+				}
+			});
+		},
+		copysss:function(txt){
+			js.ajax(js.getajaxurl('copymode','{mode}','{dir}'),{id:a.changeid,nmode:txt},function(s){
+				if(s=='ok'){
+					a.reload();
+				}else{
+					js.msg('msg',s);
+				}
+			},'post',false,'复制...,清空成功');
 		}
 	};
 	js.initbtn(c);
@@ -179,7 +204,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="allcreate" type="button">一键生成所有列表页</button>
 	</td>
 	<td align="left"  style="padding:0px 10px;">
-		<div class="input-group" style="width:160px">
+		<div class="input-group" style="width:130px">
 			<input class="form-control" id="key_{rand}" placeholder="搜模块">
 			<span class="input-group-btn">
 				<button class="btn btn-default" click="search" type="button"><i class="icon-search"></i></button>
@@ -190,7 +215,8 @@ $(document).ready(function(){
 		
 	</td>
 	<td align="right" nowrap>
-		
+		<!--
+		<button class="btn btn-default" id="copy_{rand}" click="copyss,1" disabled type="button">复制模块</button>&nbsp; -->
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp; 
 		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>

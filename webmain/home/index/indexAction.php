@@ -76,7 +76,8 @@ class indexClassAction extends Action{
 	public function getqrcodeAjax()
 	{
 		header("Content-type:image/png");
-		$url = ''.URL.'?m=login&d=we&token='.$this->admintoken.'&user='.$this->jm->base64encode($this->adminuser).'';
+		$urls= $this->rock->getouturl();
+		$url = ''.$urls.'?m=login&d=we&token='.$this->admintoken.'&user='.$this->jm->base64encode($this->adminuser).'';
 		$img = c('qrcode')->show($url);
 		echo $img;
 	}

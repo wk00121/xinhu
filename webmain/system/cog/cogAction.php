@@ -19,9 +19,11 @@ class cogClassAction extends Action
 			'memory_limit'	=> '使用最大内存',
 			'curl'			=> '是否支持CURL',
 			'max_execution_time'			=> 'PHP执行超时时间',
+			//'disk_total_space'			=> '当前磁盘',
+			//'disk_free_space'			=> '剩余可用',
 			
 		);
-		
+	
 		$data = array(
 			'title'	=> getconfig('title'),
 			'url'	=> getconfig('url'),
@@ -38,7 +40,9 @@ class cogClassAction extends Action
 			'post_max_size'			=> ini_get('post_max_size'),
 			'memory_limit'			=> ini_get('memory_limit'),
 			'max_execution_time'			=> ini_get('max_execution_time').'秒',
-			
+			//'disk_total_space'		=> $this->rock->formatsize(disk_total_space(ROOT_PATH)),
+			//'disk_free_space'		=> $this->rock->formatsize(disk_free_space(ROOT_PATH)),
+				
 		);
 		if(!function_exists('curl_init')){
 			$data['curl'] = '<font color=red>不支持</font>';

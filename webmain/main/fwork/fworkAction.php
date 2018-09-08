@@ -67,17 +67,17 @@ class fworkClassAction extends Action
 		$where	= 'and (a.`uid`='.$uid.' or a.`optid`='.$uid.')';
 		//待办
 		if($lx=='daib'){
-			$where	= 'and a.`status` not in(1,2) and '.$this->rock->dbinstr('a.nowcheckid', $uid);
+			$where	= 'and a.`isturn`=1 and  a.`status` not in(1,2) and '.$this->rock->dbinstr('a.nowcheckid', $uid);
 		}
 		
 		//我下属申请
 		if($lx=='xia'){
-			$where	= 'and '.$this->rock->dbinstr('b.superid', $uid);
+			$where	= 'and a.`isturn`=1 and  '.$this->rock->dbinstr('b.superid', $uid);
 		}
 		
 		//我参与
 		if($lx=='jmy'){
-			$where	= 'and '.$this->rock->dbinstr('a.allcheckid', $uid);
+			$where	= 'and a.`isturn`=1 and  '.$this->rock->dbinstr('a.allcheckid', $uid);
 		}
 		
 		//未通过
@@ -121,7 +121,7 @@ class fworkClassAction extends Action
 					$mids.=','.$rs1['mid'].'';
 				}
 				$this->modeids = substr($modeids,1);
-				$where = " and a.`modeid` in(".$this->modeids.") and a.`mid` in(".substr($mids,1).")";
+				$where = " and a.`isturn`=1 and a.`modeid` in(".$this->modeids.") and a.`mid` in(".substr($mids,1).")";
 			}
 		}
 		
@@ -137,6 +137,7 @@ class fworkClassAction extends Action
 		if($modeid>0)$where.=' and a.modeid='.$modeid.'';
 		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.sericnum like '$key%')";
 		
+
 		
 		return array(
 			'table' => '`[Q]flow_bill` a left join `[Q]admin` b on a.uid=b.id',

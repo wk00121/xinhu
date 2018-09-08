@@ -10,6 +10,9 @@ var cqids = '<?=$worcarr['ids']?>';
 yingyonginit = function(){
 	c.init();
 }
+yy.regetdata=function(){
+	c.getfile(0,0);
+}
 var c = {
 	typeid:0,
 	cqid:0,
@@ -71,6 +74,8 @@ var c = {
 	
 	//切换分区
 	changfenqu:function(fq){
+		yy.sousoukey='';
+		yy.searchcancel();
 		$('#workheader span:gt(0)').remove();
 		this.uptype = $(fq.options[fq.selectedIndex]).attr('uptype');
 		this.getfile(0, fq.value);
@@ -94,7 +99,7 @@ var c = {
 		if(!padg)padg=1;
 		this.page = padg;
 		get('cpselect').value = this.cqid;
-		js.ajax('word','getdata',{typeid:pid,cqid:this.cqid,cqids:cqids,atype:alx,page:padg},function(a){
+		js.ajax('word','getdata',{typeid:pid,cqid:this.cqid,cqids:cqids,atype:alx,page:padg,key:yy.sousoukey},function(a){
 			c.ismanage = a.ismanage;
 			if(a.ismanage==1)c.disabedgl(false);//有权限
 			c.data=[];

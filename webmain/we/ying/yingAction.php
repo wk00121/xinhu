@@ -31,6 +31,7 @@ class yingClassAction extends ActionNot{
 		$this->assign('openfrom', $this->get('openfrom'));
 		$this->assign('yyurl', $yyurl);
 		$this->assign('yyurljs', $yyurljs);
+		$this->assign('searchmsg', '输入关键词搜索');
 		$gid 	= $rs['id'];
 		$reim->setallyd('agent', $this->adminid, $gid);
 		

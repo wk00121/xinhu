@@ -9,9 +9,9 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'hrcheck',modename='考核评分',isflow=1,modeid='71',atype = params.atype,pnum=params.pnum;
+	var modenum = 'hrcheck',modename='考核评分',isflow=0,modeid='71',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"month","name":"\u6708\u4efd","fieldstype":"month","ispx":"0","isalign":"0","islb":"1"},{"fields":"content","name":"\u8003\u6838\u5185\u5bb9","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"fenzp","name":"\u81ea\u8bc4\u5206\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"fensj","name":"\u4e0a\u7ea7\u8bc4\u5206","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"fenrs","name":"\u4eba\u4e8b\u8bc4\u5206","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"fen","name":"\u6700\u540e\u5f97\u5206","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"deptname","name":"\u90e8\u95e8","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"applyname","name":"\u59d3\u540d","fieldstype":"changeuser","ispx":"1","isalign":"0","islb":"1"},{"fields":"title","name":"\u8003\u6838\u9879\u76ee","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"startdt","name":"\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u8bc4\u5206\u622a\u6b62\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"pfrenids","name":"\u72b6\u6001","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"fen","name":"\u6700\u540e\u5f97\u5206","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"createdt","name":"\u521b\u5efa\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_hrcheck_tjall":"deptname,applyname,title,startdt,pfrenids,fen"};
 	
 	var c = {
 		reload:function(){
@@ -158,7 +158,7 @@ $(document).ready(function(){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
 			var nstr= fieldsselarr[num];if(!nstr)nstr='';
 			if(nstr)nstr=','+nstr+',';
-			if(nstr=='' && isflow==1){
+			if(nstr=='' && isflow>0){
 				d.push({text:'申请人',dataIndex:'base_name',sortable:true});
 				d.push({text:'申请人部门',dataIndex:'base_deptname',sortable:true});
 			}
@@ -178,7 +178,7 @@ $(document).ready(function(){
 					d.push(d2);
 				}
 			}
-			if(isflow==1)d.push({text:'状态',dataIndex:'statustext'});
+			if(isflow>0)d.push({text:'状态',dataIndex:'statustext'});
 			if(nstr=='' || nstr.indexOf(',caozuo,')>=0)d.push({text:'',dataIndex:'caozuo',callback:'opegs{rand}'});
 			if(!bots){
 				bootparams.columns=d;
@@ -225,7 +225,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aHJjaGVjaw::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"月份",dataIndex:"month"},{text:"考核内容",dataIndex:"content"},{text:"自评分数",dataIndex:"fenzp",sortable:true},{text:"上级评分",dataIndex:"fensj",sortable:true},{text:"人事评分",dataIndex:"fenrs",sortable:true},{text:"最后得分",dataIndex:"fen",sortable:true},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"部门",dataIndex:"deptname",sortable:true},{text:"姓名",dataIndex:"applyname",sortable:true},{text:"考核项目",dataIndex:"title"},{text:"日期",dataIndex:"startdt",sortable:true},{text:"评分截止日期",dataIndex:"enddt",sortable:true},{text:"状态",dataIndex:"pfrenids",sortable:true},{text:"操作人",dataIndex:"optname"},{text:"最后得分",dataIndex:"fen",sortable:true},{text:"创建时间",dataIndex:"createdt",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -242,7 +242,37 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
+$('#tdleft_{rand}').hide();
+if(pnum=='tjall'){
+	bootparams.loadbefore=function(da){
+		var das = [];
+		for(var i in bootparams.columns)das.push(bootparams.columns[i]);
+		das.push({
+			'text' :'',
+			'dataIndex' :'itemname',
+		});
+		das.push({
+			'text' :'',
+			'dataIndex' :'fenshu',
+		});
+		for(var i=0;i<da.mlen;i++){
+			das.push({
+				'text' :'',
+				'dataIndex' :'pfval'+i+'',
+			});
+		}
+		a.setColumns(das);
+	}
+	bootparams.itemdblclick=function(){};
+}
 
+c.initpage=function(){
+	$('#key_{rand}').parent().before('<td style="padding-right:10px;"><input onclick="js.datechange(this,\'month\')" style="width:110px" placeholder="月份" readonly class="form-control datesss" id="dt_{rand}" ></td>');
+}
+c.searchbtn=function(){
+	var dt = get('dt_{rand}').value;
+	this.search({month:dt});
+}
 
 //[自定义区域end]
 
@@ -270,9 +300,9 @@ $(document).ready(function(){
 	<tr>
 		<td style="padding-right:10px;" id="tdleft_{rand}" nowrap><button id="addbtn_{rand}" class="btn btn-primary" click="clickwin,0" disabled type="button"><i class="icon-plus"></i> 新增</button></td>
 		<td>
-			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
+			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 

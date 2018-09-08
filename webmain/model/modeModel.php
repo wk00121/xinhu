@@ -26,7 +26,7 @@ class modeClassModel extends Model
 		$where = '';
 		if($whe!='')$where = $whe;
 		if($uid>0)$where = m('admin')->getjoinstr('receid', $uid);
-		$arr = $this->getall('status=1 and isflow=1 '.$where.'','`id`,`name`,`type`','sort');
+		$arr = $this->getall('status=1 and isflow>0 '.$where.'','`id`,`name`,`type`','sort');
 		return $arr;
 	}
 	
@@ -49,11 +49,11 @@ class modeClassModel extends Model
 		$table	= $mors['table'];
 		$name	= $mors['name'];
 		$modeid	= $mors['id'];
-		$isflow	= $mors['isflow'];
+		$isflow	= (int)$mors['isflow'];
 		$lbztxs	= $mors['lbztxs'];
 		$columnsstr = '';
 		$showzt	= false;
-		if($isflow==1){
+		if($isflow>0){
 			$columnsstr = '{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},';
 		}
 		$farr[] = array('name'=>'申请人','fields'=>'base_name');
@@ -70,7 +70,7 @@ class modeClassModel extends Model
 			$columnsstr.='},';
 			if($rs['fields']=='status')$showzt=true;
 		}
-		if($isflow==1){
+		if($isflow>0){
 			$columnsstr.='{text:"状态",dataIndex:"statustext"},';
 		}
 		$jgpstr 	= '<!--SCRIPTend-->';
@@ -88,7 +88,7 @@ class modeClassModel extends Model
 		//读取流程模块的条件
 		$whtml 		= '<div id="changatype{rand}" class="btn-group"></div>';
 		$zthtml		= '';
-		if($isflow==1)$showzt = true;
+		if($isflow>0)$showzt = true;
 		if($lbztxs==1)$showzt = true;
 		if($lbztxs==2)$showzt = false;
 		if($showzt){
@@ -104,7 +104,7 @@ class modeClassModel extends Model
 		$bear		= $this->db->getrows('[Q]option',"`num` like 'columns_".$num."_%'",'`num`,`value`');
 		foreach($bear as $k2=>$rs2)$fselarr[$rs2['num']]=$rs2['value'];
 		$placeholder= '关键字';
-		if($isflow==1)$placeholder= '关键字/申请人/单号';
+		if($isflow>0)$placeholder= '关键字/申请人/单号';
 		
 		
 $html= "".$hstart."
@@ -292,7 +292,7 @@ $(document).ready(function(){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
 			var nstr= fieldsselarr[num];if(!nstr)nstr='';
 			if(nstr)nstr=','+nstr+',';
-			if(nstr=='' && isflow==1){
+			if(nstr=='' && isflow>0){
 				d.push({text:'申请人',dataIndex:'base_name',sortable:true});
 				d.push({text:'申请人部门',dataIndex:'base_deptname',sortable:true});
 			}
@@ -312,7 +312,7 @@ $(document).ready(function(){
 					d.push(d2);
 				}
 			}
-			if(isflow==1)d.push({text:'状态',dataIndex:'statustext'});
+			if(isflow>0)d.push({text:'状态',dataIndex:'statustext'});
 			if(nstr=='' || nstr.indexOf(',caozuo,')>=0)d.push({text:'',dataIndex:'caozuo',callback:'opegs{rand}'});
 			if(!bots){
 				bootparams.columns=d;

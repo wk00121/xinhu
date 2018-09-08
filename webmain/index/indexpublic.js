@@ -360,7 +360,7 @@ function highsearchclass(options){
 	this.initfields=function(){
 		if(this.type==1){
 			var i,a=this.fieldsarr,b=this.fieldsselarr,len=a.length,str='',fid='columns_'+this.modenum+'_'+this.pnum+'',selstr='caozuo';
-			if(this.isflow==1)selstr+=',base_name,base_deptname';
+			if(this.isflow>0)selstr+=',base_name,base_deptname';
 			for(i=0;i<len;i++){
 				str+='<div class="div01"><label><input name="selfields" type="checkbox" value="'+a[i].fields+'">&nbsp;'+a[i].name+'('+a[i].fields+')</label></div>';
 				if(a[i].islb==1)selstr+=','+a[i].fields+'';

@@ -127,7 +127,7 @@
 					}
 					inp += '</select>';
 				}else if(a[i].type=='changeuser'){
-					inp	= '<div class="input-group"><input readonly class="form-control" name="'+a[i].name+'" >';
+					inp	= '<div class="input-group"><input placeholder="'+bl+'" readonly class="form-control" name="'+a[i].name+'" >';
 					inp+= '<span class="input-group-btn">';
 					if(a[i].clearbool)inp+= '<button class="btn btn-default" changeclear="'+a[i].name+'" type="button"><i class="icon-remove"></i></button>';
 					inp+= '<button class="btn btn-default" changeuser="'+a[i].name+'" type="button"><i class="icon-search"></i></button>';

@@ -6,8 +6,6 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:modenum,celleditor:true,autoLoad:false,modenum:modenum,fanye:true,
 		columns:[{
-			text:'',dataIndex:'caozuo'
-		},{
 			text:'资产名称',dataIndex:'title',editor:false,align:'left'
 		},{
 			text:'编号',dataIndex:'num'
@@ -21,7 +19,12 @@ $(document).ready(function(){
 			text:'仓库',dataIndex:'ckid'
 		},{
 			text:'使用人',dataIndex:'usename'
-		}]
+		},{
+			text:'',dataIndex:'caozuo'
+		}],
+		itemdblclick:function(d){
+			openxiangs(d.title,modenum, d.id);
+		}
 	});
 
 	var c = {

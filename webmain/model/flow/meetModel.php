@@ -47,7 +47,7 @@ class flow_meetClassModel extends flowModel
 				$inpurl1 = $this->getinputurl('meetjy',$rs1['id']);
 				if($addbo && $rs1['optid']==$this->adminid)$content.= '&nbsp;<a href="'.$inpurl1.'" class="blue">[编辑]</a>';
 				$content.= '：<br>'.$rs1['content'].'';
-				$fstr 	 = $fobj->getstr('meet', $rs1['id'],1);
+				$fstr 	 = $fobj->getstr('meet', $rs1['id'], 2);
 				if($fstr!='')$content.= '<br>'.$fstr.'';
 				$content.= '</div>';
 			}

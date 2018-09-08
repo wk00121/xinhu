@@ -136,7 +136,9 @@ class htmlChajian extends Chajian{
 		$s.='<tr height="40"><td '.$sty.' colspan="'.$hlen.'">'.$title.'</td></tr>';
 		$s.=$s1;
 		foreach($rows as $k=>$rs){
-			$s.='<tr height="26">';
+			$atr = '';
+			if(isset($rs['trbgcolor']))$atr=' bgcolor="'.$rs['trbgcolor'].'"';
+			$s.='<tr height="26"'.$atr.'>';
 			$s.='<td align="center" '.$sty.'>'.($k+1).'</td>';
 			foreach($headArr as $kf=>$na){
 				$val = '';

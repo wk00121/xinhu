@@ -5,7 +5,7 @@ $(document).ready(function(){
 
 	var a = $('#view_{rand}').bootstable({
 		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
-		url:publicstore('{mode}','{dir}'),storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		url:publicstore('{mode}','{dir}'),modename:'物品',storebeforeaction:'beforeshow',storeafteraction:'aftershow',
 		columns:[{
 			text:'编号',dataIndex:'num'
 		},{
@@ -13,9 +13,7 @@ $(document).ready(function(){
 		},{
 			text:'分类',dataIndex:'typeid',align:'left'
 		},{
-			text:'单价',dataIndex:'price',sortable:true
-		},{
-			text:'单位',dataIndex:'unit'
+			text:'单价',dataIndex:'price',sortable:true,editor:true
 		},{
 			text:'规格',dataIndex:'guige'
 		},{
@@ -23,13 +21,16 @@ $(document).ready(function(){
 		},{
 			text:'总库存',dataIndex:'stock',sortable:true
 		},{
-			text:'ID',dataIndex:'id'	
+			text:'单位',dataIndex:'unit'
+		},{
+			text:'',dataIndex:'caozuo'
 		}],
 		itemclick:function(){
 			btn(false);
 		},
 		itemdblclick:function(d){
-			openxiang('goods',d.id);
+			//openxiang('goods',d.id);
+			c.clickwin();
 		}
 	});
 	
@@ -82,8 +83,8 @@ $(document).ready(function(){
 	var c = new optionclass(c);
 	
 	function btn(bo){
-		get('del_{rand}').disabled = bo;
-		get('edit_{rand}').disabled = bo;
+		//get('del_{rand}').disabled = bo;
+		//get('edit_{rand}').disabled = bo;
 	}
 	
 	js.initbtn(c);
@@ -126,9 +127,8 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="daochu" type="button">导出</button>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button> &nbsp; 
-		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
-		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
+		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button>
+		
 	</td>
 </tr></table>
 </div>

@@ -96,6 +96,7 @@ js.apiurl = function(m,a,cans){
 var c={
 	callback:function(cs, msg){
 		var calb = js.request('callback');
+		if(ismobile==1 && js.msgok)js.msgok(msg, function(){js.back()},1);
 		if(!calb){
 			if(ismobile==0){
 				try{parent.js.msg('success', msg);}catch(e){}
@@ -528,7 +529,7 @@ var c={
 				$('#AltSspan').show();
 				c.initdatelx();
 			}
-			if(da.isflow==1){
+			if(da.isflow>0){
 				$('.status').css({'color':da.statuscolor,'border-color':da.statuscolor}).show().html(da.statustext);
 			}
 		}else{

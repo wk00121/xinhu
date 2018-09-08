@@ -5,7 +5,8 @@ class indexClassAction extends Action{
 	{
 		$afrom 			= $this->get('afrom');
 		$this->tpltype	= 'html';
-		$my			= $this->db->getone('[Q]admin', "`id`='$this->adminid'",'`face`,`id`,`name`,`ranking`,`deptname`,`deptallname`,`type`,`style`');
+		$my			= $this->db->getone('[Q]admin', "`id`='$this->adminid' and `status`=1",'`face`,`id`,`name`,`ranking`,`deptname`,`deptallname`,`type`,`style`');
+		if(!$my)return '登录用户不存在了，<a href="?m=login&a=exit">重新登录</a>';
 		$allmenuid	= m('sjoin')->getuserext($this->adminid, $my['type']);
 		m('dept')->online(1);
 		$mewhere	= '';

@@ -28,6 +28,8 @@ $(document).ready(function(){
 		},{
 			text:'颜色',dataIndex:'color',editor:true
 		},{
+			text:'可使用人员',dataIndex:'recename'	
+		},{
 			text:'ID',dataIndex:'id'	
 		}],
 		itemclick:function(){
@@ -56,7 +58,7 @@ $(document).ready(function(){
 				title:'应用菜单',height:300,width:400,
 				tablename:'im_menu',isedit:lx,
 				params:{int_filestype:'sort,type,mid,pid'},
-				submitfields:'num,name,url,sort,type,mid,pid,color',
+				submitfields:'num,name,url,sort,type,mid,pid,color,recename,receid',
 				items:[{
 					labelText:'编号',name:'num'
 				},{
@@ -75,6 +77,12 @@ $(document).ready(function(){
 					labelText:'颜色',name:'color'
 				},{
 					labelText:'mid',name:'mid',type:'hidden',value:'0'
+				},{
+					labelText:'可使用人员',name:'recename',type:'changeuser',changeuser:{
+						type:'deptusercheck',idname:'receid',title:'选择人员'
+					},clearbool:true,blankText:'默认全部人都可用'
+				},{
+					name:'receid',type:'hidden'
 				}],
 				success:function(){
 					a.reload();

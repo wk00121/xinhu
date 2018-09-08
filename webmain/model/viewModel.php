@@ -96,7 +96,7 @@ class viewClassModel extends Model
 			return $count>0;
 		}
 		$qomss  = ($glx==0)?'':'{asqom}';
-		if($type== 0 && $count==0 && $this->isflow==1){
+		if($type== 0 && $count==0 && $this->isflow>0){
 			$rows[] = array('wherestr'=>$this->rock->jm->base64encode('`uid`={uid}'),'whereid'=>0);
 		}
 		foreach($rows as $k=>$rs){

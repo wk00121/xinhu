@@ -23,6 +23,7 @@ class cacheChajian extends Chajian{
 		$sarr['time'] = $time;
 		if($time>0)$sarr['timedt'] = date('Y-m-d H:i:s', $time);
 		$sarr['url']  = $this->rock->nowurl();
+		$this->delexpire();
 		return $this->rock->createtxt($this->getpath($key, $time), json_encode($sarr));
 	}
 	
@@ -96,6 +97,25 @@ class cacheChajian extends Chajian{
 		$bar = glob(''.UPDIR.'/cache/*');
 		foreach($bar as $k=>$fil1){
 			unlink($fil1);
+		}
+	}
+	
+	/**
+	*	删除过期的缓存
+	*/
+	public function delexpire()
+	{
+		$bar = glob(''.UPDIR.'/cache/*');
+		$time= time();
+		foreach($bar as $k=>$fil1){
+			if(contain($fil1,'_')){
+				$fil11 = substr($fil1, strripos($fil1, '_')+1);
+				if(is_numeric($fil11)){
+					if($fil11<$time){
+						unlink($fil1);
+					}
+				}
+			}
 		}
 	}
 }                               

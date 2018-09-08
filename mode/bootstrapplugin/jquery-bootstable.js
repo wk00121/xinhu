@@ -150,13 +150,17 @@
 		};
 		this.createrows=function(j){
 			var a	= can.columns;
-			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis;
+			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,trsty='';
 			ov	= this.data[j];
 			s3 	= can.rendertr(ov, this, j);
 			s4  = can.rowsbody(ov, this, j);
 			if(s4)s5='rowspan="2"';
-			if(!s3 && ((can.statuschange && ov.status==0) || (ov.ishui==1) || (ov.status==5)))s3='style="color:#aaaaaa"';
-			s='<tr oi="'+j+'" dataid="'+ov.id+'" '+s3+'>';
+			if(!s3 && ((can.statuschange && ov.status==0) || (ov.ishui==1) || (ov.status==5))){
+				trsty='color:#aaaaaa;';
+			}
+			if(ov.trbgcolor)trsty+='background:'+ov.trbgcolor+';';
+			if(trsty)trsty='style="'+trsty+'"';
+			s='<tr oi="'+j+'" dataid="'+ov.id+'" '+s3+' '+trsty+'>';
 			s+='<td '+s5+' align="right" width="40">'+(j+1+can.pageSize*(this.page-1))+'</td>';
 			if(can.checked){
 				dis = '';

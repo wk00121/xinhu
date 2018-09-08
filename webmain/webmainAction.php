@@ -80,6 +80,7 @@ class Action extends mainAction
 		$this->smartydata['adminid']	= $this->adminid;
 		$this->smartydata['adminuser']	= $this->adminuser;
 		$this->smartydata['adminname']	= $this->adminname;
+		$this->smartydata['logintime']	= $this->getsession('logintime');
 	}
 	
 	private function iszclogin()

@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate,zbrangeame,zbrangeid,smlx,wjlx',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -22,6 +22,7 @@ $(document).ready(function(){
 			c.changetype(0);
 			if(a.data){
 				h.form.where.value=jm.base64decode(a.data.where);
+				if(a.data.iszf>0)$('#zbdiv_{rand}').show();
 			}
 		},
 		submitcheck:function(d){
@@ -134,6 +135,15 @@ $(document).ready(function(){
 			};
 			js.getuser(cans);
 		},
+		getzbrangeame:function(o1, lx){
+			var cans = {
+				nameobj:h.form.zbrangeame,
+				idobj:h.form.zbrangeid,
+				type:'deptusercheck',
+				title:'选择转办范围'
+			};
+			js.getuser(cans);
+		},
 		allqt:function(){
 			h.form.recename.value='全体人员';
 			h.form.receid.value='all';
@@ -141,6 +151,10 @@ $(document).ready(function(){
 		removes:function(){
 			h.form.recename.value='';
 			h.form.receid.value='';
+		},
+		getzbraremoves:function(){
+			h.form.zbrangeame.value='';
+			h.form.zbrangeid.value='';
 		},
 		setstatus:function(){
 			var val = h.form.courseact.value;
@@ -192,6 +206,9 @@ $(document).ready(function(){
 			if(str!='')str=str.substr(1);
 			h.form.courseact.value=str;
 			js.tanclose('sttts');
+		},
+		setwhere:function(){
+			js.setwhere(params.setid,'backsheowe{rand}');
 		}
 	};
 	js.initbtn(c);
@@ -203,6 +220,15 @@ $(document).ready(function(){
 	
 	$(h.form.checktype).change(function(){
 		c.changetype(1);
+	});
+	
+	$(h.form.iszf).change(function(){
+		if(this.value>0){
+			$('#zbdiv_{rand}').show();
+		}else{
+			$('#zbdiv_{rand}').hide();
+			c.getzbraremoves();
+		}
 	});
 	
 	//替换的返回
@@ -289,8 +315,8 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td  align="right" >审核条件：</td>
-			<td colspan="3"  class="tdinput"><textarea placeholder="写SQL条件，条件成立才需要此步骤" name="where" style="height:50px" class="form-control"></textarea></td>
+			<td  align="right" >审核条件：<br><a click="setwhere" href="javascript:;">[设置条件]</a>&nbsp;&nbsp;</td>
+			<td colspan="3"  class="tdinput"><textarea placeholder="写SQL条件，条件成立才需要此步骤，标准SQL条件" name="where" style="height:50px" class="form-control"></textarea></td>
 		</tr>
 		
 
@@ -301,7 +327,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" >审核处理表单：</td>
-			<td class="tdinput" colspan="3"><input name="checkfields" class="form-control"><div style="padding-top:0px" class="tishi">需要处理表单元素必须在【表单元素管理】上，输入字段名，多个用, 分开</div></td>
+			<td class="tdinput" colspan="3"><input name="checkfields" class="form-control"><div style="padding-top:0px" class="tishi">需要处理表单元素必须在【表单元素管理】上，输入字段名如：title,dt|stitle，其中格式：必填字段|选填字段</div></td>
 		</tr>
 		
 		
@@ -332,15 +358,63 @@ $(document).ready(function(){
 			<td align="right">排序号：</td>
 			<td class="tdinput"><input name="sort" value="0" maxlength="3" type="number"  onfocus="js.focusval=this.value" onblur="js.number(this)" class="form-control"></td>
 		</tr>
+	
 		
 		<tr>
-			<td  align="right" ></td>
-			<td class="tdinput" colspan="3">
-				<label><input name="status" value="1" checked type="checkbox"> 启用</label>&nbsp; &nbsp; 
-				<label><input name="iszf" value="1" type="checkbox">是否可转给他人办理</label>
+			<td align="right">转办类型：</td>
+			<td class="tdinput">
+				<select class="form-control" name="iszf">
+				<option value="0">不可转办</option>
+				<option value="1">可转办多人</option>
+				<option value="2">可转办单人</option>
+				</select>
 			</td>
 		</tr>
 		
+		<tr id="zbdiv_{rand}" style="display:none">
+			<td  align="right" nowrap >转办的范围：</td>
+		
+			<td class="tdinput" colspan="3">
+				<div style="width:100%" class="input-group">
+					<input readonly class="form-control" placeholder="不选就可转办给任何人" name="zbrangeame" >
+					<input type="hidden" name="zbrangeid" >
+					<span class="input-group-btn">
+						<button class="btn btn-default" click="getzbraremoves" type="button"><i class="icon-remove"></i></button>
+						<button class="btn btn-default" click="getzbrangeame,1" type="button"><i class="icon-search"></i></button>
+					</span>
+				</div>
+			</td>
+		</tr>
+		
+		<tr>
+			<td align="right">处理说明：</td>
+			<td class="tdinput">
+				<select class="form-control" name="smlx">
+				<option value="0">默认不同意才需要填写</option>
+				  <option value="1" >都必须填写</option>
+				  <option value="2" >都可以不写</option>
+				  <option value="3" >不显示说明栏</option>
+
+				</select>
+			</td>
+			<td align="right">处理文件：</td>
+			<td class="tdinput">
+				<select class="form-control" name="wjlx">
+				<option value="0">默认(可选上传)</option>
+				<option value="1" >必须上传</option>
+				<option value="2" >仅同意时需上传</option>
+				<option value="3" >不显示文件栏</option>
+				</select>
+			</td>
+		</tr>
+		
+			
+		<tr>
+			<td  align="right" ></td>
+			<td class="tdinput" colspan="3">
+				<label><input name="status" value="1" checked type="checkbox"> 启用</label>&nbsp;
+			</td>
+		</tr>
 		
 		<tr>
 			<td  align="right"></td>
