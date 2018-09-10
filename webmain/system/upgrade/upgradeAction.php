@@ -242,16 +242,18 @@ class upgradeClassAction extends Action
 	public function tontbudataAjax()
 	{
 		$lx = (int)$this->get('lx');
-		$barr	= c('xinhu')->getdata('getaneydata', array('lx'=>$lx));
+		$snum = $this->get('snum');
+		$barr	= c('xinhu')->getdata('getaneydata', array('lx'=>$lx,'snum'=>$snum));
 		if($barr['code']!=200)exit($barr['msg']);
 		$data 	= $barr['data'];
+		$msgr 	= '';
 		if($lx==0)$this->tonbbumenu($data['menu']);
-		if($lx==1)$this->tonbbumode($data['mode']);
+		if($lx==1)$msgr=$this->tonbbumode($data['mode']);
 		if($lx==4)$this->tonbbumodewq($data['mode']);//完全和官网一样
 		if($lx==2)$this->tonbbuying($data['yydata']);
 		if($lx==3)$this->tonbbutask($data['task']);
-		
-		echo '同步完成';
+		if($lx==5)$msgr=$this->tonbbumode($data['mode'],$snum);
+		echo '同步完成'.$msgr.'';
 	}
 	
 	//同步菜单
@@ -272,23 +274,33 @@ class upgradeClassAction extends Action
 	}
 	
 	//同步模块
-	private function tonbbumode($data)
+	private function tonbbumode($data, $snum='')
 	{
+		$zcis	= 0;
 		$db 	= m('flow_set');
 		$db1 	= m('flow_element');
 		$db2 	= m('flow_menu');
 		$db3 	= m('flow_extent');
 		$db5 	= m('flow_course');
 		$db6 	= m('flow_where');
+		$db7 	= m('flow_todo');
+		$iszdbo	= false;
+		if($snum!='')$iszdbo= true;//指定模块
 		foreach($data as $num=>$arr){
-			$moders 	= $db->getone("`num`='$num'",'`id`,`isup`');
+	
+			$moders 	= $db->getone("`num`='$num'",'`id`,`isup`,`name`');
 			$modeid		= 0;
 			$isup		= 1;
 			if($moders){
 				$modeid	= (int)$moders['id'];
 				$isup	= (int)$moders['isup'];
-				if($isup==0)continue;
+				if($isup==0){
+					if($num==$snum)exit('此['.$snum.'.'.$moders['name'].']模块未开启同步更新');
+					continue;
+				}
+				if($iszdbo && $num!=$snum)continue; //不是指定模块
 			}
+			
 			
 			$flow_set 	= $arr['flow_set'];
 			if(isset($flow_set['id']))unset($flow_set['id']);
@@ -297,34 +309,38 @@ class upgradeClassAction extends Action
 				$modeid = $db->insert($flow_set);
 				$isadd	= true;
 			}else{
-				$db->update(array(
-					'where' 	=> $flow_set['where'],
-					'sort' 		=> $flow_set['sort'],
-					'type' 		=> $flow_set['type'],
-					'summary' 	=> $flow_set['summary'],
-					'summarx' 	=> $flow_set['summarx'],
-					'tables' 	=> $flow_set['tables'],
-					'names' 	=> $flow_set['names'],
-					'isscl' 	=> $flow_set['isscl'],
-					'statusstr' => $flow_set['statusstr']
-				), $modeid);
-				/*
-				unset($flow_set['pctx']);
-				unset($flow_set['mctx']);
-				unset($flow_set['wxtx']);
-				unset($flow_set['emtx']);
-				unset($flow_set['isup']);
-				unset($flow_set['receid']);
-				unset($flow_set['recename']);
-				unset($flow_set['status']);
-				$db->update($flow_set, $modeid);*/
+				//指定模块
+				if($iszdbo){
+					unset($flow_set['pctx']);
+					unset($flow_set['mctx']);
+					unset($flow_set['wxtx']);
+					unset($flow_set['emtx']);
+					unset($flow_set['receid']);
+					unset($flow_set['recename']);
+					unset($flow_set['status']);
+					$db->update($flow_set, $modeid);
+				}else{
+					$db->update(array(
+						'where' 	=> $flow_set['where'],
+						'sort' 		=> $flow_set['sort'],
+						'type' 		=> $flow_set['type'],
+						'summary' 	=> $flow_set['summary'],
+						'summarx' 	=> $flow_set['summarx'],
+						'tables' 	=> $flow_set['tables'],
+						'names' 	=> $flow_set['names'],
+						'isscl' 	=> $flow_set['isscl'],
+						'statusstr' => $flow_set['statusstr']
+					), $modeid);
+				}
 			}
 			
 			//流程模块条件
 			$flow_where = $arr['flow_where'];
+			$sid6		= '0';
 			foreach($flow_where as $k6=>$rs6){
 				$rs6['setid'] = $modeid;
-				if(isset($rs6['id']))unset($rs6['id']);
+				if(isset($rs6['id']))unset($rs6['id']);		
+				
 				$num 			= $rs6['num'];
 				if(isempt($num))continue;
 				$where 			= "`setid`='$modeid' and `num`='$num'";
@@ -340,17 +356,24 @@ class upgradeClassAction extends Action
 			
 			//字段
 			$flow_element= $arr['flow_element'];
+			$sid1s = '0';
 			foreach($flow_element as $k1=>$rs1){
 				$rs1['mid'] = $modeid;
 				if(isset($rs1['id']))unset($rs1['id']);
 				$where 		= "`mid`='$modeid' and `fields`='".$rs1['fields']."' and `iszb`='".$rs1['iszb']."'";
 				if($db1->rows($where)==0){
-					$db1->insert($rs1);
+					$sid1 = $db1->insert($rs1);
 				}else{
 					unset($rs1['name']);
 					$db1->update($rs1, $where);
+					$sid1 = $db1->getmou('id', $where);
 				}
+				$sid1s.=','.$sid1.'';
 			}
+			if($iszdbo){
+				$db1->delete("`mid`='$modeid' and `id` not in($sid1s)"); //删除多余字段
+			}
+			
 			
 			//权限
 			$flow_extent= $arr['flow_extent'];
@@ -394,7 +417,34 @@ class upgradeClassAction extends Action
 				}
 			}
 			
+			//单据通知设置
+			if(isset($arr['flow_todo'])){
+				//if($db7->rows('setid='.$modeid.'')==0){
+					$flow_todo = $arr['flow_todo'];
+					$sids7 = '0';
+					foreach($flow_todo as $k7=>$rs7){
+						if(isset($rs7['id']))unset($rs7['id']);
+						$rs7['setid'] 	= $modeid;
+						$where 			= "`setid`='$modeid' and `name`='".$rs7['name']."'";
+						
+						if($db7->rows($where)==0){
+							$sid7 = $db7->insert($rs7);
+						}else{
+							$db7->update($rs7, $where);
+							$sid7 = $db7->getmou('id', $where);
+						}
+						$sids7.=','.$sid7.'';
+					}
+					//if($iszdbo){
+					//	$db7->delete("`setid`='$modeid' and `id` not in($sids7)");
+					//}
+				//}
+			}
+			
+			
+			$zcis++;
 		}
+		return '共'.$zcis.'个模块';
 	}
 	
 	//跟官网完全一样同步模块
@@ -407,6 +457,7 @@ class upgradeClassAction extends Action
 		$this->initstalltable('flow_extent');
 		$this->initstalltable('flow_course');
 		$this->initstalltable('flow_where');
+		$this->initstalltable('flow_todo');
 		
 		foreach($data as $num=>$arr){
 			$flow_set 		= $arr['flow_set'];
@@ -415,6 +466,7 @@ class upgradeClassAction extends Action
 			$flow_extent 	= $arr['flow_extent'];
 			$flow_course 	= $arr['flow_course'];
 			$flow_where 	= $arr['flow_where'];
+			$flow_todo 		= $arr['flow_todo'];
 			
 			
 			$db->insert($flow_set);
@@ -424,6 +476,7 @@ class upgradeClassAction extends Action
 			$this->insertdata($flow_extent, 'flow_extent');
 			$this->insertdata($flow_course, 'flow_course');
 			$this->insertdata($flow_where, 'flow_where');
+			$this->insertdata($flow_todo, 'flow_todo');
 		}
 	}
 	private function initstalltable($table)

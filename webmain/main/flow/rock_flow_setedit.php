@@ -160,7 +160,7 @@ cont:
 			<option value="3">自由流程(每步都需要由申请人指定哪个步骤)</option>
 			end-->
 			</select>
-			</font>
+			
 			</td>
 		</tr>
 		

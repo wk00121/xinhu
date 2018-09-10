@@ -301,7 +301,7 @@ class flow_hrcheckClassModel extends flowModel
 		//每季度
 		if($pinlv=='j'){
 			$m   = (int)date('m');
-			$jdr = [1,4,7,10];
+			$jdr = array(1,4,7,10);
 			if(in_array($m, $jdr)){
 				if(date('d')==date('d', strtotime($sctime)))return true;
 			}

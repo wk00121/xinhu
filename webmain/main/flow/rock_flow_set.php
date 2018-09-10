@@ -168,6 +168,15 @@ $(document).ready(function(){
 					js.msg('msg',s);
 				}
 			},'post',false,'复制...,清空成功');
+		},
+		tongbu:function(){
+			var num=a.changedata.num;
+			js.prompt('从官网中拉取模块同步','输入要同步的模块编号如(gong)：将会覆盖你模块设置。', function(jg,txt){
+				if(jg=='yes' && txt)c.tongbuss(txt);
+			},num);
+		},
+		tongbuss:function(nk){
+			js.loading('拉取同步中...');
 		}
 	};
 	js.initbtn(c);
@@ -201,7 +210,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="pipei" type="button">重新匹配流程</button>&nbsp; 
 		<button class="btn btn-default" id="biaoge_{rand}" disabled click="biaoge,1" type="button"><i class="icon-table"></i> 主表管理</button>&nbsp; 
 		<button class="btn btn-default" id="biaoges_{rand}" disabled click="biaoges,1" type="button"><i class="icon-table"></i> 子表管理</button>&nbsp; 
-		<button class="btn btn-default" click="allcreate" type="button">一键生成所有列表页</button>
+		<button class="btn btn-default" click="allcreate" type="button">生成所有列表页</button>
 	</td>
 	<td align="left"  style="padding:0px 10px;">
 		<div class="input-group" style="width:130px">
@@ -215,8 +224,7 @@ $(document).ready(function(){
 		
 	</td>
 	<td align="right" nowrap>
-		<!--
-		<button class="btn btn-default" id="copy_{rand}" click="copyss,1" disabled type="button">复制模块</button>&nbsp; -->
+		<!--<button class="btn btn-default" click="tongbu,1" type="button">同步模块</button>&nbsp;-->
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp; 
 		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>

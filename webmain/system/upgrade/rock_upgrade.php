@@ -111,9 +111,10 @@ $(document).ready(function(){
 				}
 			},kes);
 		},
-		tontbudata:function(lx, o){
+		tontbudata:function(lx, o,snum){
 			o.innerHTML=js.getmsg('同步中...');
-			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),{lx:lx},function(s){
+			if(!snum)snum='';
+			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),{'lx':lx,'snum':snum},function(s){
 				o.innerHTML=js.getmsg(s,'green');
 			});
 		},
@@ -137,6 +138,12 @@ $(document).ready(function(){
 		if(ISDEMO){js.msg('msg','演示系统不要操作');return;}
 		if(!istongbu && lx!=3){
 			js.alert('请先升级系统到最新才能同步');
+			return;
+		}
+		if(lx==5){
+			js.prompt('从官网中拉取模块同步','输入要同步的模块编号如(gong)：将会覆盖你模块设置。', function(jg,txt){
+				if(jg=='yes' && txt)c.tontbudata(lx, o, txt);
+			});
 			return;
 		}
 		js.confirm('谨慎啊，确定要同步嘛？同步了将覆盖你原先配置好的哦！',function(jg){
@@ -164,8 +171,8 @@ $(document).ready(function(){
 <div class="blank10"></div>
 <div>1、同步菜单，系统上操作菜单会和官网同步，也可到【系统→菜单管理】下管理。<a onclick="upfetwontbu(0,this)" href="javascript:;">[同步]</a></div>
 <div class="blank10"></div>
-<div>2、同步流程模块，流程模块会和官网同步，也可到【流程模块】下管理。<a onclick="upfetwontbu(1,this)" href="javascript:;">[1.同步]</a>，<a onclick="upfetwontbu(4,this)" href="javascript:;">[2.同步完全和官网一致]</a></div>
-<div style="color:#888888"><font color=white>2、</font>[1.同步]：同步了不会覆盖自己的配置信息，[2.同步完全和官网一致]：会完成和官网一致，同时会删除自己配置和新建的模块，谨慎。</div>
+<div>2、同步流程模块，流程模块会和官网同步，也可到【流程模块】下管理。<a onclick="upfetwontbu(1,this)" href="javascript:;">[1.同步]</a>，<a onclick="upfetwontbu(4,this)" href="javascript:;">[2.同步完全和官网一致]</a>，<a onclick="upfetwontbu(5,this)" href="javascript:;">[3.根据模块完成同步]</a></div>
+<div style="color:#888888"><font color=white>2、</font>[1.同步]：同步了不会覆盖自己的配置信息，[2.同步完全和官网一致]：会完成和官网一致，同时会删除自己配置和新建的模块，谨慎。[3.根据模块完成同步]：自己选择模块编号同步。</div>
 <!--<div><font color=white>2、</font>输入要同步的模块编号：<input style="width:250px" placeholder="模块编号多个,分开，输入all为全部" class="inputs"></div>-->
 <div class="blank10"></div>
 <div>3、同步桌面版/手机上应用，应用会和官网同步，也可到【系统→即时通信管理→应用管理】下管理。<a onclick="upfetwontbu(2,this)" href="javascript:;">[同步]</a></div>
