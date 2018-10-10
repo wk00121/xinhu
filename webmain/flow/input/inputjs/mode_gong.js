@@ -1,5 +1,6 @@
 function initbodys(){
 	hidetou();
+	if(form('issms'))form('issms').checked=false; //每次编辑都取消
 }
 
 //隐藏投票的

@@ -44,11 +44,13 @@ $(document).ready(function(){
 				title:'短信签名',height:400,width:400,
 				tablename:'sms',isedit:lx,
 				url:js.getajaxurl('saveqian','{mode}','{dir}'),
-				submitfields:'cont,isgk,num',
+				submitfields:'cont,isgk,num,explain',
 				items:[{
-					labelText:'签名名称',name:'cont',required:true,blankText:'3-8个字符'
+					labelText:'签名名称',name:'cont',required:true,blankText:'3-8个字符,需要与自己单位相关'
 				},{
 					labelText:'',name:'num',type:'hidden'
+				},{
+					labelText:'申请说明',name:'explain',required:true,blankText:'如提供单位名/产品官网网址等',type:'textarea'
 				},{
 					name:'isgk',labelBox:'公开(让其他用户也可以使用)',type:'checkbox',checked:false
 				}],
@@ -101,4 +103,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">审核通过签名不能修改。普通用户不能添加签名，VIP用户可添加1个签名，合作商没限制，添加签名是需要短信平台审核的，可[刷新状态]查看审核状态。签名必须包含OA,办公的字样，没有包含，请使用自己的短信平台帐号，设置短信APIKEY，超1个月未使用短信的签名将会被删除，政府部门机构是无法使用我们的短信签名服务，可以自己申请帐号使用。</div>
+<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和规则限制?</a></div>

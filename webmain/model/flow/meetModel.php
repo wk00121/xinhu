@@ -60,6 +60,11 @@ class flow_meetClassModel extends flowModel
 		}
 		$rs['state'] = $this->getstatezt($zt);
 		$rs['nzt']	 = $zt;
+		if(isset($rs['issms'])){
+			$issms 		 = '否';
+			if($rs['issms']==1)$issms = '是';
+			$rs['issms'] = $issms;
+		}
 		return $rs;
 	}
 	
@@ -71,23 +76,68 @@ class flow_meetClassModel extends flowModel
 	protected function flowsubmit($na, $sm)
 	{
 		if($this->rs['status']==1){
-			$cont  = '{optname}发起会议预定从{startdt}→{enddt},在{hyname},主题:{title}';
-			$this->push($this->rs['joinid'], '会议', $cont);
+			$this->tisongtodo();
 		}
+	}
+	
+	//审核完成后发通知
+	protected function flowcheckfinsh($zt)
+	{
+		if($zt==1)$this->tisongtodo();
+	}
+	
+	private function tisongtodo()
+	{
+		//$cont  = '{optname}发起会议预定从{startdt}→{enddt},在{hyname},主题:{title}';
+		//$start = date('Y年m月d日H:s',strtotime($this->rs['startdt']));
+		//$end = date('Y年m月d日H:s',strtotime($this->rs['enddt']));
+		//$end = $this->dbobj->stringdt($this->rs['enddt']);
+		$cont  = '{optname}发起会议“{title}”在{hyname}，时间{startdt}至{enddt}';
+		$this->push($this->rs['joinid'], '会议', $cont);
+		
+		$this->sendsms($this->rs, 'meetapply', array(
+			'optname' 	=> $this->adminname,
+			'title' 	=> $this->rs['title'],
+			'hyname' 	=> $this->rs['hyname'],
+			'startdt' 	=> $this->rs['startdt'],
+			'enddt' 	=> $this->rs['enddt'],
+		));
 	}
 	
 	protected function flowaddlog($a)
 	{
 		$actname = $a['name'];
 		if($actname == '取消会议'){
-			$this->push($this->rs['joinid'], '会议', ''.$this->adminname.'取消会议【{title}】{startdt}→{enddt}');
+			$this->push($this->rs['joinid'], '会议', ''.$this->adminname.'取消会议“{title}”，时间{startdt}至{enddt}，请悉知。');
 			$this->update('`state`=3', $this->id);
+			
+			$this->sendsms($this->rs, 'meetcancel', array(
+				'optname' 	=> $this->adminname,
+				'title' 	=> $this->rs['title'],
+				'hyname' 	=> $this->rs['hyname'],
+				'startdt' 	=> $this->rs['startdt'],
+				'enddt' 	=> $this->rs['enddt'],
+			));
 		}
 		if($actname == '结束会议'){
 			$this->update('`state`=2', $this->id);
 		}
 	}
 	
+	//发短信提醒
+	public function sendsms($rs, $tplnum, $params)
+	{
+		$receid = $rs['joinid'];
+		$issms  = arrvalue($rs,'issms');
+		
+		if(isempt($receid) || $issms!='1')return;
+		$jyid	= $rs['jyid'];
+		if(!isempt($jyid))$receid.=','.$jyid.''; //发个纪要人
+		
+		$qiannum= ''; //签名编号，可以为空
+		$barr = c('xinhuapi')->sendsms($receid, $qiannum, $tplnum, $params);
+		return $barr;
+	}
 	
 	protected function flowbillwhere($uid, $lx)
 	{

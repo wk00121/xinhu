@@ -10,7 +10,7 @@ class groupClassAction extends Action
 		}
 		return array(
 			'where' => $s,
-			'fields'=> 'id,user,name,deptname'
+			'fields'=> 'id,user,name,deptname,ranking'
 		);
 	}
 	

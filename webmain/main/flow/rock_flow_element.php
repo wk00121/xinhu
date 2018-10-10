@@ -70,6 +70,7 @@ $(document).ready(function(){
 					s+='<option value="'+csd.id+'">'+csd.name+'</option>';
 					types = csd.type;
 				}
+				s+='</optgroup>';
 				$('#mode_{rand}').html(s);
 				if(modeid>0){
 					get('mode_{rand}').value=modeid;

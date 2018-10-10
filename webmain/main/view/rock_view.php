@@ -21,7 +21,7 @@ $(document).ready(function(){
 				return jm.base64decode(v);
 			}
 		},{
-			text:'说明',dataIndex:'explain'
+			text:'说明',dataIndex:'explain',editor:true
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true
 		},{

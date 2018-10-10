@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：sealapl.印章申请，
+*	模块：sealapl.印章证照使用，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.印章申请]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.印章证照使用]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'sealapl',modename='印章申请',isflow=1,modeid='49',atype = params.atype,pnum=params.pnum;
+	var modenum = 'sealapl',modename='印章证照使用',isflow=1,modeid='49',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"sealid","name":"\u7533\u8bf7\u5370\u7ae0","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"sealname","name":"\u5370\u7ae0\u540d\u79f0","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"1"},{"fields":"isout","name":"\u662f\u5426\u5916\u5e26","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"sealid","name":"\u5bf9\u5e94ID","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"sealname","name":"\u5370\u7ae0\/\u8bc1\u7167","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"1"},{"fields":"isout","name":"\u662f\u5426\u5916\u5e26","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -87,9 +87,9 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'印章申请('+nowtabs.name+')',
-				cont:'印章申请('+nowtabs.name+')的列表的',
-				explain:'订阅[印章申请]的列表',
+				title:'印章证照使用('+nowtabs.name+')',
+				cont:'印章证照使用('+nowtabs.name+')的列表的',
+				explain:'订阅[印章证照使用]的列表',
 				objtable:a
 			});
 		},
@@ -152,7 +152,7 @@ $(document).ready(function(){
 		},
 		daoru:function(){
 			window.managelistsealapl = a;
-			addtabs({num:'daorusealapl',url:'flow,input,daoru,modenum=sealapl',icons:'plus',name:'导入印章申请'});
+			addtabs({num:'daorusealapl',url:'flow,input,daoru,modenum=sealapl',icons:'plus',name:'导入印章证照使用'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -225,7 +225,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('c2VhbGFwbA::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"印章名称",dataIndex:"sealname"},{text:"是否外带",dataIndex:"isout",sortable:true},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"申请日期",dataIndex:"applydt",sortable:true},{text:"印章/证照",dataIndex:"sealname"},{text:"是否外带",dataIndex:"isout",sortable:true},{text:"说明",dataIndex:"explain"},{text:"状态",dataIndex:"statustext"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){

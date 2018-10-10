@@ -45,7 +45,12 @@ class mode_custractClassAction extends inputAction{
 		$dbs 	= m('custsale');
 		$dbs->update('htid=0', "`htid`='$id'");
 		if($saleid > 0){
-			$dbs->update('htid='.$id.'', "`id`='$saleid'");
+			$dbs->update('`htid`='.$id.',`state`=1', "`id`='$saleid'");
+			$jhrs = $dbs->getone($saleid);
+			m($table)->update(array(
+				'custid' => $jhrs['custid'],
+				'custname' => $jhrs['custname'],
+			), $id);
 		}
 	}
 	

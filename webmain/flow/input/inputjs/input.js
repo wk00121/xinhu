@@ -22,6 +22,7 @@ var ismobile=0,firstrs={},alldata={},isxiang=0,
 	subdataminlen=[];//子表至少行数
 function initbodys(){};
 function savesuccess(){};
+function saveerror(){};
 function eventaddsubrows(){}
 function eventdelsubrows(){}
 function geturlact(act,cns){
@@ -127,9 +128,10 @@ var c={
 		if(!d)return;
 		this.saveok(d);
 	},
-	showtx:function(msg){
+	showtx:function(msg, fid){
 		js.setmsg(msg);
 		if(ismobile==1)js.msg('msg', msg);
+		if(fid && form(fid))form(fid).focus();
 	},
 	selectdatadata:{},
 	onselectdata:{},
@@ -168,19 +170,20 @@ var c={
 	},
 	savesss:function(){
 		if(js.ajaxbool||isedit==0)return false;
-		var len = arr.length,i,val,fid,flx,nas,j,j1,zbd,sda,zbs,zbmc;
+		var len = arr.length,i,val,fid,flx,nas,j,j1,zbd,sda,zbs,zbmc,fa,sdtname,edename;
 		changesubmitbefore();
 		var d = js.getformdata();
 		for(i=0;i<len;i++){
 			if(arr[i].iszb!='0')continue;
-			fid=arr[i].fields;
-			flx=arr[i].fieldstype;
-			nas=arr[i].name;
-			if(ismobile==0 && arr[i].islu=='1' && flx=='htmlediter'){
+			fa = arr[i];
+			fid=fa.fields;
+			flx=fa.fieldstype;
+			nas=fa.name;
+			if(ismobile==0 && fa.islu=='1' && flx=='htmlediter'){
 				d[fid] = this.editorobj[fid].html();
 			}
 			val=d[fid];
-			if(arr[i].isbt=='1'){
+			if(fa.isbt=='1'){
 				if(flx=='uploadfile' && val=='0'){
 					this.showtx('请选择'+nas+'');
 					return false;
@@ -197,6 +200,15 @@ var c={
 					form(fid).focus();
 					return false;
 				}
+			}
+			if(fid=='startdt')sdtname=fa.name;
+			if(fid=='enddt')edename=fa.name;
+		}
+		
+		if(sdtname && edename && d.startdt && d.enddt){
+			if(d.startdt>=d.enddt){
+				this.showtx(''+sdtname+'必须大于'+edename+'', 'enddt');
+				return false;
 			}
 		}
 		
@@ -221,11 +233,13 @@ var c={
 						if(isempt(val)){
 							if(form(fid))form(fid).focus();
 							this.showtx('['+sda.zbname+']第'+(j1+1)+'行上'+sda.name+'不能为空');
+							this.subshantiss(i, fid,0);
 							return false;
 						}
 						if(flx=='number'&&parseFloat(val)==0){
 							if(form(fid))form(fid).focus();
 							this.showtx('['+sda.zbname+']第'+(j1+1)+'行上'+sda.name+'不能为0');
+							this.subshantiss(i, fid,0);
 							return false;
 						}
 					}
@@ -266,6 +280,17 @@ var c={
 		d.sysmodenum=moders.num;
 		return d;
 	},
+	subshantiss:function(i,fid,oi){
+		if(!form(fid))return;
+		clearTimeout(this.subshantistime1);
+		if(oi%2==0){
+			$(form(fid)).parent().css('background','red');
+		}else{
+			$(form(fid)).parent().css('background','');
+			if(oi>10)return;
+		}
+		this.subshantistime1 = setTimeout(function(){c.subshantiss(i,fid,oi+1);},200);
+	},
 	saveok:function(d){
 		js.setmsg('保存中...');
 		get('AltS').disabled=true;
@@ -297,6 +322,7 @@ var c={
 			if(typeof(msg)=='undefined')msg=str;
 			get('AltS').disabled=false;
 			this.showtx(msg);//错误提醒
+			saveerror(msg);
 		}
 	},
 	changeturn:function(){
@@ -632,12 +658,15 @@ var c={
 		}
 		$(o).parent().parent().remove();
 		this.repaixuhao(xu);
+		this.rungongsi();
+		eventdelsubrows(xu);
+	},
+	rungongsi:function(){
 		var i,len=gongsiarr.length,d;
 		for(i=0;i<len;i++){
 			d = gongsiarr[i];
 			if(d.iszb==0&&form(d.fields))this.inputblur(form(d.fields),0);
 		}
-		eventdelsubrows(xu);
 	},
 	repaixuhao:function(xu){
 		var o=$('#tablesub'+xu+'').find("input[temp='xuhao']");

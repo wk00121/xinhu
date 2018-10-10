@@ -121,4 +121,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">如公开说明使用信呼系统的用户都可以使用这个模版，为了防止资源浪费，所有的模版都是公开的。普通用户不能添加模版，VIP用户可添加10个模版，合作商没限制，添加编辑模版是需要审核的，可[刷新状态]查看审核状态。</div>
+<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和使用规则?</a></div>

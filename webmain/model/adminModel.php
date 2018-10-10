@@ -428,14 +428,33 @@ class adminClassModel extends Model
 			$rangeno 	= $this->rock->get('changerangeno'); //no指定了人
 			$where1 = '';$where2 = '';
 			if(!isempt($range)){
-				$where1 = $this->gjoin($range, '', 'where');
-				$where1 = 'and ('.$where1.')';
+				//本部门||下级部门
+				if($range=='dept' || $range=='deptall'){
+					$urs 	= $this->getone($uid);
+					$deptid = $urs['deptid'];
+					if(!isempt($urs['deptids']))$deptid.=','.$urs['deptids'].'';
+					$deptida = explode(',', $deptid);
+					$datsa   = array();
+					
+					if($range=='dept'){
+						$datsa[]= '`deptid` in('.$deptid.')';
+						foreach($deptida as $did1)if($did1)$datsa[]=$this->rock->dbinstr('deptids', $did1);
+					}else{
+						foreach($deptida as $did1)if($did1)$datsa[] = 'instr(`deptpath`,\'['.$did1.']\')>0';
+					}
+					
+					$where1 = join(' )or( ', $datsa);
+					$where1 = 'and ('.$where1.')';
+				}else{
+					$where1 = $this->gjoin($range, '', 'where');
+					$where1 = 'and ('.$where1.')';
+				}
 			}
 			if(!isempt($rangeno)){
 				$where2 = $this->gjoin($rangeno, '', 'where');
 				$where2 = 'and not('.$where2.')';
 			}
-			if($lx==0)$where.=' and `isvcard`=1'; //通讯录宣誓
+			if($lx==0)$where.=' and `isvcard`=1'; //通讯录显示
 			//读取我可查看权限
 			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
@@ -518,7 +537,8 @@ class adminClassModel extends Model
 				$cl++;
 			}
 		}
-		$this->updateuserinfo($where);
+		
+		$cl += $this->updateuserinfo($where);
 		
 		//更新单据上flow_bill上的uname,udeptname
 		m('flowbill')->updatebill();
@@ -529,13 +549,15 @@ class adminClassModel extends Model
 	public function updateuserinfo($whe='')
 	{
 		$db 	= m('userinfo');
-		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,a.num,a.companyid,a.deptnames,a.rankings from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
+		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,a.num,a.companyid,a.deptnames,a.rankings,a.deptallname from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
+		$xbo 	= 0;
 		foreach($rows as $k=>$rs){
 			$uparr = array(
 				'id' 		=> $rs['id'],
 				'name' 		=> $rs['name'],
 				'deptname' 	=> $rs['deptname'],
 				'deptnames' => $rs['deptnames'],
+				'deptallname' => $rs['deptallname'],
 				'ranking' 	=> $rs['ranking'],
 				'rankings' 	=> $rs['rankings'],
 				'sex' 		=> $rs['sex'],
@@ -553,7 +575,9 @@ class adminClassModel extends Model
 				unset($uparr['id']);
 				$db->update($uparr, $rs['ids']);
 			}
+			$xbo+=$this->db->row_count();
 		}
+		return $xbo;
 	}
 	
 	//返回这个月份人员

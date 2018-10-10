@@ -311,6 +311,7 @@ class upgradeClassAction extends Action
 			}else{
 				//指定模块
 				if($iszdbo){
+					unset($flow_set['name']);
 					unset($flow_set['pctx']);
 					unset($flow_set['mctx']);
 					unset($flow_set['wxtx']);

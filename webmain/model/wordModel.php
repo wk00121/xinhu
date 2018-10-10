@@ -123,6 +123,7 @@ class wordClassModel extends Model
 				}
 			}
 			$where.=' and a.`typeid`='.$typeid.'';
+			if(!isempt($key))$where = 'a.`cid` in('.$cqids.') ';
 		}
 		
 		//共享给我的
@@ -144,8 +145,9 @@ class wordClassModel extends Model
 			$where = 'a.`type`=0 and a.`shateid` is not null and a.`optid`='.$uid.'';
 		}
 		
+		//关键词的搜索
 		if(!isempt($key)){
-			$where.=" and (b.`filename` like '%$key%' or a.`name` like '%$key%')";
+			$where .=" and (b.`filename` like '%$key%' or a.`name` like '%$key%')";
 		}
 		
 		$sarr	= array(

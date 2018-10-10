@@ -12,7 +12,7 @@ $(document).ready(function(){
 				if(ret.success){
 					$('#stotal{rand}').html(ret.data.smsinfo);
 					$('#typetext{rand}').html(ret.data.typetext);
-					if(ret.data.automy=='1')$('#tessh{rand}').show();
+					//if(ret.data.automy=='1')$('#tessh{rand}').show();
 					curl = ret.data.chongurl;
 					utype = ret.data.type;
 				}else{
@@ -75,23 +75,24 @@ $(document).ready(function(){
 			var da  = {
 				sms_iscb:get('sms_iscb_{rand}').value,
 				sms_cbnum:get('sms_cbnum_{rand}').value,
-				sms_apikey:get('sms_apikey_{rand}').value,
+				sms_apikey:'',
 				sms_mknum:get('sms_mknum_{rand}').value,
 				sms_qmnum:get('sms_qmnum_{rand}').value,
 				sms_txnum:get('sms_txnum_{rand}').value,
 				sms_yanzm:get('sms_yanzm_{rand}').value,
 				sms_dirtype:lxs
 			};
-			if(lxs=='alisms'){
-				if(da.sms_qmnum==''){
-					js.msg('msg','使用短信签名不能为空，请输入如：信呼，更多查看帮助');
-					return;
-				}
-				if(da.sms_cbnum.substr(0,4)!='SMS_'){
-					js.msg('msg','流程短信催办模版编号格式不对，请查看帮助');
-					return;
-				}
+			
+			if(da.sms_qmnum=='' && lxs!=''){
+				js.msg('msg','使用短信签名不能为空，请输入如：信呼OA，更多查看帮助');
+				return;
 			}
+			
+			if(lxs=='alisms' && da.sms_cbnum.substr(0,4)!='SMS_'){
+				js.msg('msg','流程短信催办模版编号格式不对，必须SMS_开头，请查看帮助');
+				return;
+			}
+			
 			js.msg('wait','保存中...');
 			js.ajax(js.getajaxurl('cogsave','{mode}','{dir}'),da,function(ret){
 				js.msg('success','保存成功');

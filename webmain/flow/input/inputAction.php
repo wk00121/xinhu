@@ -62,8 +62,12 @@ class inputAction extends Action
 		$sysisturn		= (int)$this->post('istrun','1');
 		$checkobj		= c('check');
 		if($this->isempt($table))$this->backmsg('模块未设置表名');
-		$fieldsarr		= $this->flow->fieldsarr;
+		
+		$fieldsarr		= array();
+		$fiexar			= $this->flow->flowfieldarr($this->flow->fieldsarra, 2);
+		foreach($fiexar as $k2=>$rs2)if($rs2['islu']==1)$fieldsarr[]=$rs2;
 		if(!$fieldsarr)$this->backmsg('没有录入元素');
+		
 		$db	   = m($table);$subna = '提交';$addbo = false;$where = "`id`='$id'"; $oldrs = false;
 		$this->mdb = $db;
 		
@@ -81,10 +85,11 @@ class inputAction extends Action
 				$this->backmsg('无权编辑['.$this->moders['name'].']的数据;');
 			
 			if($isflow>0){
-				$bos = false;
-				if($oldrs['uid']==$uid||$oldrs['optid']==$uid)$bos=true;
-				if($oldrs['status']==1)$bos=false;
-				if(!$bos)$this->backmsg('不允许编辑,可能已审核通过/不是你的单据');
+				if($oldrs['uid']==$uid || $oldrs['optid']==$uid || $this->flow->floweditother){
+				}else{
+					$this->backmsg('不是你提交/申请的单据，不允许编辑');
+				}
+				if($oldrs['status']==1)$this->backmsg('单据已审核完成，不允许编辑');
 			}
 			$subna = '编辑';
 		}
@@ -395,6 +400,8 @@ class inputAction extends Action
 		$this->gongsiarr = array();
 		
 		$fieldarr 	= m('flow_element')->getrows("`mid`='$modeid' and `iszb`=0 $stwhe",'fields,fieldstype,name,dev,data,isbt,islu,attr,iszb,issou,gongsi,placeholder','`sort`');
+		$fieldarr	= $this->flow->flowfieldarr($fieldarr, $this->ismobile);
+		
 		$modelu		= '';
 		foreach($fieldarr as $k=>$rs){
 			if($slx==1 && $oldrs){
@@ -425,6 +432,7 @@ class inputAction extends Action
 		$path 			= ''.P.'/flow/page/input_'.$num.'.html';
 		$pclucont 		= '';
 		if(file_exists($path))$pclucont 	= file_get_contents($path);
+		
 		$isupfile		= 0;
 		$nameaas 		= explode(',', $moders['names']); //子表名
 		
@@ -454,6 +462,7 @@ class inputAction extends Action
 		
 		if($content=='')exit('未设置录入页面,请到[流程模块→表单元素管理]下设置');
 		
+		$content		= $this->flow->flowinputtpl($content, $this->ismobile);
 		
 		$this->actclss	= $this;
 		$pathss 		= ''.P.'/flow/input/mode_'.$num.'Action.php';

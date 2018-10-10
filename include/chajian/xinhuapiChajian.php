@@ -118,6 +118,13 @@ class xinhuapiChajian extends Chajian{
 		$tomobile = m('admin')->getjoinfields($receid, 'mobile');
 		
 		if(isempt($tomobile))return returnerror('接收人['.$receid.']可能没设置手机号');
+		
+		$toama 	= explode(',', $tomobile);
+		$toarr 	= array();
+		foreach($toama as $tostr)if(!contain($tostr,'000000'))$toarr[]=$tostr; //过滤不规则手机号
+		if(!$toarr)return returnerror('接收人的手机号不完整');
+		
+		$tomobile = join(',', $toarr);
 		if(isempt($qiannum))$qiannum = $this->qiannum; //
 		
 		//异步发送
@@ -296,14 +303,16 @@ class xinhuapiChajian extends Chajian{
 		}else{
 			$frs 	= m('file')->getone($fileid);
 			if(!$frs)return returnerror('文件不存在1');
-			$pdfpath= $frs['pdfpath'];
-			$status = 0;
-			if(!isempt($pdfpath)){
-				if(file_exists($pdfpath)){
-					$status = 1;
-				}else{
-					$status = 2;
-				}
+			$filepath 	= $frs['filepath'];
+			$pdfpath	= str_replace('.'.$frs['fileext'].'', '.pdf', $filepath);
+			$status 	= 0;
+			if(file_exists($pdfpath)){
+				$status = 1;
+			}
+			if($status==1){
+				m('file')->update(array(
+					'pdfpath' => $pdfpath
+				), $fileid);
 			}
 			$barr 	= returnsuccess(array('status'=>$status,'ftype'=>'0'));
 		}

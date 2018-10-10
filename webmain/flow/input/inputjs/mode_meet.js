@@ -5,6 +5,7 @@ function initbodys(){
 	$(form('enddt')).blur(function(){
 		changetotal();
 	});
+	if(form('issms'))form('issms').checked=false; //每次编辑都取消
 }
 function changesubmit(d){
 	if(d.enddt<=d.startdt)return '截止时间必须大于开始时间';

@@ -78,16 +78,16 @@ class flowClassAction extends Action
 		if(!in_array(''.PREFIX.''.$tabs.'', $alltabls)){
 			$sql = "CREATE TABLE `[Q]".$tabs."` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
-`mid` smallint(6) DEFAULT '0' COMMENT '对应主表".$tab.".id',
-`sort` smallint(6) DEFAULT '0' COMMENT '排序号',
+`mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id',
+`sort` int(11) DEFAULT '0' COMMENT '排序号',
 PRIMARY KEY (`id`),KEY `mid` (`mid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 			$bo = $this->db->query($sql);
 		}else{
 			$fields = $this->db->getallfields(''.PREFIX.''.$tabs.'');
 			$str 	= '';
-			if(!in_array('mid', $fields))$str.=",add `mid` smallint(6) DEFAULT '0' COMMENT '对应主表".$tab.".id'";
-			if(!in_array('sort', $fields))$str.=",add `sort` smallint(6) DEFAULT '0' COMMENT '排序号'";
+			if(!in_array('mid', $fields))$str.=",add `mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id'";
+			if(!in_array('sort', $fields))$str.=",add `sort` int(11) DEFAULT '0' COMMENT '排序号'";
 			if($slxbo && !in_array('sslx', $fields)){
 				$ssma = explode(',', $ssm);
 				$ss1  = '';
@@ -133,7 +133,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		if(!in_array(''.PREFIX.''.$tab.'', $alltabls)){
 			$sql = "CREATE TABLE `[Q]".$tab."` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` smallint(6) DEFAULT '0',
+  `uid` int(11) DEFAULT '0',
   `optdt` datetime DEFAULT NULL COMMENT '操作时间',
   `optid`  smallint(6) DEFAULT '0',
   `optname` varchar(20) DEFAULT NULL COMMENT '操作人',

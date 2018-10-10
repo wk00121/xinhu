@@ -20,7 +20,7 @@ class crmClassModel extends Model
 	//读取我的销售机会
 	public function getmysale($uid, $id=0)
 	{
-		$where 	= '`uid`='.$uid.' and `state`=1 and (`htid`=0 or `id`='.$id.')';
+		$where 	= '`uid`='.$uid.' and `state` in(0,1) and (`htid`=0 or `htid`='.$id.')';
 		$rows 	= m('custsale')->getrows($where, 'id,custid,custname,money,laiyuan');
 		return $rows;
 	}

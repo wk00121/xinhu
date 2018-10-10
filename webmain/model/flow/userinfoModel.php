@@ -2,6 +2,7 @@
 class flow_userinfoClassModel extends flowModel
 {
 	public  $uidfields = 'id';
+	protected  $flowviewufieds = 'id';
 	
 	public function flowsearchfields()
 	{

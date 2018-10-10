@@ -5,9 +5,9 @@ $(document).ready(function(){
 	var atype=params.atype;
 	var modenum = 'hrsalary';
 	var a = $('#view_{rand}').bootstable({
-		tablename:modenum,params:{'atype':atype},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:true,
+		tablename:modenum,params:{'atype':atype},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:false,storeafteraction:'xinziafter',
 		columns:[{
-			text:'部门',dataIndex:'udeptname',sortable:true
+			text:'部门',dataIndex:'deptallname',sortable:true
 		},{
 			text:'人员',dataIndex:'uname',sortable:true
 		},{
@@ -29,7 +29,7 @@ $(document).ready(function(){
 		},{
 			text:'状态',dataIndex:'statustext'
 		},{
-			text:'',dataIndex:'caozuo'
+			text:'',dataIndex:'caozuo',callback:'callback{rand}'
 		}],
 		itemclick:function(){
 			btn(false);
@@ -39,6 +39,9 @@ $(document).ready(function(){
 		},
 		itemdblclick:function(){
 			c.view();
+		},
+		load:function(d){
+			get('daochu{rand}').disabled= (!d.isdaochu);
 		}
 	});
 	
@@ -66,7 +69,7 @@ $(document).ready(function(){
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
-			openinput('薪资', modenum,id);
+			openinput('薪资', modenum,id,'callback{rand}');
 		},
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
@@ -94,6 +97,9 @@ $(document).ready(function(){
 		}
 	};
 	js.initbtn(c);
+	callback{rand}=function(){
+		a.reload();
+	}
 });
 </script>
 
@@ -130,7 +136,7 @@ $(document).ready(function(){
 	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" click="daoru" type="button">导入</button> &nbsp; 
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+		<button class="btn btn-default" click="daochu,1" disabled id="daochu{rand}" type="button">导出</button> 
 	</td>
 	</tr>
 	</table>

@@ -72,15 +72,22 @@ class flow_gongClassModel extends flowModel
 		$cont = $h->htmlremove($this->rs['content']);
 		$cont = $h->substrstr($cont,0, 50);
 		if(strlen($cont)>40)$cont.='...';
+		if(isempt($cont))$cont = $this->rs['title']; //为空时
 		$this->push($this->rs['receid'], '通知公告', $cont, $this->rs['title'],1);
 		
-		//添加短信提醒
-		$receid = $this->rs['receid'];//接收人ID，可以为部门合聚，如d2,u1(必须)
-		$qiannum= ''; //【系统→短信管理→短信签名】下获取,如没有自己的签名默认【信呼OA】
-		$tplnum	= "default";//到【系统→短信管理→短信模版】下获取(必须)
-		$params = array();
-		$url	= "";//详情连接地址(选填)，短信模版有URL就需要填写
-		//$barr 	= c('xinhuapi')->sendsms($receid,$qiannum, $tplnum, $params, $url);
+		//添加短信提醒，短信提醒
+		if(arrvalue($this->rs,'issms')=='1'){
+			$receid = $this->rs['receid'];//接收人ID，可以为部门合聚，如d2,u1(必须)
+			if(isempt($receid))$receid = 'all'; //为空就是全部人
+			$qiannum= ''; //【系统→短信管理→短信签名】下获取,如没有自己的签名默认【信呼OA】
+			$tplnum	= 'gongsms';//到【系统→短信管理→短信模版】下获取(必须)
+			$params = array(
+				'title' 	=> $this->rs['title'],
+				'typename' 	=> $this->rs['typename'],
+			);
+			$url	= $this->getxiangurlx();//详情连接地址(选填)，短信模版有url就需要填写
+			c('xinhuapi')->sendsms($receid, $qiannum, $tplnum, $params, $url);
+		}
 	}
 	
 	protected function flowgetoptmenu($opt)

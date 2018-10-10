@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：goodly.物品领用，
+*	模块：hrsalarm.薪资模版，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.物品领用]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.薪资模版]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'goodly',modename='物品领用',isflow=1,modeid='24',atype = params.atype,pnum=params.pnum;
+	var modenum = 'hrsalarm',modename='薪资模版',isflow=0,modeid='83',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"state","name":"\u51fa\u5e93\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"wupinlist","name":"\u9886\u7528\u7684\u7269\u54c1","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6a21\u7248\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"atype","name":"\u6a21\u7248\u7c7b\u578b","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"recename","name":"\u9002\u7528\u5bf9\u8c61","fieldstype":"changedeptusercheck","ispx":"1","isalign":"0","islb":"1"},{"fields":"startdt","name":"\u5f00\u59cb\u6708\u4efd","fieldstype":"month","ispx":"0","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u6708\u4efd","fieldstype":"month","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -87,14 +87,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'物品领用('+nowtabs.name+')',
-				cont:'物品领用('+nowtabs.name+')的列表的',
-				explain:'订阅[物品领用]的列表',
+				title:'薪资模版('+nowtabs.name+')',
+				cont:'薪资模版('+nowtabs.name+')的列表的',
+				explain:'订阅[薪资模版]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_goodly|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_hrsalarm|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -151,8 +151,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistgoodly = a;
-			addtabs({num:'daorugoodly',url:'flow,input,daoru,modenum=goodly',icons:'plus',name:'导入物品领用'});
+			window.managelisthrsalarm = a;
+			addtabs({num:'daoruhrsalarm',url:'flow,input,daoru,modenum=hrsalarm',icons:'plus',name:'导入薪资模版'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -222,10 +222,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29vZG0:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aHJzYWxhcm0:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"申请日期",dataIndex:"applydt"},{text:"说明",dataIndex:"explain"},{text:"出库状态",dataIndex:"state",sortable:true},{text:"领用的物品",dataIndex:"wupinlist"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"模版名称",dataIndex:"title"},{text:"模版类型",dataIndex:"atype"},{text:"适用对象",dataIndex:"recename",sortable:true},{text:"开始月份",dataIndex:"startdt"},{text:"截止月份",dataIndex:"enddt"},{text:"说明",dataIndex:"explain"},{text:"排序号",dataIndex:"sort",sortable:true},{text:"状态",dataIndex:"status"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -242,22 +242,51 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-if(pnum=='all'){
-	c.setcolumns('state',{
-		renderer:function(v,d){
-			if(d.states!='1' && d.status=='1')v+=',<a href="javascript:;" onclick="rukuope{rand}('+d.id+')">去出库</a>';
-			return v;
-		}
-	});
-	rukuope{rand}=function(id){
-		addtabs({url:'main,goods,churuku,type=1,mid='+id+',kind=0,kindname=领用出库','num':'rukuopt'+id+'',name:''+id+'.'+modename+'操作'});
+bootparams.celleditor = true;
+c.setcolumns('status',{
+	editor:true,
+	type:'checkbox',
+	editorafter:function(){
+		a.reload();
 	}
+});
+c.setcolumns('sort',{
+	editor:true
+});
+c.setcolumns('title',{
+	editor:true
+});
+c.setcolumns('explain',{
+	editor:true
+});
+$('#tdright_{rand}').prepend(c.getbtnstr('导入模版','daoruxzmb')+'&nbsp;&nbsp;');
+$('#tdright_{rand}').prepend(c.getbtnstr('复制','copyfuz')+'&nbsp;&nbsp;');
+c.copyfuz=function(){
+	var sid = a.changeid;
+	if(!sid){js.msg('msg','没有选中行');return;}
+	
+	js.msg('wait','复制中...');
+	js.ajax(publicmodeurl(modenum,'copyfuz'),{sid:sid}, function(d){
+		js.msg('success', '复制成功');
+		a.reload();
+	},'get');
+}
+c.daoruxzmb=function(){
+	js.msg('wait','导入中...');
+	js.ajax(publicmodeurl(modenum,'daoruxzmb'),{}, function(ret){
+		if(ret=='ok'){
+			js.msg('success', '导入成功');
+			a.reload();
+		}else{
+			js.msg('msg', ret);
+		}
+	},'get');
 }
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewgoodly_{rand}').bootstable(bootparams);
+	var a = $('#viewhrsalarm_{rand}').bootstable(bootparams);
 	c.init();
 	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
@@ -280,9 +309,9 @@ if(pnum=='all'){
 	<tr>
 		<td style="padding-right:10px;" id="tdleft_{rand}" nowrap><button id="addbtn_{rand}" class="btn btn-primary" click="clickwin,0" disabled type="button"><i class="icon-plus"></i> 新增</button></td>
 		<td>
-			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
+			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待?处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待?处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -297,5 +326,5 @@ if(pnum=='all'){
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewgoodly_{rand}"></div>
+<div id="viewhrsalarm_{rand}"></div>
 <!--HTMLend-->

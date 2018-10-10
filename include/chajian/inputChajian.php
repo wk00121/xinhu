@@ -129,17 +129,26 @@ class inputChajian extends Chajian
 			
 			$datanum 	= $data;
 			$fopt		= $this->getdatastore($type, $objs, $datanum, $fid);
+			$optgroup	= '';
 			if($fopt)foreach($fopt as $k=>$rs){
 				$_val= arrvalue($rs,'value', $rs['name']);
 				$sel = ($_val==$val)?'selected':'';
 				$sel2 = ($_val==$val)?'checked':'';
 				$ocn = '';
 				if($type=='select')foreach($rs as $k1=>$v1)if($k1!='id'&&$k1!='value'&&$k1!='name')$ocn.=' '.$k1.'="'.$v1.'"';
+				if($type=='select' && isset($rs['optgroup']) && !isempt($rs['optgroup'])){
+					if($optgroup!=$rs['optgroup']){
+						if($optgroup!='')$str.='</optgroup>';
+						$str.='<optgroup label="'.$rs['optgroup'].'">';
+					}
+					$optgroup = $rs['optgroup'];
+				}
 				$str.='<option'.$ocn.' value="'.$_val.'" '.$sel.'>'.$rs['name'].'</option>';
+				
 				$str1.='<label><input name="'.$fname.'[]" value="'.$_val.'" type="checkbox">'.$rs['name'].'</label>&nbsp;&nbsp;';
 				$str2.='<label><input'.$ocn.' name="'.$fname.'" '.$sel2.' value="'.$_val.'" type="radio">'.$rs['name'].'</label>&nbsp;&nbsp;';
 			}
-			
+			if($type=='select' && $optgroup!='')$str.='</optgroup>';
 			$str.='</select>';
 			if($type=='checkboxall')$str = $str1;
 			if($type=='radio')$str = $str2;

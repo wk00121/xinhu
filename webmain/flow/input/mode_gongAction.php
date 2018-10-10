@@ -8,9 +8,10 @@ class mode_gongClassAction extends inputAction{
 	
 	protected function savebefore($table, $arr, $id, $addbo){
 		//$uarr['receid'] = $this->flow->getreceids($arr['receid']);
-		
+		$uarr = array();
+		if(!isset($arr['issms']))$uarr['issms']=0;
 		return array(
-			//'rows' => $uarr
+			'rows' => $uarr
 		);
 	}
 	

@@ -144,6 +144,14 @@ $(document).ready(function(){
 			};
 			js.getuser(cans);
 		},
+		getzbraben:function(){
+			h.form.zbrangeame.value='本部门';
+			h.form.zbrangeid.value='dept';
+		},
+		getzbrabens:function(){
+			h.form.zbrangeame.value='本部门(含下级部门)';
+			h.form.zbrangeid.value='deptall';
+		},
 		allqt:function(){
 			h.form.recename.value='全体人员';
 			h.form.receid.value='all';
@@ -380,6 +388,8 @@ $(document).ready(function(){
 					<input type="hidden" name="zbrangeid" >
 					<span class="input-group-btn">
 						<button class="btn btn-default" click="getzbraremoves" type="button"><i class="icon-remove"></i></button>
+						<button class="btn btn-default" click="getzbraben" type="button">本部门</button>
+						<button class="btn btn-default" click="getzbrabens" type="button">本部门(含下级)</button>
 						<button class="btn btn-default" click="getzbrangeame,1" type="button"><i class="icon-search"></i></button>
 					</span>
 				</div>

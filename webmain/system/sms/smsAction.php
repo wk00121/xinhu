@@ -46,7 +46,7 @@ class smsClassAction extends Action
 		
 		$parasm		= array(
 			'modename' 	=> '测试短信',
-			'sericnum' 	=> 'AB-20170117-0001',
+			'sericnum' 	=> 'AB-'.date('Ymd').'',
 			'applyname' => '申请人',
 		);
 		if($dirtype=='alisms'){
@@ -108,13 +108,15 @@ class smsClassAction extends Action
 	public function saveqianAjax()
 	{
 		if(getconfig('systype')=='demo')return returnerror('demo演示上禁止操作');
-		$cont = $this->post('cont');
+		$cont = trim($this->post('cont'));
 		$num  = $this->post('num');
+		$explain  = trim(htmlspecialchars($this->post('explain')));
 		$isgk = (int)$this->post('isgk',1);
 		$barr = $this->smsobj->postdata('sms','saveqian', array(
 			'cont' 	=> $cont,
 			'num' 	=> $num,
 			'isgk' 	=> $isgk,
+			'explain' 	=> $explain,
 		));
 		return $barr;
 	}

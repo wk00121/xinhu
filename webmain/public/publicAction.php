@@ -5,14 +5,14 @@ class publicClassAction extends Action{
 	public function fileviewerAction()
 	{
 		$id = (int)$this->get('id','0');
-		$frs= m('file')->getone($id);
+		$fobj = m('file');
+		$frs= $fobj->getone($id);
 		if(!$frs)exit('文件的记录不存在了1');
 		$type 		= $frs['fileext'];
 		$filepath 	= $frs['filepath'];
 		if(!file_exists($filepath))exit('文件不存在了2');
 		$types 		= ','.$type.',';
 		//可读取文件预览的扩展名
-		$vest 	= ',txt,log,html,htm,js,php,php3,cs,sql,java,json,css,asp,aspx,shtml,c,vbs,jsp,xml,bat,sh,';
 		$docx	= ',doc,docx,xls,xlsx,ppt,pptx,';
 		if(contain($docx, $types)){
 			$filepath 	= $frs['pdfpath'];
@@ -27,7 +27,7 @@ class publicClassAction extends Action{
 				$exta = substr($filepath, -4);
 				if($exta=='html')$this->rock->location($filepath);
 			}
-		}else if(contain($vest, $types)){
+		}else if($fobj->isyulan($type)){
 			$content  = file_get_contents($filepath);
 			if(substr($filepath,-6)=='uptemp')$content = base64_decode($content);
 			$bm =  c('check')->getencode($content);
@@ -46,6 +46,7 @@ class publicClassAction extends Action{
 		$str = 'mode/pdfjs/web/viewer.css';
 		if(!file_exists($str))exit('未安装预览pdf插件，不能预览该文件，可到信呼官网下查看安装方法，<a target="_blank" href="'.URLY.'view_topdf.html">查看帮助?</a>。');
 		$this->smartydata['filepath'] = $this->jm->base64encode($filepath);
+		$this->smartydata['filename'] = $frs['filename'];
 	}
 	
 	private function topdfshow($frs)

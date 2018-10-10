@@ -18,7 +18,7 @@ class fileClassModel extends Model
 	public function getfile($mtype, $mid, $where='')
 	{
 		if($where=='')$where = "`mtype`='$mtype' and `mid` in($mid)";
-		$rows	= $this->getall("$where order by `id`",'id,`mid`,filename,filepath,filesizecn,filesize,fileext,optname');
+		$rows	= $this->getall("$where order by `id`",'id,`mid`,filename,filepath,filesizecn,filesize,fileext,optname,thumbpath');
 		return $rows;
 	}
 	
@@ -61,6 +61,17 @@ class fileClassModel extends Model
 		return $this->contain('|jpg|png|gif|bmp|jpeg|', '|'.$ext.'|');
 	}
 	
+	public function isoffice($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|pdf|', '|'.$ext.'|');
+	}
+	
+	public function isyulan($ext)
+	{
+		return contain(',txt,log,html,htm,js,php,php3,cs,sql,java,json,css,asp,aspx,shtml,c,vbs,jsp,xml,bat,sh,', ','.$ext.',');
+	}
+	
+	//$lx=2详情
 	public function getfilestr($rs, $lx=0)
 	{
 		$fstr= '';
@@ -68,21 +79,44 @@ class fileClassModel extends Model
 		$str = $this->rock->jm->strrocktoken(array('a'=>'down','id'=>$rs['id']));
 		$url = ''.URL.'index.php?rocktoken='.$str.'';
 		$str = 'href="'.$url.'" target="_blank"';
+		$ext   = $rs['fileext'];
+		$isimg= $this->isimg($ext);
 		$strd= $str;
 		if($lx==1)$str='href="javascript:;" onclick="return js.downshow('.$rs['id'].')"';
 		if($lx==2){
 			$paths = $rs['filepath'];
-			if(!$this->isimg($rs['fileext']))$paths='';
-			$str='href="javascript:;" onclick="return c.downshow('.$rs['id'].',\''.$rs['fileext'].'\',\''.$paths.'\')"';//详情上预览
+			if(!$isimg)$paths='';
+			$str='href="javascript:;" onclick="return c.downshow('.$rs['id'].',\''.$ext.'\',\''.$paths.'\')"';//详情上预览
 		}
+		
 		$flx   = $rs['fileext'];
 		if(!$this->contain($this->fileall,','.$flx.','))$flx='wz';
 		$str1  = '';
-		$fstr .='<img src="'.URL.'web/images/fileicons/'.$flx.'.gif" align="absmiddle" height=16 width=16> <a '.$str.' style="color:blue;">'.$rs['filename'].'</a>';
-		if($lx==2 && !$this->rock->ismobile()){
-			$fstr .= ' <a '.$strd.' class="zhu">[下载]</a>';
+		$imurl = ''.URL.'web/images/fileicons/'.$flx.'.gif';
+		if($isimg && !isempt($rs['thumbpath']) && file_exists($rs['thumbpath'])){
+			$imurl = ''.URL.''.$rs['thumbpath'].'';
 		}
-		$fstr .= ' ('.$rs['filesizecn'].''.$str1.')';
+		$isdel = file_exists($rs['filepath']);
+		
+		$fstr .='<img src="'.$imurl.'" align="absmiddle" height=20 width=20>';
+		if($isdel){
+			$fstr .=' '.$rs['filename'].'';
+		}else{
+			$fstr .=' <s>'.$rs['filename'].'</s>';
+		}
+		
+		$fstr .=' <span style="color:#aaaaaa;font-size:12px">('.$rs['filesizecn'].')</span>';
+		
+		if($lx==2){
+			if($isdel){
+				$fstr .= ' <a temp="clo" '.$strd.' class="blue">下载</a>';
+				if($isimg || $this->isoffice($ext) || $this->isyulan($ext))
+					$fstr .= '&nbsp; <a temp="clo" '.$str.' class="blue">预览</a>';
+			}else{
+				$fstr .= ' <span style="color:#aaaaaa;font-size:12px">已删除</span>';
+			}
+		}
+
 		return $fstr;
 	}
 	

@@ -35,6 +35,8 @@ $(document).ready(function(){
 		},{
 			text:'部门',dataIndex:'deptname',sortable:true
 		},{
+			text:'职位',dataIndex:'ranking'
+		},{
 			text:'操作',dataIndex:'opt',renderer:function(v,d){
 				return '<a href="javascript:" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
 			}

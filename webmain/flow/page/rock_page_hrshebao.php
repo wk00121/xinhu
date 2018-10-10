@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：goodly.物品领用，
+*	模块：hrshebao.社保公积金，
 *	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
-*	来源：流程模块→表单元素管理→[模块.物品领用]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.社保公积金]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'goodly',modename='物品领用',isflow=1,modeid='24',atype = params.atype,pnum=params.pnum;
+	var modenum = 'hrshebao',modename='社保公积金',isflow=0,modeid='84',atype = params.atype,pnum=params.pnum;
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"state","name":"\u51fa\u5e93\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"wupinlist","name":"\u9886\u7528\u7684\u7269\u54c1","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"recename","name":"\u9002\u7528\u5bf9\u8c61","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"1"},{"fields":"yljishu","name":"\u517b\u8001\u4fdd\u9669\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"ylgeren","name":"\u517b\u8001\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"ylunit","name":"\u517b\u8001\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"syjishu","name":"\u5931\u4e1a\u4fdd\u9669\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"sygeren","name":"\u5931\u4e1a\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"syunit","name":"\u5931\u4e1a\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gsjishu","name":"\u5de5\u4f24\u4fdd\u9669\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gsgeren","name":"\u5de5\u4f24\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gsunit","name":"\u5de5\u4f24\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"syujishu","name":"\u751f\u80b2\u4fdd\u9669\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"syugeren","name":"\u751f\u80b2\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"syuunit","name":"\u751f\u80b2\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"yijishu","name":"\u533b\u7597\u4fdd\u9669\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"yigeren","name":"\u533b\u7597\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"yiunit","name":"\u533b\u7597\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"dbgeren","name":"\u5927\u75c5\u4e2a\u4eba(\u5143)","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"shebaogeren","name":"\u4e2a\u4eba\u793e\u4fdd\u7f34\u8d39(\u5143)","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"shebaounit","name":"\u5355\u4f4d\u793e\u4fdd\u7f34\u8d39(\u5143)","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"gongjishu","name":"\u516c\u79ef\u91d1\u57fa\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gjjgeren","name":"\u516c\u79ef\u91d1\u4e2a\u4eba\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gjjunit","name":"\u516c\u79ef\u91d1\u5355\u4f4d\u6bd4\u4f8b(%)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"gonggeren","name":"\u516c\u79ef\u91d1\u4e2a\u4eba(\u5143)","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"gongunit","name":"\u516c\u79ef\u91d1\u5355\u4f4d(\u5143)","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"startdt","name":"\u5f00\u59cb\u6708\u4efd","fieldstype":"month","ispx":"0","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u6708\u4efd","fieldstype":"month","ispx":"0","isalign":"0","islb":"1"},{"fields":"sctime","name":"\u6bcf\u6708\u751f\u6210\u65f6\u95f4","fieldstype":"date","ispx":"0","isalign":"0","islb":"0"},{"fields":"explian","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -87,14 +87,14 @@ $(document).ready(function(){
 		},
 		subscribelist:function(){
 			js.subscribe({
-				title:'物品领用('+nowtabs.name+')',
-				cont:'物品领用('+nowtabs.name+')的列表的',
-				explain:'订阅[物品领用]的列表',
+				title:'社保公积金('+nowtabs.name+')',
+				cont:'社保公积金('+nowtabs.name+')的列表的',
+				explain:'订阅[社保公积金]的列表',
 				objtable:a
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_goodly|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_hrshebao|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -151,8 +151,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistgoodly = a;
-			addtabs({num:'daorugoodly',url:'flow,input,daoru,modenum=goodly',icons:'plus',name:'导入物品领用'});
+			window.managelisthrshebao = a;
+			addtabs({num:'daoruhrshebao',url:'flow,input,daoru,modenum=hrshebao',icons:'plus',name:'导入社保公积金'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -222,10 +222,10 @@ $(document).ready(function(){
 	
 	//表格参数设定
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29vZG0:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aHJzaGViYW8:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},{text:"申请日期",dataIndex:"applydt"},{text:"说明",dataIndex:"explain"},{text:"出库状态",dataIndex:"state",sortable:true},{text:"领用的物品",dataIndex:"wupinlist"},{text:"状态",dataIndex:"statustext"},{
+		columns:[{text:"名称",dataIndex:"title"},{text:"适用对象",dataIndex:"recename"},{text:"状态",dataIndex:"status"},{text:"大病个人(元)",dataIndex:"dbgeren"},{text:"个人社保缴费(元)",dataIndex:"shebaogeren"},{text:"单位社保缴费(元)",dataIndex:"shebaounit"},{text:"公积金个人(元)",dataIndex:"gonggeren"},{text:"公积金单位(元)",dataIndex:"gongunit"},{text:"开始月份",dataIndex:"startdt"},{text:"截止月份",dataIndex:"enddt"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -242,22 +242,33 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-if(pnum=='all'){
-	c.setcolumns('state',{
-		renderer:function(v,d){
-			if(d.states!='1' && d.status=='1')v+=',<a href="javascript:;" onclick="rukuope{rand}('+d.id+')">去出库</a>';
-			return v;
-		}
-	});
-	rukuope{rand}=function(id){
-		addtabs({url:'main,goods,churuku,type=1,mid='+id+',kind=0,kindname=领用出库','num':'rukuopt'+id+'',name:''+id+'.'+modename+'操作'});
+bootparams.celleditor = true;
+c.setcolumns('status',{
+	editor:true,
+	type:'checkbox',
+	editorafter:function(){
+		a.reload();
 	}
+});
+c.setcolumns('title',{
+	editor:true
+});
+$('#tdright_{rand}').prepend(c.getbtnstr('复制','copyfuz')+'&nbsp;&nbsp;');
+c.copyfuz=function(){
+	var sid = a.changeid;
+	if(!sid){js.msg('msg','没有选中行');return;}
+	
+	js.msg('wait','复制中...');
+	js.ajax(publicmodeurl(modenum,'copyfuz'),{sid:sid}, function(d){
+		js.msg('success', '复制成功');
+		a.reload();
+	},'get');
 }
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewgoodly_{rand}').bootstable(bootparams);
+	var a = $('#viewhrshebao_{rand}').bootstable(bootparams);
 	c.init();
 	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
@@ -280,9 +291,9 @@ if(pnum=='all'){
 	<tr>
 		<td style="padding-right:10px;" id="tdleft_{rand}" nowrap><button id="addbtn_{rand}" class="btn btn-primary" click="clickwin,0" disabled type="button"><i class="icon-plus"></i> 新增</button></td>
 		<td>
-			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
+			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待?处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -297,5 +308,5 @@ if(pnum=='all'){
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewgoodly_{rand}"></div>
+<div id="viewhrshebao_{rand}"></div>
 <!--HTMLend-->

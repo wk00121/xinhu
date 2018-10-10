@@ -46,12 +46,22 @@ class minute5ClassAction extends runtAction
 					if($zt==0)$nzt = 1;
 				}else{
 					$jg = $sttime - $time;
-					if($jg <= 600 && $zt==0){
+					if($jg <= 600 && $zt==0){ //提前10分钟就提醒
 						$ssj 	= floor($jg/60);
 						$tzuid 	= $adm->gjoin($rs['joinid']);
-						$cont  	= '['.$rs['title'].']会议将在'.$ssj.'分钟后的'.$dts[1].'开始请做好准备，会议室['.$rs['hyname'].']';
+						
+						$cont  	= '会议“'.$rs['title'].'”将在'.$ssj.'分钟后的'.$dts[1].'开始请做好准备，在会议室“'.$rs['hyname'].'”';
+						$flow->loaddata($rs['id'], false);
 						$flow->id = $rs['id'];
-						$flow->push($tzuid, '', $cont);
+						$flow->push($tzuid, '', $cont); //不知道为啥这错。
+					
+						//短信通知
+						if($ssj<6)$flow->sendsms($rs, 'meettodo', array(
+							'fenz' 		=> ''.$ssj.'',
+							'title' 	=> $rs['title'],
+							'time' 		=> $dts[1],
+							'hyname' 	=> $rs['hyname']
+						));
 					}
 				}
 			}

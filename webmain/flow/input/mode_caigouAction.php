@@ -8,6 +8,12 @@ class mode_caigouClassAction extends inputAction{
 		$this->sssaid = '0';
 		foreach($data as $k=>$rs){
 			$this->sssaid.=','.$rs['aid'].'';
+			if(isset($rs['aid']))foreach($data as $k1=>$rs1){
+				if($k!=$k1){
+					if($rs['aid']==$rs1['aid'])
+						return '行'.($k1+1).'的物品已在行'.($k+1).'上填写，不要重复填写';
+				}
+			}
 		}
 	}
 	

@@ -116,12 +116,22 @@ class flowModel extends Model
 	//默认排序如：id,desc
 	public $defaultorder	= '';
 	
+	//是否可编辑别人单据
+	public $floweditother	= false;
+	
 	public function echomsg($msg)
 	{
 		if(!isajax())exit($msg);
 		showreturn('', $msg, 201);
 		exit();
 	}
+	
+	//字段处理$farr字段,$lx=0pc,1移动
+	public function flowfieldarr($farr, $lx){return $farr;}
+	
+	//自定义录入模版$lx=0pc,1移动
+	public function flowinputtpl($cont, $lx){return $cont;}
+	public function flowviewtpl($cont, $lx){return $cont;}
 	
 	/**
 	*	初始化流程信息
@@ -153,7 +163,7 @@ class flowModel extends Model
 		$this->adminmodel	= m('admin');
 		$this->remindmodel	= m('remind'); //单据提醒表
 		$this->option		= m('option');
-		$this->tfieldsarra();
+		$this->tfieldsarra(); //初始化录入的表单元素
 		$this->flowinit();
 		if($id==null)return $this;
 		$this->loaddata($id, true);
@@ -354,7 +364,7 @@ class flowModel extends Model
 	}
 	
 	/**
-	*	获取录入字段
+	*	获取详情展示字段
 	*/
 	public function getfields($lx=0)
 	{
@@ -454,7 +464,8 @@ class flowModel extends Model
 
 		//使用了自定的展示模板
 		if(file_exists($path)){
-			$contview 	 = file_get_contents($path);
+			$contview 	 = $this->flowviewtpl(file_get_contents($path), $lx);
+			
 			$_logarr	 = array();
 			foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
 			//读取流程审核步骤信息，只显示同意的
@@ -887,7 +898,7 @@ class flowModel extends Model
 	public function getlog()
 	{
 		if($this->getlogrows)return $this->getlogrows;
-		$rows = $this->flogmodel->getrows($this->mwhere, '`checkname` as `name`,`checkid`,`name` as actname,`optdt`,`explain`,`statusname`,`courseid`,`color`,`id`,`qmimg`','`id` asc');
+		$rows = $this->flogmodel->getrows($this->mwhere, '`checkname` as `name`,`checkid`,`name` as actname,`optdt`,`status`,`explain`,`statusname`,`valid`,`courseid`,`color`,`id`,`qmimg`','`id` asc');
 		$uids = $idss = '';
 		$dts  = c('date');
 		$fo   = m('file');
@@ -1273,7 +1284,7 @@ class flowModel extends Model
 			if($this->isflow==2){
 				$logdsar		= $this->getlog();
 				foreach($logdsar as $k1=>$rs1)
-					if($rs1['courseid']>0)$yisheh .= ','.$rs1['checkid'].'';	
+					if($rs1['courseid']>0 && $rs1['status']==1 && $rs1['valid']==1)$yisheh .= ','.$rs1['checkid'].'';	
 			}
 	
 			foreach($nrows as $k=>$rs){
@@ -1608,7 +1619,7 @@ class flowModel extends Model
 				if(!isempt($txnum)){
 					$mknum 	= $this->option->getval('sms_mknum');
 					if($mknum=='all' || contain(','.$mknum.',',','.$this->modenum.',')){
-						$wxurl		= $this->getxiangurl();
+						$wxurl		= $this->getxiangurlx();
 						$barr 		= c('xinhuapi')->sendsms($nuid, '', $txnum, array(
 							'modename' => $this->modename,
 							'sericnum' => $this->sericnum,
@@ -1983,9 +1994,12 @@ class flowModel extends Model
 	{
 		if($num=='')$num = $this->modenum;
 		if($id==0)$id 	 = $this->id;
-		$url 	= ''.URL.'task.php?a='.$lx.'&num='.$num.'&mid='.$id.'';
+		$url 	= URL;
+		if($lx=='x')$url = $this->rock->getouturl();//移动端
+		$url 	= ''.$url.'task.php?a='.$lx.'&num='.$num.'&mid='.$id.'';
 		return $url;
 	}
+	public function getxiangurlx($num='',$id=0){return $this->getxiangurl($num,$id,'x');}
 	
 	
 	/**
@@ -2220,7 +2234,7 @@ class flowModel extends Model
 			$farr 		= $this->getflow(true);
 			$nowcheckid = $farr['nowcheckid']; //当前处理人
 			$tplnum		= $this->option->getval('sms_cbnum','defnum');//短信模版
-			$wxurl		= $this->getxiangurl();
+			$wxurl		= $this->getxiangurlx();
 			$barr 		= c('xinhuapi')->sendsms($nowcheckid, '', $tplnum, array(
 				'modename' => $this->modename,
 				'sericnum' => $this->sericnum,
@@ -2456,6 +2470,7 @@ class flowModel extends Model
 	public function billwhere($uid, $lx)
 	{
 		$arr['table'] 	= $this->mtable;
+		$arr['tableleft'] 	= ''; //左关联table
 		$arr['fields'] 	= '';
 		$arr['order'] 	= '';
 		$arr['group'] 	= '';
@@ -2478,12 +2493,8 @@ class flowModel extends Model
 		$_wehs			= '';
 		if(is_array($nas)){
 			if(isset($nas['where']))$_wehs = $nas['where'];
-			if(isset($nas['asqom']))$arr['asqom']  = $nas['asqom'];
-			if(isset($nas['order']))$arr['order']  = $nas['order'];
-			if(isset($nas['fields']))$arr['fields']= $nas['fields'];
-			if(isset($nas['table']))$arr['table']  = $nas['table'];
-			if(isset($nas['group']))$arr['group']  = $nas['group'];
-			if(isset($nas['keywhere']))$arr['keywhere']  = $nas['keywhere'];
+			$ftears	= explode(',','asqom,order,fields,fieldsleft,table,group,keywhere,tableleft');
+			foreach($ftears as $fid)if(isset($nas[$fid]))$arr[$fid]  = $nas[$fid];
 		}else{
 			$_wehs	= $nas;
 		}
@@ -2494,9 +2505,11 @@ class flowModel extends Model
 		$temsao			= 0;
 		if(!contain($table, ' ') && $this->isflow>0){
 			$arr['table'] = '`[Q]'.$this->mtable.'` a left join `[Q]flow_bill` b on a.`id`=b.`mid` and b.`table`=\''.$this->mtable.'\'';
+			if(!isempt($arr['tableleft']))$arr['table'].=' left join '.$arr['tableleft'].'';
 			$arr['asqom'] = 'a.';
 			$arr['fields']= 'a.*,b.`uname` as base_name,b.`udeptname` as base_deptname,b.`sericnum`,b.`nowcheckname`';
-			$arr['order'] = 'a.`optdt` desc'; //默认操作时间倒序
+			if(isset($arr['fieldsleft']) && $arr['fieldsleft'])$arr['fields'].=','.$arr['fieldsleft'].''; 
+			if($arr['order']=='')$arr['order'] = 'a.`optdt` desc'; //默认操作时间倒序
 			$temsao		  = 1;
 			if($this->defaultorder){
 				$defa 			= explode(',', $this->defaultorder);
@@ -2925,6 +2938,7 @@ class flowModel extends Model
 		
 		$sql 	= 'select '.$fields.' as `name`,'.$tofiels.' as value from '.$table.' where 1=1 '.$where.' group by '.$fields.'';
 		$sql 	= str_replace('[A]', $narr['asqom'], $sql);
+		
 		
 		$rows 	= $this->db->getall($sql);
 		$total	= 0;

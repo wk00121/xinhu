@@ -725,7 +725,11 @@ class kaoqinClassModel extends Model
 			if($rs['state']=='早退')$zaotui = $rs['stotal'];
 			if($rs['state']=='未打卡')$weidk= $rs['stotal'];
 		}
+		$dbts = $this->getsbdt($uid, $month);//上班天数
+		
 		return array(
+			'ysbtime' 	=> $dbts[0],
+			'zsbtime' 	=> $dbts[1],
 			'cidao' 	=> $chidao,
 			'zaotui' 	=> $zaotui,
 			'weidk' 	=> $weidk,

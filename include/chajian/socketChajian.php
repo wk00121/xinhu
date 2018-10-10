@@ -30,7 +30,8 @@ class socketChajian extends Chajian
 		if($type=='ppt' || $type=='pptx')$flx='ppt';
 		$topah 	= ''.ROOT_PATH.'/mode/pdfjs/topdf/'.$flx.'.js';
 		if(!file_exists($topah))return '没有安装转化插件';
-		$url  	= m('base')->getasynurl('asynrun', 'topdfok', array('id'=>$fid,'type'=>'pdf'));;
+		$url  	= m('base')->getasynurl('asynrun', 'topdfok', array('id'=>$fid,'type'=>'pdf'));
+		$url 	= URL;
 		$path 	= ''.ROOT_PATH.'/mode/pdfjs/topdf/start.bat "'.$topah.'" "'.ROOT_PATH.'/'.$path.'" "'.$url.'"';
 		$bo 	= $this->udpsend($path);
 		return $bo;
@@ -50,9 +51,9 @@ class socketChajian extends Chajian
 			}
 			if($msg==''){
 				fwrite($handle, $str);  
-				$bstr = fread($handle, 1024); 
+				//$bstr = fread($handle, 1024); //去掉这个，不然容易阻塞
 				fclose($handle);
-				if(isempt($bstr))$msg = 'error';
+				//if(isempt($bstr))$msg = 'error';
 			}
 		}
 		$barr['code'] = 0;
