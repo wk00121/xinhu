@@ -56,7 +56,7 @@ class inputAction extends Action
 		$this->flow		= m('flow')->initflow($modenum);
 		$this->moders	= $this->flow->moders;
 		$modeid			= $this->moders['id'];
-		$isflow			= $this->moders['isflow'];
+		$isflow			= (int)$this->moders['isflow'];
 		$flownum		= $this->moders['num'];
 		$table			= $this->moders['table'];
 		$sysisturn		= (int)$this->post('istrun','1');
@@ -127,6 +127,8 @@ class inputAction extends Action
 				if($this->flow->rows("`$fid`='{$uaarr[$fid]}' and `id`<>$id")>0)$uaarr[$fid]=$this->flow->createbianhao($rs['data'], $fid);
 			}
 		}
+		
+		
 		
 		//默认字段保存
 		$allfields = $this->db->getallfields('[Q]'.$table.'');
@@ -378,13 +380,13 @@ class inputAction extends Action
 		
 		$apaths		= ''.P.'/flow/input/mode_'.$moders['num'].'Action.php';
 		if(!file_exists($apaths))exit('没有创建布局录入页面，无法打开，请到【流程模块→表单元素管理】下的点按钮“PC端录入页面布局”，更多查看'.c('xinhu')->helpstr('bwb3mf').'。');
-		
+		$isflow		= (int)$moders['isflow'];
 		$this->smartydata['moders']	= array(
 			'num' 	=> $moders['num'],
 			'id' 	=> $moders['id'],
 			'name' 	=> $moders['name'],
 			'names' => $moders['names'],
-			'isflow'=> $moders['isflow'],
+			'isflow'=> $isflow,
 			'iscs'	=> $moders['iscs'],
 		);
 		$this->smartydata['chao']	= $this->flow->getcsname($mid);
@@ -412,7 +414,7 @@ class inputAction extends Action
 				if($rs['issou']==1)$modelu.='{'.$rs['fields'].'}';
 			}else{	
 				if($rs['islu'] || $stwhe!='')$modelu.='{'.$rs['fields'].'}';
-				if(!isempt($rs['gongsi']))$this->gongsiarr[] = array(
+				if(!isempt($rs['gongsi']) && contain($rs['gongsi'],'{'))$this->gongsiarr[] = array(
 					'iszb' 	 => 0,
 					'fields' => $rs['fields'],
 					'gongsi' => $rs['gongsi'],
@@ -495,20 +497,26 @@ class inputAction extends Action
 		
 		$course			= array();
 		$nowcourseid	= 0;
-		if($moders['isflow']>0 && $lutype==0 && $moders['isbxs']==0){
+		if($isflow>0 && $lutype==0 && $moders['isbxs']==0){
 			$course[]= array('name'=>'提交','id'=>0);
-			$courses	= $this->flow->getflowpipei($this->adminid);
-			if($mid>0){
-				$nowcourseid = $this->flow->billmodel->getmou('nowcourseid',"`table`='".$this->flow->mtable."' and `mid`='$mid'");
-			}
-			foreach($courses as $k=>$rs1){
-				$na = $rs1['name'];
-				if(!$this->isempt($rs1['explain']))$na.= '<br><span style="font-size:12px">('.$rs1['explain'].')</span>';
-				$rs1['name'] = $na;
-				$rs1['k'] 	 = $k;
-				$rs1['isnow']= $rs1['id']==$nowcourseid;
-				$course[]=$rs1;
-			}
+			
+			
+			
+				$courses	= $this->flow->getflowpipei($this->adminid);
+				if($mid>0){
+					$nowcourseid = $this->flow->billmodel->getmou('nowcourseid',"`table`='".$this->flow->mtable."' and `mid`='$mid'");
+				}
+				foreach($courses as $k=>$rs1){
+					$na = $rs1['name'];
+					if(!$this->isempt($rs1['explain']))$na.= '<br><span style="font-size:12px">('.$rs1['explain'].')</span>';
+					$rs1['name'] = $na;
+					$rs1['k'] 	 = $k;
+					$rs1['isnow']= $rs1['id']==$nowcourseid;
+					$course[]=$rs1;
+				}
+				
+			
+			
 			$course[]= array('name'=>'结束','id'=>-1);
 		}
 		$this->title  	= $moders['name'];
@@ -516,11 +524,14 @@ class inputAction extends Action
 		$this->smartydata['gongsiarr']	= $this->gongsiarr;
 		$this->smartydata['subfielsa']	= $this->subfielsa;
 		$this->smartydata['mid']		= $mid;
-		$this->smartydata['isflow']		= $moders['isflow'];
+		$this->smartydata['isflow']		= $isflow;
 		$this->smartydata['course']		= $course;
 		$this->smartydata['zbnamearr']	= $nameaas;
 		$this->smartydata['zbshu']		= $zbshu;//子表数
 		$this->smartydata['isupfile']	= $isupfile;//是否有上传
+		$this->assign('inputobj', c('input'));
+		
+		
 	}
 	
 	//多行子表内替换

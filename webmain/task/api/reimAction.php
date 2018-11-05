@@ -45,9 +45,16 @@ class reimClassAction extends apiAction
 			$tos = m('im_groupuser')->rows("`gid`='$gid' and `uid`='$uid'");
 			if($tos==0)$this->showreturn('','您不在此会话中，不允许发送', 201);
 		}
+		
+		$cont 		= $this->post('cont');
+		$cont 		= $this->jm->base64decode($cont);
+		$cont 		= str_replace('<br>','[BR]', $cont);
+		$cont 		= str_replace(array('<','>'),array('&lt;','&gt;'), $cont);
+		$cont 		= $this->jm->base64encode(str_replace('[BR]','<br>',$cont));
+		
 		$arr 		= m('reim')->sendinfor($type, $uid, $gid, array(
 			'optdt' => $this->now,
-			'cont'  => $this->post('cont'),
+			'cont'  => $cont,
 			'fileid'=> (int)$this->post('fileid')
 		), $lx);
 		$this->showreturn($arr);

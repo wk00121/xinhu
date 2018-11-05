@@ -139,7 +139,7 @@ class upgradeClassAction extends Action
 		return $hurs;
 	}
 	
-	//弃用
+	//在用
 	public function shengjianssAjax()
 	{
 		$mid 	= (int)$this->post('id');

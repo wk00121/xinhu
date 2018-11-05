@@ -23,7 +23,7 @@
 <div align="center" style="position:absolute;width:100%">
 	<div id="topheih" class="blank40"></div>
 
-	<div style="font-size:20px"><?=$da['title']?></div>
+	<div style="font-size:20px"><b><?=$da['title']?></b></div>
 	<div class="blank30"></div>
 	<div class="lmaisft box">
 		<div class="blank20"></div>
@@ -35,12 +35,12 @@
 			<div id="loginview0">
 			
 				<div>
-					<div><input type="text" style="height:40px;width:300px" class="input" onKeyUp="if(event.keyCode==13)getpassobj().focus()" value="<?=$da['ca_adminuser']?>"  placeholder="请输入用户名/姓名/手机号/邮箱" name="adminuser" ></div>
+					<div><input type="text" style="height:40px;width:300px;border-radius:5px" class="input" onKeyUp="if(event.keyCode==13)getpassobj().focus()" value="<?=$da['ca_adminuser']?>"  placeholder="请输入用户名/姓名/手机号/邮箱" name="adminuser" ></div>
 				</div>
 
 				<div class="blank30"></div>
 				<div>
-					<div><input  style="height:40px;width:300px" class="input"  onKeyUp="if(event.keyCode==13)loginsubmit()" value="<?php if($da['ca_rempass']=='1')echo $da['ca_adminpass'];?>"   type="password" placeholder="请输入密码"></div>
+					<div><input  style="height:40px;width:300px;border-radius:5px" class="input"  onKeyUp="if(event.keyCode==13)loginsubmit()" value="<?php if($da['ca_rempass']=='1')echo $da['ca_adminpass'];?>"   type="password" placeholder="请输入密码"></div>
 				</div>
 
 				<div class="blank10"></div>
@@ -55,13 +55,13 @@
 				<input type="hidden" name="logintype" value="1">
 			<?php }?>
 				<div>
-					<input type="text" style="height:40px;width:300px" class="input" onKeyUp="if(event.keyCode==13)form('adminmobileyzm').focus()" maxlength="11" value=""  placeholder="请输入手机号" name="adminmobile" >
+					<input type="text" style="height:40px;width:300px;border-radius:5px" class="input" onKeyUp="if(event.keyCode==13)form('adminmobileyzm').focus()" maxlength="11" value=""  placeholder="请输入手机号" name="adminmobile" >
 				</div>
 				<div class="blank30"></div>
 				<div>
 					<table><tr>
-					<td><input type="text" style="height:40px;width:200px" class="input" onKeyUp="" maxlength="6" placeholder="请输入验证码" name="adminmobileyzm" ></td>
-					<td><input type="button" onclick="getyzm(this)" style="height:42px;width:100px" value="获取验证码" class="webbtn" ></td>
+					<td><input type="text" style="height:40px;width:200px;border-top-left-radius:5px;border-bottom-left-radius:5px" class="input" onKeyUp="" maxlength="6" placeholder="请输入验证码" name="adminmobileyzm" ></td>
+					<td><input type="button" onclick="getyzm(this)" style="height:42px;width:100px;border-top-right-radius:5px;border-bottom-right-radius:5px" value="获取验证码" class="webbtn" ></td>
 					</tr></table>
 				</div>
 			</div>
@@ -70,7 +70,7 @@
 			<div class="blank20"></div>
 
 			<div align="left">
-				<button type="button" onClick="loginsubmit()" style="padding:10px 20px" class="webbtn" name="button">登录</button>&nbsp;<span id="msgview"></span>
+				<button type="button" onClick="loginsubmit()" style="padding:10px 30px;border-radius:5px" class="webbtn" name="button">登录</button>&nbsp;<span id="msgview"></span>
 			</div>
 			<div class="blank10"></div>
 		</form>

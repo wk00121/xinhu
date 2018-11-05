@@ -73,8 +73,14 @@ function notifyClass(opts){
 			if(!salx)nwjs.winshow();
 			this.close();
 		};
-		
+		this.notification = notification;
 		if(can.soundbo)this.playsound(can.sound);
+	};
+	this.close = function(){
+		try{
+		if(this.notification)this.notification.close();
+		}catch(e){}
+		this.notification = false;
 	};
 	this.playsound=function(src){
 		if(!src)src=this.sound;

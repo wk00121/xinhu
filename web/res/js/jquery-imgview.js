@@ -193,4 +193,10 @@
 		return cls;
 	}
 	
+	$.imgviewclose= function(){
+		var bo = get('imgview_main');
+		$('#imgview_main').remove();
+		return bo;
+	}
+	
 })(jQuery); 

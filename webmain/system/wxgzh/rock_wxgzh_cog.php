@@ -55,7 +55,7 @@ $(document).ready(function(){
 			<td  align="right" width="180"><font color=red>*</font>AppSecret(应用密钥)：</td>
 			<td class="tdinput">
 			<textarea id="wxgzhsecret_{rand}" style="height:60px" class="form-control"></textarea>
-			<font color="#888888">可以使用公众号的订阅号/服务号都可以，到公众号后台【开发→基本配置】下获取,<a href="http://xh829.com/view_wxgzh.html"  target="_blank">[帮助]</a></font>
+			<font color="#888888">可以使用公众号的订阅号/服务号都可以，到公众号后台【开发→基本配置】下获取,<a href="<?=URLY?>view_wxgzh.html"  target="_blank">[帮助]</a></font>
 			</td>
 		</tr>
 		

@@ -156,9 +156,9 @@ cont:
 			<option value="0">无流程</option>
 			<option value="1">顺序流程(按照预设好的步骤一步一步审核)</option>
 			<option value="2">顺序前置流程(出现重复人审核自动跳过)</option>
-			<!--start
-			<option value="3">自由流程(每步都需要由申请人指定哪个步骤)</option>
-			end-->
+			<?php
+			
+			?>
 			</select>
 			
 			</td>

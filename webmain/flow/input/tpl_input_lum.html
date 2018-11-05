@@ -50,7 +50,7 @@ input,textarea,select,*{font-size:16px}
 .tablesub td{height:25px;text-align:center;border:1px #888888 solid;}
 .tablesub .inputs{border:none;padding:0px;margin:0px;width:100%}
 
-.status{position: absolute;right:2px;top:2px;display:none;width:70px;height:70px;overflow:hidden; border:2px red solid;border-radius:50%;font-size:16px;text-align:center;line-height:70px;color:red;transform:rotate(-45deg);-o-transform:rotate(-45deg);-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg)}
+.status{position: absolute;right:15px;top:2px;display:none;width:70px;height:70px;overflow:hidden; border:2px red solid;border-radius:50%;font-size:16px;text-align:center;line-height:70px;color:red;transform:rotate(-45deg);-o-transform:rotate(-45deg);-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg)}
 
 
 .btn-default{background-color:#1389D3;}
@@ -129,13 +129,21 @@ if($showheader==1)echo '<div id="header_title" class="header"><span onclick="js.
 				echo $stsp;
 			}
 		}
+		
+		
+		//是否抄送
 		$iscs = (int)$da['moders']['iscs'];
 		if($iscs>0){
-		?><tr>
-			<td class="lurim" nowrap><font color="red"><?=(($iscs==1) ? '':'*')?></font>抄送给</td>
-			<td><div class="divinput"><table width="98%"><tr><td width="100%"><input class="inputs" style="width:99%" id="syschaosongs" value="<?=$da['chao']['csname']?>" placeholder="选择要抄送的人员" readonly type="text" name="syschaosong"><input name="syschaosongid" value="<?=$da['chao']['csnameid']?>" id="syschaosongs_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('syschaosongs')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('syschaosongs','changeusercheck','选择抄送人员')" class="webbtn">选择</a></td></tr></table></div></td>
-		</tr>	
-		<?php
+			$csstr= $inputobj->inputchangeuser(array(
+				'name'		=> 'syschaosong',
+				'id'		=> 'syschaosongid',
+				'placeholder'=>'选择要抄送的人员',
+				'type'		=> 'changeusercheck',
+				'title'		=> '选择抄送人员',
+				'value' 	=> $da['chao']['csname'],
+				'valueid'	=> $da['chao']['csnameid']
+			));
+			echo '<tr><td class="lurim" nowrap><font color="red">'.(($iscs==1) ? '':'*').'</font>抄送给</td><td><div class="divinput">'.$csstr.'</div></td></tr>';
 		}
 		?>
 		</table>

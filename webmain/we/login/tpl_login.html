@@ -29,6 +29,7 @@ function initbody(){
 	var msurl = location.href;
 	var us=jm.base64decode(js.request('user'));
 	if(!us)us=js.getoption('adminuser');
+	$('#adminpass').val(jm.base64decode(js.getoption('weadminpass')));
 	get('adminmobile').value=js.getoption('adminmobile');
 	temp_token=js.request('token');
 	$('#adminuser').val(us);
@@ -50,6 +51,7 @@ function initbody(){
 		if(e.keyCode==13 && this.value)$('#adminpass').focus();
 	});
 	$('#adminpass').keyup(function(e){
+		js.setoption('weadminpass', jm.base64encode(this.value));
 		if(e.keyCode==13 && this.value)loginsubmit(0);
 	});
 }
@@ -297,7 +299,7 @@ if($iskj>0){
 		echo '<div onclick="yanzdengl()" style="text-align:center;padding-top:10px;color:#1389D3">'.(($iskj==2)?'企业':'').'微信快捷登录</div>';
 	}
 }
-if($loginyzm>0 && $loginyzm!=3)echo '<div onclick="changlogin(this)" style="text-align:center;padding-top:10px;color:#1389D3">验证码登录</div>';
+if($loginyzm>0 && $loginyzm!=3)echo '<div class="weui_extra_area" onclick="changlogin(this)" style="text-align:center;color:#888888;padding-bottom:10px">验证码登录</div>';
 ?>
 
 

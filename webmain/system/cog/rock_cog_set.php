@@ -131,6 +131,14 @@ $(document).ready(function(){
 			
 		</tr>
 		
+		<tr>
+			<td  align="right">腾讯地图KEY：</td>
+			<td class="tdinput"><input id="qqmapkey_{rand}" placeholder="可不设置，可到https://lbs.qq.com/下申请" class="form-control"></select></td>
+			
+			
+			
+		</tr>
+		
 		
 		<tr>
 			<td  align="right"></td>

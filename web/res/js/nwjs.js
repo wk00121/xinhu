@@ -75,7 +75,7 @@ var nwjs={
 	},
 	removetray:function(){
 		if(!this.nw)return;
-		this.tray.remove();
+		if(this.tray)this.tray.remove();
 		this.win.removeAllListeners('close');
 		if(this.shortcut)nwjsgui.App.unregisterGlobalHotKey(this.shortcut);
 		this.closeserver();

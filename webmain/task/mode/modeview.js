@@ -5,6 +5,7 @@ function othercheck(){}
 function oninputblur(name,zb,obj){};
 
 function initbody(){
+	js.inittabs();
 	$('body').click(function(){
 		$('.menullss').hide();
 	});
@@ -68,7 +69,7 @@ function check(lx){
 	if(form('fileid'))da.fileid=form('fileid').value;
 	if(form('check_tuiid'))da.tuiid=form('check_tuiid').value;
 	var smlx = form('check_smlx').value,wjlx=form('check_wjlx').value;
-	
+	js.setmsg();
 	if(da.zt==''){
 		js.setmsg('请选择处理动作');
 		return;
@@ -105,6 +106,22 @@ function check(lx){
 			js.setmsg('请选择下一步处理人');return;
 		}
 	}
+	
+	//自由流程处理的
+	if(da.zt=='1' && form('sys_nextcourseid')){
+		da.sys_nextcourseid 	= form('sys_nextcourseid').value;
+		da.sys_nextcoursename 	= form('sys_nextcoursename').value;
+		da.sys_nextcoursenameid = form('sys_nextcoursenameid').value;
+		if(da.sys_nextcourseid==''){
+			js.setmsg('请选择下步处理步骤');
+			return;
+		}
+		if(da.sys_nextcourseid>0 && da.sys_nextcoursenameid==''){
+			js.setmsg('请选择下步处理人');
+			return;
+		}
+	}
+	
 	if(!da.zynameid && da.zt!='2'){
 		var fobj=$('span[fieidscheck]'),i,fid,flx,fiad,val,isbt;
 		var subdat = js.getformdata();
@@ -360,9 +377,25 @@ var c={
 		if(zt=='1'){
 			$('#zhuangdiv').show();
 			$('#nextxuandiv').show();
+			if(get('sys_nextcoursediv0')){
+				$('#sys_nextcoursediv0').show();
+			}
 		}else{
 			$('#zhuangdiv').hide();
 			$('#nextxuandiv').hide();
+			if(get('sys_nextcoursediv0')){
+				form('sys_nextcourseid').value='';
+				js.changeclear('changesys_nextcoursename');
+				$('#sys_nextcoursediv0').hide();
+				$('#sys_nextcoursediv1').hide();
+			}
+		}
+	},
+	changenextcourse:function(o1){
+		if(o1.value>0){
+			$('#sys_nextcoursediv1').show();
+		}else{
+			$('#sys_nextcoursediv1').hide();
 		}
 	},
 	//手写签名

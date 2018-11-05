@@ -95,7 +95,11 @@ class logClassModel extends Model
 	{
 		if($uid==0)$uid=$this->adminid;
 		$sid = $this->db->getjoinval('[Q]reads','mid',"`table`='$table' and `optid`=$uid group by `mid`");
-		if($sid=='')$sid = '0';
+		if($sid==''){
+			$sid = '0';
+		}else{
+			$sid = '0,'.$sid.'';
+		}
 		return $sid;
 	}
 	

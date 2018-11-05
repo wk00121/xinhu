@@ -146,6 +146,7 @@ class reimClassModel extends Model
 	{
 		if($slx==3 || isempt($receid))return false;
 		$gid	= $this->getgroupid($gname);
+		$grs 	= $this->getgroupxinxi($gid);
 		$gname	= $this->groupname;
 		$admdb  = m('admin');
 		$sarr	= array(
@@ -154,6 +155,7 @@ class reimClassModel extends Model
 			'type'		=> 'agent',
 			'pushtype'	=> 'agent',
 			'title'		=> $title,
+			'gface'		=> arrvalue($grs,'face'),
 			'gid'		=> $gid,
 			'cont'		=> $this->rock->jm->base64encode($cont),
 			'url'		=> $url
@@ -585,6 +587,7 @@ class reimClassModel extends Model
 	{
 		$arr = array();
 		$rows= array();
+		$loadci  = (int)$this->rock->get('loadci','0');
 		if($type == 'user'){
 			$arr 	= $this->getuserinfor($uid, $gid, $minid, $lastdt);
 		}
@@ -593,6 +596,9 @@ class reimClassModel extends Model
 		}
 		$arr['receinfor'] = $this->getreceinfor($type, $gid);
 		$arr['nowdt'] 	  = time();
+		if($loadci==0){
+			$arr['sendinfo']  = m('admin')->getinfor($uid);
+		}
 		if(isset($arr['rows']))$arr['rows'] = $this->replacefileid($arr['rows']);
 		$this->hisobj->update('stotal=0',"`type`='$type' and `receid`='$gid' and `uid`='$uid'");
 		return $arr;
@@ -858,7 +864,8 @@ class reimClassModel extends Model
 		$cont		= '';
 		if(isset($cans['cont']))$cont=$cans['cont'];
 		$receid		= $gid;
-		$gname		= m('im_group')->getmou('name', $gid);
+		$grs 		= $this->getgroupxinxi($gid);
+		$gname		= $grs['name'];
 		$type		= 'group';
 		$fileid		= 0;
 		$msgid		= '';
@@ -914,6 +921,7 @@ class reimClassModel extends Model
 					'gid'	=> $gid,
 					'gname'	=> $gname,
 					'optdt' => $optdt,
+					'gface' => arrvalue($grs,'face'),
 					'messid' => $arr['id'],
 					'fileid' => $fileid
 				);
@@ -1047,7 +1055,7 @@ class reimClassModel extends Model
 		$carr['adminid'] 	= $sendid;
 		$carr['optdt'] 		= $this->rock->now;
 		$carr['sendname'] 	= $sers['name'];
-		$carr['face'] 		= $this->getface($face);
+		$carr['face'] 		= $this->getface($face); //发送人头像
 		$carr['receid'] 	= $receid;
 		foreach($conarr as $k=>$v)$carr[$k]=$v;
 		return $this->pushserver('send', $carr);

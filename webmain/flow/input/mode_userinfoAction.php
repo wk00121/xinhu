@@ -68,5 +68,34 @@ class mode_userinfoClassAction extends inputAction{
 		
 		if($uarr)m('admin')->update($uarr, $id);
 	}
+	
+	//获取打开记录
+	public function gethetongAjax()
+	{
+		$guid = (int)$this->get('guid','0');
+		$ind  = (int)$this->get('ind','0');
+		$bh   = 'userract';
+		$zd   = 'uid';
+		if($ind==4){
+			$bh   = 'reward';
+			$zd   = 'objectid';
+		}
+		if($ind==5){
+			$bh   = 'hrpositive';
+		}
+		if($ind==6){
+			$bh   = 'hrredund';
+		}
+		if($ind==7){
+			$bh   = 'hrtrsalary';
+		}
+		if($ind==8){
+			$bh   = 'hrtransfer';
+			$zd   = 'tranuid';
+		}
+		$flow = m('flow')->initflow($bh);
+		$cont = $flow->getrowstable('all','and {asqom}`'.$zd.'`='.$guid.'');
+		return $cont;
+	}
 }	
 			

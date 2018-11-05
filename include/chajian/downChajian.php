@@ -161,11 +161,12 @@ class downChajian extends Chajian{
 	private function replacefile($str)
 	{
 		$s 			= strtolower($str);
+		$s2			= $s.'';
 		$lvlaraa  	= explode(',','user(),found_rows,(),select*from,select*,%20');
 		$lvlarab	= array();
 		foreach($lvlaraa as $_i)$lvlarab[]='';
 		$s = str_replace($lvlaraa, $lvlarab, $s);
-		if($s!=$str)$str = $s;
+		if($s!=$s2)$str = $s;
 		return $str;
 	}
 	

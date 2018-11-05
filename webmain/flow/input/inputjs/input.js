@@ -264,6 +264,18 @@ var c={
 			}
 		}
 		
+		if(form('sys_nextcourseid') && bo){
+			if(!d.sys_nextcourseid){
+				this.showtx('请指定下步处理步骤');
+				form('sys_nextcourseid').focus();
+				return false;
+			}
+			if(!d.sys_nextcoursenameid){
+				this.showtx('请选择下步处理人');
+				return false;
+			}
+		}
+		
 		if(moders.iscs=='2' && isempt(d.syschaosongid) && bo){
 			this.showtx('请选择抄送对象');
 			return false;
@@ -450,6 +462,25 @@ var c={
 		if(fvid!='')fvid=fvid.substr(1);
 		form(sna).value=fvid;
 	},
+	
+	//预览文件
+	downshow:function(id, ext,pts){
+		var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
+		if(pts!=''&&js.isimg(ext)){
+			$.imgview({'url':pts,'ismobile':ismobile==1});
+			return false;
+		}
+		if(ismobile==1){
+			var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
+			if(docsx.indexOf(','+ext+',')==-1)
+				if(appobj1('openfile', id))return;
+			js.location(url);
+		}else{
+			js.winiframe('文件预览',url);
+		}
+		return false;
+	},
+	
 	//上传文件点击
 	clickupfile:function(o1,sna, xs){
 		this.yuobj = o1;
@@ -458,15 +489,16 @@ var c={
 		if(isempt(fid))return;
 		var f = this.filearr['f'+fid+''];if(!f)return;
 		if(isedit==0 || xs){
+			js.alertclose();
 			if(js.isimg(f.fileext)){
 				var src = f.imgviewurl;
 				if(!src)src=f.thumbpath.replace('_s','');
 				this.showviews(src);
 			}else{
-				js.downshow(fid);
+				this.downshow(fid, f.fileext);
 			}
 		}else{
-			js.confirm('确定要删除文件：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">[预览]</a>',function(jg){
+			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>',function(jg){
 				if(jg=='yes'){
 					o.remove();
 					c.showupid(sna);

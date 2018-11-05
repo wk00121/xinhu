@@ -289,7 +289,13 @@ js.winiframe=function(tit, url){
 	return false;	
 }
 js.downshow=function(id){
-	js.open('?id='+id+'&a=down',600,350);
+	if(appobj1('openfile', id))return;
+	var url = '?id='+id+'&a=down';
+	if(nwjsgui){
+		this.location(url);
+	}else{
+		js.open(url,600,350);
+	}
 	return false;
 }
 js.downupdels=function(sid, said, o1){
@@ -378,6 +384,7 @@ js.getformdata=function(nas){
 	obj	= document[nas];
 	for(i=0;i<obj.length;i++){
 		o 	 = obj[i];type = o.type,val = o.value,na = o.name;
+		if(!na)continue;
 		if(type=='checkbox'){
 			val	= '0';
 			if(o.checked)val='1';
@@ -542,6 +549,7 @@ js.tanclose=function(act, guan){
 	js.xpbody(act,'none');
 	return false;
 }
+js.xpbodysplit = 0;
 js.xpbody=function(act,type){
 	if(type=='none'){
 		$("div[xpbody='"+act+"']").remove();
@@ -549,9 +557,9 @@ js.xpbody=function(act,type){
 		return;
 	}
 	if(get('xpbg_bodydds'))return false;
-	var H	= (document.body.clientHeight<winHb())?winHb()-5:document.body.clientHeight;
-	var W	= document.documentElement.scrollWidth+document.body.scrollLeft;
-	var bs='<div id="xpbg_bodydds" xpbody="'+act+'" oncontextmenu="return false" style="position:absolute;display:none;width:'+W+'px;height:'+H+'px;filter:Alpha(opacity=30);opacity:0.3;left:0px;top:0px;background-color:#000000;z-index:80"></div>';
+	var H	= (document.body.clientHeight<winHb())?winHb()-this.xpbodysplit-5:document.body.clientHeight-this.xpbodysplit*2;
+	var W	= document.documentElement.scrollWidth+document.body.scrollLeft-this.xpbodysplit*2;
+	var bs='<div id="xpbg_bodydds" xpbody="'+act+'" oncontextmenu="return false" style="position:absolute;display:none;width:'+W+'px;height:'+H+'px;filter:Alpha(opacity=30);opacity:0.3;left:'+this.xpbodysplit+'px;top:'+this.xpbodysplit+'px;background-color:#000000;z-index:80"></div>';
 	$('body').prepend(bs);	
 	$('#xpbg_bodydds').fadeIn(300);
 }
@@ -625,6 +633,9 @@ js.alert = function(txt,tit,fun){
 js.wait	= function(txt,tit,fun){
 	js.confirm(txt, fun, '', tit, 3, '');
 }
+js.alertclose=function(){
+	js.tanclose('confirm');
+}
 js.tanstyle = 0;
 js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 	if(!lx)lx=0;
@@ -639,7 +650,7 @@ js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 	}else if(lx==3){
 		h+='<img src="images/mloading.gif" height="32" width="32" align="absmiddle">&nbsp; '+txt+'';
 	}else{
-		h+='<img src="images/helpbg.png" align="absmiddle">&nbsp; '+txt+'';
+		h+=''+txt+'';
 	}
 	h+='</div>';
 	h+='<div style="padding:10px" align="center">';
@@ -664,7 +675,7 @@ js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 			var cbo = fun(jg, val);
 			if(cbo)return false;
 		}
-		js.tanclose('confirm');
+		js.alertclose();
 		return false;
 	}
 	$('#confirm_btn1').click(backl);
@@ -688,7 +699,7 @@ js.msg = function(lx, txt,sj){
 		sj	= 60;
 	}
 	if(lx=='msg')txt='<font color=red>'+txt+'</font>';var t=10;
-	var s = '<div onclick="$(this).remove()" id="msgshowdivla" style="position:fixed;top:'+t+'px;z-index:200;" align="center"><div style="padding:8px 20px;background:rgba(0,0,0,0.7);color:white;font-size:16px;">'+txt+'</div></div>';
+	var s = '<div onclick="$(this).remove()" id="msgshowdivla" style="position:fixed;top:'+t+'px;z-index:200;" align="center"><div style="padding:8px 20px;background:rgba(0,0,0,0.7);color:white;font-size:16px;border-radius:5px">'+txt+'</div></div>';
 	$('body').append(s);
 	var w=$('#msgshowdivla').width(),l=(winWb()-w)*0.5;
 	$('#msgshowdivla').css('left',''+l+'px');
@@ -750,7 +761,7 @@ js.getparenta=function(o, oi){
 js.ajaxwurbo = false;
 js.ajaxbool = false;
 js.ajax = function(url,da,fun,type,efun, tsar){
-	if(js.ajaxbool)return;
+	//if(js.ajaxbool)return;
 	if(!da)da={};if(!type)type='get';if(!tsar)tsar='';tsar=tsar.split(',');
 	if(typeof(fun)!='function')fun=function(){};
 	if(typeof(efun)!='function')efun=function(){};
@@ -836,6 +847,7 @@ js.changeuser=function(na, lx, tits,ocans){
 		'showview' 	: 'showuserssvie',
 		'titlebool'	:false,
 		'changevalue':'',
+		'changerange':'', //选择范围
 		'oncancel'	:function(){
 			js.tanclose('changeaction');
 		}
@@ -856,7 +868,7 @@ js.changeuser=function(na, lx, tits,ocans){
 			js.tanclose('changeaction');
 			if(can.callback)can.callback(sna,sid);
 		}
-		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+can.changevalue+'&callback=changcallback';
+		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+can.changevalue+'&callback=changcallback&changerange='+can.changerange+'';
 		winiframe.location.href = url;
 	}else{
 		$('#showuserssvie').chnageuser(can);
@@ -954,4 +966,22 @@ js.cliendsend=function(at, cans, fun,ferr){
 	}
 	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录REIM客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
+}
+
+js.ontabsclicks=function(){};
+js.inittabs=function(){
+	$('.r-tabs div').click(function(){
+		js.tabsclicks(this);
+	});
+}
+js.tabsclicks=function(o1){
+	var o = $(o1);
+	var tid= o.parent().attr('tabid');
+	$('.r-tabs[tabid="'+tid+'"] div').removeClass('active');
+	$('[tabitem][tabid="'+tid+'"]').hide();
+	var ind = o.attr('index');
+	o.addClass('active');
+	var ho = $('[tabitem='+ind+'][tabid="'+tid+'"]');
+	ho.show();
+	this.ontabsclicks(ind, tid, o, ho);
 }

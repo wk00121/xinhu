@@ -99,6 +99,7 @@ class htmlChajian extends Chajian{
 		$txt	.= '</tr>';
 		foreach($rows as $k=>$rs){
 			$txt	.= '<tr>';
+			$rs['xuhaos'] = $k+1;
 			for($h=0; $h<$thead; $h++){
 				$stls= $style;
 				$stls.='';

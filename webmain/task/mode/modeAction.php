@@ -51,6 +51,7 @@ class modeClassAction extends ActionNot
 			$inputjspath = '';
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
+		$this->assign('inputobj', c('input'));
 	}
 	
 	//pc端页面详情
@@ -88,6 +89,7 @@ class modeClassAction extends ActionNot
 			$inputjspath = '';
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
+		$this->assign('inputobj', c('input'));
 	}
 	
 	//下载

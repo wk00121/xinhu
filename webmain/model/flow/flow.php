@@ -172,7 +172,7 @@ class flowModel extends Model
 	
 	private function tfieldsarra()
 	{
-		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`fieldstype`,`savewhere`,`data`,`iszb`,`issou`,`islu`,`islb`,`isonly`','`sort`');
+		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`iszs`,`fieldstype`,`savewhere`,`data`,`iszb`,`issou`,`islu`,`islb`,`isonly`','`sort`');
 		$this->fieldsarr = array();
 		if($rows)foreach($rows as $k=>$rs){
 			if($rs['islu']==1)$this->fieldsarr[] = $rs;
@@ -613,7 +613,7 @@ class flowModel extends Model
 	public function ischehui()
 	{
 		$is 	= 0;
-		if($this->rs['status']==1)return $is;
+		if($this->rs['status']==1 || $this->isflow==3)return $is;//自由流程不允许撤回
 		$where 	= "".$this->mwhere." and `courseid`>0 order by `id` desc";
 		$rs 	= $this->flogmodel->getone($where);
 		$time 	= time()-2*3600;
@@ -814,6 +814,8 @@ class flowModel extends Model
 		$tuicourse = $this->flogmodel->getall($this->mwhere.' and `courseid`>0 and `valid`=1 and `status`=1 and `step`<'.$step.'','`id`,`checkname`,`name`','`step` desc');
 		$sarr['tuicourse']		= $tuicourse;
 		
+		
+		
 		return $sarr;
 	}
 	
@@ -844,7 +846,11 @@ class flowModel extends Model
 		if($statusstr=='')$statusstr=$this->rock->arrvalue($this->moders,'statusstr');
 		$statusara 	= array();
 		$colorsa   	= array('blue','green','red','#ff6600','#526D08','#888888','','','','','','','','','','','','','');
-		if(isempt($statusstr))$statusstr =  '待?处理|blue,已审核|green,不同意|red';
+		if(isempt($statusstr)){
+			$statussst = '不同意';
+			
+			$statusstr =  '待?处理|blue,已审核|green,'.$statussst.'|red';
+		}
 		$nowcheckname= arrvalue($rs,'nowcheckname');
 		if(isempt($other))$other = $nowcheckname;
 
@@ -883,7 +889,7 @@ class flowModel extends Model
 	
 	public function getstatusstr($rs)
 	{
-		return $this->getstatus($this->rs, '','', $glx);
+		return $this->getstatus($rs, '','', 1);
 	}
 	
 	/**
@@ -907,7 +913,7 @@ class flowModel extends Model
 			$idss.=','.$rs['id'].'';
 			$col = $rs['color'];
 			if(isempt($col))$col='green';
-			if(contain($rs['statusname'],'不'))$col='red';
+			if(contain($rs['statusname'],'不') || $rs['status']=='2')$col='red';
 			$rows[$k]['color'] 		= $col;
 			$rows[$k]['checkdt'] 	= $rs['optdt'];
 			$rows[$k]['sm']  		= $rs['explain'];	
@@ -997,10 +1003,14 @@ class flowModel extends Model
 			$this->update($marr, $this->id);
 			
 			//每次编辑判断是否重新开始走审批。
-			if(arrvalue($this->moders,'isflowlx')=='1'){
+			if(arrvalue($this->moders,'isflowlx')=='1' || $this->isflow==3){
 				$this->checksmodel->delete($this->mwhere);
 				$this->flogmodel->update('`valid`=0', ''.$this->mwhere.' and `courseid`>0 and `valid`=1');
 			}
+			
+			
+			
+			
 			$farr = $this->getflow();
 			//第一步自定义审核人
 			if($farr['nowcourseid']>0){
@@ -1110,7 +1120,11 @@ class flowModel extends Model
 		$urs 			= $this->urs;
 		if(!$urs)$urs 	= $uid;
 		if(!is_array($urs))$urs = $this->db->getone('[Q]admin', "`id`='$urs'", '`deptid`,`deptpath`,`id`');
-		$barr 	= m('flowcourse')->pipeiCourse($this->modeid);
+		$coursedb 		= m('flowcourse');
+		
+		
+		
+		$barr 	= $coursedb->pipeiCourse($this->modeid);
 		$rows 	= $barr['rows'];
 		$this->pipeiCoursearrc = $barr['rowd'];
 		$this->pipeiCoursearrs = array();
@@ -1690,12 +1704,12 @@ class flowModel extends Model
 		return $this->rock->reparr($this->moders['summary'], $this->rs);
 	}
 	
-	private function addcheckname($courseid, $uid, $uname, $onbo=false, $addlx=0)
+	public function addcheckname($courseid, $uid, $uname, $onbo=false, $addlx=0)
 	{
 		$uida 	= explode(',', ''.$uid.'');
 		$uidan 	= explode(',', $uname);
 		if($onbo)$this->checksmodel->delete($this->mwhere.' and `courseid`='.$courseid.'');
-		foreach($uida as $k=>$uid){
+		if($uida)foreach($uida as $k=>$uid){
 			$uname	= $this->rock->arrvalue($uidan, $k);
 			$zyarr 	= array(
 				'table' 	=> $this->mtable,
@@ -1704,7 +1718,7 @@ class flowModel extends Model
 				'courseid' 	=> $courseid,
 				'optid' 	=> $this->adminid,
 				'optname' 	=> $this->adminname,
-				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加
+				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加，5自定义流程
 				'optdt' 	=> $this->rock->now,
 				'status' 	=> 0
 			);
@@ -1785,9 +1799,10 @@ class flowModel extends Model
 	/**
 	*	异常直接标识已完成
 	*/
-	public function checkerror($sm='')
+	public function checkerror($lx=1,$sm='')
 	{
-		$msg = $this->check(1, $sm, 1);
+		if($sm=='')$sm='单据异常管理员处理';
+		$msg = $this->check($lx, $sm, 1);
 		return $msg;
 	}
 
@@ -1810,7 +1825,7 @@ class flowModel extends Model
 			if($arr['nowcourseid']!=0)return '当前有审核步骤ID是存在的不能直接标识已完成';
 			$to 	= $this->flogmodel->rows($this->mwhere.' and `courseid`>0 and `status`=1');
 			if($to==0)return '该单据没有任何通过审核处理不能直接标识已完成或已审核';
-			$nowcourse = array('id'=>0,'name'=>'异常处理','step'=>0);
+			$nowcourse = array('id'=>66666,'name'=>'异常处理','step'=>0);
 		}
 		
 		$nextcourse	= $this->nextcourse;
@@ -1821,13 +1836,15 @@ class flowModel extends Model
 		$qmimgstr	= $this->rock->post('qmimgstr'); //签名图片
 		$tuiid		= (int)$this->rock->post('tuiid'); //退回到哪个flowlog.id上
 		$iszhuanyi	= $ischangenext = 0;
-		if($zt==1 && isempt($zynameid) && $this->rock->arrvalue($nextcourse,'checktype')=='change'){
+		if($zt==1 && $this->isflow<3 && isempt($zynameid) && $this->rock->arrvalue($nextcourse,'checktype')=='change'){
 			if($nextnameid=='')return '请选择下一步处理人';
 			$ischangenext = 1;
 		}
 		if($zt!=2)$tuiid = 0;//只有2的状态才能退回
 		
 		$istongyi		 = in_array($zt, $this->flowstatusarr); //是否审核本步骤同意
+		
+		
 		
 		if($zynameid!='' && $istongyi){
 			if($zynameid==$this->adminid)return '不能转给自己';
@@ -2599,6 +2616,7 @@ class flowModel extends Model
 					$_kearr[] = "b.`uname` like '%".$key."%'";
 					$_kearr[] = "b.`udeptname` like '%".$key."%'";
 					$_kearr[] = "b.`sericnum` = '$key'";
+					$_kearr[] = "b.`nowcheckname` = '$key'"; //搜索当前处理人
 				}
 				
 				//其他or字段条件格式：name@1,title
@@ -2730,14 +2748,16 @@ class flowModel extends Model
 	/**
 	*	根据流程模块条件读取记录和统计
 	*/
-	public function getflowrows($uid, $lx, $limit=5)
+	public function getflowrows($uid, $lx, $limit=5, $swher='')
 	{
 		$nas 	= $this->billwhere($uid, $lx);
 		$table 	= $nas['table'];
 		if(!contain($table,' '))$table='[Q]'.$table.'';
 		if(isempt($nas['fields']))$nas['fields'] = '*';
-		if($limit==0)return $this->db->rows($table, '1=1 '.$nas['where'].''); 
-		$rows 	= $this->db->getrows($table, '1=1 '.$nas['where'].'', $nas['fields'], $nas['order'], $limit);
+		$swher 	= str_replace('{asqom}',$nas['asqom'], $swher);
+		$where  = '1=1 '.$nas['where'].' '.$swher.'';
+		if($limit==0)return $this->db->rows($table, $where ); 
+		$rows 	= $this->db->getrows($table, $where , $nas['fields'], $nas['order'], $limit);
 		foreach($rows as $k=>$rs){
 			$rows[$k] = $this->flowrsreplace($rs, 2);
 		}
@@ -2995,4 +3015,25 @@ class flowModel extends Model
 		$this->nexttodo($hrs['uid'],'receipt', $sm, '回执确认');
 		return 'ok';
 	}
+	
+	
+	/**
+	*	获取简单列表数据，返回table表格
+	*/
+	public function getrowstable($atype, $where, $limit=100)
+	{
+		$rows 		= $this->getflowrows($this->adminid,$atype,$limit,$where);
+		$headstr	= '@xuhaos,,center';
+		foreach($this->fieldsarra as $k=>$rs)if($rs['iszs']==1)$headstr.='@'.$rs['fields'].','.$rs['name'].'';
+		if($this->isflow>0){
+			$headstr.='@statustext,状态';
+			if(is_array($rows))foreach($rows as $k=>$rs){
+				$rows[$k]['statustext'] = $this->getstatusstr($rs);
+			}
+		}
+		$cont 	 	= c('html')->createrows($rows, substr($headstr, 1),'#cccccc','noborder');
+		return $cont;
+	}
+	
+	
 }

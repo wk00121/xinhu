@@ -115,7 +115,7 @@ if($da['arr']['optmenu']){
 			$cheikbo = true;
 		?>
 		<tr height="40">
-			<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理人</div></td>
+			<td class="tdys1"><div align="right" style="color:#555555">当前处理</div></td>
 			<td class="tdys1"><div align="left"><?=$flowinfor['nowcourse']['name']?>(<?=$flowinfor['nowcourse']['nowcheckname']?>)</div></td>
 		</tr>
 		
@@ -147,8 +147,10 @@ if($da['arr']['optmenu']){
 		<?php 
 		}
 		
+		
+		
 		//不通过退回是
-		if($tuiname != ''){
+		if($tuiname != '' && $da['arr']['isflow']!=3){
 		?>
 		<tr style="display:none" id="tuihuidiv" height="40">
 			<td class="tdys1" nowrap><div align="right" style="color:#555555"><font color=red>*</font><?=$tuiname?>退回</div></td>

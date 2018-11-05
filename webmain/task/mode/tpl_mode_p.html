@@ -70,7 +70,7 @@ if($stype!=''){
 <div align="center">
 <div style="width:700px;position:relative" align="left">
 	<?php if($stype==''){?>
-	<div class="menulls"><a href="javascript:;" id="showmenu" style="background-color:#888888;font-size:12px" class="webbtn">操作V</a></div>
+	<div class="menulls"><input id="showmenu" style="background-color:#888888;font-size:12px;border-radius:5px" class="webbtn" value="操作V" type="button"></div>
 	<div class="menullss"><ul><li lx="0">打印全部...</li><li lx="6">只打印内容...</li>
 	<li lx="5">另存为word...</li>
 	<?php
@@ -191,7 +191,7 @@ if($stype!=''){
 				$cheikbo = true;
 			?>
 			<tr height="40">
-				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font>处理人</div></td>
+				<td class="tdys1"><div align="right" style="color:#555555">当前处理</div></td>
 				<td class="tdys1"><div align="left"><?=$flowinfor['nowcourse']['name']?>(<?=$flowinfor['nowcourse']['nowcheckname']?>)</div></td>
 			</tr>
 			
@@ -222,8 +222,12 @@ if($stype!=''){
 			<?php 
 			}
 			
+			
+			
+			
+			
 			//不通过退回是
-			if($tuiname != ''){
+			if($tuiname != '' && $da['arr']['isflow']!=3){
 			?>
 			<tr style="display:none" id="tuihuidiv">
 				<td class="tdys1"><div align="right" style="color:#555555"><font color=red>*</font><?=$tuiname?>退回</div></td>
@@ -305,7 +309,7 @@ if($stype!=''){
 			
 			<tr>
 				<td class="tdys1">&nbsp;</td>
-				<td class="tdys1" style="padding:5px"><div align="left"><input class="webbtn" onclick="check(0)" id="check_btn" value="提交处理" type="button">&nbsp;<span id="msgview"></span>&nbsp; &nbsp; <label style="color:#888888"><input id="autocheckbox" checked type="checkbox">处理完自动关闭</label></div></td>
+				<td class="tdys1" style="padding:5px"><div align="left"><input class="webbtn" onclick="check(0)" id="check_btn" style="border-radius:5px;padding:8px 20px;" value="提交处理" type="button">&nbsp;<span id="msgview"></span>&nbsp; &nbsp; <label style="color:#888888"><input id="autocheckbox" checked type="checkbox">处理完自动关闭</label></div></td>
 			</tr>
 			
 			<?php }?>

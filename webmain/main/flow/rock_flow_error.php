@@ -24,7 +24,10 @@ $(document).ready(function(){
 			text:'处理方法',dataIndex:'chuli',align:'left'
 		},{
 			text:'处理',dataIndex:'chulis',renderer:function(v,d,i){
-				if(d.errtype==1)v='<button type="button" onclick="biaoshiyw{rand}('+i+')" class="btn btn-success btn-xs">标识已审核</button>';
+				if(d.errtype==1){
+					v='<button type="button" onclick="biaoshiyw{rand}('+i+',1)" class="btn btn-success btn-xs">标识已审核</button>';
+					v+='<br><button type="button" onclick="biaoshiyw{rand}('+i+',2)" class="btn btn-danger btn-xs">退回提交人</button>';
+				}
 				return v;
 			}
 		}],
@@ -41,8 +44,8 @@ $(document).ready(function(){
 	function btn(bo, d){
 		get('edit_{rand}').disabled = bo;
 	}
-	biaoshiyw{rand}=function(i){
-		c.biaowanc(i);
+	biaoshiyw{rand}=function(i,lx){
+		c.biaowanc(i,lx);
 	}
 	var c = {
 		view:function(){
@@ -55,17 +58,19 @@ $(document).ready(function(){
 				a.reload();
 			},'get',false,'匹配中...,匹配完成');
 		},
-		biaowanc:function(i){
+		biaowanc:function(i,lx){
 			var d= a.getData(i);
-			js.prompt('异常标识说明','确定要标识已完成/已审核的单据状态吗？请输入说明：',function(jg, text){
-				if(jg=='yes' && text){
+			var sm='确定要标识已完成/已审核的单据状态吗';
+			if(lx==2)sm='确定要退回给提交人让他重新提交吗';
+			js.prompt('异常标识说明',''+sm+'？请输入说明：',function(jg, text){
+				if(jg=='yes'){
 					d.sm = text;
-					c.biaowancss(d);
+					c.biaowancss(d,lx);
 				}
 			});
 		},
-		biaowancss:function(d){
-			js.ajax(js.getajaxurl('oksuccess','flowopt','flow'),{modenum:d.modenum,mid:d.id,sm:d.sm},function(s){
+		biaowancss:function(d,lx){
+			js.ajax(js.getajaxurl('oksuccess','flowopt','flow'),{modenum:d.modenum,mid:d.id,sm:d.sm,lx:lx},function(s){
 				if(s=='ok'){
 					a.reload();
 				}else{

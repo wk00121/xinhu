@@ -157,20 +157,28 @@ class inputChajian extends Chajian
 		if($type=='datetime'||$type=='date'||$type=='time'||$type=='month'){
 			$str = '<input onclick="js.datechange(this,\''.$type.'\')" value="'.$val.'" '.$attr.''.$onblue.''.$styles.' class="inputs datesss" inputtype="'.$type.'" readonly name="'.$fname.'">';
 		}
+		//数字类型
 		if($type=='number'){
-			$str 	= '<input class="inputs" '.$attr.''.$styles.' value="'.$val.'" type="number" onfocus="js.focusval=this.value" maxlength="10" onblur="js.number(this);c.inputblur(this,'.$iszb.')" name="'.$fname.'">';
+			$str 	= '<input class="inputs" '.$attr.''.$styles.' value="'.$val.'" type="number" onfocus="js.focusval=this.value" maxlength="20" onblur="js.number(this);c.inputblur(this,'.$iszb.')" name="'.$fname.'">';
 		}
 		if($type=='xuhao'){
 			$str = '<input class="inputs" '.$attr.' type="text" value="'.$val.'" name="'.$fname.'">';
 			$str.= '<input value="0" type="hidden" name="'.$a['fieldss'].$leox.'">';
 		}
 		if($type=='changeusercheck'||$type=='changeuser'||$type=='changedept'||$type=='changedeptcheck'||$type=='changedeptusercheck'){
-			$_vals  = explode('|', $val);$_vals0 = $_vals[0];
-			$_vals1 = isset($_vals[1]) ? $_vals[1] : '';
 			$zbnae	= $data;
 			if($iszb>0)$zbnae = $data.''.($iszb-1).''.$leox.'';
-			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.'  class="inputs" style="width:99%" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$zbnae.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
-			$str   .= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\')" class="webbtn">选择</a></td></tr></table>';
+			$str 	= $this->inputchangeuser(array(
+				'name' 	=> $fname,
+				'id' 	=> $zbnae,
+				'value'	=> $val,
+				'type' 	=> $type,
+				'title' => $fieldname,
+				'changerange' => arrvalue($a, 'gongsi'),
+				'placeholder' => $placeholder,
+				'attr'  => $onblue,
+				'style' => '',
+			));
 		}
 		if($type=='selectdatafalse' || $type=='selectdatatrue'){
 			$str 	= '<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input '.$attr.''.$onblue.''.$styles.' class="inputs" style="width:99%" value="'.$val.'" readonly type="text" name="'.$fname.'"></td>';
@@ -211,6 +219,36 @@ class inputChajian extends Chajian
 				$str = '<tr><td class="lurim" nowrap>'.$fnams.'</td><td width="90%">'.$str.'</td></tr>';
 			}
 		}
+		return $str;
+	}
+	
+	/**
+	*	输出选择人员html
+	*/
+	public function inputchangeuser($arr=array())
+	{
+		$oarr   = array(
+			'name'=>'',
+			'id'=>'',
+			'type'=>'changeuser',
+			'value'=> '',
+			'valueid'=> '',
+			'title' => '',
+			'changerange' => '',
+			'placeholder' => '',
+			'attr' => '',
+		);
+		foreach($arr as $k=>$v)$oarr[$k]=$v;
+		$fname  = $oarr['name'];
+		$zbnae  = $oarr['id'];
+		$type   = $oarr['type'];
+		$valea  = explode('|', $oarr['value']);
+		$_vals0	= $valea[0];
+		$_vals1	= arrvalue($valea,1, $oarr['valueid']);
+		
+		$str 	= '<table width="99%" cellpadding="0" border="0"><tr><td width="100%"><input class="inputs" style="width:99%;" '.$oarr['attr'].' placeholder="'.$oarr['placeholder'].'" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$zbnae.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
+		$str   .= '<td nowrap><input onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn" value="×" type="button"><input id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\',\''.$oarr['title'].'\' ,{changerange:\''.$oarr['changerange'].'\'})" value="选择" type="button" class="webbtn"></td></tr></table>';
+		
 		return $str;
 	}
 	

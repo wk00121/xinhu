@@ -25,7 +25,6 @@ class uploadClassAction extends apiAction
 	{
 		$fileid = $this->get('fileid','0');
 		if($fileid==0)exit('fileid=0');
-		
 		$data 	= $this->getpostdata();
 		if(isempt($data))return '没有数据';
 		$fileext= $this->get('fileext');

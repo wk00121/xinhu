@@ -94,3 +94,10 @@ a.webbtn:link,a.webbtn:visited,.webbtn{color:#ffffff;opacity:0.8; background-col
 .upload_items img.imgs{width:50px;height:50px;margin:5px}
 .upload_items_items{padding:5px;text-align:center}
 .upload_items_meng{ background:rgba(0,0,0,0.5);position:absolute;left:0px;top:0px;height:60px;overflow:hidden;line-height:60px;text-align:center;width:100%;color:white}
+
+.r-tabs{overflow:hidden;height:36px}
+.r-tabs .r-tabs-item{height:36px;overflow:hidden;line-height:36px;display: block;float:left;text-align:center;padding:0px 10px;border:1px #888888 solid;border-bottom:0px;border-right-width:0px;cursor:pointer;color:#888888}
+.r-tabs .r-tabs-item:first-child{border-top-left-radius:5px}
+.r-tabs .r-tabs-item:last-child{border-top-right-radius:5px;border-right-width:1px}
+.r-tabs .r-tabs-item:not(:first-child):not(:last-child){border-radius:0}
+.r-tabs .r-tabs-item.r-tabs-item.active{color:#336699;}

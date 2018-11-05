@@ -8,7 +8,7 @@ class indexreimClassAction extends apiAction
 	{
 		$viewobj 	= m('view');
 		$dbs 		= m('reim');
-		
+		$gtype		= $this->rock->get('gtype');
 		$udarr 		= m('dept')->getdeptuserdata();
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
@@ -16,11 +16,14 @@ class indexreimClassAction extends apiAction
 		$grouparr 	= $dbs->getgroup($this->adminid);
 		$agentarr	= $dbs->getagent($this->adminid);
 		$historyarr	= $dbs->gethistory($this->adminid);
-		$applyarr	= m('mode')->getmoderows($this->adminid,'and islu=1');
 		$modearr	= array();
-		foreach($applyarr as $k=>$rs){
-			if(!$viewobj->isadd($rs, $this->adminid))continue;
-			$modearr[]=array('type'=>$rs['type'],'num'=>$rs['num'],'name'=>$rs['name']);
+		
+		if(isempt($gtype)){
+			$applyarr	= m('mode')->getmoderows($this->adminid,'and islu=1');
+			foreach($applyarr as $k=>$rs){
+				if(!$viewobj->isadd($rs, $this->adminid))continue;
+				$modearr[]=array('type'=>$rs['type'],'num'=>$rs['num'],'name'=>$rs['name']);
+			}
 		}
 		
 		$arr['deptjson']	= json_encode($deptarr);

@@ -350,6 +350,7 @@ class adminClassModel extends Model
 			if(!$this->isempt($deptid))$unitname = $this->db->getpval('[Q]dept','pid','name', $deptid);
 		}
 		return array(
+			'id' 		=> $uid,
 			'unitname' => $unitname,
 			'deptname' => $deptname,
 			'name' 		=> $name,
@@ -461,6 +462,7 @@ class adminClassModel extends Model
 			$rows = $this->getall("`id`='$uid'",$fields,'`sort`,`name`');
 		}
 		$py   = c('pingyin');
+		
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] = $rs['face'] = $this->getface($rs['face']);
 			//if($lx==1){

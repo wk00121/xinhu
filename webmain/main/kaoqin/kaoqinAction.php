@@ -573,6 +573,7 @@ class kaoqinClassAction extends Action
 		if(!$rs)exit('not found record');
 		if($rs['scale']<=0)$rs['scale']=12;
 		$this->smartydata['rs'] = $rs;
+		$this->smartydata['qqmapkey']	= getconfig('qqmapkey','55QBZ-JGYLO-BALWX-SZE4H-5SV5K-JCFV7');
 	}
 	
 	public function locationchangeAction()
@@ -585,6 +586,7 @@ class kaoqinClassAction extends Action
 		$this->assign('location_x', $location_x);
 		$this->assign('location_y', $location_y);
 		$this->assign('scale', $scale);
+		$this->smartydata['qqmapkey']	= getconfig('qqmapkey','55QBZ-JGYLO-BALWX-SZE4H-5SV5K-JCFV7');
 	}
 	
 	//删除打卡记录

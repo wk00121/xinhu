@@ -47,6 +47,23 @@ $(document).ready(function(){
 	blursehs{rand}=function(o1){
 		o1.value = o1.value.replace('select ','[SQL]');
 	}
+	
+	var c = {
+		xuanchang:function(){
+			var val = h.form.fieldstype.value;
+			if(val.indexOf('change')==0){
+				var cans1 = {
+					idobj:h.form.gongsi,
+					type:'deptusercheck',
+					title:'选择范围'
+				};
+				js.getuser(cans1);
+			}else{
+				js.msg('msg','元素类型不是选择人员部门的');
+			}
+		}
+	};
+	js.initbtn(c);
 });
 
 </script>
@@ -107,7 +124,7 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td align="right">计算公式：</td>
-			<td class="tdinput" colspan="3"><textarea  name="gongsi" style="height:60px" class="form-control"></textarea><font color=#888888>如：{price}*{shu}，更多公式详见<a target="_blank" href="<?=URLY?>view_gongsi.html">[帮助]</a>哦</font></td>
+			<td class="tdinput" colspan="3"><textarea  name="gongsi" style="height:60px" class="form-control"></textarea><font color=#888888>如：{price}*{shu}，更多公式详见<a target="_blank" href="<?=URLY?>view_gongsi.html">[帮助]</a>哦，字段元素类型为选择人员部门时这个可以设置要<a href="javascript:;" click="xuanchang">选择范围</a>。</font></td>
 		</tr>
 		
 		<tr>

@@ -465,7 +465,8 @@
 			$.ajax({
 				url:can.url,type:'POST',data:das,dataType:'json',
 				success:function(a1){
-					js.msg('success', '处理成功，共有记录'+a1.totalCount+'条/导出'+a1.downCount+'条，点我直接<a class="a" href="'+a1.url+'" target="_blank">[下载]</a>', 60);
+					var lex = (nwjsgui)?'_self':'_blank';
+					js.msg('success', '处理成功，共有记录'+a1.totalCount+'条/导出'+a1.downCount+'条，点我直接<a class="a" href="'+a1.url+'" target="'+lex+'">[下载]</a>', 60);
 					me.bool=false;
 				},
 				error:function(e){

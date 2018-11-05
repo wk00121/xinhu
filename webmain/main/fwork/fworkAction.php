@@ -60,6 +60,7 @@ class fworkClassAction extends Action
 		$lx 	= $this->post('atype');
 		$this->atypess = $lx;
 		$dt 	= $this->post('dt1');
+		$dt2 	= $this->post('dt2');
 		$key 	= $this->post('key');
 		$zt 	= $this->post('zt');
 		$modeid = (int)$this->post('modeid','0');
@@ -133,9 +134,11 @@ class fworkClassAction extends Action
 				$where.=" and a.`status` not in(5) and a.`isturn`=0 "; //未提交
 			}
 		}
-		if($dt!='')$where.=" and a.applydt='$dt'";
+		if($dt!='')$where.=" and a.`applydt`>='$dt'";
+		if($dt2!='')$where.=" and a.`applydt`<='$dt2'";
+		
 		if($modeid>0)$where.=' and a.modeid='.$modeid.'';
-		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.sericnum like '$key%')";
+		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.`sericnum` like '$key%' or a.`nowcheckname`='$key')";
 		
 
 		

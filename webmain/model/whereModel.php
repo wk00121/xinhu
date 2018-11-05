@@ -113,7 +113,7 @@ class whereClassModel extends Model
 			}
 			//我的同级部门人员：{uid,dept}
 			if($type=='dept'){
-				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.$deptid.')';
+				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.$deptid.' or '.$this->rock->dbinstr('deptids',$deptid).')';
 			}
 			//我的同级部门人员(含子部门)：{uid,deptall}
 			if($type=='deptall'){

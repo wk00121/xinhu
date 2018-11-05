@@ -50,7 +50,7 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 	<div class="blank10"></div>
 	<div style="min-width:650px; position:relative;max-width:750px;margin:0px 10px">
 		<div class="status"></div>
-		<div style="padding-bottom:15px;"><span onclick="location.reload()" style="font-size:24px"><?=$da['title']?></span></div>
+		<div style="padding-bottom:15px;"><span id="inputtitle" onclick="location.reload()" style="font-size:24px"><?=$da['title']?></span></div>
 		<div class="tdcont" align="left">
 			<form name="myform">
 			<input name="id" type="hidden" value="<?=$da['mid']?>">
@@ -94,12 +94,22 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 					echo $stsp;
 				}
 			}
+			
+			
+			
+			//是否抄送
 			$iscs = (int)$da['moders']['iscs'];
 			if($iscs>0){
-			?>
-			
-			<div style="padding-top:20px"><table width="100%"><tr><td width="15%" nowrap height="30" align="right"><font color="red"><?=(($iscs==1) ? '':'*')?></font>抄送给：</td><td width="100%"><input class="inputs" style="width:99%" id="syschaosongs" value="<?=$da['chao']['csname']?>" placeholder="选择要抄送的人员" readonly type="text" name="syschaosong"><input name="syschaosongid" value="<?=$da['chao']['csnameid']?>" id="syschaosongs_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('syschaosongs')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('syschaosongs','changeusercheck','选择抄送人员')" class="webbtn">选择</a></td></tr></table></div>
-			<?php
+				$csstr= $inputobj->inputchangeuser(array(
+					'name'		=> 'syschaosong',
+					'id'		=> 'syschaosongid',
+					'placeholder'=>'选择要抄送的人员',
+					'type'		=> 'changeusercheck',
+					'title'		=> '选择抄送人员',
+					'value' 	=> $da['chao']['csname'],
+					'valueid'	=> $da['chao']['csnameid']
+				));
+				echo '<div style="padding-top:20px"><table width="100%"><tr><td width="15%" nowrap height="30" align="right"><font color="red">'.(($iscs==1) ? '':'*').'</font>抄送给&nbsp;</td><td width="100%">'.$csstr.'</td></tr></table></div>';
 			}
 			?>
 			</form>
@@ -113,7 +123,7 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 		<?php
 		if($da['isflow']>0)echo '<label><input onclick="c.changeturn(this)" value="1" checked type="checkbox" id="sysisturn">直接提交</label>&nbsp;';
 		?>
-		<input id="AltS" type="button" onclick="return c.save()" value="提交" class="webbtn"></span>&nbsp; &nbsp; 
+		<input id="AltS" type="button" style="border-radius:5px" onclick="return c.save()" value="提交" class="webbtn"></span>&nbsp; &nbsp; 
 	</div>
 </div>
 <script>

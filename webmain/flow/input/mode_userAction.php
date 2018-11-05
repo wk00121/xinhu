@@ -10,7 +10,7 @@ class mode_userClassAction extends inputAction{
 		//$user = strtolower(trimstr($cans['user']));
 		$user = trimstr($cans['user']);
 		$name = trimstr($cans['name']);
-		$num  = trimstr($cans['num']);
+		$num  = trimstr(arrvalue($cans,'num'));
 		$email= trimstr($cans['email']);
 		$pass = $cans['pass'];
 		$check= c('check');

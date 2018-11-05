@@ -68,6 +68,7 @@ class cogClassAction extends Action
 		$arr['db_drive'] 	= getconfig('db_drive');
 		$arr['xinhukey'] 	= getconfig('xinhukey');
 		$arr['bcolorxiang'] = getconfig('bcolorxiang');
+		$arr['qqmapkey'] 	= getconfig('qqmapkey');
 		$arr['asynsend'] 	= getconfig('asynsend');
 		$arr['officeyl'] 	= getconfig('officeyl'); //文档预览
 		$arr['sqllog'] 		= getconfig('sqllog') ? '1' : '0';
@@ -97,6 +98,7 @@ class cogClassAction extends Action
 		
 		$arr['url'] 		= $this->post('url');
 		$arr['reimtitle'] 	= $this->post('reimtitle');
+		$arr['qqmapkey'] 	= $this->post('qqmapkey');
 		
 		$apptitle 			= $this->post('apptitle');
 		if(!isempt($apptitle))$arr['apptitle'] = $apptitle;

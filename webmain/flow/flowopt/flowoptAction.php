@@ -95,7 +95,9 @@ class flowoptClassAction extends Action
 		$mid 	= (int)$this->post('mid');
 		$modenum= $this->post('modenum');
 		$sm 	= $this->post('sm');
-		$msg 	= m('flow')->opt('checkerror', $modenum, $mid, $sm);
+		$lx 	= $this->post('lx','1');
+		$flow   = m('flow')->initflow($modenum, $mid);
+		$msg 	= $flow->checkerror($lx, $sm);
 		return $msg;
 	}
 	
