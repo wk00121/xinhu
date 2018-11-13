@@ -13,6 +13,7 @@ var reim={
 	timeloads:0,
 	ruloadtime:5*60, //5分钟
 	init:function(){
+		js.ajaxwurbo   = true;
 		js.xpbodysplit = 5;
 		date = js.now('Y-m-d');
 		nwjs.init();

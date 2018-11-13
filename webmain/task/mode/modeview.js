@@ -141,7 +141,9 @@ function check(lx){
 	
 	var o1 = get('check_btn');
 	o1.disabled = true;
-	if(lx==0 && f.fileobj && f.fileobj.start())return js.setmsg('上传相关文件中...');//有上传相关文件
+	if(lx==0 && f.fileobj && f.fileobj.start()){
+		return js.setmsg('上传相关文件中...');//有上传相关文件
+	}
 	var url = c.gurl('check');
 	js.ajax(url,da,function(a){
 		if(a.success){

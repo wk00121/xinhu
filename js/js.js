@@ -761,7 +761,7 @@ js.getparenta=function(o, oi){
 js.ajaxwurbo = false;
 js.ajaxbool = false;
 js.ajax = function(url,da,fun,type,efun, tsar){
-	//if(js.ajaxbool)return;
+	if(js.ajaxbool && !js.ajaxwurbo)return;
 	if(!da)da={};if(!type)type='get';if(!tsar)tsar='';tsar=tsar.split(',');
 	if(typeof(fun)!='function')fun=function(){};
 	if(typeof(efun)!='function')efun=function(){};

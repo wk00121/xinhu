@@ -104,6 +104,10 @@ $(document).ready(function(){
 		},
 		upshos:function(lx,id,kes){
 			if(kes=='null')kes='';
+			if(id==22&&!istongbu){
+				js.alert('请先升级系统到最新才能安装');
+				return;
+			}
 			js.prompt('模块安装','安装key(免费模块可不输入,直接点确定)',function(lxbd,msg){
 				if(lxbd=='yes'){
 					if(lx==2&&msg)msg=jm.uncrypt(msg);

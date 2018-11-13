@@ -137,7 +137,7 @@
 				for(var i=0;i<a.length;i++)if(a[i].id)ids+=','+a[i].id+'';
 				if(ids!='')ids=ids.substr(1);
 				try{if(form(this.fileidinput))form(this.fileidinput).value=ids;}catch(e){};
-				this.allsuccess(this.fileallarr, ids);
+				if(oi>0)this.allsuccess(this.fileallarr, ids); //必须全部才触发
 				return false;
 			}
 			this.nowoi = oi;

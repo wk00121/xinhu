@@ -551,7 +551,7 @@ class adminClassModel extends Model
 	public function updateuserinfo($whe='')
 	{
 		$db 	= m('userinfo');
-		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,a.num,a.companyid,a.deptnames,a.rankings,a.deptallname from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
+		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,b.state,a.num,a.companyid,a.deptnames,a.rankings,a.deptallname from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
 		$xbo 	= 0;
 		foreach($rows as $k=>$rs){
 			$uparr = array(
@@ -571,6 +571,11 @@ class adminClassModel extends Model
 				'num' 		=> $rs['num'],
 				'companyid' => $rs['companyid'],
 			);
+			if(isempt($rs['quitdt'])){
+				if($rs['state']=='5')$uparr['state'] = 0;
+			}else{
+				$uparr['state'] = 5;//离职
+			}
 			if(isempt($rs['ids'])){
 				$db->insert($uparr);
 			}else{

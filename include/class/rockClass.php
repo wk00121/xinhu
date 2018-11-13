@@ -145,9 +145,19 @@ final class rockClass
 		$str = strtolower($s);
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){
 			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
-			$s = str_replace($v1,'', $str);
+			$s = str_ireplace($v1,'', $s);
 		}
-	
+		return $this->reteistrs($s);
+	}
+	//参数里面禁用/*,*/
+	private function reteistrs($s){
+		$lvlaras = array('/*','*/');
+		$bo = false;
+		foreach($lvlaras as $v1)if($this->contain($s, $v1)){
+			$s  = str_replace($v1,'', $s);
+			$bo = true;
+		}
+		if($bo)$s = $this->reteistrs($s);
 		return $s;
 	}
 	public function debug($txt, $lx, $dabo=false)
@@ -162,7 +172,8 @@ final class rockClass
 		$txt.=''.chr(10).''.chr(10).'[IP]'.chr(10).''.$this->ip.'';
 		$txt.=''.chr(10).''.chr(10).'[datetime]'.chr(10).''.$this->now().'';
 		$txt.=''.chr(10).''.chr(10).'[Browser]'.chr(10).''.$this->HTTPweb.'';
-		$file = ''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log';
+		
+		$file = ''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.str_shuffle('abcdefghijklmn').'.log';
 		$this->createtxt($file, $txt);
 		return $file;
 	}
@@ -565,7 +576,7 @@ final class rockClass
 		if(!DEBUG)return;
 		$msg 	= '['.$this->now.']:'.$this->nowurl().''.chr(10).''.$str.'';
 		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
-		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.rand(100,999).'.log', $msg);
+		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.str_shuffle('abcdefghijklmn').'.log', $msg);
 	}
 	
 	public function arrvalue($arr, $k, $dev='')

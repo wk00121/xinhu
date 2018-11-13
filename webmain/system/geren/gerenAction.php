@@ -65,7 +65,7 @@ class gerenClassAction extends Action
 	
 	public function delfileAjax()
 	{
-		$id = $this->post('id','0');
+		$id = (int)$this->post('id','0');
 		m('file')->delfile($id);
 		backmsg();
 	}

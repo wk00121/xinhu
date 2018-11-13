@@ -72,7 +72,7 @@ abstract class mysql{
 		//记录访问sql日志
 		if(getconfig('sqllog')){
 			$sql = '';
-			$filstr = 'sqllog_'.date('Y.m.d.H.i.s').'_'.$this->rock->adminid.'_'.str_shuffle('abcdefg').'.log';
+			$filstr = 'sqllog_'.date('Y.m.d.H.i.s').'_'.$this->rock->adminid.'_'.str_shuffle('abcdefghijklmn').'.log';
 			foreach($this->sqlarr as $sql1)$sql.="\n\n$sql1;";
 			if($sql!='')$this->rock->createtxt(''.UPDIR.'/sqllog/'.date('Y-m-d').'/'.$filstr.'', "时间[".$this->rock->now."],用户[".$this->rock->adminid.".".$this->rock->adminname."],IP[".$this->rock->ip."],WEB[".$this->rock->web."],URL[".$this->rock->nowurl()."]".$sql);
 		}

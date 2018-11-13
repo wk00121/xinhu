@@ -33,7 +33,7 @@ class mode_worcClassAction extends inputAction{
 	*/
 	public function createfolderAjax()
 	{
-		$cqid 	= $this->post('cqid');
+		$cqid 	= (int)$this->post('cqid');
 		$typeid = (int)$this->post('typeid','0');
 		$name 	= $this->post('name');
 		
@@ -45,7 +45,7 @@ class mode_worcClassAction extends inputAction{
 	*/
 	public function delfileAjax()
 	{
-		$id = $this->post('id','0');
+		$id = (int)$this->post('id','0');
 		return m('word')->delword($id);
 	}
 	

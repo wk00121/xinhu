@@ -85,18 +85,18 @@ class flow_hrsalaryClassModel extends flowModel
 	{
 		$lmonth = c('date')->adddate($month.'-01','m',-1, 'Y-m');
 		$swer 	= m('admin')->monthuwhere($month);
-		$where 	= "`month`<'$month' and xuid in(select id from `[Q]admin` where 1=1 $swer) and `xuid` not in(select xuid from `[Q]".$this->mtable."` where `month`='$month')";
+		$where 	= "`month`<'$month' and xuid in(select id from `[Q]userinfo` where 1=1 $swer) and `xuid` not in(select xuid from `[Q]".$this->mtable."` where `month`='$month')";
 		$addfes = 'base,postjt';//基本工资跟岗位工资
 		
 		$adees	= explode(',', $addfes);
 		$rows 	= $this->db->getall("select * from `[Q]hrsalary` where $where order by `month` desc");
-		$count  = $this->db->count;
+		$count  = 0;
 		$xuarr  = array();
 		foreach($rows as $k=>$rs){
 			unset($rs['id']);
 			$xuid	= $rs['xuid'];
 			if(isset($xuarr[$xuid]))continue;
-		
+			$count++;
 			$xuarr[$xuid] = 1;
 			$arr 	= array();
 			$arr1 	= array(
