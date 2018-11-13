@@ -349,6 +349,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		$atype	= $this->get('atype');
 		$rs 	= m('flow_set')->getone("`id`='$setid'");
 		if(!$rs)exit('sorry!');
+		$rs['zibiaoshu'] = count(explode(',', $rs['tables']));
 		$this->smartydata['rs'] = $rs;
 		$this->title  = $rs['name'].'_录入页面设置';
 		$fleftarr 	= m('flow_element')->getrows("`mid`='$setid'",'*','`iszb`,`sort`');

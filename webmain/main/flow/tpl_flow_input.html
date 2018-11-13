@@ -11,7 +11,7 @@
 <script type="text/javascript" src="mode/kindeditor/kindeditor-min.js"></script>
 <script type="text/javascript">
 var id  = '<?=$da['rs']['id']?>',adminid='<?=$da['adminid']?>';
-var modenum = '<?=$da['rs']['num']?>',editor,atype='0';
+var modenum = '<?=$da['rs']['num']?>',editor,atype='0',zibiaoshu=<?=$da['rs']['zibiaoshu']?>;
 function initbody(){
 	resizes();
 	$(window).resize(resizes);
@@ -78,7 +78,9 @@ var c={
 		js.open(url, 700,450);
 	},
 	instartrows:function(){
-		var s='<div style="padding:10px"><select class="inputs" id="sss1ds"><option value="1">第1个多行子表</option><option value="2">第2个多行子表</option><option value="3">第3个多行子表</option><option value="4">第4个多行子表</option><option value="5">第5个多行子表</option><option value="6">第6个多行子表</option></select>&nbsp;<select class="inputs" id="hangshu"><option value="1">默认1行</option><option value="2">默认2行</option><option value="3">默认3行</option><option value="4">默认4行</option></select></div>';
+		var s1='';
+		for(var i=1;i<=zibiaoshu;i++)s1+='<option value="'+i+'">第'+i+'个多行子表</option>';
+		var s='<div style="padding:10px"><select class="inputs" id="sss1ds">'+s1+'</select>&nbsp;<select class="inputs" id="hangshu"><option value="1">默认1行</option><option value="2">默认2行</option><option value="3">默认3行</option><option value="4">默认4行</option></select></div>';
 		js.tanbody('charusss','获取多行子表',300,150,{
 			html:s,
 			btn:[{text:'确定'}]
