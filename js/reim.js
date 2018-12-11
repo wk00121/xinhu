@@ -1,4 +1,4 @@
-﻿/**
+/**
 *	REIM即时通信主js
 *	caratename：雨中磐石(rainrock)
 *	caratetime：2017-07-20 21:40:00

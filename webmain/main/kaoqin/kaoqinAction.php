@@ -25,7 +25,7 @@ class kaoqinClassAction extends Action
 		if($reimbo->installwx(1)){
 			$barr 	= m('weixinqy:daka')->getrecord($uids, $dt1, $dt2, 1);
 			//加入异步
-			if($uids=='' && $barr['maxpage']>1){
+			if($uids=='' && $barr['errcode']==0 && $barr['maxpage']>1){
 				for($i=1;$i<=$barr['maxpage'];$i++){
 					if($i>1)$reimbo->asynurl('asynrun','wxdkjl', array(
 						'dt1' 		=> $dt1,

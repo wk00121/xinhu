@@ -5,7 +5,7 @@ class flow_officiaClassModel extends flowModel
 	protected function flowdatalog($arr)
 	{
 		
-		$arr['title'] 		= '';
+		//$arr['title'] 		= '';
 
 		return $arr;
 	}

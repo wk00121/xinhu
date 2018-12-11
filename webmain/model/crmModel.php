@@ -15,6 +15,12 @@ class crmClassModel extends Model
 		return $rows;
 	}
 	
+	//读取所有客户
+	public function custdata()
+	{
+		$rows 	= $this->getrows("`status`=1",'id as value,name,id,unitname as subname','`optdt` desc');
+		return $rows;
+	}
 	
 	
 	//读取我的销售机会
@@ -192,5 +198,15 @@ class crmClassModel extends Model
 				'htnum' => $rs['num'],
 			), $rs['id']);
 		}
+	}
+	
+	/**
+	*	跟进名称读取客户档案
+	*/
+	public function getcustomer($name)
+	{
+		if(isempt($name))return false;
+		$rs = $this->getone("(`name`='$name' or `unitname`='$name')");
+		return $rs;
 	}
 }

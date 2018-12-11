@@ -200,7 +200,7 @@ cont:
 				<label><input name="isgbjl" value="1" type="checkbox"> 不显示操作记录</label>&nbsp; &nbsp; 
 				<label><input name="isgbcy" value="1" type="checkbox"> 不显示查阅记录</label>&nbsp; 
 				<label><input name="isscl" value="1" type="checkbox"> 标识已生成列表页</label>&nbsp; 
-				<label><input name="ispl" value="1" checked type="checkbox"> 开启可评论</label>
+				<label><input name="ispl" value="1" type="checkbox"> 开启可评论</label>
 				&nbsp; 
 				<label><input name="istxset" value="1" type="checkbox"> 开启单据提醒设置</label>
 				&nbsp; 

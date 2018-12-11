@@ -314,8 +314,16 @@ class reimClassModel extends Model
 	
 	public function getgroupxinxi($gid)
 	{
-		$rs = m('im_group')->getone($gid,'`id`,`type`,`name`,`face`,`deptid`');
+		$rs 	= m('im_group')->getone($gid,'`id`,`type`,`name`,`face`,`deptid`');
 		$facarr = array('images/group.png','images/group.png','images/system.png');
+		if(!$rs){
+			$rs = array(
+				'face'  => '',
+				'type'  => 2,
+				'name'  => '',
+				'id' 	=> $gid,
+			);
+		}
 		$rs['face'] 	= $this->getface($rs['face'], $facarr[$rs['type']]);
 		$rs['utotal'] 	= $this->db->rows('[Q]im_groupuser','gid='.$gid.'');
 		$rs['innei'] 	= $this->db->rows('[Q]im_groupuser','gid='.$gid.' and uid='.$this->adminid.''); //是否在会话中
@@ -513,12 +521,13 @@ class reimClassModel extends Model
 			}else{
 				$face	= 'images/group.png';
 				$rows[$k]['gid'] = $rs['receid'];
-				$rson  	= $this->db->getone('[Q]im_group', $rs['receid'], 'name,face');
+				$rson  	= $this->db->getone('[Q]im_group', $rs['receid'], 'name,face,deptid');
 				if(!isempt($rs['title']) && $rson)$rson['name'] = $rs['title'];
 			}
 			if($rson){
 				$name = $rson['name'];
 				$face = $this->getface($rson['face'], $face);
+				if($rs['type']=='group')$rows[$k]['deptid'] = $rson['deptid'];
 			}
 			$rows[$k]['face'] = $face;
 			$rows[$k]['name'] = $name;

@@ -1,11 +1,19 @@
-﻿/**
+/**
 *	REIM即时通信主js-最新版本
 *	caratename：雨中磐石(rainrock)
 *	caratetime：2018-11-01 21:40:00
 *	homepage:www.rockoa.com
 */
 
-var agentarr={},userarr={},cnum='',windowfocus=true,jietubool=false;
+var agentarr={},userarr={},grouparr={},cnum='',windowfocus=true,jietubool=false;
+//是不是xp和win7的版本
+function jisxobo(){
+	var llq = navigator.userAgent.toLowerCase();
+	if(llq.indexOf('windows nt 5')>0 || llq.indexOf('windows nt 6.1')>0){
+		return true;
+	}
+	return false;
+}
 var reim={
 	chatobj:{},
 	maindata:{},
@@ -107,9 +115,19 @@ var reim={
 		if(!nwjsgui){
 			$('#closediv').remove();
 		}
+		$('#reim_keysou').keyup(function(){reim.searchss();});
+		$('#reim_keysou').click(function(){reim.searchss();});
+		
+		if(jisxobo()){
+			js.xpbodysplit = 0;
+			get('mindivshow').style.margin='0px';
+		}
 	},
 	resize:function(){
 		viewheight = winHb()-10-50; //可操作高度
+		var lx1 = 0;
+		if(jisxobo())lx1=10;
+		viewheight+=lx1;
 		$('#mindivshow').css('height',''+(viewheight+50)+'px');
 		$('#centlist').css('height',''+viewheight+'px');
 		$('#viewzhulist').css('height',''+viewheight+'px');
@@ -178,7 +196,7 @@ var reim={
 		}
 	},
 	getapiurl:function(m,a){
-		return 'api.php?m='+m+'&a='+a+'';
+		return 'api.php?m='+m+'&a='+a+'&cfrom=reim';
 	},
 	//ajax访问处理
 	ajax:function(url,cans, fun, lx,efun){
@@ -220,15 +238,77 @@ var reim={
 		}
 		
 		var aarr  = js.decode(ret.agentjson);
-		var cbarr = {};
-		for(var i=0;i<aarr.length;i++){
+		var cbarr = {},i;
+		for(i=0;i<aarr.length;i++){
 			if(!cbarr[aarr[i].types])cbarr[aarr[i].types]=[];
 			cbarr[aarr[i].types].push(aarr[i]);
 		}
 		this.maindata.aarr=cbarr;
+		aarr = this.maindata.garr;
+		for(i=0;i<aarr.length;i++){
+			grouparr[aarr[i].id]=aarr[i];
+		}
 		this.showagent(false);
 		this.myip 			= ret.ip;
 		this.showhistory(this.maindata.harr);
+	},
+	//搜索联系人/会话/应用
+	searchss:function(){
+		clearTimeout(this.searchsstime);
+		this.searchsstime=setTimeout('reim.searchssss()',500);
+		if(!this.searchright)this.searchright=$.rockmenu({
+			data:[],iconswh:20,width:210,
+			itemsclick:function(d){
+				reim.searchclick(d);
+			}
+		});
+	},
+	searchclick:function(d){
+		var ty = d.type;
+		if(ty=='user')this.showuserinfo(d.xuoi);
+		if(ty=='group')this.openchat(d.type,d.id,d.name,d.icons);
+		if(ty=='agent')this.openagenh(d.id);
+	},
+	searchssss:function(){
+		var o = $('#reim_keysou'),val=strreplace(o.val());
+		var d=[];
+		if(val==''){
+			this.searchright.hide();
+			return;
+		}
+		val=val.toLowerCase();
+		var off=o.offset(),sid,a,s1,arr,i,oi=1;
+		arr = this.maindata.uarr;
+		for(i=0;i<arr.length;i++){
+			a=arr[i];
+			if(a.name.indexOf(val)>-1 || a.pingyin.indexOf(val)==0 || a.deptname.indexOf(val)>-1 || a.ranking.indexOf(val)>-1){
+				s1=''+a.name+'<font color=#888888>('+a.ranking+')</font>';
+				d.push({name:s1,id:a.id,icons:a.face,type:'user',xuoi:i});
+				oi++;
+			}
+			if(oi>10)break;//最多显示10人
+		}
+		arr = this.maindata.garr;
+		for(i=0;i<arr.length;i++){
+			a=arr[i];
+			if(a.name.indexOf(val)>-1){
+				s1=''+a.name+'<font color=#888888>(会话)</font>';
+				d.push({name:s1,id:a.id,icons:a.face,type:'group'});
+			}
+		}
+		for(sid in agenharr){
+			a=agenharr[sid];
+			if(a.name.indexOf(val)>-1){
+				s1=''+a.name+'<font color=#888888>(应用)</font>';
+				d.push({name:s1,id:a.id,icons:a.face,type:'agent'});
+			}
+		}
+		if(d.length==0){
+			this.searchright.hide();
+			return;
+		}
+		this.searchright.setData(d);
+		this.searchright.showAt(off.left+1,off.top+25,$('#reim_headercenter').width()-2);
 	},
 	websocketlink:function(a){
 		if(this.connectbool){
@@ -413,7 +493,10 @@ var reim={
 			s+='<div onclick="reim.openchat(\'group\',\''+d.id+'\',\''+d.name+'\',\''+d.face+'\')" class="lists">';
 			s+='<table cellpadding="0" border="0" width="100%"><tr>';
 			s+='<td style="padding-right:5px"><div style="height:24px;overflow:hidden"><img src="'+d.face+'" style="height:24px;width:24px"></div></td>';
-			s+='<td align="left" width="100%"><div class="name">'+d.name+'</div></td>';
+			s+='	<td align="left" width="100%"><div class="name">'+d.name+'';
+			if(d.deptid=='1')s+=' <span class="reimlabel">全员</span>';
+			if(d.deptid>'1')s+=' <span class="reimlabel1">部门</span>';
+			s+='	</div></td>';
 			s+='</tr></table>';
 			s+='</div>';
 		}
@@ -439,10 +522,17 @@ var reim={
 		var cls = lex ? ' active' : '';
 		var na  = d.name;
 		if(d.title)na = d.title;
+		if(d.type=='group'){
+			var d2 = grouparr[d.receid];
+			if(d2)d.deptid = d2.deptid;
+		}
+		var s1 = '';
+		if(d.deptid=='1')s1=' <span class="reimlabel">全员</span>';
+		if(d.deptid>'1')s1=' <span class="reimlabel1">部门</span>';
 		s	= '<div class="lists'+cls+'" rtype="hist" oncontextmenu="reim.historyright(this,event)" tsaid="'+d.receid+'" tsaype="'+d.type+'"  temp="hist" id="history_'+num+'" onclick="reim.openchat(\''+ty+'\',\''+d.receid+'\',\''+d.name+'\',\''+d.face+'\')">';
 		s+='<table cellpadding="0" border="0" width="100%"><tr>';
 		s+='<td style="padding-right:8px"><div style="height:30px;overflow:hidden"><img src="'+d.face+'"></div></td>';
-		s+='<td align="left" width="100%"><div class="name">'+na+'</div><div class="huicont">'+jm.base64decode(d.cont)+'</div></td>';
+		s+='<td align="left" width="100%"><div class="name">'+na+''+s1+'</div><div class="huicont">'+jm.base64decode(d.cont)+'</div></td>';
 		s+='<td align="right" nowrap><span id="chat_stotal_'+num+'" class="badge red">'+st+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
 		s+='</tr></table>';
 		s+='</div>';
@@ -536,12 +626,7 @@ var reim={
 	biaoyd:function(type,gid){
 		js.ajax(this.getapiurl('reim','yiduall'),{type:type,gid:gid},false,'get');
 	},
-	receiveunit:function(d){
-		var msg = jm.base64decode(d.cont);
-		notifyobj.showpopup(msg,{icon:d.companylogo,title:d.companyname,rand:d.companynum,click:function(b){
-			reim.qieunit(b.title,b.rand);
-		}});
-	},
+
 	receiveagenh:function(d){
 		var gid = d.gid;
 		var num = d.type+'_'+gid,stotal=0,msg;
@@ -762,7 +847,7 @@ var reim={
 				reim.clickcogclick(d);
 			}
 		});
-		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'设置',lx:'cog'},{'name':'退出',lx:'exit'}];
+		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'设置',lx:'cog'},{'name':'创建会话',lx:'create'},{'name':'退出',lx:'exit'}];
 		this.cogmenu.setData(d);
 		var off = $(o1).offset();
 		this.cogmenu.showAt(40,off.top-d.length*36);
@@ -786,6 +871,24 @@ var reim={
 		if(lx=='jl'){
 			this.openrecord();
 		}
+		if(lx=='create'){
+			this.creategroup();
+		}
+	},
+	//创建会话
+	creategroup:function(){
+		js.prompt('创建会话','请输入会话名称：',function(lx,v){
+			if(lx=='yes'){
+				if(!v){js.msg('msg','没有输入会话名称');return false;}
+				js.msg('wait','创建中...');
+				reim.ajax(reim.getapiurl('reim','createlun'),{val:jm.base64encode(v)}, function(da){
+					js.msg('success','创建成功，请打开会话窗口邀请人员加入');
+					reim.changetabs(1);
+					reim.initload(true);
+				});
+			}
+		});
+		return false;
 	},
 	exitlogin:function(bo){
 		if(!bo){
@@ -897,22 +1000,35 @@ function chatcreate(cans){
 	this.showtitle=function(){
 		var o = $('#viewtitle_'+this.num+''),s='';
 		var od = this.receinfo;
-		if(!od)od={};
+		if(!od)od={deptid:'-1'};
 		s+='<table width="100%"><tr>';
 		s+='<td width="30" align="center"><div style="padding:0px 10px;padding-right:8px;height:30px;overflow:hidden"><img style="border-radius:0px" src="'+this.face+'" height="30" width="30"></div></td>';
 		s+='<td height="50" width="100%">';
 		s+='	<div><b style="font-size:16px;">'+this.name+'</b>';
 		if(this.type=='group' && this.usershu)s+='('+this.usershu+')';
+		if(this.type=='group'){
+			if(od.deptid=='1')s+=' <span class="reimlabel">全员</span>';
+			if(od.deptid>'1')s+=' <span class="reimlabel1">部门</span>';
+		}
 		if(od.ranking)s+=' <span style="font-size:12px;color:#aaaaaa">('+od.ranking+')</span>';
 		s+='	</div>';
 		if(od.unitname)s+='<div style="font-size:12px;color:#aaaaaa">'+od.unitname+'</div>';
 		s+='</td>';
-		if(this.type=='group22'){
-			if(!od.deptid)s+='<td width="30" title="邀请" class="chattitbtn" nowrap><i class="icon-plus"></i></td>';
-			s+='<td width="30" title="会话信息" class="chattitbtn" nowrap><i class="icon-group"></i></td>';
+		if(this.type=='group'){
+			if(!od.deptid || od.deptid=='0'){
+				s+='<td width="30" title="邀请" id="yaoqingchat_'+this.num+'" class="chattitbtn" nowrap><i class="icon-plus"></i></td>';
+				s+='<td width="30" title="退出会话" id="tuichuchat_'+this.num+'" class="chattitbtn" nowrap><i class="icon-signout"></i></td>';
+			}
+			//s+='<td width="30" title="会话信息" class="chattitbtn" nowrap><i class="icon-group"></i></td>';
 		}
 		s+='</tr></table>';
 		o.html(s);
+		$('#yaoqingchat_'+this.num+'').click(function(){
+			me.yaoqing();
+		});
+		$('#tuichuchat_'+this.num+'').click(function(){
+			me.exitgroup();
+		});
 	};
 	this.loaddata=function(o1, iref){
 		if(this.boolload)return;
@@ -993,6 +1109,50 @@ function chatcreate(cans){
 		}
 	};
 	
+	//邀请
+	this.yaoqing=function(){
+		if(this.type!='group')return;
+		js.changeuser(false,'usercheck','邀请人到会话中', {
+			onselect:function(sna,sid){
+				if(!sid)return;
+				me.yaoqings(sid);
+			}
+		});
+	};
+	this.yaoqings=function(sid){
+		js.msg('wait','邀请中...');
+		reim.ajax(reim.getapiurl('reim','yaoqinguid'),{val:sid,gid:this.gid},function(da){
+			js.msg();
+			if(da.success){
+				js.msgok('邀请成功');
+				me.getreceinfor();
+			}else{
+				js.msg('msg',da);
+			}
+		});
+	};
+	this.getreceinfor=function(){
+		reim.ajax(reim.getapiurl('reim','getreceinfor'),{type:this.type,gid:this.gid},function(ret){
+			me.receinfo	= ret.data.receinfor;
+			me.usershu	= me.receinfo.utotal;
+			me.showtitle();
+		});
+	};
+	this.exitgroup=function(){
+		if(this.type!='group')return;
+		js.confirm('确定要此退出会话吗？',function(lx){
+			if(lx=='yes'){
+				me.exitgroups();
+			}
+		});
+	};
+	
+	this.exitgroups=function(){
+		js.msg('wait','退出中...');
+		reim.ajax(reim.getapiurl('reim','exitgroup'),{gid:this.gid}, function(da){
+			js.msgok('成功退出此会话，无法在此会话发消息了');
+		});
+	};
 	this.contshozt=function(d){
 		return strformat.contshozt(d,'web/');
 	};

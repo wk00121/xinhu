@@ -242,6 +242,7 @@ class flow_hrsalaryClassModel extends flowModel
 			
 			$arr['isturn']  = (arrvalue($arr,'isturn')=='是') ? 1 : 0;
 			$arr['status']  = (arrvalue($arr,'status')=='是') ? 1 : 0;
+			$arr['ispay']  	= (arrvalue($arr,'ispay')=='是') ? 1 : 0;
 			
 			if($arr['status']==1)$arr['isturn'] = 1;
 			

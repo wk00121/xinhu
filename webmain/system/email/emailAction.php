@@ -65,9 +65,11 @@ class emailClassAction extends Action
 	
 	public function emailtotals($table, $rows)
 	{
+		$emrs = m('admin')->getone($this->adminid, 'email,emailpass');
+		if(getconfig('systype')=='demo')$emrs['emailpass']='';
 		return array(
 			'rows' => $rows,
-			'email'=> m('admin')->getone($this->adminid, 'email,emailpass'),
+			'email'=> $emrs,
 			'total'=> m('emailm')->zongtotal($this->adminid)
 		);
 	}

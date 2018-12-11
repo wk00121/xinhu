@@ -201,7 +201,16 @@ class flowModel extends Model
 	{
 		$this->id		= (int)$id;
 		$this->mwhere	= "`table`='$this->mtable' and `mid`='$id'";
-		$this->rs 		= $this->getone($id);
+		
+		//防止同主表模块串数据
+		$swhere 		= "`id`='$id'";
+		$wherestr 		= $this->moders['where'];
+		if(!isempt($wherestr)){
+			$wherestr = $this->rock->covexec($wherestr);
+			$swhere .= ' and '.$wherestr;
+		}
+		
+		$this->rs 		= $this->getone($swhere);
 		$this->uname	= '';
 		if(!$this->rs)$this->echomsg('数据记录不存在了');
 		$this->rs['base_name'] 		= '';

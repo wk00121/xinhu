@@ -950,7 +950,9 @@ function appobj1(act, can1){
 }
 //向PC客户端发送命令
 js.cliendsend=function(at, cans, fun,ferr){
-	var url = unescape('http%3A//127.0.0.1%3A2829/%3Fatype');
+	var dk  = '2829';
+	if(at=='rockoffice')dk='2827';
+	var url = unescape('http%3A//127.0.0.1%3A'+dk+'/%3Fatype');
 	if(!cans)cans={};if(!fun)fun=function(){};if(!ferr)ferr=function(){return false;}
 	url+='='+at+'&callback=?';
 	var llq = navigator.userAgent.toLowerCase();
@@ -966,6 +968,19 @@ js.cliendsend=function(at, cans, fun,ferr){
 	}
 	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录REIM客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
+}
+
+//发送文档编辑
+js.sendeditoffice=function(id){
+	this.ajax('api.php?m=upload&a=rockofficeedit',{id:id},function(ret){
+		if(ret.success){
+			js.cliendsend('rockoffice',{
+				paramsstr:ret.data
+			});
+		}else{
+			js.msg('msg', ret.msg);
+		}
+	},'get,json');
 }
 
 js.ontabsclicks=function(){};

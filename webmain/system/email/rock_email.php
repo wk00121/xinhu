@@ -43,6 +43,9 @@ $(document).ready(function(){
 		load:function(d){
 			nowemail=d.email
 			c.showtotal(d.total);
+		},
+		itemdblclick:function(d){
+			openxiangs('邮件','emailm',d.id);
 		}
 	});
 	function btn(bo){

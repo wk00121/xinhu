@@ -95,13 +95,7 @@ $(document).ready(function(){
 	showvies{rand}=function(oi,lx){
 		var d=a.getData(oi);
 		if(lx==3){
-			var durl = '<?=URL?>',paramsstr='',
-				downurl = ''+durl+''+d.filepath+'',
-				cansa = [durl,d.filename,''+md5(durl)+'_'+d.filesize+'_'+d.fileid+'.'+d.fileext+'',downurl,d.fileid,adminid,'<?=$xhrock->admintoken?>','edit',d.fileext];
-			for(var i=0;i<cansa.length;i++)paramsstr+=','+cansa[i]+'';	
-			js.cliendsend('office',{
-				paramsstr:paramsstr.substr(1)
-			});
+			js.sendeditoffice(d.fileid);
 			return;
 		}
 		if(lx==2){

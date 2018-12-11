@@ -26,6 +26,8 @@
 					maxupgloble = maxup;
 				}}catch(e){}
 			});
+			if(maxupgloble>0)this.maxsize= maxupgloble;
+			
 			if(!this.autoup)return;
 			if(this.initremove){
 				$('#'+this.inputfile+'').parent().remove();

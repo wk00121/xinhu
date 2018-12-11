@@ -3,7 +3,7 @@
 $(document).ready(function(){
 	var a = $('#veiw_{rand}').bootstable({
 		tablename:'todo',checked:true,fanye:true,statuschange:false,
-		url:js.getajaxurl('publicstore','{mode}','{dir}'),defaultorder:'`status`,`id` desc',
+		url:js.getajaxurl('publicstore','{mode}','{dir}'),defaultorder:'`id` desc',
 		storeafteraction:'totaldaetods',storebeforeaction:'beforetotaldaetods',
 		columns:[{
 			text:'类型',dataIndex:'title',sortable:true,renderer:function(v,d){
