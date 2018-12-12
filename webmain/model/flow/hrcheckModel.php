@@ -41,8 +41,11 @@ class flow_hrcheckClassModel extends flowModel
 		if(isempt($rs['pfrens'])){
 			$ztstr = '<font color=green>评分已完成</font>';
 		}else{
-			//$ztstr = '待<font color=blue>'.$rs['pfrens'].'</font>评分';
-			$ztstr = '<font color=blue>待评分</font>';
+			if($rs['uid']==$this->adminid){
+				$ztstr = '待<font color=blue>'.$rs['pfrens'].'</font>评分';
+			}else{
+				$ztstr = '<font color=blue>待评分</font>';
+			}
 		}
 		$rs['pfrenids'] = $ztstr;
 		if($lx==1){
