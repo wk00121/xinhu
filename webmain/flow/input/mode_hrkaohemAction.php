@@ -11,7 +11,7 @@ class mode_hrkaohemClassAction extends inputAction{
 		$wqz  = 0;
 		foreach($data as $k=>$rs)$wqz+=floatval($rs['weight']);
 		
-		if(round($wqz,2)!=100)return '考核项目内容权重加起来必须100%';
+		//if(round($wqz,2)!=100)return '考核项目内容权重加起来必须100%';
 		
 		$data = $this->getsubtabledata(1);
 		if(count($data)==0)return '至少要有一行评分人';

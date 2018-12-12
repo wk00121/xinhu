@@ -203,7 +203,7 @@ class flow_hrcheckClassModel extends flowModel
 				$inarr['applyname'] = $urs['name'];
 				$pfren  = $pfrenid  = $pfrenids = $pfrens = '';
 				$mid 	= 0;
-				$where1 = "`uid`='".$urs['id']."' and `startdt`='".$inarr['startdt']."'";
+				$where1 = "`uid`='".$urs['id']."' and `startdt`='".$inarr['startdt']."' and `khid`='".$rs['id']."'";
 				if($mrs = $this->getone($where1)){
 					$mid= (int)$mrs['id'];
 				}else{

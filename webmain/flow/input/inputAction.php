@@ -574,8 +574,8 @@ class inputAction extends Action
 			if(!$this->isempt($nrs)){
 				$fida= explode(',', $nrs);$xu0='0';
 				if(isset($fida[1]))$xu0=$fida[1];
-				
-				$str		= $this->inputobj->getfieldcont($fida[0], $this->actclss,'_'.$xu0.'', 1);
+				$iszb		= floatval(substr($fida[0],-1))+1;//第几个子表如果超过第10个子表就麻烦了
+				$str		= $this->inputobj->getfieldcont($fida[0], $this->actclss,'_'.$xu0.'', $iszb);
 				$content	= str_replace('['.$nrs.']', $str, $content);
 			}
 		}
