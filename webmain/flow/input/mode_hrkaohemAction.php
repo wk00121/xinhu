@@ -54,5 +54,12 @@ class mode_hrkaohemClassAction extends inputAction{
 			$dbn->insert($rs);
 		}
 	}
+	
+	//生成
+	public function shengchegeAjax()
+	{
+		$keox = m('flow')->initflow('hrcheck')->hrkaohemrun();
+		return '今日'.$this->rock->date.'有'.$keox.'个考核项目生成成功';
+	}
 }	
 			

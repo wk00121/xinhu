@@ -168,10 +168,13 @@ class flow_hrcheckClassModel extends flowModel
 		$dbn1 = m('hrcheckn');
 		$dbn  = m('hrkaohen');
 		$rows = m('hrkaohem')->getall("`status`=1 and `startdt`<='$dt' and `enddt`>='$dt'");
+		$keox = 0;
 		foreach($rows as $k=>$rs){
+			
 			$bo 	= $this->xuyuns($rs);
 			if(!$bo)continue;
 			
+			$keox++;
 			$rowxm = $dbs->getall("`mid`='".$rs['id']."'",'*','`sort`');
 			$rowpf = $dbn->getall("`mid`='".$rs['id']."'",'*','`sort`');
 			
@@ -289,6 +292,7 @@ class flow_hrcheckClassModel extends flowModel
 				$this->numtodosend('pftodo','评分');
 			}
 		}
+		return $keox;
 	}
 	private function xuyuns($rs){
 		$pinlv  = $rs['pinlv'];

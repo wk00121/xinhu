@@ -248,6 +248,7 @@ c.setcolumns('status',{
 	'editor':true
 });
 $('#tdright_{rand}').prepend(c.getbtnstr('复制','copyfuz')+'&nbsp;&nbsp;');
+$('#tdright_{rand}').prepend(c.getbtnstr('生成考核评分','shengchege')+'&nbsp;&nbsp;');
 c.copyfuz=function(){
 	var sid = a.changeid;
 	if(!sid){js.msg('msg','没有选中行');return;}
@@ -256,6 +257,12 @@ c.copyfuz=function(){
 	js.ajax(publicmodeurl(modenum,'copyfuz'),{sid:sid}, function(d){
 		js.msg('success', '复制成功');
 		a.reload();
+	},'get');
+}
+c.shengchege=function(){
+	js.msg('wait','生成中...');
+	js.ajax(publicmodeurl(modenum,'shengchege'),{}, function(str){
+		js.msg('success', str);
 	},'get');
 }
 
