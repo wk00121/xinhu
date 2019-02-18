@@ -24,6 +24,7 @@ class xinhuChajian extends Chajian{
 		$url = $this->updatekey;
 		$url.= 'api.php?a='.$act.'';
 		$url.= '&host='.$this->rock->jm->base64encode(HOST).'&version='.VERSION.'&time='.time().'&web='.$this->rock->web.'&ip='.$this->rock->ip.'&randkey='.getconfig('randkey').'&xinhukey='.getconfig('xinhukey').'';
+		$url.= '&authorkey='.getconfig('authorkey').'';
 		foreach($can as $k=>$v)$url.='&'.$k.'='.$v.'';
 		return $url;
 	}

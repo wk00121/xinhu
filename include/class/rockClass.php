@@ -178,7 +178,10 @@ final class rockClass
 		return $file;
 	}
 	
-	private function isjm($s)
+	/**
+	*	是否加密的字符串
+	*/
+	public function isjm($s)
 	{
 		$bo = false;
 		if(!$s)return $bo;

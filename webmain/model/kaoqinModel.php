@@ -618,7 +618,7 @@ class kaoqinClassModel extends Model
 	/**
 	*	计算剩余假期时间,如果审核未通过，申请人不删除照样也会扣除时间
 	*/
-	public function getqjsytime($uid, $type, $dt='', $id=0)
+	public function getqjsytime($uid, $type, $dt='', $id=0, $jzdt='')
 	{
 		$types 	= '增加'.$type.'';
 		$wehe	= '';
@@ -627,11 +627,33 @@ class kaoqinClassModel extends Model
 			$wehe = 'and `jiatype`=0'; //只有可调休才能用
 		}
 		if($dt=='')$dt = $this->rock->now;
+		if($jzdt=='')$jzdt = $dt; //截止时间
 		$zto	= $to1 = 0;
 		$enddt 	= '';//截止
 		
+		
+		
+		
+		//总
+		$zrows	= $this->db->getall("select * from `[Q]kqinfo` where `uid`='$uid' and `kind`='$types' $wehe and `status`=1 order by `stime` asc");
+		if(!$zrows)return 0;
+		foreach($zrows as $k1=>$rs1){
+			$jsdt = $rs1['enddt'];
+			if(isempt($jsdt))$jsdt 	= '2099-12-31 23:59:59';
+			$zrows[$k1]['enddt']	= $jsdt;
+			$zrows[$k1]['totals']	= floatval($rs1['totals']);
+		}
+		
+		//用过的
+		$yrows  = $this->db->getall("select * from `[Q]kqinfo` where `uid`='$uid' and `kind`='请假' and `qjkind`='$type' and `status` not in(5) and `id`<>$id order by `stime` asc");
+		
+		
+		return $this->getqjsytimess($zrows, $yrows, $dt, $jzdt);
+		
+		//---以下是弃用的---------
+		
 		//总共的
-		$zrs	= $this->db->getone('[Q]kqinfo', "`uid`='$uid' and `kind`='$types' $wehe and `status`=1 and `stime`<='$dt' and (`enddt` is null or `enddt`>='$dt')","sum(totals)totals,min(stime)stime");
+		$zrs	= $this->db->getone('[Q]kqinfo', "`uid`='$uid' and `kind`='$types' $wehe and `status`=1 and `stime`<='$dt' and (`enddt` is null or `enddt`>='$jzdt')","sum(totals)totals,min(stime)stime");
 		if($zrs){
 			$zto 	= floatval($zrs['totals']);
 			if(!isempt($zrs['stime']))$enddt="and `stime`>='".$zrs['stime']."'";
@@ -647,8 +669,51 @@ class kaoqinClassModel extends Model
 		}
 		
 		$wjg 	= $zto - floatval($to1);
+		if($wjg<0)$wjg = 0;
 
 		return $wjg;
+	}
+	private function getqjsytimess($zrows, $yrows, $dt, $jzdt)
+	{
+		$zross  = array();
+		$yross  = array();
+		$zsssj  = 0;
+		if($yrows && $zrows){
+			foreach($yrows as $k2=>$rs2){
+				$totals = floatval($rs2['totals']); //请假的时间
+				foreach($zrows as $k1=>$rs1){
+					if($rs2['stime']>=$rs1['stime'] && $rs2['etime']<=$rs1['enddt']){
+						$sys = $rs1['totals'] - $totals;
+						
+						//还有剩余可用时间
+						if($sys>0){
+							$zrows[$k1]['totals'] = $sys;
+						}else if($sys<0){
+							//时间还不够
+							$rs2['totals'] = 0-$sys;
+							$yross[] = $rs2;
+						}
+					}
+				}
+			}
+			//继续下一步
+			foreach($zrows as $k1=>$rs1){
+				if($rs1['totals']>0)$zross[] = $rs1;
+			}
+			
+			//递归处理
+			$zsssj = $this->getqjsytimess($zross, $yross, $dt, $jzdt);
+		}else{
+			if($zrows)foreach($zrows as $k1=>$rs1){
+				if($rs1['stime']<=$dt && $rs1['enddt']>=$jzdt){
+					$zsssj+=$rs1['totals'];
+				}
+			}
+		}
+		
+		
+		
+		return $zsssj;
 	}
 	
 	//总统计显示
@@ -679,7 +744,7 @@ class kaoqinClassModel extends Model
 		$tsjia	= '事假,病假';
 		$tsjia	= m('option')->getval('kqsqtype', $tsjia); //读取选项
 		if($msg == '' && !$this->contain(','.$tsjia.',', ','.$qjkind.',')){
-			$sy1	= $this->getqjsytime($uid, $qjkind, $start, $id);
+			$sy1	= $this->getqjsytime($uid, $qjkind, $start, $id, $end);
 			if($sy1<0)$sy1=0;
 			$totals	= floatval($totals);
 			if($totals>$sy1)$msg = '剩余['.$qjkind.']'.$sy1.'小时,不能申请,'.c('xinhu')->helpstr('kaoqin').'';

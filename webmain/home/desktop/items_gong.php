@@ -15,7 +15,7 @@ homeobject.show_gong_list=function(a){
 	for(i=0;i<a.length;i++){
 		a1=a[i];
 		col=(a1.ishui==1)?'#aaaaaa':'';
-		s+='<a temp="list" style="color:'+col+'" onclick="openxiangs(\''+a1.typename+'\',\'gong\',\''+a1.id+'\');" class="list-group-item">◇【'+a1.typename+'】'+a1.title+'['+a1.indate+']</a>';
+		s+='<a temp="list" style="color:'+col+'" onclick="openxiangs(\''+a1.typename+'\',\'gong\',\''+a1.id+'\');" class="list-group-item">◇【'+a1.typename+'】'+a1.title+'('+a1.indate+')</a>';
 	}
 	$('#homegonglist').append(s);
 }

@@ -50,8 +50,10 @@ $config		= array(
 	'mobile_show' 	=> true,	//首页是否显示手机版
 	'accesslogs' 	=> false,	//是否记录访问日志和限制IP
 	'upurl'			=> '', 		//上传文件附件地址(还不能使用)
+	'authorkey'		=> '' 		//系统授权的key，请联系官网获取
 );
 
+//引入配置文件
 $_confpath		= $rock->strformat('?0/?1/?1Config.php', ROOT_PATH, PROJECT);
 if(file_exists($_confpath)){
 	$_tempconf	= require($_confpath);
@@ -60,6 +62,11 @@ if(file_exists($_confpath)){
 	if(!isempt($config['memory_limit']) && function_exists('ini_set'))
 		ini_set('memory_limit', $config['memory_limit']);
 	if($config['timeout']>-1 && function_exists('set_time_limit'))set_time_limit($config['timeout']);	
+}
+
+$_confpath	= ''.ROOT_PATH.'/config/author.php';
+if(file_exists($_confpath)){
+	$config['authorkey'] = require($_confpath);
 }
 
 define('DEBUG', $config['debug']);

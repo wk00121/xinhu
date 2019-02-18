@@ -247,7 +247,7 @@ class inputChajian extends Chajian
 		$_vals1	= arrvalue($valea,1, $oarr['valueid']);
 		
 		$str 	= '<table width="99%" cellpadding="0" border="0"><tr><td width="100%"><input class="inputs" style="width:99%;" '.$oarr['attr'].' placeholder="'.$oarr['placeholder'].'" id="change'.$fname.'" value="'.$_vals0.'" readonly type="text" name="'.$fname.'"><input name="'.$zbnae.'" value="'.$_vals1.'" id="change'.$fname.'_id" type="hidden"></td>';
-		$str   .= '<td nowrap><input onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn" value="×" type="button"><input id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\',\''.$oarr['title'].'\' ,{changerange:\''.$oarr['changerange'].'\'})" value="选择" type="button" class="webbtn"></td></tr></table>';
+		$str   .= '<td nowrap><button onclick="js.changeclear(\'change'.$fname.'\')" class="webbtn" type="button">×</button><button id="btnchange_'.$fname.'" onclick="js.changeuser(\'change'.$fname.'\',\''.$type.'\',\''.$oarr['title'].'\' ,{changerange:\''.$oarr['changerange'].'\'})" type="button" class="webbtn">选择</button></td></tr></table>';
 		
 		return $str;
 	}

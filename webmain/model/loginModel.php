@@ -316,7 +316,7 @@ class loginClassModel extends Model
 	//更新token最后时间
 	private function uptokendt($id)
 	{
-		$this->update("moddt='".$this->rock->now."'", $id);
+		$this->update("`moddt`='".$this->rock->now."',`online`=1", $id);
 	}
 	
 	//自动快速登录
@@ -333,7 +333,7 @@ class loginClassModel extends Model
 		if($baid==0){
 			$tokans = $this->rock->jm->uncrypt($this->rock->cookie('mo_adminid'));//用cookie登录
 			if(!isempt($tokans)){
-				$onrs 	= $this->getone("`token`='$tokans' and `online`=1",'`name`,`token`,`id`,`uid`');
+				$onrs 	= $this->getone("`token`='$tokans'",'`name`,`token`,`id`,`uid`');
 				if($onrs){
 					$uid= $onrs['uid'];
 					$this->setsession($uid, $onrs['name'], $onrs['token']);

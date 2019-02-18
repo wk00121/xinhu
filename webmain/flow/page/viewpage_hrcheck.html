@@ -35,7 +35,7 @@ if($da['arr']['pfrows']){
 </div>
 <script>
 function submittijiao(o2){
-	var obj = $('input[name^="pingfen_"]'),o1,str='';
+	var obj = $('input[name^="pingfen_"]'),o1,str='',str1='';
 	for(var i=0;i<obj.length;i++){
 		o1 = obj[i];
 		if(o1.value==''){
@@ -43,6 +43,12 @@ function submittijiao(o2){
 			return;
 		}
 		str+=','+o1.name.replace('pingfen_','')+'|'+o1.value+'';
+		if(i>1)str1+=' && ';
+		if(i>0)str1+=''+o1.value+'=='+obj[i-1].value+'';
+	}
+	if(str1!='' && eval(str1)){
+		js.setmsg('所有输入评分值不能都相同','', 'msgview_spage');
+		return;
 	}
 	str = str.substr(1);
 	var da = {'str':str,'sm':get('other_explain').value,'mid':mid};

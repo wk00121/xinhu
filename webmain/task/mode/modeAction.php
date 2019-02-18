@@ -1,7 +1,7 @@
 <?php
 class modeClassAction extends ActionNot
 {
-	public function initAction()
+	public function init123Action()
 	{
 		$aid 	= (int)$this->get('adminid');
 		$token 	= $this->get('token');
@@ -10,6 +10,11 @@ class modeClassAction extends ActionNot
 			$this->mweblogin(1);
 		}
 		$this->getlogin(1);
+	}
+	
+	public function initAction()
+	{
+		$this->mweblogin(0);
 	}
 
 	public function defaultAction()

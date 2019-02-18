@@ -80,11 +80,11 @@ $(document).ready(function(){
 <table width="100%">
 <tr valign="top">
 <td width="220">
-	<div style="border:1px #cccccc solid">
+	<div style="border:1px #cccccc solid;width:220px">
 	  <div id="optionview_{rand}" style="height:400px;overflow:auto;"></div>
 	</div>  
 </td>
-<td width="10"></td>
+<td width="10" nowrap>&nbsp;</td>
 <td>
 
 

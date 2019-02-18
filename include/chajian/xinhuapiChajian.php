@@ -45,6 +45,7 @@ class xinhuapiChajian extends Chajian{
 		$url.= '?m='.$mod.'&a='.$act.'';
 		$url.= '&host='.$this->rock->jm->base64encode(HOST).'&version='.VERSION.'&randtime='.time().'&ip='.$this->rock->ip.'&xinhukey='.getconfig('xinhukey').'&sysnum='.$this->systemnum.'';
 		if(!isempt($this->smsapikey))$url.='&smsapikey='.$this->smsapikey.'';
+		$url.= '&authorkey='.getconfig('authorkey').'';
 		foreach($can as $k=>$v)$url.='&'.$k.'='.$v.'';
 		return $url;
 	}

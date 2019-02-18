@@ -499,19 +499,17 @@ class ActionNot extends Action
 	protected function logincheck(){}
 	
 	/**
-	*	手机端判断有没有登录
+	*	手机端/单据详情页判断有没有登录就根据cookie登录
 	*/
 	protected function mweblogin($lx=0, $ismo=false)
 	{
-		$uid 	= $this->adminid;
-		$agid	= $this->rock->get('agentid');
-		if($agid!='')$this->rock->savesession(array('wxqyagentid' => $agid));
 		$uid 	= m('login')->autologin((int)$this->get('adminid','0'), $this->get('token'));
 		if($uid==0){
 			$this->loginnot($ismo);
 		}else{
-			$this->initProject();
+			$this->initProject(); //登录成功
 		}
 		$this->adminid 		= $uid;
+		return $uid;
 	}
 }

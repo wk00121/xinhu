@@ -75,12 +75,23 @@ class cogClassAction extends Action
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
 		$arr['mobile_show'] = getconfig('mobile_show') ? '1' : '0';
+		$arr['isshou'] 		= $this->isshouquan() ? '1' : '0';
 		
 		$loginyzm			= getconfig('loginyzm');
 		if(!$loginyzm)$loginyzm	= '0';
 		$arr['loginyzm'] 	= $loginyzm;
 		if(getconfig('systype')=='demo')$arr['xinhukey']='';
 		$this->returnjson($arr);
+	}
+	
+	private function isshouquan()
+	{
+		$key = getconfig('authorkey');
+		if(!isempt($key) && $this->rock->isjm($key)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	public function savecongAjax()

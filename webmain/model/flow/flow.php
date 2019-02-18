@@ -3000,7 +3000,8 @@ class flowModel extends Model
 		
 		$reaa 	= explode(',', $receids);
 		if(!$reaa)$reaa = array();
-		if(!in_array($reaa, $uid)){
+		
+		if(!in_array($uid, $reaa)){
 			if($receids!='')$receids.=',';
 			$receids.=''.$uid.'';
 		}

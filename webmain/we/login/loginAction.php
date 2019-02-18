@@ -11,7 +11,8 @@ class loginClassAction extends ActionNot{
 			if(!isempt($token))$iskj=3;
 		}
 		$this->assign('iskj', $iskj);
-		
+		//print_r($_COOKIE);
+		//echo $_SERVER['HTTP_USER_AGENT'];
 		$ptoken		= $this->get('ptoken');
 		$loginyzm	= (int)getconfig('loginyzm','0');
 		if(!isempt($ptoken))$loginyzm = 0;
@@ -73,5 +74,20 @@ class loginClassAction extends ActionNot{
 	{
 		$this->display= false;
 		m('wxgzh:oauth')->oauthback();
+	}
+	
+	
+	
+	/**
+	*	无登录页面的快捷登录
+	*/
+	public function qywxloginAction()
+	{
+		$this->display= false;
+		m('weixinqy:oauth')->login('qy');
+	}
+	public function qywxlogincodeAction()
+	{
+		m('weixinqy:oauth')->logincode('qy');
 	}
 }

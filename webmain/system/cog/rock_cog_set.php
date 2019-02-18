@@ -8,6 +8,7 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('getinfo','{mode}','{dir}'),{},function(a){
 				barr = a;
 				for(var i in a)$('#'+i+'_{rand}').val(a[i]);
+				if(a.isshou=='1')$('#benquan_{rand}').html('<font color=green>授权版</font>');
 			},'get,json');
 		},
 		save:function(o){
@@ -53,6 +54,10 @@ $(document).ready(function(){
 			<td  colspan="4"><div class="inputtitle">基本信息
 			<div style="padding:5px;line-height:18px;font-size:12px;color:#888888">此保存在配置文件下，也可以自己打开配置文件(webmain/webmainConfig.php)来修改</div>
 			</div></td>
+		</tr>
+		
+		<tr>
+			<td  colspan="4" class="tdinput" ><div align="center" style="line-height:30px">系统版本：<b  id="benquan_{rand}" style="font-size:20px"><font color=red>开源版</font></b><input id="isshou_{rand}" type="hidden" class="form-control"></div></td>
 		</tr>
 	
 		<tr>
