@@ -681,21 +681,32 @@ class kaoqinClassModel extends Model
 		if($yrows && $zrows){
 			foreach($yrows as $k2=>$rs2){
 				$totals = floatval($rs2['totals']); //请假的时间
+				$boo	= false;
 				foreach($zrows as $k1=>$rs1){
 					if($rs2['stime']>=$rs1['stime'] && $rs2['etime']<=$rs1['enddt']){
 						$sys = $rs1['totals'] - $totals;
-						
+						$boo = true;
 						//还有剩余可用时间
 						if($sys>0){
 							$zrows[$k1]['totals'] = $sys;
+							$totals = 0;
 						}else if($sys<0){
-							//时间还不够
-							$rs2['totals'] = 0-$sys;
-							$yross[] = $rs2;
+							$totals = 0-$sys;//还剩
+						}else{
+							$totals = 0;//刚好抵扣
 						}
 					}
+					if($totals==0)break;
+				}
+				
+				//还有剩
+				if($totals>0 && $boo){
+					$rs2['totals'] = $totals;
+					$yross[] = $rs2;
 				}
 			}
+			//print_r($yross);
+			
 			//继续下一步
 			foreach($zrows as $k1=>$rs1){
 				if($rs1['totals']>0)$zross[] = $rs1;
