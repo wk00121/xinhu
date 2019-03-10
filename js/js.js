@@ -956,7 +956,7 @@ js.cliendsend=function(at, cans, fun,ferr){
 	if(!cans)cans={};if(!fun)fun=function(){};if(!ferr)ferr=function(){return false;}
 	url+='='+at+'&callback=?';
 	var llq = navigator.userAgent.toLowerCase();
-	if(llq.indexOf('windows nt 5')>0){
+	if(llq.indexOf('windows nt 5')>0 && dk=='2829'){
 		if(!ferr())js.msg('msg','XP的系统不支持哦');
 		return;
 	}

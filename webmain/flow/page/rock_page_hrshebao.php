@@ -116,6 +116,7 @@ $(document).ready(function(){
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
 			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
+			if(d.isdaochu)$('#daobtn_{rand}').show();
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -302,7 +303,7 @@ c.copyfuz=function(){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
+			<button class="btn btn-default" style="display:none" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

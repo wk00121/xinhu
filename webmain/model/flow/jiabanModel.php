@@ -17,9 +17,9 @@ class flow_jiabanClassModel extends flowModel
 			$etime		= date('Y-m-d H:i:s', strtotime($rs['etime'])+3600*2);
 			$kqdkjl		= m('kqdkjl')->getall("`uid`='".$rs['uid']."' and `dkdt`>='$stime' and `dkdt`<='$etime'",'dkdt','`dkdt` desc');
 			if($kqdkjl)$dakatime='';
-			foreach($kqdkjl as $k=>$rs){
+			foreach($kqdkjl as $k=>$rs1){
 				if($k>0)$dakatime.=',&nbsp;';
-				$dakatime.=''.$rs['dkdt'].'';
+				$dakatime.=''.$rs1['dkdt'].'';
 			}
 		}
 		

@@ -23,6 +23,7 @@ $(document).ready(function(){
 			text:'下载次数',dataIndex:'downci',sortable:true
 		},{
 			text:'',dataIndex:'opt',renderer:function(v,d,oi){
+				if(d.ishui=='1')return '已删';
 				return '<a href="javascript:;" onclick="showvies{rand}('+oi+',0)">预览</a>&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',1)"><i class="icon-arrow-down"></i></a>';
 			}
 		}]

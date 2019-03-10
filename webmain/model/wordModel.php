@@ -175,6 +175,20 @@ class wordClassModel extends Model
 			}else{
 				if(isempt($rs['name']))$rs['name'] = $rs['filename'];
 				if(!isempt($rs['thumbpath']) && !file_exists($rs['thumbpath']))$rs['thumbpath']='';
+				
+				$fpath = $rs['filepath'];
+			
+				$wjstatus= 1;
+				if(substr($fpath,0,4)=='http'){
+					$wjstatus = 2;
+				}else{
+					if(!file_exists($fpath)){
+						$wjstatus=0;
+						$rs['ishui']=1;
+					}
+				}
+				$rs['wjstatus'] = $wjstatus;
+				
 			}
 		}
 		if($lx==0){
@@ -205,7 +219,7 @@ class wordClassModel extends Model
 		foreach($sadid as $fid){
 			$arr['fileid'] = $fid;
 			$id = $this->insert($arr);
-			$file->addfile($fid, 'word', $id);
+			$file->addfile($fid, 'word', $id, 'word');
 		}
 		$names = '';
 		$frows = $file->getall('`id` in('.$sid.')');

@@ -108,6 +108,16 @@ class loginClassAction extends apiAction
 	}
 	
 	/**
+	*	获取钉钉企业Id
+	*/
+	public function ddqiyeidAction()
+	{
+		$this->showreturn(array(
+			'qiyeid' => $this->option->getval('dingding_qiyeid')
+		));
+	}
+	
+	/**
 	*	钉钉获取登录
 	*/
 	public function dingcheckAction()

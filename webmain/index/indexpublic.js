@@ -66,7 +66,7 @@ function publicsave(mo, dos,oans){
 }
 
 function editfacechang(xid,nems){
-	js.upload('_editfacechangback',{maxup:'2',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid});	
+	js.upload('_editfacechangback',{maxup:'1',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid});	
 }
 function _editfacechangback(a,xid){
 	var f = a[0];

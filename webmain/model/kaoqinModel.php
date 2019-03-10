@@ -673,43 +673,37 @@ class kaoqinClassModel extends Model
 
 		return $wjg;
 	}
+	
 	private function getqjsytimess($zrows, $yrows, $dt, $jzdt)
 	{
 		$zross  = array();
 		$yross  = array();
 		$zsssj  = 0;
 		if($yrows && $zrows){
-			foreach($yrows as $k2=>$rs2){
-				$totals = floatval($rs2['totals']); //请假的时间
-				$boo	= false;
-				foreach($zrows as $k1=>$rs1){
-					if($rs2['stime']>=$rs1['stime'] && $rs2['etime']<=$rs1['enddt']){
-						$sys = $rs1['totals'] - $totals;
-						$boo = true;
-						//还有剩余可用时间
-						if($sys>0){
-							$zrows[$k1]['totals'] = $sys;
+			
+			foreach($zrows as $k1=>$rs1){
+				$totals = floatval($rs1['totals']); //总可用时间
+				foreach($yrows as $k2=>$rs2){
+					$totaly = floatval($rs2['totals']);
+					if($totaly>0 && $rs2['stime']>=$rs1['stime'] && $rs2['etime']<=$rs1['enddt']){
+						$sys = $totaly - $totals;
+						if($sys==0){
 							$totals = 0;
-						}else if($sys<0){
-							$totals = 0-$sys;//还剩
+							$yrows[$k2]['totals']= 0;
+						}else if($sys>0){
+							$yrows[$k2]['totals']= $sys;
+							$totals = 0;
 						}else{
-							$totals = 0;//刚好抵扣
+							$totals = 0-$sys;
+							$yrows[$k2]['totals'] = 0;
 						}
 					}
-					if($totals==0)break;
+					if($totals ==0)break;//扣完了
 				}
-				
-				//还有剩
-				if($totals>0 && $boo){
-					$rs2['totals'] = $totals;
-					$yross[] = $rs2;
+				if($totals>0){
+					$rs1['totals'] = $totals;
+					$zross[] = $rs1;
 				}
-			}
-			//print_r($yross);
-			
-			//继续下一步
-			foreach($zrows as $k1=>$rs1){
-				if($rs1['totals']>0)$zross[] = $rs1;
 			}
 			
 			//递归处理
@@ -722,10 +716,9 @@ class kaoqinClassModel extends Model
 			}
 		}
 		
-		
-		
 		return $zsssj;
 	}
+	
 	
 	//总统计显示
 	public function getqjsytimestr($uid=0, $dt='', $id=0)

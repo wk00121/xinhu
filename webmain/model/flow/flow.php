@@ -133,6 +133,9 @@ class flowModel extends Model
 	public function flowinputtpl($cont, $lx){return $cont;}
 	public function flowviewtpl($cont, $lx){return $cont;}
 	
+	//在线编辑单据下附件
+	public function floweditoffice($frs, $ofrs){}
+	
 	/**
 	*	初始化流程信息
 	*/
@@ -428,7 +431,7 @@ class flowModel extends Model
 		$arr['logarr']	 = $this->getlog();
 		$contview 	 	 = '';
 		$path 			 = ''.P.'/flow/page/view_'.$this->modenum.'_'.$lx.'.html';
-		$fstr			 = $fobj->getstr($this->mtable, $this->id, 2);
+		$fstr			 = $fobj->getstr($this->mtable, $this->id, 3);//3说明是详情也读
 		$issubtabs		 = 0;
 		if($fstr != ''){
 			$this->rs['file_content'] 	= $fstr;
@@ -455,7 +458,7 @@ class flowModel extends Model
 				if(isempt($fval))$fval='0';
 				$data[$fid] = '';
 				if($fval!='0'){
-					$data[$fid] = $fobj->getstr('', '', 2, "`id` in($fval)");
+					$data[$fid] = $fobj->getstr('', '', 3, "`id` in($fval)");
 				}
 			}
 			if($fty=='uploadimg'){
@@ -592,6 +595,18 @@ class flowModel extends Model
 		if(isset($data['title']))$arr['title'] = $data['title'];
 		$_oarr 			 = $this->flowdatalog($arr);
 		if(is_array($_oarr))foreach($_oarr as $k=>$v)$arr[$k]=$v;
+		
+		$conta = $this->rock->matcharr($contview,2);
+		$edbof = false;
+		
+		
+		foreach($conta as $fids){
+			$thnr = '';
+			
+			$contview = str_replace('`'.$fids.'`', $thnr, $contview);
+		}
+		$arr['contview'] = $contview;
+		
 		return $arr;
 	}
 	//$lx=0PC，1移动
@@ -986,10 +1001,10 @@ class flowModel extends Model
 		foreach($arr as $k=>$v)$addarr[$k]=$v;
 		$this->flogmodel->insert($addarr);
 		$ssid = $this->db->insert_id();
-		$fileid			= $this->rock->post('fileid');
-		if($fileid!='')m('file')->addfile($fileid, 'flow_log', $ssid);
-		$logfileid		= $this->rock->post('logfileid');
-		if($logfileid!='')m('file')->addfile($logfileid, $this->mtable, $this->id);
+		$fileid			= $this->rock->post('fileid'); //这个是审批处理时下的上传文件
+		if($fileid!='')m('file')->addfile($fileid, 'flow_log', $ssid, $this->modenum.'|'.$this->id);
+		$logfileid		= $this->rock->post('logfileid'); //这个是从单据操作菜单添加追加时
+		if($logfileid!='')m('file')->addfile($logfileid, $this->mtable, $this->id, $this->modenum);
 		$addarr['id'] 	= $ssid;
 		$this->flowaddlog($addarr);
 		$this->getlogrows	= array();
@@ -1270,13 +1285,39 @@ class flowModel extends Model
 			$nrows 	 = array();
 			
 			//获取审核人
-			$allcheckid= '';
+			$allcheckid		= '';
+			$isoptsuperbo 	= false;
 			foreach($rows as $k=>$rs){
 				$uarr 	= $this->getcheckname($rs);
 				$rows[$k]['checkid'] 	= $uarr[0];
 				$rows[$k]['checkname'] 	= $uarr[1];
 				$allcheckid .= ','.$uarr[0].'';
+				if($rs['checktype']=='optsuper' && isempt($uarr[0]))$isoptsuperbo=true;//有操作人上级
 			}
+			
+			//有需要读取上一步
+			if($isoptsuperbo)foreach($rows as $k=>$rs){
+				if($rs['checktype']=='optsuper'){
+					//读取上一步处理人
+					$_k1	= $k-1;
+					$_uid	= $this->optid;
+					if($_k1>=0){
+						$ours = $this->flogmodel->getone($this->mwhere.' and `courseid`='.$rows[$_k1]['id'].' and `valid`=1 ','`checkid`','`id` desc');
+						if($ours){
+							$_uid = (int)$rows[$_k1]['checkid'];
+						}else{
+							$_uid = $ours['checkid'];
+						}
+					}
+					$uarr = $this->adminmodel->getsuperman($_uid);
+					if($uarr){
+						$rows[$k]['checkid'] 	= $uarr[0];
+						$rows[$k]['checkname'] 	= $uarr[1];
+					}
+				}
+			}
+			//print_r($rows);
+			
 
 			foreach($rows as $k=>$rs){
 				$nrows[] = $rs;

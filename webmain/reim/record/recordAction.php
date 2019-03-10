@@ -51,7 +51,7 @@ class recordClassAction extends Action
 		if($suids!='0')$farr	= $this->db->getarr('[Q]admin', "`id` in($suids)",'`face`,`name`');
 		if($guids!='0')$garr	= $this->db->getarr('[Q]im_group', "`id` in($guids)",'`face`,`name`');
 		
-		if($fuids!='0')$warr	= $this->db->getarr('[Q]file', "`id` in($fuids)",'filename,filesizecn,fileext,filepath'); //相关文件
+		if($fuids!='0')$warr	= $this->db->getarr('[Q]file', "`id` in($fuids)",'filename,filesizecn,fileext,filepath,thumbpath'); //相关文件
 		$fobj 	= m('file');
 		$ztfo   = m('im_messzt');
 		foreach($rows as $k=>$rs){

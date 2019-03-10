@@ -147,9 +147,9 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		}else{
 			$fields = $this->db->getallfields(''.PREFIX.''.$tab.'');
 			$str 	= '';
-			if(!in_array('uid', $fields))$str.=",add `uid` smallint(6) DEFAULT '0'";
+			if(!in_array('uid', $fields))$str.=",add `uid` int(11) DEFAULT '0'";
 			if(!in_array('optdt', $fields))$str.=",add `optdt` datetime DEFAULT NULL COMMENT '操作时间'";
-			if(!in_array('optid', $fields))$str.=",add `optid` smallint(6) DEFAULT '0'";
+			if(!in_array('optid', $fields))$str.=",add `optid` int(11) DEFAULT '0'";
 			if(!in_array('optname', $fields))$str.=",add `optname` varchar(20) DEFAULT NULL COMMENT '操作人'";
 			if(!in_array('applydt', $fields))$str.=",add `applydt` date DEFAULT NULL COMMENT '申请日期'";
 			if(!in_array('explain', $fields))$str.=",add `explain` varchar(500) DEFAULT NULL COMMENT '说明'";

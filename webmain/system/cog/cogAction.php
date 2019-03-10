@@ -71,6 +71,7 @@ class cogClassAction extends Action
 		$arr['qqmapkey'] 	= getconfig('qqmapkey');
 		$arr['asynsend'] 	= getconfig('asynsend');
 		$arr['officeyl'] 	= getconfig('officeyl'); //文档预览
+		//$arr['officedk'] 	= getconfig('officedk');
 		$arr['sqllog'] 		= getconfig('sqllog') ? '1' : '0';
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
@@ -131,6 +132,7 @@ class cogClassAction extends Action
 		$arr['bcolorxiang'] = $this->post('bcolorxiang');
 		
 		$arr['officeyl'] 	= $this->post('officeyl');
+		//$arr['officedk'] 	= $this->post('officedk');
 		
 		$asynsend 		 	= $this->post('asynsend');
 		$arr['asynsend'] 	= $asynsend;
@@ -173,6 +175,7 @@ class cogClassAction extends Action
 		$smarr['mobile_show']	= '首页是否显示手机版';
 		$smarr['loginyzm']		= '登录方式:0仅使用帐号+密码,1帐号+密码/手机+验证码,2帐号+密码+验证码,3仅使用手机+验证码';
 		$smarr['officeyl']		= '文档Excel.Doc预览类型,0自己部署插件，1使用官网支持任何平台';
+		$smarr['officedk']		= '文件预览打开方式1新窗口打开';
 		
 		$str1 = '';
 		foreach($arr as $k=>$v){

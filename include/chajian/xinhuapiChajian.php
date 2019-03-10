@@ -261,14 +261,27 @@ class xinhuapiChajian extends Chajian{
 		$fileext  = $frs['fileext'];
 		$filesize = floatval($frs['filesize']);
 		if(!contain($yulx,','.$fileext.','))return returnerror('不是文档类型');
-		if(isempt($filepath) || !file_exists($filepath))return returnerror('文件不存在2');
+		
+		if(isempt($filepath))return returnerror('文件路径是空的');
+		
+		if(substr($filepath, 0,4)!='http' && !file_exists($filepath))return returnerror('文件不存在2');
 		
 		$pdfpath	= $frs['pdfpath'];
 		if(!isempt($pdfpath) && file_exists($pdfpath))return returnerror('已转过了');
+		$localpath	= $frs['filepath'];
+		
+		//如果是远程文件必须先下载到服务器
+		if(substr($filepath, 0,4)=='http'){
+			$localpath = ''.UPDIR.'/'.date('Y-m').'/'.date('d_His').''.rand(10,99).'_temp.'.$fileext.'';
+			$this->rock->createtxt($localpath, @file_get_contents($filepath));
+			if(!file_exists($localpath))return returnerror('无法下载远程文件，不能转换');
+			$filesize = filesize($localpath);
+			if($filesize==0)return returnerror('远程文件已损坏');
+		}
 		
 		if(getconfig('officeyl')=='1'){
 			$barr 	= $this->postdata('office','recedata', array(
-				'data' 		=> $this->rock->jm->base64encode(file_get_contents($filepath)),
+				'data' 		=> $this->rock->jm->base64encode(file_get_contents($localpath)),
 				'fileid' 	=> $fileid,
 				'fileext'	=> $fileext,
 				'filesize'	=> $filesize,
@@ -280,7 +293,7 @@ class xinhuapiChajian extends Chajian{
 		}else{
 			if(!contain(PHP_OS,'WIN'))return returnerror('只能在windows的服务器下转化');
 			
-			$bo 		= c('socket')->topdf($frs['filepath'], $fileid, $fileext);
+			$bo 		= c('socket')->topdf($localpath, $fileid, $fileext);
 			if(!$bo || is_string($bo))return returnerror(''.$bo.'，'.c('xinhu')->helpstr('topdf').'');
 			
 			$barr 	= returnsuccess();
@@ -289,7 +302,8 @@ class xinhuapiChajian extends Chajian{
 		if($barr['success']){
 			$times = ceil($filesize/(30*1024));//默认50/秒
 			if($times<10)$times = 10;
-			$barr['data']['times'] = $times;
+			$barr['data']['times'] 		= $times;
+			$barr['data']['localpath'] 	= $this->rock->jm->base64encode($localpath);
 		}
 		
 		return $barr;
@@ -305,7 +319,13 @@ class xinhuapiChajian extends Chajian{
 			$frs 	= m('file')->getone($fileid);
 			if(!$frs)return returnerror('文件不存在1');
 			$filepath 	= $frs['filepath'];
+			$localpath	= $this->rock->get('localpath');
+			if(!isempt($localpath)){
+				$filepath = $this->rock->jm->base64decode($localpath);
+			}
+			
 			$pdfpath	= str_replace('.'.$frs['fileext'].'', '.pdf', $filepath);
+			
 			$status 	= 0;
 			if(file_exists($pdfpath)){
 				$status = 1;

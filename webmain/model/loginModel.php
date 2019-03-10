@@ -346,4 +346,14 @@ class loginClassModel extends Model
 		}
 		return $baid;
 	}
+	
+	public function updateallonline()
+	{
+		return;//暂时没啥用
+		$moddt	= date('Y-m-d H:i:s', time()-180);
+		$rows = $this->getall("`online`=1 and `moddt`>='$moddt'");
+		$uids = '';
+		foreach($rows as $k=>$rs)$uids.=','.$rs['uid'].'';
+		if($uids!='')m('admin')->update('`online`=1', "`id` in(".substr($uids,1).")");
+	}
 }

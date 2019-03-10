@@ -109,6 +109,19 @@ var up={
 			up.change1(oi+1);
 			return false;
 		}
+		
+		//回调的验证
+		<?php if($params['changeback']!=''){?>
+		try{
+			var tisr = parent.<?=$params['changeback']?>(file);
+			if(tisr && typeof(tisr)=='string'){
+				js.msg('msg',tisr);
+				up.change1(oi+1);
+				return false;
+			}
+		}catch(e){}
+		<?php }?>
+		
 		this.moi++;
 		for(var i=0;i<olen;i++){
 			if(this.filearr[i].filename==filename && this.filearr[i].filesize==filesize){
@@ -277,7 +290,6 @@ window.onbeforeunload=function(){
 }
 </script>
 <style type="text/css">
-button{cursor:pointer}
 .alert{ padding:1px 5px; border:1px #996 solid; background-color:#ffffff; color:#933}
 *{ font-size:14px;}
 .mdiv{ border-bottom:1px #cccccc solid; height:22px; overflow:hidden}
@@ -291,14 +303,14 @@ button{cursor:pointer}
 button{ cursor:pointer}
 #footmsg{ text-align:left; padding:3px}
 .quebntha{position:fixed;right:10px;bottom:10px;}
-.webbtn{color:#ffffff;opacity:0.8; background-color:#1389D3; padding:5px 8px; border:none; cursor:pointer;font-size:14px}
+.webbtn{color:#ffffff;opacity:0.8; background-color:#1389D3; padding:5px 8px; border:none; cursor:pointer;font-size:14px;outline:none;border-radius:5px}
 .webbtn:disabled{background-color:#aaaaaa; color:#eeeeee}
 .webbtn:hover{box-shadow:0px 0px 5px rgba(0,0,0,0.3);opacity:1}
 </style>
 </head>
 <body style="padding:1px" onLoad="up.init()">
 <center>
-<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" multiple onChange="up.change(this)"></form>
+<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" <?php if($params['maxup']>1)echo 'multiple';?> onChange="up.change(this)"></form>
 <div align="left" style="padding:3px"></div>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>

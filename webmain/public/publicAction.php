@@ -10,7 +10,9 @@ class publicClassAction extends Action{
 		if(!$frs)exit('文件的记录不存在了1');
 		$type 		= $frs['fileext'];
 		$filepath 	= $frs['filepath'];
-		if(!file_exists($filepath))exit('文件不存在了2');
+		
+		if(substr($filepath, 0,4)!='http' && !file_exists($filepath))exit('文件不存在了2');
+		
 		$types 		= ','.$type.',';
 		//可读取文件预览的扩展名
 		$docx	= ',doc,docx,xls,xlsx,ppt,pptx,';

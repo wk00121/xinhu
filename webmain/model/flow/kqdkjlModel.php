@@ -23,16 +23,16 @@ class flow_kqdkjlClassModel extends flowModel
 		
 		//全部下属打卡
 		if($lx=='down' || $lx=='dwdown'){
-			$s  = 'and '.m('admin')->getdownwheres('b.id', $uid, 0);
+			$s  = 'and '.$this->adminmodel->getdownwheres('b.id', $uid, 0);
 		}
 		if($atype=='all')$s ='';
 		if(!isempt($dt1))$s.=" and a.`dkdt`>='$dt1'";
 		if(!isempt($dt2))$s.=" and a.`dkdt`<='$dt2 23:59:59'";
-		if(!isempt($key))$s.=m('admin')->getkeywhere($key, 'b.');
-		$fields = 'a.*,b.name,b.deptname';
+		if(!isempt($key))$s.=" and (b.`name` like '%$key%' or b.`deptallname` like '%$key%' or b.`ranking` like '%$key%')";
+		$fields = 'a.*,b.`name`,b.`deptname`';
 		$tabls  = $this->mtable;
 		
-		$table  = '`[Q]'.$tabls.'` a left join `[Q]admin` b on a.uid=b.id';
+		$table  = '`[Q]'.$tabls.'` a left join `[Q]userinfo` b on a.uid=b.id';
 		return array(
 			'where' => $s,
 			'table' => $table, 

@@ -13,7 +13,11 @@ $(document).ready(function(){
 				return '<img src="web/images/fileicons/'+lxs+'.gif">';
 			}
 		},{
-			text:'名称',dataIndex:'filename',align:'left'
+			text:'名称',dataIndex:'filename',align:'left',renderer:function(v,d){
+				var ss='';
+				if(d.status==2)ss='<img title="远程文件" src="web/images/fileicons/html.gif">';
+				return ''+v+''+ss+'';
+			}
 		},{
 			text:'大小',dataIndex:'filesizecn',sortable:true
 		},{
@@ -33,8 +37,14 @@ $(document).ready(function(){
 		},{
 			text:'ID',dataIndex:'id',sortable:true
 		},{
+			text:'关联模块',dataIndex:'mknum'
+		},{
 			text:'',dataIndex:'opt',renderer:function(v,d,oi){
-				return '<a href="javascript:;" onclick="showvies{rand}('+oi+',0)">预览</a>&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',1)"><i class="icon-arrow-down"></i></a>';
+				if(d.status=='0'){
+					return '已删';
+				}else{
+					return '<a href="javascript:;" onclick="showvies{rand}('+oi+',0)">预览</a>&nbsp;<a href="javascript:;" onclick="showvies{rand}('+oi+',1)"><i class="icon-arrow-down"></i></a>';
+				}
 			}
 		}],
 		itemclick:function(){

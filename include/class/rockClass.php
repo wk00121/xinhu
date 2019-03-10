@@ -166,7 +166,7 @@ final class rockClass
 		$txt	= ''.$txt.''.chr(10).'[URL]'.chr(10).''.$this->nowurl().'';
 		if($_POST){
 			$pstr = '';
-			foreach($_POST as $k=>$v)$pstr.=''.chr(10).'['.$k.']：'.$v.'';
+			foreach($_POST as $k=>$v)$pstr.=''.chr(10).'['.$k.']:'.$v.'';
 			$txt.=''.chr(10).''.chr(10).'[POST]'.$pstr.'';
 		}
 		$txt.=''.chr(10).''.chr(10).'[IP]'.chr(10).''.$this->ip.'';
@@ -651,5 +651,15 @@ final class rockClass
 		if(!isempt($xurl1))$xurl = $xurl1;
 		if(substr($xurl,-1)!='/')$xurl.='/';
 		return $xurl;
-	}	
+	}
+	
+	/**
+	*	一个完整绝对路径
+	*/
+	public function gethttppath($fpath, $url='')
+	{
+		if($url=='')$url = URL;
+		if(substr($fpath,0,4)!='http')$fpath = ''.$url.''.$fpath.'';
+		return $fpath;
+	}
 }

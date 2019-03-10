@@ -129,7 +129,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" >相应条件：</td>
-			<td class="tdinput" colspan="3"><textarea  name="where" style="height:60px" class="form-control"></textarea></td>
+			<td class="tdinput" colspan="3"><textarea  placeholder="非共用主表，不要需要设置，请留空" name="where" style="height:60px" class="form-control"></textarea></td>
 		</tr>
 		
 		<tr>

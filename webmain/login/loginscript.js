@@ -96,7 +96,7 @@ function loginsubmit(){
 			get('imglogo').src=a.face;
 			js.setoption('loginface', a.face);
 			var burl = js.request('backurl');
-			var curl = (burl=='')?'?m=index':jm.base64decode(burl);
+			var curl = (burl=='')?NOWURL:jm.base64decode(burl);
 			js.setmsg('登录成功,<a href="'+curl+'">跳转中</a>...','green');
 			js.location(curl);
 		}else{

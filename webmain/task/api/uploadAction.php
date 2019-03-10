@@ -23,13 +23,19 @@ class uploadClassAction extends apiAction
 	*/
 	public function upfilevbAction()
 	{
-		$fileid = $this->get('fileid','0');
+		$fileid = (int)$this->get('fileid','0');
 		if($fileid==0)exit('fileid=0');
 		$data 	= $this->getpostdata();
 		if(isempt($data))return '没有数据';
 		$fileext= $this->get('fileext');
 		$uptype = '|doc|docx|xls|xlsx|ppt|pptx|';
 		if(!contain($uptype,'|'.$fileext.'|'))$fileext='doc';
+		$fileobj  = m('file');
+		$frs 	  = $fileobj->getone($fileid); //记录
+		if(!$frs)exit('文件记录不存在了');
+		
+		$frs['oldfilepath'] = $frs['filepath'];
+		
 		$filepath = ''.UPDIR.'/'.date('Y-m').'/'.date('d_His').''.rand(10,99).'.'.$fileext.'';
 		$this->rock->createtxt($filepath, base64_decode($data));
 		
@@ -37,12 +43,52 @@ class uploadClassAction extends apiAction
 		$filesizecn 		  	= $this->rock->formatsize($filesize);
 		
 		//更新文件
-		m('file')->update(array(
+		$fileobj->update(array(
 			'filepath' 		=> $filepath,
 			'filesize' 		=> $filesize,
 			'filesizecn' 	=> $filesizecn,
 			'pdfpath' 		=> '',
 		),$fileid);
+		
+		//告诉上传人说编辑了他的附件
+		$mknums = arrvalue($frs,'mknum');
+		if(!isempt($mknums) && $frs['mid']>0){
+			
+			$mid = $frs['mid'];
+			$mknumsa = explode('|', $mknums);
+			$modenum = $mknumsa[0];
+			if(isset($mknumsa[1]))$mid = $mknumsa[1];
+			$flow = m('flow')->initflow($modenum, $mid, false);
+			
+			$ssid = $flow->addlog(array(
+				'name' => '在线编辑'
+			));
+			
+			$ufrs = $frs;
+			$ufrs['filepath'] = $frs['oldfilepath'];
+			unset($ufrs['oldfilepath']);
+			unset($ufrs['id']);
+			$ufrs['mtype']  = 'flow_log';
+			$ufrs['mid'] 	= $ssid;
+			$ufrs['mknum'] 	= ''.$modenum.'|'.$mid.'';
+			$ufrs['filename'] 	= str_replace('.'.$ufrs['fileext'].'','(备份).'.$ufrs['fileext'].'', $ufrs['filename']);
+			$fileobj->insert($ufrs); //记录原来的文件
+			
+			//不是我创建就告诉创建人
+			if($this->adminid<>$frs['optid'])
+				$flow->push($frs['optid'],'', ''.$this->adminname.'在线编辑文件“'.$frs['filename'].'”', '文件在线编辑');
+			
+			
+			$flow->floweditoffice($frs, $ufrs);
+			
+		}else if($this->adminid<>$frs['optid']){ //不知道关联哪个模块
+			$flow = m('flow')->initflow('word');
+			$flow->push($frs['optid'],'文档', ''.$this->adminname.'在线编辑文件“'.$frs['filename'].'”', '文件在线编辑',0, array(
+				'wxurl' => ''
+			));
+		}
+		
+		
 		return 'ok,'.md5(URL).'_'.$filesize.'_'.$fileid.'.'.$fileext.'';
 		
 		return 'ok';
@@ -150,8 +196,9 @@ class uploadClassAction extends apiAction
 		$fileid = (int)$this->get('id');
 		$frs 	= m('file')->getone($fileid);
 		if(!$frs)return returnerror('文件不存在了');
+		$filepath = $frs['filepath'];
 		
-		if(!file_exists($frs['filepath']))return returnerror('文件不存在了1');
+		if(substr($filepath,0,4)!='http' && !file_exists($filepath))return returnerror('文件不存在了1');
 		
 		$uptype = '|doc|docx|xls|xlsx|ppt|pptx|';
 		if(!contain($uptype,'|'.$frs['fileext'].'|'))return returnerror('不是文档类型无法在线编辑');
@@ -159,7 +206,7 @@ class uploadClassAction extends apiAction
 		$arr[]  = URL;
 		$arr[]  = $frs['filename'];
 		$arr[]  = ''.md5(URL).'_'.$frs['filesize'].'_'.$fileid.'.'.$frs['fileext'].'';
-		$arr[]  = ''.URL.''.$frs['filepath'].''; //下载地址
+		$arr[]  = $this->rock->gethttppath($filepath); //下载地址
 		$arr[]  = $fileid;
 		$arr[]  = $this->adminid;
 		$arr[]  = $this->token;

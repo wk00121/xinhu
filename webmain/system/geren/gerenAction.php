@@ -48,7 +48,7 @@ class gerenClassAction extends Action
 		}
 		return array(
 			'where' => $where,
-			'fields' => '`id`,fileext,filename,filesizecn,thumbpath,filepath,adddt,optname,downci,ip,web,mtype,mid',
+			//'fields' => '`id`,fileext,filename,filesizecn,thumbpath,filepath,adddt,optname,downci,ip,web,mtype,mid',
 		);
 	}
 	public function fileafter($table, $rows)
@@ -57,6 +57,15 @@ class gerenClassAction extends Action
 			if(!isempt($rs['thumbpath'])){
 				if(!file_exists($rs['thumbpath']))$rs['thumbpath']='';
 			}
+			$fpath = $rs['filepath'];
+			
+			$status= 1;
+			if(substr($fpath,0,4)=='http'){
+				$status = 2;
+			}else{
+				if(!file_exists($fpath))$status=0;
+			}
+			$rs['status'] = $status;
 		}
 		return array(
 			'rows' => $rows

@@ -68,13 +68,16 @@ class adminClassModel extends Model
 		if(isempt($gid))return '';
 		$where 	= "1=1 and ((`type`='gu' and `mid` in($gid)) or (`type`='ug' and `sid` in($gid)))";
 		$rows  	= $this->db->getall("select `type`,`mid`,`sid` from `[Q]sjoin` where $where");
-		$uids 	= '';
+		$uids 	= array();
 		foreach($rows as $k=>$rs){
-			if($rs['type']=='gu')$uids.=','.$rs['sid'].'';
-			if($rs['type']=='ug')$uids.=','.$rs['mid'].'';
+			$uid = '';
+			if($rs['type']=='gu')$uid =$rs['sid'];
+			if($rs['type']=='ug')$uid =$rs['mid'];
+			if($uid!='' && !in_array($uid, $uids)){
+				$uids[]= $uid;
+			}
 		}
-		if($uids!='')$uids= substr($uids, 1);
-		return $uids;
+		return join(',', $uids);
 	}
 
 	/**

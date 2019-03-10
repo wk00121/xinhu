@@ -12,6 +12,8 @@ js.ddjsimport	= function(funs){
 		funs();
 	});
 }
+
+//鉴权 
 js.jssdkdingding = function(qxlist,afe){
 	if(!afe)js.ddjsimport(function(){
 		js.jssdkdingding(qxlist, true);
@@ -24,6 +26,7 @@ js.jssdkdingding = function(qxlist,afe){
 		ret = ret.data;//js.getarr(ret);
 		if(ret.corpId==''|| !ret)return js.jssdkddcall(false);;
 		js.ddcorpId = ret.corpId;
+		js.ddqiyeid = ret.qiyeid;
 		dd.config({
 			agentId: ret.agentId,
 			corpId: ret.corpId,

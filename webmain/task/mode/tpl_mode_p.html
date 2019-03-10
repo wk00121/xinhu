@@ -15,6 +15,7 @@ if($stype==''){
 <link rel="stylesheet" type="text/css" href="<?=$da['p']?>/css/css.css">
 <script type="text/javascript" src="<?=$jqurl?>"></script>
 <script type="text/javascript" src="js/js.js"></script>
+<script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js?<?=$da['logintime']?>"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script>
@@ -266,7 +267,7 @@ if($stype!=''){
 			<tr style="display:none" id="zhuangdiv">
 				<td class="tdys1"><div  align="right" style="color:#555555">转给</div></td>
 				<td class="tdys1" style="padding:5px"><div align="left">
-				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser<?=$flowinfor['zbrangelx']?>','',{changerange:'<?=$flowinfor['zbrangeid']?>'})" class="webbtn">选择</a></td></tr></table>
+				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择了就会转办给对应人" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser<?=$flowinfor['zbrangelx']?>','',{changerange:'<?=$flowinfor['zbrangeid']?>'})" class="webbtn">选择</a></td></tr></table>
 				</div></td>
 			</tr>	
 			<?php 

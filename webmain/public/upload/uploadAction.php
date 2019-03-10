@@ -6,7 +6,11 @@ class uploadClassAction extends Action{
 	*/
 	public function defaultAction()
 	{
-		$params['callback'] 	= $this->get('callback');
+		$callback	= $this->get('callback');
+		$callbacka	= explode('|', $callback);
+		
+		$params['callback'] 	= $callbacka[0];
+		$params['changeback'] 	= arrvalue($callbacka,1);
 		$params['maxup'] 		= $this->get('maxup','0');
 		$params['thumbnail'] 	= $this->get('thumbnail');
 		$params['maxwidth'] 	= $this->get('maxwidth','0');

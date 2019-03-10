@@ -147,29 +147,38 @@ function yanzdengl(){
 	var burl = js.request('backurl');
 	js.location('?m=login&d=we&a=wxlogin&backurl='+burl+'');
 }
-function dingdengl(){
-	js.wx.load('处理中...');
-	if(js.jssdkdingding){
-		js.jssdkdingding();
-	}else{
-		shidengl();
-	}
-}
-js.jssdkddcall=function(bo){
+
+//最新钉钉快捷登录使用
+function dingdengl(bo){
 	if(!bo){
-		shidengl();
-	}else{
-		dd.runtime.permission.requestAuthCode({
-			corpId: js.ddcorpId,
-			onSuccess: function(result){
-				dingdlogn(result.code);
-			},
-			onFail : function(err) {
-				shidengl();
-			}
+		js.wx.load('处理中...');
+		js.ddjsimport(function(){
+			dingdengl(true);
 		});
+		return;
 	}
+	js.ajax('login','ddqiyeid',false,function(ret){
+		if(!ret.qiyeid){
+			js.wx.alert('没有设置钉钉的企业CorpId');
+			return;
+		}
+		js.wx.load('处理中...');
+		dd.ready(function() {
+			dd.runtime.permission.requestAuthCode({
+				corpId: ret.qiyeid,
+				onSuccess: function(result){
+					dingdlogn(result.code);
+				},
+				onFail : function(err) {
+					shidengl();
+				}
+			});
+		});
+	},'none',false, function(str){
+		shidengl();
+	});
 }
+
 function shidengl(){
 	js.wx.unload();
 	js.wx.alert('无法使用钉钉快捷登录');

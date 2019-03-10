@@ -419,7 +419,7 @@ class Action extends mainAction
 					$id = $this->db->insert_id();
 					$idadd = true;
 				}
-				if($fileid !='0')m('file')->addfile($fileid,$table,$id);
+				if($fileid !='0')m('file')->addfile($fileid,$table,$id, $modenum);
 				if(!$this->isempt($aftersavea)){
 					if(method_exists($this, $aftersavea)){
 						$this->$aftersavea($table, $uaarr, $id, $idadd);

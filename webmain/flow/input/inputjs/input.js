@@ -363,6 +363,7 @@ var c={
 	},
 	//初始上传框
 	filearr:{},
+	uploadback:function(){},
 	initinput:function(){
 		var o,o1,sna,i,tsye,uptp,tdata,farr=alldata.filearr,far;
 		var o = $('div[id^="filed_"]');
@@ -393,6 +394,7 @@ var c={
 							c.filearr['f'+d.id+''] = f;
 							c.showupid(sna);//显示ID	
 						}
+						c.uploadback(sna, f);
 					},
 					'onprogress':function(f,bl){
 						var sna= f.sname,tsye=f.snape;

@@ -63,6 +63,7 @@ $(document).ready(function(){
 			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
 			text:'',dataIndex:'opt',renderer:function(v,d,oi){
+				if(d.ishui=='1')return '已删';
 				var lxs = ',doc,docx,xls,xlsx,ppt,pptx,';
 				if(d.fileext=='folder'){
 					return '<a href="javascript:;" onclick="openfolder{rand}('+d.id+','+d.cid+')">打开</a>';
@@ -82,6 +83,9 @@ $(document).ready(function(){
 		},
 		load:function(d){
 			c.showlaber(d);
+		},
+		itemdblclick:function(d){
+			openxiangs(d.name,'word', d.id);
 		}
 	});
 	
@@ -279,6 +283,8 @@ $(document).ready(function(){
 	</div>
 	<div class="blank10"></div>
 	<div id="view_{rand}"></div>
+	<div class="tishi">←双击左边的分区可对分区下文档进行管理。</div>
+	
 </td>
 </tr>
 </table>

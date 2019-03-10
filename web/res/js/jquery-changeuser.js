@@ -9,7 +9,7 @@
 (function ($) {
 	
 	function _getstyles(){
-		var s='<style>.changeuserlist div.listsss{padding:10px; background:white;border-bottom:1px #eeeeee solid;cursor:default}.changeuserlist div:active{ background:#f1f1f1}.changeuserbotton{height:30px;width:50px; background:#d9534f;color:white;font-size:14px;border:none;padding:0px;margin:0px;line-height:20px;cursor:default;opacity:1}.changeuserbotton:active{color:white;border:none;opacity:0.8}</style>';
+		var s='<style>.changeuserlist div.listsss{padding:10px; background:white;border-bottom:1px #eeeeee solid;cursor:default}.changeuserlist div:active{ background:#f1f1f1}.changeuserbotton{height:30px;width:50px; background:#d9534f;color:white;font-size:14px;border:none;padding:0px;margin:0px;line-height:20px;cursor:default;opacity:1;outline:none;border-radius:5px}.changeuserbotton:active{color:white;border:none;opacity:0.8}</style>';
 		return s;
 	}
 	
@@ -18,6 +18,7 @@
 		var rand	= ''+parseInt(Math.random()*9999999)+''; 
 		var me		= this;
 		this.rand	= rand;
+		this.changesel = '';
 		
 		this._init	= function(){
 			for(var i in options)this[i]=options[i];
@@ -34,12 +35,15 @@
 	
 			this.userarr = [];
 			this.deptarr = [];
+			this.grouparr= [];
 			if(isempt(this.changerange) && isempt(this.changerangeno)){
 				var us = js.getoption('userjson');
 				if(us)this.userarr = js.decode(us);
 				
 				us = js.getoption('deptjson');
 				if(us)this.deptarr = js.decode(us);
+				us = js.getoption('groupjson');
+				if(us)this.grouparr = js.decode(us);
 			}
 			this.show();
 		};
@@ -60,7 +64,7 @@
 				jhei+=50;
 			}
 			if(this.changetype.indexOf('user')>=0){
-				s+='<div style="height:50px;overflow:hidden;border-bottom:1px #cccccc solid"><table width="100%"><tr><td width="100%" height="50"><input id="changekey_'+this.rand+'" placeholder="部门/姓名/职位" style="height:30px;border:none;background:none;width:100%;margin:0px 10px"></td><td><input style="background:none;border:none;color:#666666" class="changeuserbotton" id="changesoubtn_'+this.rand+'" value="查找" type="button" ></td></tr></table></div>';
+				s+='<div style="height:50px;overflow:hidden;border-bottom:1px #cccccc solid"><table width="100%"><tr><td width="100%" height="50"><input id="changekey_'+this.rand+'" placeholder="部门/姓名/职位" style="height:30px;border:none;background:none;width:100%;margin:0px 10px;outline:none"></td><td><button style="background:none;border:none;color:#666666" class="changeuserbotton" id="changesoubtn_'+this.rand+'" type="button" >查找</button></td></tr></table></div>';
 				jhei+=50;
 			}
 			s+='<div style="-webkit-overflow-scrolling:touch;height:'+(hei-jhei)+'px;overflow:auto; background:#f1f1f1" class="changeuserlist">';
@@ -69,7 +73,15 @@
 			s+='</div>';
 			var s3= '<input id="changeboxs_'+rand+'" style="width:18px;height:18px;" align="absmiddle" type="checkbox" >';
 			if(type!='checkbox1')s3='';
-			s+='<div style="height:50px;line-height:50px;border-top:1px #cccccc solid" align="right"><table width="100%"><tr><td width="10" nowrap>&nbsp;</td><td width="80%">'+s3+'</td><td><input style="width:70px;border:none" type="button" id="changereload_'+rand+'" class="changeuserbotton" value="刷新数据" ></td><td width="20" nowrap>&nbsp;</td><td><input class="changeuserbotton" type="button" id="changecancl_'+rand+'" value="取消" ></td><td width="20" nowrap>&nbsp;</td><td height="50"><input style="background:#1389D3;" id="changeok_'+rand+'" type="button" value="确定" class="changeuserbotton"></td><td width="10" nowrap>&nbsp;</td></tr></table></div>';
+			if(1==1){
+				s3='<select id="changesel_'+rand+'" style="height:30px;border:none;background:none;outline:none">';
+				s3+='<option value="">默认显示</option>';
+				if(this.changetype.indexOf('user')>=0)s3+='<option value="1">仅限显示人员</option>';
+				if(this.changetype.indexOf('dept')>=0)s3+='<option value="2">仅限显示部门</option>';
+				if(this.changetype.indexOf('user')>=0)s3+='<option value="3">显示组</option>';
+				s3+='</select>';
+			}
+			s+='<div style="height:50px;line-height:50px;border-top:1px #cccccc solid" align="right"><table width="100%"><tr><td width="10" nowrap>&nbsp;</td><td width="80%">'+s3+'</td><td><button style="width:70px;border:none" type="button" id="changereload_'+rand+'" class="changeuserbotton" >刷新数据</button></td><td width="10" nowrap>&nbsp;</td><td><button class="changeuserbotton" type="button" id="changecancl_'+rand+'" >取消</button></td><td width="10" nowrap>&nbsp;</td><td height="50"><button style="background:#1389D3;" id="changeok_'+rand+'" type="button" class="changeuserbotton">确定</button></td><td width="10" nowrap>&nbsp;</td></tr></table></div>';
 			s+=_getstyles();
 			s+='</div>';
 			if(atts==''){
@@ -96,15 +108,69 @@
 			$('#changeboxs_'+this.rand+'').click(function(){
 				me._changboxxuan(this)
 			});
+			$('#changesel_'+this.rand+'').change(function(){
+				me._changesel(this)
+			});
 		};
 		this.showlist=function(pid,oi){
 			var type=this.inputtype,hw=24;
-			var a=this.deptarr,len=a.length,i,s='',ssu='',wjj,s2='',sids;
-			var s1='<div style="width:'+(hw*oi)+'px"></div>';
-			var dob=this.changetype.indexOf('dept')==-1;
-			var uob=this.changetype.indexOf('user')>=0;
+			var s='',ssu='',s1='';
+			var sel = this.changesel;
+			var dob = this.changetype.indexOf('dept')==-1;
+			var uob = this.changetype.indexOf('user')>=0;
+			this.fid = 1;
+			
+			if(sel=='1'){
+				ssu = this._showuser(0,'',type,sel);
+			}else if(sel=='2'){
+				s   = this._showdept(pid,oi,s1,type,sel,dob,uob);
+			}else if(sel=='3'){
+				s 	= this._showgorup(type);
+			}else{
+				s1='<div style="width:'+(hw*oi)+'px"></div>';
+				s 	= this._showdept(pid,oi,s1,type,sel,dob,uob);
+				if(uob){
+					ssu+=this._showuser(pid,s1,type,sel);
+				}
+			}
+			
+			$('#showdiv'+rand+'_'+pid+'').html(ssu+s).attr('show','true');
+			if(sel==''){
+				if(pid==0)this.showlist(this.fid, 1);
+				$('#showdiv'+rand+'_0 [deptxu]').unbind('click').click(function(){
+					me._deptclicks(this);
+				});
+			}
+			if(sel=='3'){
+				$('#showdiv'+rand+'_0 [groupxu]').unbind('click').click(function(){
+					me._groupclicks(this);
+				});
+			}
+		};
+		this._showuser=function(pid,s1,type,sel){
+			var a,len,i,ssu='',dids;
+			a=this.userarr;
+			len=a.length;
+			for(i=0;i<len && i<200;i++){
+				dids = ','+a[i].deptids+',';
+				if(
+				((a[i].deptid==pid || dids.indexOf(','+pid+',')>-1 || sel=='1') && sel!='3')
+				||
+				(sel=='3' && (','+a[i].groupname+',').indexOf(','+pid+',')>-1)//显示组下人员
+				){
+					ssu+='<div class="listsss">';
+						ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
+						ssu+='</div>';
+				}
+			}
+			return ssu;
+		};
+		this._showdept=function(pid,oi,s1,type,sel,dob,uob){
+			var a,len,i,wwj,s2='',s='';
+			a=this.deptarr;
+			len=a.length;
 			for(i=0;i<len;i++){
-				if(a[i].pid==pid){
+				if(a[i].pid==pid || sel=='2'){
 					wjj= 'images/files.png';
 					if(a[i].ntotal=='0' && uob)wjj= 'images/file.png';
 					s2 = '<input name="changeuserinput_'+rand+'" xls="d" xname="'+a[i].name+'" xu="'+i+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'">';
@@ -113,27 +179,43 @@
 					s+='<div class="listsss">';
 					s+='<table width="100%"><tr><td>'+s1+'</td><td deptxu="'+i+'_'+oi+'" width="100%"><img align="absmiddle" height="20" height="20" src="'+wjj+'">&nbsp;'+a[i].name+'</td><td>'+s2+'</td></tr></table>';
 					s+='</div>';
-					s+='<span  show="false" id="showdiv'+rand+'_'+a[i].id+'"></span>';
+					s+='<span show="false" id="showdiv'+rand+'_'+a[i].id+'"></span>';
 				}
 			}
-			if(uob){
-				a=this.userarr;
-				len=a.length;
-				for(i=0;i<len;i++){
-					sids = ','+a[i].deptids+',';
-					if(a[i].deptid==pid || sids.indexOf(','+pid+',')>=0){
-						ssu+='<div class="listsss">';
-						ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
-						ssu+='</div>';
-					}
-				}
+			return s;
+		};
+		this._showgorup=function(type){
+			var a,len,i,ssu='',s1;
+			a=this.grouparr;
+			len=a.length;
+			for(i=0;i<len;i++){
+				s1  = '<input name="changeuserinput_'+rand+'" xls="g" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'">';
+				if(this.changetype.indexOf('deptuser')==-1)s1='';
+				ssu+='<div class="listsss">';
+				ssu+='<table width="100%"><tr><td></td><td groupxu="'+i+'" width="100%"><img align="absmiddle" height="24" height="24" src="images/group.png">&nbsp;'+a[i].name+' <span style="font-size:12px;color:#888888">('+a[i].usershu+'人)</span></td><td>'+s1+'</td></tr></table>';
+				ssu+='</div>';
+				ssu+='<span show="false" id="showgroup'+rand+'_'+a[i].id+'"></span>';
 			}
-			
-			$('#showdiv'+rand+'_'+pid+'').html(ssu+s).attr('show','true');
-			if(pid==0)this.showlist(1, 1);
-			$('#showdiv'+rand+'_0 [deptxu]').unbind('click').click(function(){
-				me._deptclicks(this);
-			});
+			return ssu;
+		};
+		this._groupclicks=function(o){
+			if(this.changetype.indexOf('user')==-1)return;
+			var sxu = $(o).attr('groupxu');
+			var a 	= this.grouparr[sxu];
+			var o1	= $('#showgroup'+rand+'_'+a.id+'');
+			var lx	= o1.attr('show');
+			if(lx=='false'){
+				var s1='<div style="width:24px"></div>';
+				var s = this._showuser(a.id,s1,this.inputtype, this.changesel);
+				o1.html(s).attr('show','true');
+			}else{
+				o1.toggle();
+			}
+		};
+		this._changesel=function(o1){
+			var val = o1.value;
+			this.changesel = val;
+			this.showlist(0, 0);
 		};
 		this._searchkeys=function(e){
 			clearTimeout(this._searchkeystime);
@@ -235,6 +317,7 @@
 			}
 			this.userarr = js.decode(ret.userjson);
 			this.deptarr = js.decode(ret.deptjson);
+			this.grouparr = js.decode(ret.groupjson);
 			this.showlist(0, 0);
 		};
 		this._changboxxuan=function(os){
@@ -292,9 +375,9 @@
 			var s='<div style="z-index:1;width:100%;height:100%;overflow:hidden;left:0px;top:0px; background:rgba(0,0,0,0.3);position:fixed;z-index:9" id="selectdata_'+rand+'">';
 			s+='<div tsid="main" id="mints_'+rand+'" style="position:absolute;top:30%; background:white;width:'+ws+';box-shadow:0px 0px 5px rgba(0,0,0,0.3)">';
 			s+='	<div onmousedown="js.move(\'mints_'+rand+'\')" style="line-height:40px; background:#2c3e50;color:white;font-size:16px"> &nbsp; &nbsp;'+this.title+'</div>';
-			s+='	<div style="height:50px;overflow:hidden;border-bottom:1px #cccccc solid"><table width="100%"><tr><td width="100%" height="50"><input id="changekey_'+this.rand+'" placeholder="搜索关键词" style="height:30px;border:none;background:none;width:100%;margin:0px 10px"></td><td><input style="background:none;color:#666666" class="changeuserbotton" id="changesoubtn_'+this.rand+'" value="查找" type="button" ></td></tr></table></div>';
+			s+='	<div style="height:50px;overflow:hidden;border-bottom:1px #cccccc solid"><table width="100%"><tr><td width="100%" height="50"><input id="changekey_'+this.rand+'" placeholder="搜索关键词" style="height:30px;border:none;background:none;width:100%;margin:0px 10px;outline:none"></td><td><button style="background:none;color:#666666;" class="changeuserbotton" id="changesoubtn_'+this.rand+'" type="button" >查找</button></td></tr></table></div>';
 			s+='	<div style="-webkit-overflow-scrolling:touch;height:300px;overflow:auto; background:#f1f1f1" id="selectlist_'+rand+'" class="changeuserlist"></div>';
-			s+='	<div style="height:50px;line-height:50px;border-top:1px #cccccc solid" align="right"><table width="100%"><tr><td width="10" nowrap>&nbsp;</td><td width="80%"><font color="#888888" tsid="count"></font></td><td><input type="button" id="changereload_'+rand+'" class="changeuserbotton" value="刷新" ></td><td width="10" nowrap>&nbsp;</td><td><input class="changeuserbotton" type="button" id="changecancl_'+rand+'" value="取消" ></td><td width="10" nowrap>&nbsp;</td><td height="50"><input style="background:#1389D3;" id="changeok_'+rand+'" type="button" value="确定" class="changeuserbotton"></td><td width="10" nowrap>&nbsp;</td></tr></table></div>';
+			s+='	<div style="height:50px;line-height:50px;border-top:1px #cccccc solid" align="right"><table width="100%"><tr><td width="10" nowrap>&nbsp;</td><td width="80%"><font color="#888888" tsid="count"></font></td><td><button type="button" id="changereload_'+rand+'" class="changeuserbotton">刷新</button></td><td width="10" nowrap>&nbsp;</td><td><button class="changeuserbotton" type="button" id="changecancl_'+rand+'">取消</button></td><td width="10" nowrap>&nbsp;</td><td height="50"><button style="background:#1389D3;" id="changeok_'+rand+'" type="button" class="changeuserbotton">确定</button></td><td width="10" nowrap>&nbsp;</td></tr></table></div>';
 			s+='</div>';
 			s+='</div>';
 			s+=_getstyles();

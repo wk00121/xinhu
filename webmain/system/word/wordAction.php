@@ -70,7 +70,7 @@ class wordClassAction extends Action
 		foreach($sadid as $fid){
 			$arr['fileid'] = $fid;
 			$sid = m('word')->insert($arr);
-			$file->addfile($fid, 'word', $sid);
+			$file->addfile($fid, 'word', $sid, 'word');
 		}
 		echo 'ok';
 	}

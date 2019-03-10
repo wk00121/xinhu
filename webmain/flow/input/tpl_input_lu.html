@@ -35,9 +35,9 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 .tablesub td{height:25px;text-align:center;border-bottom:1px #888888 solid;border-right:1px #888888 solid;}
 .tablesub .inputs{border:none}
 
-.course{padding:8px 10px; background-color:#CDF4EC;border:1px #AADDD3 solid;margin-right:10px;text-align:center}
-.coursejt{height:8px;overflow:hidden;width:30px;background-color:#CDF4EC}
-.coursejts{width:0px;  height:0px; overflow:hidden;border-width:8px;border-style:solid;border-color:transparent transparent transparent #CDF4EC;}
+.course{padding:8px; background-color:#dbf0fc;border:1px #c2e6f9 solid;margin-right:10px;text-align:center;border-radius:5px}
+.coursejt{height:8px;overflow:hidden;width:30px;background-color:#dbf0fc}
+.coursejts{width:0px;  height:0px; overflow:hidden;border-width:8px;border-style:solid;border-color:transparent transparent transparent #dbf0fc;}
 .tishi{color:#888888;font-size:12px;padding:3px}
 .btn-default{background-color:#1389D3;}
 .btn-danger{background-color:#d9534f;}
@@ -77,6 +77,9 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 				}
 				$coursestr .= '</tr></table>';
 				$coursestr .= '</div>';
+				
+				if($da['moders']['isbxs']==1)$coursestr='';//不显示流程图
+				
 				//判断流程步骤是否上步指定
 				if($firstrs && $firstrs['checktype']=='change'){
 					$firstrs['isbt'] = 0;
@@ -88,7 +91,7 @@ var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gon
 						$firstrs['isbt'] = 1;
 					}
 					$stsp.= ''.$firstrs['name'].'：</td>';
-					$stsp.= '<td width="100%"><input  class="inputs" style="width:99%" id="sysnextchange" value="" placeholder="'.$placeholder.'" readonly type="text" name="sysnextopt"><input name="sysnextoptid" value="" id="sysnextchange_id" type="hidden"><input name="sysnextcustidid" value="'.$firstrs['id'].'" type="hidden"></td>';
+					$stsp.= '<td width="100%"><input  class="inputs" style="width:99%" id="sysnextchange" value="'.$firstrs['sysnextopt'].'" placeholder="'.$placeholder.'" readonly type="text" name="sysnextopt"><input name="sysnextoptid" value="'.$firstrs['sysnextoptid'].'" id="sysnextchange_id" type="hidden"><input name="sysnextcustidid" value="'.$firstrs['id'].'" type="hidden"></td>';
 					$stsp.= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'sysnextchange\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_recename" onclick="js.changeuser(\'sysnextchange\',\'changeusercheck\',\'选择'.$firstrs['name'].'\',{changerange:\''.$firstrs['checktypeid'].'\'})" class="webbtn">选择</a></td>';
 					$stsp.= '</tr></table></div>';
 					echo $stsp;

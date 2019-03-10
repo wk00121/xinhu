@@ -111,6 +111,7 @@ class inputAction extends Action
 		}
 		
 		//人员选择保存的
+		$otherfileid = '';
 		foreach($fieldsarr as $k=>$rs){
 			if(substr($rs['fieldstype'],0,6)=='change'){
 				if(!$this->isempt($rs['data'])){
@@ -125,6 +126,10 @@ class inputAction extends Action
 			if($rs['fieldstype']=='num'){
 				$fid = $rs['fields'];
 				if($this->flow->rows("`$fid`='{$uaarr[$fid]}' and `id`<>$id")>0)$uaarr[$fid]=$this->flow->createbianhao($rs['data'], $fid);
+			}
+			if($rs['fieldstype']=='uploadfile'){
+				$_val= arrvalue($uaarr, $rs['fields']);
+				if(!isempt($_val))$otherfileid.=','.$_val.'';
 			}
 		}
 		
@@ -215,7 +220,8 @@ class inputAction extends Action
 		if(!$bo)$this->backmsg($this->db->error());
 		
 		if($id==0)$id = $this->db->insert_id();
-		m('file')->addfile($this->post('fileid'), $table, $id);
+		m('file')->addfile($this->post('fileid'), $table, $id, $modenum);
+		if($otherfileid!='')m('file')->addfile(substr($otherfileid,1), '', $id, $modenum);
 		
 		//保存多行子表
 		$tabless	 = $this->moders['tables'];
@@ -388,6 +394,7 @@ class inputAction extends Action
 			'names' => $moders['names'],
 			'isflow'=> $isflow,
 			'iscs'	=> $moders['iscs'],
+			'isbxs'	=> $moders['isbxs'],
 		);
 		$this->smartydata['chao']	= $this->flow->getcsname($mid);
 		$modeid 	= $moders['id'];
@@ -497,7 +504,7 @@ class inputAction extends Action
 		
 		$course			= array();
 		$nowcourseid	= 0;
-		if($isflow>0 && $lutype==0 && $moders['isbxs']==0){
+		if($isflow>0 && $lutype==0){
 			$course[]= array('name'=>'提交','id'=>0);
 			
 			
@@ -512,6 +519,28 @@ class inputAction extends Action
 					$rs1['name'] = $na;
 					$rs1['k'] 	 = $k;
 					$rs1['isnow']= $rs1['id']==$nowcourseid;
+					if(arrvalue($moders,'isflowlx')=='1'){
+						$rs1['isnow'] = $k==0; //如果走重头审批第一步就是第一步的
+					}
+					
+					//读取上次选择的2019-03-06 23:10:00添加
+					$cuid 	= $name = '';
+					if($rs1['isnow'] && $rs1['checktype']=='change' && $mid>0){
+						$cheorws= $this->flow->checksmodel->getall("`table`='".$this->flow->mtable."' and `mid`='$mid' and `courseid`=".$rs1['id']."",'checkid,checkname');
+						if($cheorws){
+							foreach($cheorws as $k3=>$rs3){
+								$cuid.=','.$rs3['checkid'].'';
+								$name.=','.$rs3['checkname'].'';
+							}
+							if($cuid != ''){
+								$cuid = substr($cuid, 1);
+								$name = substr($name, 1);
+							}
+						}
+					}
+					$rs1['sysnextoptid']= $cuid;
+					$rs1['sysnextopt']	= $name;
+					
 					$course[]=$rs1;
 				}
 				

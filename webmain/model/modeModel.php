@@ -99,6 +99,7 @@ class modeClassModel extends Model
 				$zthtml .= '<option style="color:'.arrvalue($ztv, 1).'" value="'.$zt.'">'.$ztv[0].'</option>';
 			}
 			$zthtml .= '</select></td>';
+			$zthtml	 = str_replace('?','', $zthtml);
 		}
 		$fselarr	= array();
 		$bear		= $this->db->getrows('[Q]option',"`num` like 'columns_".$num."_%'",'`num`,`value`');
@@ -124,7 +125,7 @@ $html= "".$hstart."
 		<td  width=\"90%\" style=\"padding-left:10px\">$whtml</td>
 	
 		<td align=\"right\" id=\"tdright_{rand}\" nowrap>
-			".$drstrbtn."<button class=\"btn btn-default\" id=\"daobtn_{rand}\" disabled click=\"daochu\" type=\"button\">导出 <i class=\"icon-angle-down\"></i></button> 
+			".$drstrbtn."<button class=\"btn btn-default\" style=\"display:none\" id=\"daobtn_{rand}\" disabled click=\"daochu\" type=\"button\">导出 <i class=\"icon-angle-down\"></i></button> 
 		</td>
 	</tr>
 	</table>
@@ -250,6 +251,7 @@ $(document).ready(function(){
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
 			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
+			if(d.isdaochu)$('#daobtn_{rand}').show();
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){

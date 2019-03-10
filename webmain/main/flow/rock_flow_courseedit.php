@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate,zbrangeame,zbrangeid,smlx,wjlx',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate,zbrangeame,zbrangeid,smlx,wjlx,isxgfj',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -283,7 +283,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" nowrap ><a href="<?=URLY?>view_checklx.html" target="_blank">?审核人员类型</a>：</td>
-			<td class="tdinput"><select class="form-control" name="checktype"><option value="">-类型-</option><option value="super">直属上级</option><option value="superall">直属上级逐级审批</option><option value="rank">职位</option><option value="user">指定人员</option><option value="dept">部门负责人</option><option value="auto">自定义(写代码上)</option><option value="apply">申请人</option><option value="opt">操作人</option><option value="change">由上步指定</option><option value="cname">审核人员组</option><option value="field">主表上元素</option></select></td>
+			<td class="tdinput"><select class="form-control" name="checktype"><option value="">-类型-</option><option value="super">直属上级</option><option value="optsuper">上次处理的直属上级</option><option value="superall">直属上级逐级审批</option><option value="rank">职位</option><option value="user">指定人员</option><option value="dept">部门负责人</option><option value="auto">自定义(写代码上)</option><option value="apply">申请人</option><option value="opt">操作人</option><option value="change">由上步指定</option><option value="cname">审核人员组</option><option value="field">主表上元素</option></select></td>
 			
 			<td align="right" id="checktext_{rand}" nowrap></td>
 			<td class="tdinput" id="checkname_{rand}" style="display:none">
@@ -366,7 +366,10 @@ $(document).ready(function(){
 			<td align="right">排序号：</td>
 			<td class="tdinput"><input name="sort" value="0" maxlength="3" type="number"  onfocus="js.focusval=this.value" onblur="js.number(this)" class="form-control"></td>
 		</tr>
-	
+	<tr>
+			<td align="right">处理时：</td>
+			<td class="tdinput" colspan="3"><label><input name="isxgfj" value="1" type="checkbox">可直接编辑附件(客户端需要安装<a href="<?=URLY?>view_editword.html" target="_blank">在线编辑文档</a>)</label>&nbsp;</td>
+		</tr>
 		
 		<tr>
 			<td align="right">转办类型：</td>

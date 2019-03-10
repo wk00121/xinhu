@@ -109,6 +109,13 @@ class mode_userClassAction extends inputAction{
 		}
 		return $barr;
 	}
+	
+	//更新在线的状态，token10分钟内都是在线
+	protected function storebefore($table)
+	{
+		m('login')->updateallonline();
+	}
+	
 	//组织结构活动得到树形数据
 	private function depttreeshu($rows, $pid)
 	{

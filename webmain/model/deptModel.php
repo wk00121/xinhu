@@ -65,10 +65,17 @@ class deptClassModel extends Model
 	*/
 	public function getdeptuserdata($lx=0)
 	{
-		$userarr 	= m('admin')->getuser($lx);
+		$admindb 	= m('admin');
+		$userarr 	= $admindb->getuser($lx);
 		$deptarr 	= $this->getdata($userarr);
 		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
 		$grouparr	= m('group')->getall('id >0','id,name','`sort`');
+		foreach($grouparr as $k=>$rs){
+			$uids = $admindb->getgrouptouid($rs['id']);
+			$usershu = 0;
+			if($uids!='')$usershu = count(explode(',', $uids));
+			$grouparr[$k]['usershu'] = $usershu;
+		}
 		
 		return array(
 			'uarr' => $userarr,

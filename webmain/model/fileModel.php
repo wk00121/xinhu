@@ -22,10 +22,10 @@ class fileClassModel extends Model
 		return $rows;
 	}
 	
-	public function addfile($fileid, $mtype, $mid)
+	public function addfile($fileid, $mtype, $mid, $mknum='')
 	{
 		if(!$this->isempt($fileid)){
-			$this->update("`mtype`='$mtype',`mid`='$mid'", "`id` in($fileid) and `mid`=0");
+			$this->update("`mtype`='$mtype',`mid`='$mid',`mknum`='$mknum'", "`id` in($fileid) and `mid`=0");
 		}
 	}
 	
@@ -66,12 +66,17 @@ class fileClassModel extends Model
 		return contain('|doc|docx|xls|xlsx|ppt|pptx|pdf|', '|'.$ext.'|');
 	}
 	
+	public function isbianju($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|', '|'.$ext.'|');
+	}
+	
 	public function isyulan($ext)
 	{
 		return contain(',txt,log,html,htm,js,php,php3,cs,sql,java,json,css,asp,aspx,shtml,c,vbs,jsp,xml,bat,sh,', ','.$ext.',');
 	}
 	
-	//$lx=2详情
+	//$lx=2详情,$lx=3是flow.php getdatalog下读取的
 	public function getfilestr($rs, $lx=0)
 	{
 		$fstr= '';
@@ -83,7 +88,7 @@ class fileClassModel extends Model
 		$isimg= $this->isimg($ext);
 		$strd= $str;
 		if($lx==1)$str='href="javascript:;" onclick="return js.downshow('.$rs['id'].')"';
-		if($lx==2){
+		if($lx>=2){
 			$paths = $rs['filepath'];
 			if(!$isimg)$paths='';
 			$str='href="javascript:;" onclick="return c.downshow('.$rs['id'].',\''.$ext.'\',\''.$paths.'\')"';//详情上预览
@@ -97,6 +102,7 @@ class fileClassModel extends Model
 			$imurl = ''.URL.''.$rs['thumbpath'].'';
 		}
 		$isdel = file_exists($rs['filepath']);
+		if(substr($rs['filepath'],0,4)=='http')$isdel=true;
 		
 		$fstr .='<img src="'.$imurl.'" align="absmiddle" height=20 width=20>';
 		if($isdel){
@@ -107,11 +113,12 @@ class fileClassModel extends Model
 		
 		$fstr .=' <span style="color:#aaaaaa;font-size:12px">('.$rs['filesizecn'].')</span>';
 		
-		if($lx==2){
+		if($lx>=2){
 			if($isdel){
 				$fstr .= ' <a temp="clo" '.$strd.' class="blue">下载</a>';
 				if($isimg || $this->isoffice($ext) || $this->isyulan($ext))
 					$fstr .= '&nbsp; <a temp="clo" '.$str.' class="blue">预览</a>';
+				if($this->isbianju($ext) && $lx==3)$fstr .='`'.$rs['id'].'`'; //用于编辑
 			}else{
 				$fstr .= ' <span style="color:#aaaaaa;font-size:12px">已删除</span>';
 			}
@@ -136,7 +143,7 @@ class fileClassModel extends Model
 		$nas 		= '';
 		foreach($rows as $k=>$rs){
 			$path = $rs['filepath'];
-			if(!isempt($path) && file_exists($path)){
+			if(!isempt($path) && (file_exists($path) || substr($path,0,4)=='http') ){
 				$str .= ','.$path.'';
 				$nas .= ','.$rs['filename'].'';
 			}
@@ -191,11 +198,11 @@ class fileClassModel extends Model
 		$rows 	= $this->getall($where, 'filepath,thumbpath,pdfpath');
 		foreach($rows as $k=>$rs){
 			$path = $rs['filepath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
 			$path = $rs['thumbpath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
 			$path = $rs['pdfpath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
 		}
 		$this->delete($where);
 	}

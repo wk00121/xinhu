@@ -116,6 +116,7 @@ $(document).ready(function(){
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
 			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
+			if(d.isdaochu)$('#daobtn_{rand}').show();
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -272,7 +273,7 @@ $(document).ready(function(){
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待?处理</option><option style="color:green" value="1">已开票</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已开票</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
 			<div style="width:85px" class="btn-group">
 			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
@@ -281,7 +282,7 @@ $(document).ready(function(){
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
+			<button class="btn btn-default" style="display:none" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

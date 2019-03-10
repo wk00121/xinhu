@@ -126,24 +126,28 @@ $(document).ready(function(){
 			<td  align="right">PC首页显示：</td>
 			<td class="tdinput">REIM：<select id="reim_show_{rand}" ><option value="0">不显示</option><option value="1">显示</option></select>&nbsp;&nbsp;手机版：<select id="mobile_show_{rand}" ><option value="0">不显示</option><option value="1">显示</option></select></td>
 		</tr>
+	
 		
 		<tr>
-			<td  align="right">文档转PDF预览：</td>
-			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
+			<td  align="right">腾讯地图KEY：</td>
+			<td class="tdinput"><input id="qqmapkey_{rand}" placeholder="可不设置，可到https://lbs.qq.com/下申请" class="form-control"></select></td>
 			
 			<td  align="right">登录方式：</td>
 			<td class="tdinput"><select id="loginyzm_{rand}"  class="form-control"><option value="0">仅使用帐号+密码</option><option value="1">帐号+密码/手机+验证码</option><option value="2">帐号+密码+验证码</option><option value="3">仅使用手机+验证码</option></select></td>
 			
 		</tr>
 		
+			
 		<tr>
-			<td  align="right">腾讯地图KEY：</td>
-			<td class="tdinput"><input id="qqmapkey_{rand}" placeholder="可不设置，可到https://lbs.qq.com/下申请" class="form-control"></select></td>
+			<td  align="right">文档转PDF预览：</td>
+			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
 			
-			
+			<!--
+			<td  align="right">文件预览打开方式：</td>
+			<td class="tdinput"><select id="officedk_{rand}"  class="form-control"><option value="">模式窗口打开</option><option value="1">新窗口打开</option></select></td>
+			-->
 			
 		</tr>
-		
 		
 		<tr>
 			<td  align="right"></td>
