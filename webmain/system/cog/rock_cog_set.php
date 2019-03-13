@@ -147,6 +147,9 @@ $(document).ready(function(){
 			<td class="tdinput"><select id="officedk_{rand}"  class="form-control"><option value="">模式窗口打开</option><option value="1">新窗口打开</option></select></td>
 			-->
 			
+			<td  align="right">记录用户操作：</td>
+			<td class="tdinput"><select id="useropt_{rand}"  class="form-control"><option value="">不记录</option><option value="1">记录到日志里</option></select></td>
+			
 		</tr>
 		
 		<tr>

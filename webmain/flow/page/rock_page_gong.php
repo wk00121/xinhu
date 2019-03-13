@@ -243,6 +243,12 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
+c.setcolumns('recename',{
+	renderer:function(v){
+		return '<div style="max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
+	}
+});
+
 
 
 //[自定义区域end]

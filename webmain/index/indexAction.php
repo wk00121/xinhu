@@ -126,12 +126,17 @@ class indexClassAction extends Action{
 	public function getshtmlAction()
 	{
 		$surl = $this->jm->base64decode($this->get('surl'));
+		$num  = $this->get('num');
+		$menuname  = $this->jm->base64decode($this->get('menuname'));
 		if(isempt($surl))exit('not found');
 		$file = ''.P.'/'.$surl.'.php';
 		if(!file_exists($file))$file = ''.P.'/'.$surl.'.shtml';
 		if(!file_exists($file))exit('404 not found '.$surl.'');
 		if(contain($surl,'home/index/rock_index'))$this->showhomeitems();//首页的显示
 		$this->displayfile = $file;
+		//记录打开菜单日志
+		if($num!='home' && getconfig('useropt')=='1')
+			m('log')->addlog('打开菜单', '菜单['.$num.'.'.$menuname.']');
 	}
 	//显示桌面项目
 	private function showhomeitems()

@@ -391,7 +391,7 @@ function addtabs(a){
 	a.urlpath = url+'.php';
 	objcont.append('<div temp="content" id="content_'+num+'"></div>');
 	$.ajax({
-		url:'?m=index&a=getshtml&surl='+jm.base64encode(url)+'',
+		url:'?m=index&a=getshtml&surl='+jm.base64encode(url)+'&num='+num+'&menuname='+jm.base64encode(a.name)+'',
 		type:'get',
 		success: function(da){
 			$('#mainloaddiv').remove();

@@ -44,6 +44,10 @@ class yingClassAction extends ActionNot{
 			$yingobj->initYing($this);
 		}
 		
+		//记录打开应用日志
+		if(getconfig('useropt')=='1')m('log')->addlog('打开应用', '应用['.$num.'.'.$this->title.']');
+		
+		
 		//以下是新版应用页面，不想用可以删掉
 		//if($rs['url']=='auto' || $yyurl=='')$this->displayfile = ''.P.'/we/agent/tpl_agent.html';
 	}
