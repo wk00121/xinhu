@@ -205,7 +205,7 @@ var reim = {
 		}
 		var wsurl = jm.base64decode(a.wsurl),receid = a.recid;
 		this.showconfigarr = a;
-		if(isempt(wsurl) || wsurl.indexOf('ws:')!=0){
+		if(isempt(wsurl) || wsurl.indexOf('ws')!=0){
 			this.serverstatus(3);
 			return false;
 		}
