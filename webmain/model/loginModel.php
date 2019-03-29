@@ -37,7 +37,7 @@ class loginClassModel extends Model
 		$mobile	= '';
 		$notyzmbo	= false;//不需要验证码的
 		$logyzbo	= false;
-		if($cfrom=='appandroid')$notyzmbo = true;
+		//if($cfrom=='appandroid')$notyzmbo = true;
 		
 		//5分钟内登录错误超过5次，限制一下
 		$dtstr	= date('Y-m-d H:i:s', time()-5*60);
@@ -282,7 +282,7 @@ class loginClassModel extends Model
 	public function uplastdt($cfrom='', $token='')
 	{
 		$token = $this->rock->request('token', $token);
-		$cfrom = $this->rock->request('cfrom', $cfrom);
+		if($cfrom=='')$cfrom = $this->rock->request('cfrom');
 		$now = $this->rock->now;
 		$this->update("moddt='$now',`online`=1", "`token`='$token' and `cfrom`='$cfrom'");
 	}

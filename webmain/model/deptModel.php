@@ -67,6 +67,10 @@ class deptClassModel extends Model
 	{
 		$admindb 	= m('admin');
 		$userarr 	= $admindb->getuser($lx);
+		//根据禁看权限
+		$flow 		= m('flow')->initflow('user');
+		$userarr 	= $flow->viewjinfields($userarr);
+		
 		$deptarr 	= $this->getdata($userarr);
 		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
 		$grouparr	= m('group')->getall('id >0','id,name','`sort`');

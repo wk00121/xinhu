@@ -144,7 +144,7 @@ class htmlChajian extends Chajian{
 			foreach($headArr as $kf=>$na){
 				$val = '';
 				if(isset($rs[$kf]))$val=$rs[$kf];
-				$s.='<td '.$sty.'>'.$val.'</td>';
+				$s.='<td '.$sty.'>'.$this->execelval($val).'</td>';
 			}
 			$s.='</tr>';
 		}
@@ -164,8 +164,14 @@ class htmlChajian extends Chajian{
 		$bo 		= $this->rock->createtxt(iconv('utf-8','gb2312',$url), $s);
 		return $url;
 	}
-	
-	
+	//超过11位的数字就会变型处理
+	private function execelval($str)
+	{
+		if($str!=''){
+			if(is_numeric($str) && strlen($str)>11)$str=''.$str.'&nbsp;';
+		}
+		return $str;
+	}
 	
 	
 	

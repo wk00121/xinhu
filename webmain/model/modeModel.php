@@ -36,7 +36,7 @@ class modeClassModel extends Model
 		if(is_array($modeid)){
 			$mors	= $modeid;
 		}else{
-			$mors 	= m('flow_set')->getone($modeid,'`id`,`table`,`num`,`name`,`isflow`,`lbztxs`');
+			$mors 	= m('flow_set')->getone($modeid,'`id`,`table`,`names`,`num`,`name`,`isflow`,`lbztxs`');
 		}
 		$num	= $mors['num'];
 		$path 	= ''.P.'/flow/page/rock_page_'.$num.'.php';
@@ -144,7 +144,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = '".$num."',modename='".$name."',isflow=".$isflow.",modeid='".$modeid."',atype = params.atype,pnum=params.pnum;
+	var modenum = '".$num."',modename='".$name."',isflow=".$isflow.",modeid='".$modeid."',atype = params.atype,pnum=params.pnum,modenames='".$mors['names']."';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = ".json_encode($farr).",fieldsselarr= ".json_encode($fselarr).";
 	
@@ -210,7 +210,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -219,6 +219,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

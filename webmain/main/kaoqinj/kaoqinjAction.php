@@ -12,7 +12,7 @@ class kaoqinjClassAction extends Action
 	
 	public function kqjcmddelAjax()
 	{
-		$id 	= $this->post('id');
+		$id 	=  c('check')->onlynumber($this->post('id'));
 		m('kqjcmd')->delete("`id` in ($id)");
 		showreturn();
 	}

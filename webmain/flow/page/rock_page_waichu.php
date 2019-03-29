@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'waichu',modename='外出出差',isflow=1,modeid='23',atype = params.atype,pnum=params.pnum;
+	var modenum = 'waichu',modename='外出出差',isflow=1,modeid='23',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applyname","name":"\u7533\u8bf7\u4eba","fieldstype":"changeuser","ispx":"0","isalign":"0","islb":"0"},{"fields":"atype","name":"\u7c7b\u578b","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"address","name":"\u5916\u51fa\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"outtime","name":"\u5916\u51fa\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"intime","name":"\u9884\u8ba1\u56de\u5c97","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"reason","name":"\u5916\u51fa\u7406\u7531","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"1","islb":"1"}],fieldsselarr= [];
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'finkai',modename='开票申请',isflow=1,modeid='65',atype = params.atype,pnum=params.pnum;
+	var modenum = 'finkai',modename='开票申请',isflow=1,modeid='65',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"name","name":"\u5f00\u7968\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"money","name":"\u5f00\u7968\u91d1\u989d","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"paydt","name":"\u5f00\u7968\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"custid","name":"\u5bf9\u5e94\u5ba2\u6237ID","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"fullname","name":"\u516c\u53f8\u5355\u4f4d\u540d\u79f0","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"1"},{"fields":"address","name":"\u516c\u53f8\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"shibieid","name":"\u7eb3\u7a0e\u8bc6\u522b\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"openbank","name":"\u5f00\u6237\u884c","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"cardid","name":"\u5f00\u6237\u5e10\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"paytype","name":"\u5f00\u7968\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"num","name":"\u76f8\u5173\u5355\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

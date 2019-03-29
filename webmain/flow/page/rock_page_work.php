@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'work',modename='任务',isflow=1,modeid='4',atype = params.atype,pnum=params.pnum;
+	var modenum = 'work',modename='任务',isflow=1,modeid='4',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"grade","name":"\u7b49\u7ea7","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"dist","name":"\u5206\u914d\u7ed9","fieldstype":"changeuser","ispx":"0","isalign":"0","islb":"1"},{"fields":"projectid","name":"\u6240\u5c5e\u9879\u76ee","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"startdt","name":"\u5f00\u59cb\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"ddname","name":"\u7763\u5bfc\u4eba","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"score","name":"\u4efb\u52a1\u5206\u503c","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"mark","name":"\u5f97\u5206","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u521b\u5efa\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"optdt","name":"\u521b\u5efa\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= {"columns_work_":"title,type,grade,dist,startdt,enddt,ddname,score,optname,optdt,caozuo","columns_work_all":"title,type,grade,dist,startdt,enddt,ddname,score,mark,optname,optdt,caozuo"};
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

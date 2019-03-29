@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'carm',modename='车辆管理',isflow=0,modeid='42',atype = params.atype,pnum=params.pnum;
+	var modenum = 'carm',modename='车辆管理',isflow=0,modeid='42',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"carnum","name":"\u8f66\u724c\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"cartype","name":"\u8f66\u8f86\u7c7b\u578b","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"carbrand","name":"\u8f66\u8f86\u54c1\u724c","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"carmode","name":"\u578b\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"buydt","name":"\u8d2d\u4e70\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"buyprice","name":"\u8d2d\u4e70\u4ef7\u683c","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"framenum","name":"\u8f66\u67b6\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"enginenb","name":"\u53d1\u52a8\u673a\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"ispublic","name":"\u662f\u5426\u516c\u5f00\u4f7f\u7528","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"},{"fields":"state","name":"\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"djshu","name":"\u767b\u8bb0\u6570","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

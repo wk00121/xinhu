@@ -6,6 +6,7 @@ class dayClassAction extends runtAction
 	{
 		m('flow')->initflow('work')->tododay(); //任务到期提醒
 		m('flow')->initflow('daiban')->tododay(); //流程待办处理提醒
+		m('flow')->initflow('meet')->createmeet(); //会议生成
 		echo 'success';
 	}
 	

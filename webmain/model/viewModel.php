@@ -40,6 +40,14 @@ class viewClassModel extends Model
 		return $this->getsswhere(0, $ufid, $glx);
 	}
 	
+	//获取禁看字段的权限
+	public function viewjinfields($mid, $uid=0, $ufid='')
+	{
+		$this->getursss($mid, $uid);
+		$rows = $this->getsswhere(6, $ufid);
+		return $rows;
+	}
+	
 	//是否有新增权限
 	public function isadd($mid, $uid=0)
 	{
@@ -89,7 +97,7 @@ class viewClassModel extends Model
 		if($ufid=='')$ufid = 'uid';
 		$uid	= $this->urs['id'];
 		$companyid	= arrvalue($this->urs, 'companyid','0');
-		$rows 	= $this->getall('`type`='.$type.' and `modeid`='.$mid.' and `status`=1 '.$where.'','wherestr,whereid');
+		$rows 	= $this->getall('`modeid`='.$mid.' and `type`='.$type.' and `status`=1 '.$where.'','wherestr,whereid,fieldstr');
 		$wehs	= array();
 		$count  = $this->db->count;
 		if($type==1 || $type==4 || $type==5){
@@ -97,7 +105,11 @@ class viewClassModel extends Model
 		}
 		$qomss  = ($glx==0)?'':'{asqom}';
 		if($type== 0 && $count==0 && $this->isflow>0){
-			$rows[] = array('wherestr'=>$this->rock->jm->base64encode('`uid`={uid}'),'whereid'=>0);
+			$rows[] = array(
+				'wherestr'=>$this->rock->jm->base64encode('`uid`={uid}'),
+				'whereid'=>0,
+				'fieldstr'=>''
+			);
 		}
 		foreach($rows as $k=>$rs){
 			$sw = $this->rock->jm->base64decode($rs['wherestr']);
@@ -130,20 +142,31 @@ class viewClassModel extends Model
 			
 			//所有数据
 			if($sw=='all'){
+				if($type==6){
+					$rows[$k]['wherestr'] = '';
+					continue;
+				}
 				return ' and 1=1';
 			}
 			if(!isempt($sw)){
 				$sw 	= $this->whereobj->getstrwhere($sw, $uid, $ufid);
 				$sw 	= str_replace('{asqom}', $qomss, $sw);
 				$sw 	= '('.$sw.')';
+				$rows[$k]['wherestr'] = $sw;
 				$wehs[] = $sw;
 			}
 			$whereid = (int)$rs['whereid'];
 			if($whereid>0){
 				$sww = $this->whereobj->getwherestr($whereid, $uid, $ufid, 1);
-				if($sww!='')$wehs[] = '('.$sww.')';
+				if($sww!=''){
+					$wehs[] = '('.$sww.')';
+					$rows[$k]['wherestr2'] = '('.$sww.')';
+				}
 			}
 		}
+		
+		if($type==6)return $rows;//禁看类型字段 
+		
 		$s = join(' or ', $wehs);
 		if($s!=''){
 			$s = ' and ('.$s.')';

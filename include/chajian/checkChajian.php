@@ -93,4 +93,22 @@ class checkChajian extends Chajian{
 	{
 		return preg_match("/^([0-9]{4})-([0-9]{2})$/", $str);
 	}
+	
+	/**
+	*	过滤字母,只留数字
+	*/
+	public function onlynumber($str)
+	{
+		return preg_replace('/[a-zA-Z]/','', $str);
+	}
+	
+	/**
+	*	替换空格
+	*/
+	public function replacekg($str)
+	{
+		$str 	= preg_replace('/\s*/', '', $str);
+		$qian	= array(" ","　","\t","\n","\r");
+		return str_replace($qian, '', $str); 
+	}
 }

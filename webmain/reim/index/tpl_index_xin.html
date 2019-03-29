@@ -32,7 +32,6 @@
 <script type="text/javascript" src="web/res/js/jquery-rockupload.js"></script>
 <script type="text/javascript" src="mode/plugin/jquery-rockmodels.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-changeuser.js"></script>
-
 <style>
 .close{height:24px;width:24px;display:block;text-align:center;line-height:20px;cursor:pointer;font-size:20px;color:#f1f1f1;float:left}
 .close:hover{color:white;}
@@ -83,13 +82,12 @@ function winfocus(){
 	</table>
 	
 	</div>
-	
 
 	<table style="width:100%;" height="100%">
 	<tr valign="top">
 	<td height="100%"  style="border-right:1px #dddddd solid" width="60" bgcolor="#f5f9ff">
 		<div align="center" style="width:60px;overflow:hidden">
-			<div style="margin-top:20px"><img title="<?=$da['adminname']?>" onclick="location.reload()" src="images/noface.png" id="myface" style="border-radius:50%;" align="absmiddle" height="40" width="40">
+			<div style="margin-top:20px"><img title="<?=$da['adminname']?>" onclick="reim.openmyinfo()" src="images/noface.png" id="myface" style="border-radius:50%;" align="absmiddle" height="40" width="40">
 			</div>
 			<div style="margin-top:20px;">
 				<div class="cursor lefticons" id="changetabs0" onclick="reim.changetabs(0)" title="消息" style="color:#1389D3;">

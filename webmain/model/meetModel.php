@@ -70,10 +70,11 @@ class meetClassModel extends Model
 	public function isapplymsg($startdt, $enddt, $hyname, $id=0)
 	{
 		$msg 		= '';
-		$where 		= "id <> '$id' and `hyname`='$hyname' and type=0 and ((`startdt`<'$startdt' and `enddt`>'$startdt') or (`startdt`<'$enddt' and `enddt`>'$enddt') or (`startdt`>'$startdt' and `enddt`<'$enddt') or (`startdt`='$startdt' and `enddt`='$enddt')) and `state` in(0,1)";
+		$where 		= "id <> '$id' and `hyname`='$hyname' and `type`=0 and ((`startdt`<'$startdt' and `enddt`>'$startdt') or (`startdt`<'$enddt' and `enddt`>'$enddt') or (`startdt`>'$startdt' and `enddt`<'$enddt') or (`startdt`='$startdt' and `enddt`='$enddt')) and `state` in(0,1)";
 		if($this->rows($where)>0){
 			$msg = '该会议室的时间段已经申请过了';
 		}
 		return $msg;
 	}
+	
 }

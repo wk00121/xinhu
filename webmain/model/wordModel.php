@@ -94,7 +94,7 @@ class wordClassModel extends Model
 			$moopt->update("`value`='success'", $onrs['id']);
 		}
 		
-		$cqids	= $this->rock->post('cqids','-1');
+		$cqids	= c('check')->onlynumber($this->rock->post('cqids','-1'));
 		$cqid	= (int)$this->rock->post('cqid','0'); //打开的分区
 		$typeid = (int)$this->rock->post('typeid','0'); //文件夹ID
 		$atype  = $this->rock->post('atype');

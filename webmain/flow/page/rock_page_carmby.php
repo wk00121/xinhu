@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'carmby',modename='车辆保养',isflow=1,modeid='60',atype = params.atype,pnum=params.pnum;
+	var modenum = 'carmby',modename='车辆保养',isflow=1,modeid='60',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"carid","name":"\u4fdd\u517b\u8f66\u8f86","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"type","name":"\u5355\u636e\u7c7b\u578b","fieldstype":"fixed","ispx":"0","isalign":"0","islb":"0"},{"fields":"jianame","name":"\u9a7e\u9a76\u5458","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"reason","name":"\u4fdd\u517b\u539f\u56e0","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"address","name":"\u4fdd\u517b\u5730\u70b9","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"bujian","name":"\u4fdd\u517b\u5185\u5bb9","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"startdt","name":"\u4fdd\u517b\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u53d6\u8f66\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"money","name":"\u4fdd\u517b\u91d1\u989d","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"kmshu","name":"\u5f53\u524d\u4fdd\u517b\u516c\u91cc\u6570","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"nextdt","name":"\u4e0b\u6b21\u4fdd\u517b\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"kmnshu","name":"\u4e0b\u6b21\u4fdd\u517b\u516c\u91cc\u6570","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

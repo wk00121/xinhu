@@ -134,8 +134,10 @@ class loginClassAction extends apiAction
 	//初始化验证
 	public function initsetAction()
 	{
+		$call = $this->get('callback');
 		$barr['title'] 	= getconfig('reimtitle','REIM');
-		$this->showreturn($barr);
+		//$this->showreturn($barr);
+		echo ''.$call.'('.json_encode($barr).')';
 	}
 	
 	//获取二维码

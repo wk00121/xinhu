@@ -7,7 +7,7 @@
 */
 
 (function ($) {
-	
+	js.onchangedate = function(){}; //选择时间回调
 	function rockdatepicker(elet, options){
 		var obj		= $(elet);
 		var can		= options;
@@ -159,9 +159,9 @@
 			}
 			
 			s+='	<div style="line-height:30px">&nbsp; <font color="#888888">选择：</font><span id="rockdatepicker_span'+rand+'"></span>';
-			s+='		<span><input min="0" max="23" readOnly id="rockdatepicker_input_h'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>:';
-			s+='		<span><input min="0" max="59" readOnly id="rockdatepicker_input_i'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>:';
-			s+='		<span><input min="0" max="59" readOnly id="rockdatepicker_input_s'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>';
+			s+='		<span><input min="0" max="23" onfocus="js.focusval=this.value"  onblur="js.number(this)" id="rockdatepicker_input_h'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>:';
+			s+='		<span><input min="0" max="59" onfocus="js.focusval=this.value"  onblur="js.number(this)" id="rockdatepicker_input_i'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>:';
+			s+='		<span><input min="0" max="59" onfocus="js.focusval=this.value"  onblur="js.number(this)" id="rockdatepicker_input_s'+rand+'" style="width:24px;text-align:center;height:20px;line-height:16px;border:1px #cccccc solid;background:none" value="00" maxlength="2"></span>';
 			s+=		'</div>';
 			s+='	<div style="height:30px;overflow:hidden;text-align:right;background:#eeeeee;line-height:28px">';
 			s+='		<a href="javascript:;" class="a" id="rockdatepicker_clear'+rand+'">清空</a>&nbsp; ';
@@ -367,10 +367,16 @@
 			this.setValue(val);
 		};
 		this.setValue 	= function(v){
+			var nobj = false;
 			if(can.inputid!=''){
+				nobj = get(can.inputid);
 				$('#'+can.inputid+'').val(v).focus();;
 			}else{
+				nobj = elet;
 				obj.val(v).focus();;
+			}
+			if(nobj){
+				js.onchangedate(nobj.name, nobj, v, this);
 			}
 			can.itemsclick(v, this);
 			this.hidemenu();

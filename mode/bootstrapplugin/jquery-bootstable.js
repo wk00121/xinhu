@@ -436,7 +436,7 @@
 				}
 			});
 		};
-		this.exceldown = function(bt, lxs){
+		this.exceldown = function(bt, lxs,ocsn){
 			if(this.bool)return;
 			var excelfields='',excelheader='',i,a=can.columns;
 			var np	= (lxs==2) ? this.page : 1;
@@ -457,6 +457,8 @@
 			if(lxs==2){
 				das.limit	= can.pageSize;
 			}
+			if(ocsn)for(i in ocsn)das[i]=ocsn[i];
+				
 			das.exceltitle  = jm.encrypt(das.exceltitle);
 			das.excelfields = jm.encrypt(das.excelfields);
 			das.excelheader = jm.encrypt(das.excelheader);
@@ -517,6 +519,27 @@
 				}
 			}
 		};
+		this.hiderows=function(ids){
+			var sid = ids.split(','),id,i;
+			for(i=0;i<sid.length;i++){
+				id	= sid[i];
+				obj.find("tr[dataid='"+id+"']").hide();
+				if(id == this.changeid){
+					this.changeid= 0;
+					this.changedata = {};
+				}
+			}
+		};
+		this.showrows=function(id){
+			var sid = ids.split(','),id,i;
+			for(i=0;i<sid.length;i++){
+				id	= sid[i];
+				obj.find("tr[dataid='"+id+"']").show();
+			}
+		};
+		this.showallrows=function(){
+			obj.find("tr[dataid']").show();
+		}
 		this.order	= function(a, b){
 			if(!a)return;
 			if(!b)b='asc';

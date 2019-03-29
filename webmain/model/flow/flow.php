@@ -26,8 +26,9 @@ class flowModel extends Model
 	public $optid	= 0;		//当前当街对应操作用Id，如提交人Id
 	public $isflow	= 0;		//当前模块是否有流程审核步骤
 	public $ismobile= 0;		//是否移动的页面请求的
-	public $minwidth	= 100;	//录入页面子表最小宽度
+	public $minwidth= 100;		//录入页面子表最小宽度
 	public $atype	= '';
+	public $daochubo= false;	//是否导出操作
 	
 	
 	//当初始化模块后调用
@@ -147,6 +148,7 @@ class flowModel extends Model
 			$this->moders 	= m('flow_set')->getone(is_numeric($num) ? $num : "`num`='$num'");
 			if(!$this->moders)$this->echomsg('模块['.$num.']不存在，请到[流程模块列表]下添加');
 		}
+		$this->daochubo = ($this->rock->post('execldown')=='true') ? true :false;
 		$table 			= $this->moders['table'];
 		$this->modeid	= $this->moders['id'];
 		$this->modenum	= $this->moders['num'];
@@ -441,6 +443,9 @@ class flowModel extends Model
 		//$this->replacepbr($this->rs, 'content');
 		
 		$data 			= $this->flowrsreplace($this->rs, 1);
+		$dataa 			= $this->viewjinfields(array($data));
+		$data			= $dataa[0];
+		
 		//读取多行子表
 		$subdata 		= $this->getsuballdata(1);
 		foreach($subdata as $zb=>$da){
@@ -505,7 +510,7 @@ class flowModel extends Model
 			$contview 	 	= $this->rock->reparr($contview, $data);
 		}
 		$arr['isdefaultview'] = 0;
-		if($this->isempt($contview)){
+		if($this->isempt($contview) || contain($contview, '$contview$')){
 			$arr['isdefaultview'] = 1;
 			$_fields		 = array();
 			if($this->isflow>0){
@@ -521,14 +526,14 @@ class flowModel extends Model
 			}
 			//if(!isset($fields['optdt']))$fields['optdt']	= '操作时间';
 			
-			$contview 	= c('html')->xiangtable($fields, $data, getconfig('bcolorxiang'));
-			$contview 	= '<div align="center">'.$contview.'</div>';
+			$contvimr 	= c('html')->xiangtable($fields, $data, getconfig('bcolorxiang'));
+			$contvimr 	= '<div align="center">'.$contvimr.'</div>';
 			
 			//移动默认展示
 			if($lx==1){
-				$contview	= '';
+				$contvimr	= '';
 				if($this->isflow>0){
-					$contview.='<div class="r-border-b">
+					$contvimr.='<div class="r-border-b">
 					<div class="blank5"></div>
 					<table><tr>
 						<td width="50" align="left"><img style="height:40px;width:40px;border-radius:50%" src="'.$this->urs['face'].'"></td>
@@ -539,21 +544,24 @@ class flowModel extends Model
 					unset($fields['base_name']);
 					unset($fields['base_deptname']);
 				}
-				$contview 	.= '<div><table width="100%">';
+				$contvimr 	.= '<div><table width="100%">';
 				foreach($fields as $f=>$n){
 					$vs = arrvalue($data, $f);
 					if(!isempt($vs)){
 						//子表
 						if(substr($f,0,7)=='subdata'){
-							$contview .= '<tr><td colspan="2"><div style="padding:5px" align="left"><div><b>'.$n.'</b></div>'.$vs.'</div></td></tr>';
+							$contvimr .= '<tr><td colspan="2"><div style="padding:5px" align="left"><div><b>'.$n.'</b></div>'.$vs.'</div></td></tr>';
 						}else{
-							$contview .= '<tr><td nowrap><div align="right" style="color:#888888;padding:5px 0px">'.$n.'：</div></td><td width="95%"><div style="padding:5px" align="left">'.$vs.'</div></td></tr>';
+							$contvimr .= '<tr><td nowrap><div align="right" style="color:#888888;padding:5px 0px">'.$n.'：</div></td><td width="95%"><div style="padding:5px" align="left">'.$vs.'</div></td></tr>';
 						}
 					}
 				}
-				$contview  .= '</table></div>';
+				$contvimr  .= '</table></div>';
 			}
+			if(isempt($contview))$contview = $contvimr;
+			$contview	 = str_replace('$contview$',$contvimr, $contview);
 		}
+		
 		$arr['contview'] = $contview;
 		$arr['readarr']	 = m('log')->getreadarr($this->mtable, $this->id); //已读人员
 		
@@ -2543,6 +2551,7 @@ class flowModel extends Model
 		$arr['group'] 	= '';
 		$arr['keywhere']= '';
 		$arr['asqom'] 	= ''; //主表别名
+		$arr['onlywhere'] 	= ''; //只要我的一个搜索
 		$this->atype 	= $lx;
 		$nas 			= $this->flowbillwhere($uid, $lx);
 		$inwhere		= '';
@@ -2560,7 +2569,7 @@ class flowModel extends Model
 		$_wehs			= '';
 		if(is_array($nas)){
 			if(isset($nas['where']))$_wehs = $nas['where'];
-			$ftears	= explode(',','asqom,order,fields,fieldsleft,table,group,keywhere,tableleft');
+			$ftears	= explode(',','asqom,order,fields,fieldsleft,table,group,onlywhere,keywhere,tableleft');
 			foreach($ftears as $fid)if(isset($nas[$fid]))$arr[$fid]  = $nas[$fid];
 		}else{
 			$_wehs	= $nas;
@@ -2655,13 +2664,6 @@ class flowModel extends Model
 					}
 				}
 				
-				/*
-				if($check->isnumber($key)){
-					$_kearr[] = "{asqom}`id`='$key'";
-					if($temsao==1)$_kearr[] = "b.`uid`='$key'";
-				}else if($temsao==1){
-					
-				}*/
 				if($temsao==1){
 					$_kearr[] = "b.`uname` like '%".$key."%'";
 					$_kearr[] = "b.`udeptname` like '%".$key."%'";
@@ -2683,14 +2685,17 @@ class flowModel extends Model
 					}
 				}
 			}
-			if($_kearr)$arr['keywhere'] = "and (".join($_kearr, ' or ').")";
+			if($_kearr && $arr['onlywhere']=='')$arr['keywhere'] = "and (".join($_kearr, ' or ').")";
 		}
-		if(!isempt($arr['keywhere']))$where .= ' '.$arr['keywhere'];
+		
+		if(!isempt($arr['onlywhere']))$where .= ' '.$arr['onlywhere'];
+		if(!isempt($arr['keywhere']))$where  .= ' '.$arr['keywhere'];
 
 		if($highwhere!='')$where .= ' '.$highwhere;
 		$where 			= str_replace('{asqom}', $arr['asqom'], $where);
 		$arr['order'] 	= str_replace('{asqom}', $arr['asqom'], $arr['order']);
 		$where 			= str_replace('[A]', $arr['asqom'], $where);
+		
 		
 		//字段显示
 		$fields 		= $arr['fields'];
@@ -3084,6 +3089,60 @@ class flowModel extends Model
 		}
 		$cont 	 	= c('html')->createrows($rows, substr($headstr, 1),'#cccccc','noborder');
 		return $cont;
+	}
+	
+	/**
+	*	禁看处理
+	*/
+	public function viewjinfields($rows)
+	{
+		if(!$rows)return $rows;
+		$jinkfarr = $this->viewmodel->viewjinfields($this->moders, $this->adminid, $this->flowviewufieds);
+		if($jinkfarr && is_array($jinkfarr)){
+			$wherear= array();
+			$ids 	= '';
+			foreach($rows as $k=>$rs){
+				if(!isset($rs['id']))return $rows;//没有id字段是无法判断
+				$ids.=','.$rs['id'].'';
+			}
+			$ids	= substr($ids, 1);
+			foreach($jinkfarr as $k1=>$rs1){
+				$wherestr 	= arrvalue($rs1,'wherestr');
+				$wherestr2 	= arrvalue($rs1,'wherestr2');
+				$fieldstr 	= arrvalue($rs1,'fieldstr');
+				if(isempt($fieldstr))continue;
+				if($wherestr=='' && $wherestr2=='')continue;
+				if($wherestr2!=''){
+					if($wherestr!='')$wherestr.=' and ';
+					$wherestr.=$wherestr2;
+				}
+				$wherestr= str_replace('{asqom}','', $wherestr);
+				$jinrows = $this->getall('`id` in('.$ids.') and '.$wherestr.'','id');
+				if(!$jinrows)continue;
+				$jinrow	 = array();
+				foreach($jinrows as $k2=>$rs2)$jinrow[]=$rs2['id'];
+				$jinkfarr[$k1]['jinrows'] = $jinrow;
+			}
+			
+			//隐藏字段设置
+			foreach($rows as $k=>$rs){
+				$id = $rs['id'];
+				if(arrvalue($rs, $this->flowviewufieds)==$this->adminid)continue;//我自己都可以看
+				foreach($jinkfarr as $k1=>$rs1){
+					$fieldstr 	= arrvalue($rs1,'fieldstr');
+					$jinrows 	= arrvalue($rs1,'jinrows');
+					if($jinrows){
+						$farr 	= explode(',', $fieldstr);
+						if(in_array($id, $jinrows)){
+							foreach($farr as $fid){
+								if(isset($rs[$fid]))$rows[$k][$fid]='';//清空
+							}
+						}
+					}
+				}
+			}
+		}
+		return $rows;
 	}
 	
 	

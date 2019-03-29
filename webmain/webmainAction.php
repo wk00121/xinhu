@@ -171,15 +171,16 @@ class Action extends mainAction
 	public function publicdelAjax()
 	{
 		$this->iszclogin();
-		$id		= $this->rock->post('id');
+		$id		= c('check')->onlynumber($this->rock->post('id'));
 		$table	= $this->rock->iconvsql($this->rock->post('table','',1),1);
 		$modenum= $this->rock->post('modenum');
 		if(getconfig('systype')=='demo')$this->showreturn('', '演示数据禁止删除', 201);
 		if($id=='')$this->showreturn('', 'sorry', 201);
 		$isadmin= (int)$this->getsession('isadmin');
+		$deltba = array('todo','option','menu','wouser');
 		if($modenum==''){
 			if($isadmin != 1 && $table!='todo')$this->showreturn('','只有管理员才能操作' , 201);
-			if(substr($table,0,5)=='flow_'||$table=='todo'||$table=='option'||$table=='menu'){
+			if(substr($table,0,5)=='flow_' || in_array($table, $deltba)){
 				m($table)->delete("`id` in($id)");
 			}else{
 				$this->showreturn('','未设置删除权限' , 201);
@@ -277,6 +278,7 @@ class Action extends mainAction
 	
 	public function publictreestoreAjax()
 	{
+		return array();//此方法无用
 		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->rock->post('tablename_abc'),1));
 		$order	= $this->rock->iconvsql($this->rock->get('order'));
 		$fistid	= $this->rock->get('fistid','0');

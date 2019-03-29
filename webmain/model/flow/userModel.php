@@ -43,6 +43,7 @@ class flow_userClassModel extends flowModel
 	//替换
 	public function flowrsreplace($rs, $lx=0)
 	{
+		if(getconfig('systype')=='demo' && isset($rs['mobile']))$rs['mobile']='';
 		if($this->rock->ismobile()){
 			if(isset($rs['mobile']) && !isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
 			if(isset($rs['tel']) && !isempt($rs['tel']))$rs['tel']='<a onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';

@@ -63,8 +63,13 @@ class flow_userinfoClassModel extends flowModel
 		
 		if(isset($rs['companyid']) && $lx==1)$rs['companyid'] = m('company')->getmou('name',"`id`='".$rs['companyid']."'");
 		
-		if($this->rock->request('execldown')=='true' && isset($rs['idnum'])){
-			$rs['mobile'] = '&nbsp;'.$rs['idnum'];
+		if(getconfig('systype')=='demo' && isset($rs['mobile']))$rs['mobile']='';
+		
+		//导出处理
+		if($this->daochubo){
+			//if(isset($rs['mobile']))$rs['mobile'] = '&nbsp;'.$rs['mobile'];
+			//if(isset($rs['idnum']))$rs['idnum'] = '&nbsp;'.$rs['idnum'];
+			//if(isset($rs['banknum']))$rs['banknum'] = '&nbsp;'.$rs['banknum'];
 		}
 	
 		return $rs;
@@ -77,12 +82,13 @@ class flow_userinfoClassModel extends flowModel
 	
 	protected function flowbillwhere($uid, $lx)
 	{
-	
+		$fields = 'a.id,a.name,a.deptname,a.ranking,a.state,a.tel,a.sex,a.mobile,a.workdate,a.jiguan,a.minzu,a.xueli,a.email,a.syenddt,a.quitdt,a.positivedt,a.birtype,a.birthday,a.num,b.name as companyid';
+		if($this->daochubo)$fields='a.*,b.name as companyid';//导出的
 		return array(
 			'ztfields'	=> 'state',
 			'order'		=> 'a.id',
 			'table'		=> '`[Q]userinfo` a left join `[Q]company` b on a.companyid=b.id',
-			'fields'	=> 'a.id,a.name,a.deptname,a.ranking,a.state,a.tel,a.sex,a.mobile,a.workdate,a.jiguan,a.minzu,a.xueli,a.email,a.syenddt,a.quitdt,a.positivedt,a.birtype,a.birthday,a.num,b.name as companyid',
+			'fields'	=> $fields,
 			'asqom'		=> 'a.',
 			'orlikefields' => 'b.name'
 		);

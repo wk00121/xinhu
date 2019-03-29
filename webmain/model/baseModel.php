@@ -52,6 +52,7 @@ class baseClassModel extends Model
 		$urs['adminid']	 	= $uid;
 		$urs['deptname']	= arrvalue($urs,'deptname');
 		$urs['ranking']		= arrvalue($urs,'ranking');
+		$urs['ismobile']	= $this->rock->ismobile() ? '1' : '0';
 		$barr = $this->rock->matcharr($str);
 		foreach($barr as $match){
 			$key 	= $match;

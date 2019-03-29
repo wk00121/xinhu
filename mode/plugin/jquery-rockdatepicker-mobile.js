@@ -7,7 +7,7 @@
 */
 
 (function ($) {
-	
+	js.onchangedate = function(){}; //选择时间回调
 	function rockdatepicker_mobile(options){
 		
 		var me = this;
@@ -198,25 +198,32 @@
 			val = val.replace('H', this.sa(H));
 			val = val.replace('i', this.sa(i));
 			val = val.replace('s', this.sa(s));
+			var nobj = false;
 			if(this.inputid&&get(this.inputid)){
-				get(this.inputid).value=val;
-				get(this.inputid).focus();
+				nobj = get(this.inputid);
 			}
 			if(this.inputobj){
-				this.inputobj.value=val;
-				this.inputobj.focus();
+				nobj = this.inputobj;
+			}
+			if(nobj){
+				nobj.value=val;
+				nobj.focus();
+				js.onchangedate(nobj.name, nobj, val, this);
 			}
 			this.cancal();
 		};
 		this.clearo=function(){
-			var val='';
+			var val='',nobj = false;
 			if(this.inputid&&get(this.inputid)){
-				get(this.inputid).value=val;
-				get(this.inputid).focus();
+				nobj = get(this.inputid);
 			}
 			if(this.inputobj){
-				this.inputobj.value=val;
-				this.inputobj.focus();
+				nobj = this.inputobj;
+			}
+			if(nobj){
+				nobj.value=val;
+				nobj.focus();
+				js.onchangedate(nobj.name, nobj, val, this);
 			}
 			this.cancal();
 		};

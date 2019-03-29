@@ -21,10 +21,12 @@ $(document).ready(function(){
 				return s;
 			}
 		},{
-			text:'发件人',dataIndex:'sendname'
+			text:'发件人',dataIndex:'sendname',renderer:function(v){
+				return '<div style="max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
+			}
 		},{
 			text:'收件人',dataIndex:'recename',renderer:function(v){
-				return '<div style="width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
+				return '<div style="max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
 			}
 		},{
 			text:'发件时间',dataIndex:'senddt',sortable:true

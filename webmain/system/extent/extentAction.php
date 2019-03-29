@@ -41,7 +41,7 @@ class extentClassAction extends Action
 				$ntable = ''.PREFIX.'group';
 			break;
 		}
-		if($ntable != ''){
+		if($ntable != '' && $checkaid != '' ){
 			$this->db->insert($this->T('sjoin'),'`type`,`mid`,`sid`,`indate`',"select '$type','$mid',`id`,'$this->now' from `$ntable` where `id` in($checkaid)",true);
 		}
 		if($msg=='')$msg='success';

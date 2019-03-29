@@ -1,6 +1,20 @@
 //1、当页面加载完成会调用函数 initbodys()，里面可以写初始信息，绑定事件等。
 function initbodys(){
 	
+	//绑定触发时间
+	c.onselectdata['custname']=function(d){
+		//js.getarr(d);//选择了打印一下，去试试
+		form('explain').value=d.subname;//读取到的写入到一个文本框里。
+		
+		//要去加上客户的所在地址就用ajax，geturlact是一个方法，参数写方法名getcustinfo，这个方法是在录入模块控制器文件里的方法。
+		js.ajax(geturlact('getcustinfo'),{custid:d.id},function(ret){
+			form('sheng').value=ret.sheng;
+			form('shi').value=ret.shi;
+			//也可以写更多字段
+			//调试js错误，
+			//form('abcdd').value=ret.sheng;//这句是错的，没有abcdd字段。
+		},'get,json');
+	}
 	
 	//当元素类型是[弹框下拉选择]时
 	c.onselectdata['tanxuan']=function(d){

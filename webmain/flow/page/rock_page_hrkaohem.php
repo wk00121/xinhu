@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'hrkaohem',modename='考核项目',isflow=0,modeid='81',atype = params.atype,pnum=params.pnum;
+	var modenum = 'hrkaohem',modename='考核项目',isflow=0,modeid='81',atype = params.atype,pnum=params.pnum,modenames='考核项目内容,评分人';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u8003\u6838\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"startdt","name":"\u5f00\u59cb\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"recename","name":"\u8003\u6838\u5bf9\u8c61","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"pinlv","name":"\u8003\u6838\u9891\u7387","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"sctime","name":"\u751f\u6210\u65f6\u95f4","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"pfsj","name":"\u8bc4\u5206\u65f6\u95f4(\u5929)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"maxfen","name":"\u6700\u9ad8\u5206\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"hegfen","name":"\u5408\u683c\u5206\u6570","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"temp_zbcont","name":"\u8003\u6838\u5185\u5bb9","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"temp_pfren","name":"\u8bc4\u5206\u4eba","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
@@ -75,7 +75,7 @@ $(document).ready(function(){
 					c.daonchuclick(d);
 				}
 			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'订阅此列表',lx:2}];
+			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
 			this.daochuobj.setData(d);
 			var lef = $(o1).offset();
 			this.daochuobj.showAt(lef.left, lef.top+35);
@@ -84,6 +84,15 @@ $(document).ready(function(){
 			if(d.lx==0)a.exceldown();
 			if(d.lx==1)a.exceldownnow();
 			if(d.lx==2)this.subscribelist();
+			if(d.lx==3)this.excelauto();
+		},
+		excelauto:function(){
+			autoexcelfun({
+				'fieldsarr':fieldsarr,
+				'objtable':a,
+				'isflow':isflow,
+				'modenames':modenames
+			});
 		},
 		subscribelist:function(){
 			js.subscribe({

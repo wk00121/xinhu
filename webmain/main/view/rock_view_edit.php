@@ -2,12 +2,12 @@
 <script >
 $(document).ready(function(){
 	{params};
-	var id = params.id,mid=params.mid;
+	var id = params.id,mid=params.mid,fieldsarr=[];
 	if(!id)id = 0;
 	var h = $.bootsform({
 		window:false,rand:'{rand}',tablename:'flow_extent',
 		url:publicsave('{mode}','{dir}'),
-		submitfields:'recename,receid,modeid,type,whereid,wherestr,explain,status',
+		submitfields:'recename,receid,modeid,type,whereid,wherestr,explain,status,fieldstr',
 		requiredfields:'recename,type,modeid',
 		success:function(){
 			closenowtabs();
@@ -16,6 +16,9 @@ $(document).ready(function(){
 		},
 		load:function(a){
 			js.setselectdata(h.form.whereid,a.wherelist,'id');
+			fieldsarr = a.fieldsarr;
+			c.showfields(a.data.fieldstr);
+			if(a.data.type=='6')$('#jinfiile{rand}').show();
 		},
 		loadafter:function(a){
 			if(a.data){
@@ -24,13 +27,37 @@ $(document).ready(function(){
 		},
 		submitcheck:function(d){
 			if(d.type!='1' && d.type!='4' && d.type!='5' && d.wherestr=='' && d.whereid=='0')return '必须设置输入相应条件';
-			return {wherestr:jm.base64encode(d.wherestr)}
+			var fieldstr = '';
+			if(d.type=='6'){
+				fieldstr=js.getchecked('fieldstr{rand}');
+				if(fieldstr=='')return '请选择禁看字段';
+			}
+			return {wherestr:jm.base64encode(d.wherestr),fieldstr:fieldstr}
 		}
 	});
 	h.forminit();
 	h.load(js.getajaxurl('loaddata','{mode}','{dir}',{id:id,mid:mid}));
 	h.setValue('modeid',mid);
+	$(h.form.type).change(function(){
+		var val = this.value;
+		if(val=='6'){
+			$('#jinfiile{rand}').show();
+		}else{
+			$('#jinfiile{rand}').hide();
+		}
+	});
 	var c = {
+		showfields:function(st1){
+			var i,len=fieldsarr.length,d1,str='',sel;
+			st1 = ','+st1+',';
+			for(i=0;i<len;i++){
+				d1 = fieldsarr[i];
+				sel= '';
+				if(st1.indexOf(','+d1.fields+',')>=0)sel='checked';
+				str+='<label><input type="checkbox" '+sel+' name="fieldstr{rand}" value="'+d1.fields+'">'+d1.name+'</label>&nbsp;&nbsp;';
+			}
+			$('#viewjinkan{rand}').html(str);
+		},
 		getdist:function(o1, lx){
 			var cans = {
 				nameobj:h.form.recename,
@@ -60,6 +87,8 @@ $(document).ready(function(){
 			h.load(js.getajaxurl('loaddata','{mode}','{dir}',{id:id,mid:mid}));
 		}
 	};
+	
+	
 	js.initbtn(c);
 });
 
@@ -92,12 +121,15 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td  align="right" width="15%" ><font color=red>*</font> 类型可：</td>
-			<td class="tdinput" width="35%" ><select name="type" class="form-control"><option value="0">查看</option><option value="1">添加</option><option value="2">编辑</option><option value="3">删除</option><option value="4">导入</option><option value="5">导出</option></select></td>
+			<td  align="right" width="15%" ><font color=red>*</font> 类型：</td>
+			<td class="tdinput" width="35%" ><select name="type" class="form-control"><option value="0">查看</option><option value="1">添加</option><option value="2">编辑</option><option value="3">删除</option><option value="4">导入</option><option value="5">导出</option><option value="6">禁看字段(条件满足时针对对象就不能查看相应的字段)</option></select></td>
 			<td  align="right"  width="15%"></td>
 			<td class="tdinput" width="35%" ></td>
 		</tr>
-		
+		<tr id="jinfiile{rand}" style="display:none">
+			<td  align="right" >选择禁看字段：</td>
+			<td class="tdinput" colspan="3" id="viewjinkan{rand}"></td>
+		</tr>
 		<tr>
 			<td  align="right" >选择条件：</td>
 			<td class="tdinput"><select class="form-control" name="whereid"><option value="0">无条件</option></select></td>
@@ -105,7 +137,7 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td  align="right" ></td>
-			<td colspan="3" style="padding-bottom:10px"><font color=#888888>在【流程模块条件】上添加，满足此条件才需要此步骤</font></td>
+			<td colspan="3" style="padding-bottom:10px"><font color=#888888>在【流程模块条件】上添加</font></td>
 		</tr>
 		
 		<tr>

@@ -695,6 +695,7 @@ class inputAction extends Action
 			$barr['isdaochu'] 	= $vobj->isdaochu($this->modeid, $this->adminid); //判断是否可导入
 		}
 		$barr['souarr']		= $this->flow->flowsearchfields();
+		$rows 	= $this->flow->viewjinfields($rows);//禁看字段处理
 		$scarr 				= $this->storeafter($table, $rows);
 		if(is_array($scarr))foreach($scarr as $k=>$v)$barr[$k]=$v;
 		return $barr;

@@ -27,6 +27,21 @@ class mode_demoClassAction extends inputAction{
 		
 	}
 	
+	//读取客户的数据源
+	public function getmycust()
+	{
+		//webmain\model\crmModel.php
+		$rows = m('crm')->getmycust($this->adminid); //这个是写的否方法了
+		return $rows;//返回，在去试试
+	}
+	
+	public function getcustinfoAjax()
+	{
+		$custid = (int)$this->get('custid');//客户Id
+		$rs  	= m('customer')->getone('`id`='.$custid.'');//读取客户，这个是操作数据库方法，官网有帮助
+		return $rs;//返回
+	}
+	
 	
 	//弹出下拉选择单选
 	public function tanxuan()

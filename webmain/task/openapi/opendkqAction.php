@@ -23,6 +23,7 @@ class opendkqClassAction extends openapiAction
 		$oi 	= 0;$uarr = array();
 		$dtobj 	= c('date');$adb 	= m('admin');$db = m('kqdkjl');
 		$updt 	= '';
+		$cheobj = c('check');
 		if(is_array($arr))foreach($arr as $k=>$rs){
 			$name = isset($rs['name']) ? $rs['name'] : '';
 			$dkdt = isset($rs['dkdt']) ? $rs['dkdt'] : '';
@@ -33,7 +34,11 @@ class opendkqClassAction extends openapiAction
 				if(isset($uarr[$name])){
 					$uid = $uarr[$name];
 				}else{
-					$usar 	= $adb->getrows("`name`='$name'",'id');
+					$uwher  = "`name`='$name'";
+					if($cheobj->iscnmobile($name))$uwher  = "`mobile`='$name'";
+					if($cheobj->isemail($name))$uwher  	  = "`email`='$name'";
+					
+					$usar 	= $adb->getrows($uwher,'id');
 					if($this->db->count!=1)continue;
 					$uid	= $usar[0]['id'];
 					$uarr[$name] = $uid;

@@ -154,7 +154,7 @@ var reim={
 			this.initload();
 		}
 		
-		if(this.timeloads==5)this.getonline();
+		//if(this.timeloads==5)this.getonline();//获取在线人员id
 	},
 	bodykeydown:function(e){
 		var code	= e.keyCode;
@@ -247,6 +247,10 @@ var reim={
 		aarr = this.maindata.garr;
 		for(i=0;i<aarr.length;i++){
 			grouparr[aarr[i].id]=aarr[i];
+		}
+		aarr = this.maindata.uarr;
+		for(i=0;i<aarr.length;i++){
+			userarr[aarr[i].id]=aarr[i];
 		}
 		this.showagent(false);
 		this.myip 			= ret.ip;
@@ -356,7 +360,7 @@ var reim={
 				if(reim.otherlogin)return;
 				reim.serverstatus(0);
 				js.msg('msg','连接已经断开了<br><span id="lianmiaoshoetime"></span><a href="javascript:;" onclick="reim.connectservers()">[重连]</a>',0);
-				reim.relianshotime(30);
+				reim.relianshotime(10);
 			}
 		});
 	},
@@ -566,31 +570,54 @@ var reim={
 			this.showbadge('chat');
 		}	
 	},
-	showuserinfo:function(oi){
+	openmyinfo:function(){
+		this.showuserinfo(0,userarr[adminid]);
+	},
+	showuserinfo:function(oi, d1){
 		var d = this.maindata.uarr[oi];
+		if(d1)d=d1;
 		var num = 'userinfo_'+d.id+'';
 		var s = '<div align="center"><div align="left" style="width:300px;margin-top:50px">';
 		s+='	<div style="padding-left:70px"><img id="myfacess" onclick="$(this).imgview()" src="'+d.face+'" height="100" width="100" style="border-radius:50%;border:1px #eeeeee solid"></div>';
-		var zt = '';
-		if(d.status==0)zt=' &nbsp;<font style="font-size:12px" color=red>未加入</font>';
-		s+='	<div style="line-height:30px;padding:10px;padding-left:20px;"><font color=#888888>姓名：</font>'+d.name+''+zt+'<br><font color=#888888>部门：</font>'+d.deptallname+'<br><font color=#888888>职位：</font>'+d.ranking+'<br><font color=#888888>性别：</font>'+d.sex+'<br><font color=#888888>电话：</font>'+d.tel+'<br><font color=#888888>手机：</font>'+d.mobile+'<br><font color=#888888>邮箱：</font>'+d.email+'</div>';
+		if(d.id==adminid)s+='<div style="padding-left:90px"><a href="javascript:;" id="fupbgonet" onclick="reim.upfaceobj.click()" style="font-size:12px">修改头像</a></div>';
+
+		s+='	<div style="line-height:30px;padding:10px;padding-left:20px;"><font color=#888888>姓名：</font>'+d.name+'<br><font color=#888888>部门：</font>'+d.deptallname+'<br><font color=#888888>职位：</font>'+d.ranking+'<br><font color=#888888>性别：</font>'+d.sex+'<br><font color=#888888>电话：</font>'+d.tel+'<br><font color=#888888>手机：</font>'+d.mobile+'<br><font color=#888888>邮箱：</font>'+d.email+'</div>';
 		s+='	<div style="padding-top:10px;padding-left:50px"><input type="button" value="发消息" onclick="reim.openchat(\'user\',\''+d.id+'\',\''+d.name+'\',\''+d.face+'\')" class="btn">&nbsp; &nbsp; <input onclick="reim.closetabs(\''+num+'\')" type="button" value="关闭" class="btn btn-danger"></div>';
 		s+='</div></div>';
 		this.addtabs(num,s);
+		if(d.id==adminid){
+			if(!this.upfaceobj)this.upfaceobj=$.rockupload({inputfile:'upfacess',uptype:'image',
+				onsuccess:function(f,str){
+					var a=js.decode(str);
+					if(!a.id)return;
+					reim.saveface(a.id);
+				},
+				onchange:function(){
+					$('#fupbgonet').html('上传中...');
+				}
+			});
+		}
+	},
+	saveface:function(fid){
+		this.ajax(this.getapiurl('reim','changeface'),{id:fid},function(ret){
+			var face = ret.data;
+			get('myface').src=face;
+			get('myfacess').src=face;
+			adminface=face;
+			js.setoption('loginface', face);
+			js.setoption('adminface', face);
+			$('#fupbgonet').html('修改成功');
+		});
 	},
 	openchat:function(type,reid,na,fac){
-	
 		var num = ''+type+'_'+reid+'';
-		
 		$('#chat_stotal_'+num+'').html('');
 		this.showbadge('chat');
-		
 		if(type=='agent'){
 			this.openagenh(reid);
 			return;
 		}
-		
-		var s = '<div style=" background:#f5f9ff">';
+		var s = '<div style="background:#f5f9ff">';
 		s+='<div id="viewtitle_'+num+'" style="height:50px;overflow:hidden;border-bottom:#dddddd solid 1px;">';
 		s+='</div>';
 		var hei = 206;
@@ -813,7 +840,11 @@ var reim={
 		if(d.num=='kqdaka'){
 			this.opendaka();return;
 		}
-		js.open(url, w,h,'agent'+d.num+'');
+		if(url.substr(0,4)=='http' && url.indexOf(HOST)<0 && nwjsgui){
+			nwjs.openurl(url);
+		}else{
+			js.open(url, w,h,'agent'+d.num+'');
+		}
 	},
 	//考勤打卡
 	opendaka:function(bo){
@@ -946,7 +977,6 @@ var reim={
 		}
 		
 		s+='	<div style="padding:10px 0px;border-top:1px #eeeeee solid">网络IP：'+this.myip+'</div>';
-		
 		s+='	<div style="padding-top:10px;"><input onclick="reim.closetabs(\''+num+'\')" type="button" value="关闭" class="btn btn-danger"></div>';
 		s+='</div></div>';
 		this.addtabs(num,s);
@@ -1019,7 +1049,7 @@ function chatcreate(cans){
 				s+='<td width="30" title="邀请" id="yaoqingchat_'+this.num+'" class="chattitbtn" nowrap><i class="icon-plus"></i></td>';
 				s+='<td width="30" title="退出会话" id="tuichuchat_'+this.num+'" class="chattitbtn" nowrap><i class="icon-signout"></i></td>';
 			}
-			//s+='<td width="30" title="会话信息" class="chattitbtn" nowrap><i class="icon-group"></i></td>';
+			s+='<td width="30" title="会话里的人员" id="tuiuserlist_'+this.num+'" class="chattitbtn" nowrap><i class="icon-group"></i></td>';
 		}
 		s+='</tr></table>';
 		o.html(s);
@@ -1028,6 +1058,9 @@ function chatcreate(cans){
 		});
 		$('#tuichuchat_'+this.num+'').click(function(){
 			me.exitgroup();
+		});
+		$('#tuiuserlist_'+this.num+'').click(function(){
+			me.showhuilist();
 		});
 	};
 	this.loaddata=function(o1, iref){
@@ -1125,6 +1158,7 @@ function chatcreate(cans){
 			js.msg();
 			if(da.success){
 				js.msgok('邀请成功');
+				me.userlistarr=false;
 				me.getreceinfor();
 			}else{
 				js.msg('msg',da);
@@ -1146,7 +1180,29 @@ function chatcreate(cans){
 			}
 		});
 	};
-	
+	this.showhuilist=function(){
+		var s = '<div id="showuserlist" style="height:250px;overflow:auto;padding:5px 10px"><div align="center" style="padding:10px;"><img src="images/mloading.gif" align="absmiddle">&nbsp;加载人员...</div></div>';
+		js.tanbody('syscogshow','会话上人员('+this.usershu+')',420,100,{html:s});
+		if(!this.userlistarr){
+			reim.ajax(reim.getapiurl('reim','getgroupuser'),{type:this.type,gid:this.gid},function(ret){
+				me.showusershow(ret.data.uarr);
+			},'get');
+		}else{
+			this.showusershow(this.userlistarr);
+		}
+	};
+	this.showusershow=function(a){
+		this.userlistarr = a;
+		var i,len=a.length,s='',oi=0;
+		s+='<table width="100%"><tr>';
+		for(i=0;i<len;i++){
+			oi++;
+			s+='<td width="20%"><div style="padding:5px" align="center"><div><img style="height:34px;width:34px;border-radius:50%" onclick="$.imgview({url:this.src})" src="'+a[i].face+'"></div><div style="color:#888888">'+a[i].name+'</div></div></td>';
+			if(oi%5==0)s+='</tr><tr>';
+		}
+		s+='</tr></table>';
+		$('#showuserlist').html(s);
+	};
 	this.exitgroups=function(){
 		js.msg('wait','退出中...');
 		reim.ajax(reim.getapiurl('reim','exitgroup'),{gid:this.gid}, function(da){

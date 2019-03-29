@@ -2,8 +2,8 @@
 <script >
 $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
-		tablename:'im_group',where:'and type=2',sort:'sort',dir:'asc',celleditor:true,
-		modenum:'yingyong',storeafteraction:'yingyongafter',modedir:'{mode}:{dir}',
+		tablename:'im_group',where:'and type=2',celleditor:true,
+		modenum:'yingyong',storeafteraction:'yingyongafter',storebeforeaction:'yingyongbefore',modedir:'{mode}:{dir}',
 		columns:[{
 			text:'图标',dataIndex:'face',align:'left',renderer:function(v,d){
 				var s='';
@@ -20,7 +20,7 @@ $(document).ready(function(){
 		},{
 			text:'编号',dataIndex:'num'
 		},{
-			text:'排序号',dataIndex:'sort',editor:true
+			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
 			text:'地址',dataIndex:'url'
 		},{

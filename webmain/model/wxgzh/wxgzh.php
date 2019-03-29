@@ -12,11 +12,11 @@ class wxgzhModel extends Model
 	
 	//发模版消息的
 	protected $URL_tplsend		= 'message/template/send';
+	protected $URL_tplgetlist	= 'template/get_all_private_template';
 	
 
 	
 	public $appid 		= '';
-	public $tplid 		= '';
 	public $optionpid 	= '-4';
 	public $backarr 	= array();
 	protected $secret 	= '';
@@ -49,7 +49,6 @@ class wxgzhModel extends Model
 		$this->appid 	= $this->option->getval('wxgzh_appid');
 		$this->secret	= $this->option->getval('wxgzh_secret');
 		$this->corpid	= $this->option->getval('weixin_corpid');
-		$this->tplid	= $this->option->getval('wxgzh_tplid');
 		return $this->appid;
 	}
 	
@@ -120,9 +119,10 @@ class wxgzhModel extends Model
 	}
 
 	
-	public function setbackarr($code, $msg)
+	public function setbackarr($msg, $code=-1)
 	{
 		$this->backarr	= array('errcode'=>$code, 'msg'=>$msg);
+		return $this->backarr;
 	}
 	
 	public function clearalltoken()

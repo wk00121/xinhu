@@ -30,6 +30,10 @@ class yanzmClassAction extends apiAction
 	public function gloginAction()
 	{
 		$mobile = $this->post('mobile');
+		if(isempt($mobile))return returnerror('手机号不能为空');
+		
+		if($this->rock->isjm($mobile))$mobile = $this->jm->uncrypt($mobile);
+		
 		if(!c('check')->ismobile($mobile))return returnerror('手机号格式有误');
 		
 		$device	= $this->post('device');

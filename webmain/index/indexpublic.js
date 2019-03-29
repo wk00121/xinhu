@@ -549,3 +549,61 @@ function classubscribe(options){
 js.subscribe=function(csns){
 	return new classubscribe(csns);
 }
+
+//自定义导出
+function autoexcelfun(options){
+	var me 		= this;
+	var cans 	= js.apply({'oncallback':function(){},isflow:0,title:'自定义列导出','params':{},objtable:false}, options);
+	for(var a in cans)this[a]=cans[a];
+	this._init=function(){
+		if(!this.objtable){
+			js.msg('msg','没指定一个表格无法导出');
+			return;
+		}
+		var str='<table width="100%"><tr>',i,len=this.fieldsarr.length,d1,sel,oi=0;
+		for(i=0;i<len;i++){
+			d1 = this.fieldsarr[i];
+			if(this.isflow==0){
+				if(d1.fields=='base_name' || d1.fields=='base_deptname')continue;
+			}
+			oi++;
+			sel = '';
+			if(d1.islb==1)sel='checked';
+			str+='<td width="25%" align="left"><label><input name="daochufields" value="'+i+'" '+sel+' type="checkbox">'+d1.name+'</label></td>';
+			if(oi%4==0)str+='</tr><tr>';
+		}
+		str+='</tr></table>';
+		str+='<div><label><input type="checkbox" onclick="js.selall(this,\'daochufields\')">全选</label>&nbsp;&nbsp;&nbsp;导出前&nbsp;<input type="number" class="form-control" id="daolimit" style="width:100px" min="1" value="1000">&nbsp;条记录</div>';
+		js.tanbody('autoexceldao',this.title,520,410,{
+			html:'<div>'+str+'</div>',
+			bodystyle:'padding:10px',
+			btn:[{text:'确定'}]
+		});
+		$('#autoexceldao_btn0').click(function(){
+			me.okdaochu();
+		});
+	}
+	this.okdaochu=function(){
+		var did = js.getchecked('daochufields');
+		if(did==''){
+			js.msg('msg','至少要选择一个列');
+			return;
+		}
+		var dida = did.split(','),i,d1,str1='',str2='';
+		for(i=0;i<dida.length;i++){
+			d1 = this.fieldsarr[dida[i]];
+			str1+=','+d1.name+'';
+			str2+=','+d1.fields+'';
+		}
+		str1 = str1.substr(1);
+		str2 = str2.substr(1);
+		this.objtable.exceldown('',2, {
+			'page':1,
+			'limit':get('daolimit').value,
+			'excelfields':str2,
+			'excelheader':str1
+		});
+		js.tanclose('autoexceldao');
+	}
+	this._init();
+}

@@ -148,10 +148,10 @@
 			}
 		};
 		this._showuser=function(pid,s1,type,sel){
-			var a,len,i,ssu='',dids;
+			var a,len,i,ssu='',dids,zoi=0,ids;
 			a=this.userarr;
 			len=a.length;
-			for(i=0;i<len && i<200;i++){
+			for(i=0;i<len;i++){
 				dids = ','+a[i].deptids+',';
 				if(
 				((a[i].deptid==pid || dids.indexOf(','+pid+',')>-1 || sel=='1') && sel!='3')
@@ -159,8 +159,10 @@
 				(sel=='3' && (','+a[i].groupname+',').indexOf(','+pid+',')>-1)//显示组下人员
 				){
 					ssu+='<div class="listsss">';
-						ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'"  xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
-						ssu+='</div>';
+					ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'" xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
+					ssu+='</div>';
+					zoi++;
+					if(zoi>=200)break;//最多显示200人，其他用搜索
 				}
 			}
 			return ssu;

@@ -83,7 +83,7 @@ class fileClassModel extends Model
 		if(!$rs)return $fstr;
 		$str = $this->rock->jm->strrocktoken(array('a'=>'down','id'=>$rs['id']));
 		$url = ''.URL.'index.php?rocktoken='.$str.'';
-		$str = 'href="'.$url.'" target="_blank"';
+		$str = 'href="'.$url.'"';
 		$ext   = $rs['fileext'];
 		$isimg= $this->isimg($ext);
 		$strd= $str;

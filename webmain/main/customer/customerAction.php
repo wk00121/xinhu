@@ -113,7 +113,7 @@ class customerClassAction extends Action
 	//分配客户
 	public function distcustAjax()
 	{
-		$sid 	= $this->post('sid','0');
+		$sid 	= c('check')->onlynumber($this->post('sid','0'));
 		$sname 	= $this->post('sname');
 		$snid 	= $this->post('snid');
 		$lx 	= $this->post('lx');

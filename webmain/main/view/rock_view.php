@@ -11,8 +11,8 @@ $(document).ready(function(){
 			text:'模块',dataIndex:'modename',sortable:true
 		},{
 			text:'类型',dataIndex:'type',sortable:true,renderer:function(oi){
-				var as=['查看','添加','编辑','删除','导入','导出'];
-				return '可'+as[oi]+'';
+				var as=['可查看','可添加','可编辑','可删除','可导入','可导出','禁看字段'];
+				return ''+as[oi]+'';
 			}
 		},{
 			text:'条件',dataIndex:'whereid'

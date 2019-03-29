@@ -7,10 +7,43 @@ class flow_meetClassModel extends flowModel
 		$this->hyarra 	= array('正常','会议中','结束','取消');
 		$this->hyarrb 	= array('green','blue','#ff6600','#888888');
 		$this->dbobj	= c('date');
+		
+		$this->reatearr = array(
+			'd' => '每天',
+			'w1' => '每周一',
+			'w2' => '每周二',
+			'w3' => '每周三',
+			'w4' => '每周四',
+			'w5' => '每周五',
+			'w6' => '每周六',
+			'w7' => '每周日',
+			'm' => '每月',
+			'y' => '每年',
+		);
+	}
+	
+	public function getratestore()
+	{
+		$arr = array();
+		foreach($this->reatearr as $k=>$v)$arr[] = array(
+			'value' => $k,
+			'name' => $v
+		);
+		return $arr;
 	}
 	
 	public function flowrsreplace($rs, $lx=0)
 	{
+		if(arrvalue($rs, 'type')=='1'){
+			$ztrs = '<font color=green>启用</font>';
+			if($rs['status']=='0'){
+				$ztrs = '<font color=#888888>停用</font>';
+				$rs['ishui']=1;
+			}
+			if(!isempt($rs['rate']))$ztrs.=','.arrvalue($this->reatearr,$rs['rate']).''; //转未汉字
+			$rs['state'] = $ztrs;
+			return $rs;//说明是固定会议
+		}
 		$rs['week']  = $this->dbobj->cnweek($rs['startdt']);
 		$zt 		 = $rs['state'];
 		$nzt 		 = $zt;
@@ -78,6 +111,10 @@ class flow_meetClassModel extends flowModel
 		if($this->rs['status']==1){
 			$this->tisongtodo();
 		}
+		//固定会议
+		if($this->rs['type']=='1'){
+			$this->createmeet($this->id);
+		}
 	}
 	
 	//审核完成后发通知
@@ -88,10 +125,12 @@ class flow_meetClassModel extends flowModel
 	
 	private function tisongtodo()
 	{
+		if($this->rs['type']!='0')return;//这个是普通会议才需要通知。
 		//$cont  = '{optname}发起会议预定从{startdt}→{enddt},在{hyname},主题:{title}';
 		//$start = date('Y年m月d日H:s',strtotime($this->rs['startdt']));
 		//$end = date('Y年m月d日H:s',strtotime($this->rs['enddt']));
 		//$end = $this->dbobj->stringdt($this->rs['enddt']);
+		if($this->rs['startdt'] < $this->rock->now)return;//已过期了
 		$cont  = '{optname}发起会议“{title}”在{hyname}，时间{startdt}至{enddt}';
 		$this->push($this->rs['joinid'], '会议', $cont);
 		
@@ -143,12 +182,60 @@ class flow_meetClassModel extends flowModel
 	{
 		$dt 	= $this->rock->post('dt');
 		$where 	= '';
+		//固定会议
+		if($lx=='allgd'){
+			$where 	= 'and `type`=1';
+		}else{
+			$where 	= 'and `type`=0';
+		}
 		if($dt!='')$where.=" and startdt like '$dt%'";
-		$fields	= 'id,startdt,enddt,optname,state,title,hyname,joinname,`explain`,jyname';
+		//$fields	= 'id,startdt,enddt,optname,state,title,hyname,joinname,`explain`,jyname';
 		return array(
-			'fields' => $fields,
+			//'fields' => $fields,
 			'where'	 => $where,
 			'order' => 'startdt desc'
 		);
+	}
+	
+	
+	//每天运行计划任务将固定会议生成普通会议通知对应人
+	public function createmeet($id=0)
+	{
+		$owhe 	= '';
+		if($id>0)$owhe='`id`='.$id.' and ';
+		$narr 	= $this->getall(''.$owhe.'`type`=1 and `status`=1');
+		$dtobj	= c('date');
+		foreach($narr as $k=>$rs){
+			$gdt = $dtobj->daterate($rs['rate'], $rs['startdt']);
+			if(!$gdt)continue;
+			$startdt = ''.$gdt.' '.substr($rs['startdt'],11).'';
+			$enddt 	 = ''.$gdt.' '.substr($rs['enddt'],11).'';
+			
+			$ars 	 = $rs;
+			$ars['mid'] = $rs['id'];
+			$ars['type'] = '0';
+			$ars['startdt'] = $startdt;
+			$ars['enddt'] = $enddt;
+			$ars['state'] = 0;
+			$ars['rate'] = '';
+			unset($ars['id']);
+			
+			$where = "`mid`=".$rs['id']." and `startdt` like '".$gdt."%'";
+			$ors 	= $this->getone($where);
+			$uwerew = '';
+			$iid 	= 0;
+			if($ors){
+				$iid	= $ors['id'];
+				$uwerew = "`id`='$iid'";
+			}
+			$this->record($ars, $uwerew);
+			
+			
+			if($iid==0){
+				$iid = $this->db->insert_id();
+				$this->loaddata($iid, false);
+				$this->tisongtodo();//通知
+			}
+		}
 	}
 }
