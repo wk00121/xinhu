@@ -96,7 +96,7 @@ class wxgzhClassAction extends Action
 		$urs  = m('wouser')->getone("`openid`='$openid'");
 		if(!$urs)return returnerror('没有找到此授权的微信人');
 		
-		$barr = m('wxgzh:index')->sendtpl($openid, $id, array(),'', true);
+		$barr = m('wxgzh:index')->sendtpl($openid, $id, array(), true);
 		if($barr['errcode']!=0)return returnerror($barr['errcode'].'.'.$barr['msg']);
 		
 		return returnsuccess();

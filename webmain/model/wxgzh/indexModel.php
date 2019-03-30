@@ -45,7 +45,7 @@ class wxgzh_indexClassModel extends wxgzhModel
 	*	发模版消息
 	*/
 	private $tplidarr = array();
-	public function sendtpl($openid, $tplid, $params=array(),$url='',$istest=false)
+	public function sendtpl($openid, $tplid, $params=array(),$istest=false)
 	{
 		if(isset($this->tplidarr[$tplid])){
 			$tpidrs = $this->tplidarr[$tplid];
@@ -77,7 +77,8 @@ class wxgzh_indexClassModel extends wxgzhModel
 		foreach($modefar as $fid=>$fv){
 			$modeparams = str_replace('{'.$fid.'}', arrvalue($params, $fid), $modeparams);
 		}
-
+		
+		$url  = arrvalue($params, 'url');
 		$body = '{
            "touser":"'.$openid.'",
            "template_id":"'.$template_id.'",

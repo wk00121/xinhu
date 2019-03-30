@@ -84,8 +84,7 @@
 		});
 	}catch(e){}
 	
-	//开启js异步队列
-	try{queue.start();}catch(e){console.error('无法使用js队列');}
+
 	var dsa = [];
 	$('#topmenudiv span[pmenuid]').each(function(){
 		dsa.push({name:$(this).html(),objs:this});

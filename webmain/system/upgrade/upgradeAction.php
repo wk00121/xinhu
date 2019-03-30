@@ -54,6 +54,7 @@ class upgradeClassAction extends Action
 	{
 		$id 	= $this->post('id');
 		$key 	= $this->post('key');
+		if(!isempt($key) && $this->rock->isjm($key))$key = $this->jm->uncrypt($key);
 		$barr	= c('xinhu')->getdata('getinstallfile',array('id'=>$id,'sysnum'=>$this->keyss,'key'=>$key));
 		if($barr['code']!=200)showreturn('',$barr['msg'],201);
 		$data 	= $barr['data'];
@@ -145,6 +146,7 @@ class upgradeClassAction extends Action
 		$mid 	= (int)$this->post('id');
 		$fileid	= (int)$this->post('fileid');
 		$key 	= $this->post('key');
+		if(!isempt($key) && $this->rock->isjm($key))$key = $this->jm->uncrypt($key);
 		$oi 	= $this->post('oii');
 		$len 	= $this->post('lens');
 		$updatedt = $this->post('updatedt');

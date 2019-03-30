@@ -110,7 +110,6 @@ $(document).ready(function(){
 			}
 			js.prompt('模块安装','安装key(免费模块可不输入,直接点确定)',function(lxbd,msg){
 				if(lxbd=='yes'){
-					if(lx==2&&msg)msg=jm.uncrypt(msg);
 					c.upsho(lx,id,msg, 0);
 				}
 			},kes);

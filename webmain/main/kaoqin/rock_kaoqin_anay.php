@@ -39,25 +39,13 @@ $(document).ready(function(){
 				js.msg('msg','请选择月份');
 				return;
 			}
-			js.wait('['+dt+']月份的考勤分析中(<span id="fenxijindu">0%</span>)...');
+			
 			js.ajax(js.getajaxurl('kqanayallinit','{mode}','{dir}'),{dt:dt},function(ret){
-				var oi=0,zong=ret.maxpage,i,cans;
+				var oi=0,zong=ret.maxpage,i,cans,dar=[];
 				for(i=1;i<=zong;i++){
-					cans = {
-						url:js.getajaxurl('kqanayallpage','{mode}','{dir}',{dt:dt,page:i}),
-						success:function(str){
-							oi++;
-							var bili = (oi/zong)*100;
-							$('#fenxijindu').html(''+bili+'%');
-							if(bili==100){
-								js.msg('success','分析完成');
-								a.reload();
-								js.tanclose('confirm')
-							}
-						}
-					}
-					queue.add(cans);
+					dar.push(js.getajaxurl('kqanayallpage','{mode}','{dir}',{dt:dt,page:i}));
 				}
+				queue.addlist(dar,function(){a.reload();},'['+dt+']月份的考勤分析');
 			},'get,json');
 		},
 		xqkaoqb:function(){

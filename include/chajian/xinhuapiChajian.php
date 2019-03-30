@@ -116,8 +116,12 @@ class xinhuapiChajian extends Chajian{
 	public function sendsms($receid, $qiannum, $tplnum, $params=array(), $url='', $addlog=true, $isyb=true)
 	{
 		if(isempt($receid))return returnerror('没有接收人');
-		$tomobile = m('admin')->getjoinfields($receid, 'mobile');
-		
+		$receda = explode(',', $receid);
+		if(c('check')->iscnmobile($receda[0])){
+			$tomobile = $receid;
+		}else{
+			$tomobile = m('admin')->getjoinfields($receid, 'mobile');
+		}
 		if(isempt($tomobile))return returnerror('接收人['.$receid.']可能没设置手机号');
 		
 		$toama 	= explode(',', $tomobile);

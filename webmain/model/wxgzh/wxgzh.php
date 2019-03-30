@@ -66,6 +66,19 @@ class wxgzhModel extends Model
 		return $is;
 	}
 	
+	/**
+	*	是否有设置微信公众号
+	*/
+	public function issetwxgzh()
+	{
+		$str = $this->option->getval('wxgzh_token');
+		if($str){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 	//获取token
 	public function gettoken()
 	{
