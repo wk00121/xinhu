@@ -25,7 +25,8 @@ class homeitemsClassModel extends Model
 				$barr[''.$num.'arr'] = $this->$act();
 			}
 		}
-		if(in_array('kjrk', $numarr))$barr['total'] = $this->gettotals($this->adminid); //有快捷方式才显示
+		if(in_array('kjrk', $numarr) || in_array('kjrko', $numarr))
+			$barr['total'] = $this->gettotals($this->adminid); //有快捷方式才显示
 		return $barr;
 	}
 	

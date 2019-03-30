@@ -10,8 +10,14 @@ var todocontent = '',homeobject={},homenums=<?=json_encode($homearrs)?>;
 
 <div style="padding:10px">
 
-<div align="left">
+<?php
+if(in_array('kjrko',$homearrs)){
+	$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_kjrko.php';
+	if(file_exists($paths))include_once($paths);
+}
+?>
 
+<div align="left">
 	<table  border="0" width="100%" cellspacing="0" cellpadding="0">
 	<tr valign="top">
 		
@@ -62,6 +68,9 @@ $(document).ready(function(){
 			js.ajax(url,{},function(da){
 				c.gettotalshow(da);
 			},'get,json');
+			homeobject.refresh=function(){
+				c.refresh();
+			};
 		},
 		//初始化
 		init:function(){

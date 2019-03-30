@@ -30,6 +30,14 @@ class wxgzh_indexClassModel extends wxgzhModel
 				'summary'	=> '请假时间2019-03-26的9时到18共8小时'
 			),
 		);
+		$xhtype = getconfig('xinhutype');
+		if(!isempt($xhtype)){
+			$obj = m($xhtype);
+			if(method_exists($obj, 'getwxgzhtpl')){
+				$narr = $obj->getwxgzhtpl();
+				if(is_array($narr))foreach($narr as $k=>$rs1)$barr[]=$rs1;
+			}
+		}
 		return $barr;
 	}
 	
