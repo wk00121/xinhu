@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50610
 File Encoding         : 65001
 
-Date: 2019-03-30 09:22:11
+Date: 2019-04-11 09:30:26
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -68,14 +68,14 @@ CREATE TABLE `xinhu_admin` (
 -- ----------------------------
 -- Records of xinhu_admin
 -- ----------------------------
-INSERT INTO `xinhu_admin` VALUES ('1', 'A001', 'admin', '管理员', 'e10adc3949ba59abbe56e057f20f883e', '2767', '1', '1', '男', '0592-1234569', 'upload/face/1.jpg', '2', '开发部', '3', '财务部', '财务总监', '信呼开发团队/开发部', '5', '磐石', '项目主管', '1', '[1],[2],[3]', '[5]', '1,3', '15800000023', '1', '2016-06-01', null, '2017-03-08 09:52:30', null, null, null, '0', 'guanliyuan', null, '1', '0', null, '1', null);
+INSERT INTO `xinhu_admin` VALUES ('1', 'A001', 'admin', '管理员', 'e10adc3949ba59abbe56e057f20f883e', '2782', '1', '1', '男', '0592-1234569', 'upload/face/1.jpg', '2', '开发部', '3', '财务部', '财务总监', '信呼开发团队/开发部', '5', '磐石', '项目主管', '1', '[1],[2],[3]', '[5]', '1,3,4', '15800000023', '1', '2016-06-01', null, '2017-03-08 09:52:30', null, null, null, '0', 'guanliyuan', null, '1', '0', null, '1', null);
 INSERT INTO `xinhu_admin` VALUES ('2', null, 'diaochan', '貂蝉', 'e10adc3949ba59abbe56e057f20f883e', '94', '1', '0', '女', '0592-123456', 'upload/face/2.jpg', '3', '财务部', null, null, null, '信呼开发团队/财务部', '5', '磐石', '财务总监', '1', '[1],[3]', '[5]', '1,3', '15800000007', '1', '2016-08-09', null, null, null, null, null, '0', 'diaochan', null, '2', '0', null, '1', null);
 INSERT INTO `xinhu_admin` VALUES ('3', null, 'xiaoqiao', '小乔', 'e10adc3949ba59abbe56e057f20f883e', '164', '1', '0', '女', null, 'upload/face/3.jpg', '3', '财务部', null, null, null, '信呼开发团队/财务部', '2', '貂蝉', '出纳', '1', '[1],[3]', '[5],[2]', '1', '15800000001', '1', '2017-05-02', null, '2016-08-30 20:34:23', null, null, null, '0', 'xiaoqiao', null, '2', '0', null, '1', null);
 INSERT INTO `xinhu_admin` VALUES ('4', null, 'daqiao', '大乔', 'e10adc3949ba59abbe56e057f20f883e', '243', '1', '0', '女', null, 'upload/face/4.jpg', '4', '行政人事部', null, null, null, '信呼开发团队/行政人事部', '5', '磐石', '人事主管', '1', '[1],[4]', '[5]', '1,3', '15800000002', '1', '2017-07-01', null, '2016-10-20 22:27:51', null, null, null, '0', 'daqiao', null, '2', '0', null, '1', null);
 INSERT INTO `xinhu_admin` VALUES ('5', null, 'rock', '磐石', 'e10adc3949ba59abbe56e057f20f883e', '273', '1', '0', '男', null, 'upload/face/5.jpg', '5', '管理层', null, null, null, '信呼开发团队/管理层', null, null, '董事长', '0', '[1],[5]', null, '2,3', '15800000003', '1', '2015-11-01', null, null, null, null, null, '0', 'panshi', null, '1', '0', null, '1', null);
 INSERT INTO `xinhu_admin` VALUES ('6', null, 'zhangfei', '张飞', 'e10adc3949ba59abbe56e057f20f883e', '90', '1', '0', '男', null, 'upload/face/6.jpg', '2', '开发部', null, null, null, '信呼开发团队/开发部', '1', '管理员', '程序员', '100', '[1],[2]', '[5],[1]', '1', '15800000004', '1', '2017-07-01', null, '2016-11-01 20:15:52', null, null, null, '0', 'zhangfei', null, '1', '0', null, '1', null);
-INSERT INTO `xinhu_admin` VALUES ('7', null, 'zhaozl', '赵子龙', 'e10adc3949ba59abbe56e057f20f883e', '80', '1', '0', '男', null, 'upload/face/7.jpg', '2', '开发部', null, null, null, '信呼开发团队/开发部', '1', '管理员', '高级程序员', '100', '[1],[2]', '[5],[1]', '1', '15800000005', '1', '2016-07-01', null, '2017-06-28 15:34:26', null, null, null, '0', 'zhaozilong', null, '1', '0', null, '1', null);
-INSERT INTO `xinhu_admin` VALUES ('8', null, 'xinhu', '信呼客服', '6846860684f05029abccc09a53cd66f1', '325', '1', '1', '男', null, 'upload/face/8.jpg', '2', '开发部', null, null, null, '信呼开发团队/开发部', '1', '管理员', '客服', '200', '[1],[2]', '[5],[1]', '1', '15800000006', '1', '2018-12-12', null, null, null, 'rainrock829', null, '2', 'xinhukefu', null, '1', '0', null, '1', null);
+INSERT INTO `xinhu_admin` VALUES ('7', null, 'zhaozl', '赵子龙', 'e10adc3949ba59abbe56e057f20f883e', '81', '1', '0', '男', null, 'upload/face/7.jpg', '2', '开发部', null, null, null, '信呼开发团队/开发部', '1', '管理员', '高级程序员', '100', '[1],[2]', '[5],[1]', '1', '15800000005', '1', '2016-07-01', null, '2017-06-28 15:34:26', null, null, null, '0', 'zhaozilong', null, '1', '0', null, '1', null);
+INSERT INTO `xinhu_admin` VALUES ('8', null, 'xinhu', '信呼客服', '6846860684f05029abccc09a53cd66f1', '325', '1', '1', '男', null, 'upload/face/8.jpg', '2', '开发部', null, null, null, '信呼开发团队/开发部', '1', '管理员', '客服', '200', '[1],[2]', '[5],[1]', '1,4', '15800000006', '1', '2018-12-12', null, null, null, 'rainrock829', null, '2', 'xinhukefu', null, '1', '0', null, '1', null);
 
 -- ----------------------------
 -- Table structure for `xinhu_assetm`
@@ -334,8 +334,8 @@ CREATE TABLE `xinhu_chargems` (
 -- ----------------------------
 -- Records of xinhu_chargems
 -- ----------------------------
-INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2019-03-30 09:21:28', null, '1');
-INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2019-03-30 09:21:28', null, '0');
+INSERT INTO `xinhu_chargems` VALUES ('1', '0', '1', '2016-12-28 15:24:19', '2019-04-11 09:30:07', null, '1');
+INSERT INTO `xinhu_chargems` VALUES ('2', '1', '1', '2016-12-28 15:21:14', '2019-04-11 09:30:07', null, '0');
 
 -- ----------------------------
 -- Table structure for `xinhu_city`
@@ -886,8 +886,8 @@ CREATE TABLE `xinhu_file` (
 -- ----------------------------
 INSERT INTO `xinhu_file` VALUES ('1', null, '1', '系统logo.png', null, 'png', '2000', '2.36 KB', 'images/logo.png', 'images/logo.png', '1', '管理员', '2016-11-23 22:26:21', '127.0.0.1', 'Chrome', 'word', '1', '9', '0', null, '0', null);
 INSERT INTO `xinhu_file` VALUES ('2', null, '1', 'daiban.png', null, 'png', '2000', '2.21 KB', 'images/daiban.png', 'images/daiban.png', '1', '管理员', '2016-11-23 22:26:26', '127.0.0.1', 'Chrome', 'word', '2', '9', '0', null, '0', null);
-INSERT INTO `xinhu_file` VALUES ('3', null, '1', '信呼开发团队介绍.pptx', 'application/msword', 'pptx', '37837', '36.95 KB', 'http://www.rockoa.com/upload/upgfile/xinhuppt.pptx', null, '1', '管理员', '2019-03-09 19:20:41', '127.0.0.1', 'Chrome', 'wordxie', '1', '2', null, '', '0', 'wordxie');
-INSERT INTO `xinhu_file` VALUES ('4', null, '1', '信呼使用文档.docx', 'application/msword', 'docx', '1000', '10KB', 'http://www.rockoa.com/upload/upgfile/xinhuuse.docx', null, '1', '管理员', '2019-03-09 20:45:33', '127.0.0.1', 'Chrome', 'wordxie', '2', '0', null, 'upload/2019-03/09_21041330_temp.pdf', '0', 'wordxie');
+INSERT INTO `xinhu_file` VALUES ('3', null, '1', '信呼开发团队介绍.pptx', 'application/msword', 'pptx', '37837', '36.95 KB', 'http://www.rockoa.com/upload/upgfile/xinhuppt.pptx', null, '1', '管理员', '2019-03-09 19:20:41', '127.0.0.1', 'Chrome', 'wordxie', '1', '3', null, '', '0', 'wordxie');
+INSERT INTO `xinhu_file` VALUES ('4', null, '1', '信呼使用文档.docx', 'application/msword', 'docx', '1000', '10KB', 'http://www.rockoa.com/upload/upgfile/xinhuuse.docx', null, '1', '管理员', '2019-03-09 20:45:33', '127.0.0.1', 'Chrome', 'wordxie', '2', '1', null, 'upload/2019-03/09_21041330_temp.pdf', '0', 'wordxie');
 
 -- ----------------------------
 -- Table structure for `xinhu_files`
@@ -2266,7 +2266,7 @@ CREATE TABLE `xinhu_flow_extent` (
   `fieldstr` varchar(500) DEFAULT NULL COMMENT '相关字段',
   PRIMARY KEY (`id`),
   KEY `modeid` (`modeid`)
-) ENGINE=MyISAM AUTO_INCREMENT=213 DEFAULT CHARSET=utf8 COMMENT='模块权限';
+) ENGINE=MyISAM AUTO_INCREMENT=215 DEFAULT CHARSET=utf8 COMMENT='模块权限';
 
 -- ----------------------------
 -- Records of xinhu_flow_extent
@@ -2468,6 +2468,8 @@ INSERT INTO `xinhu_flow_extent` VALUES ('208', '管理员', 'u1', '2', '2', 'YHR
 INSERT INTO `xinhu_flow_extent` VALUES ('209', '管理员', 'u1', '2', '3', 'YHR5cGVgPTEg', null, '1', '0', null);
 INSERT INTO `xinhu_flow_extent` VALUES ('210', '管理员', 'u1', '29', '5', null, null, '1', '0', null);
 INSERT INTO `xinhu_flow_extent` VALUES ('211', '全体人员', 'all', '10', '6', 'MT0x', null, '0', '0', 'workdate,mobile,tel,email');
+INSERT INTO `xinhu_flow_extent` VALUES ('213', '管理员组', 'g4', '11', '5', null, null, '1', '0', null);
+INSERT INTO `xinhu_flow_extent` VALUES ('214', '管理员组', 'g4', '34', '5', null, null, '1', '0', null);
 
 -- ----------------------------
 -- Table structure for `xinhu_flow_log`
@@ -2495,7 +2497,7 @@ CREATE TABLE `xinhu_flow_log` (
   `iszb` tinyint(1) DEFAULT '0' COMMENT '是否转办记录',
   PRIMARY KEY (`id`),
   KEY `table` (`table`,`mid`)
-) ENGINE=MyISAM AUTO_INCREMENT=1952 DEFAULT CHARSET=utf8 COMMENT='单据操作记录';
+) ENGINE=MyISAM AUTO_INCREMENT=1953 DEFAULT CHARSET=utf8 COMMENT='单据操作记录';
 
 -- ----------------------------
 -- Records of xinhu_flow_log
@@ -2590,12 +2592,7 @@ INSERT INTO `xinhu_flow_log` VALUES ('453', 'vcard', '3', '1', null, '提交', '
 INSERT INTO `xinhu_flow_log` VALUES ('456', 'vcard', '4', '1', null, '提交', '0', '2016-12-20 11:31:21', null, '127.0.0.1', 'Chrome', '信呼客服', '8', '53', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('461', 'vcard', '5', '1', null, '提交', '0', '2016-12-21 14:36:17', null, '127.0.0.1', 'Chrome', '管理员', '1', '53', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('490', 'daily', '16', '1', null, '提交', '0', '2017-01-06 09:17:15', null, '127.0.0.1', 'Firefox', '管理员', '1', '3', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('532', 'meet', '5', '6', '签到', '签到', '0', '2017-02-28 10:36:02', '我来了', '127.0.0.1', 'Chrome', '管理员', '1', '2', 'blue', '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('533', 'meet', '5', '6', '签到', '签到', '0', '2017-02-28 10:38:27', null, '192.168.1.152', 'Chrome', '管理员', '1', '2', 'blue', '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('534', 'meet', '6', '1', null, '提交', '0', '2017-02-28 11:38:44', null, '127.0.0.1', 'Chrome', '管理员', '1', '54', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('500', 'daily', '17', '1', null, '提交', '0', '2017-02-10 16:20:46', null, '127.0.0.1', 'Chrome', '张飞', '6', '3', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('535', 'meet', '7', '1', null, '提交', '0', '2017-02-28 12:36:58', null, '127.0.0.1', 'Chrome', '管理员', '1', '54', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('536', 'meet', '8', '1', null, '提交', '0', '2017-02-28 12:53:47', null, '127.0.0.1', 'Chrome', '管理员', '1', '54', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('503', 'work', '9', '1', null, '提交', '0', '2017-02-13 10:53:58', null, '127.0.0.1', 'Chrome', '管理员', '1', '4', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('504', 'work', '9', '2', '执行中', '进度报告', '0', '2017-02-13 11:06:09', '攻城中', '127.0.0.1', 'Chrome', '张飞', '6', '4', 'orange', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('506', 'customer', '1', '1', null, '共享给', '0', '2017-02-15 14:56:50', '共享给:管理员', '127.0.0.1', 'Chrome', '管理员', '1', '7', null, '1', '0', null, '0');
@@ -2604,10 +2601,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('508', 'customer', '1', '1', null, '取消�
 INSERT INTO `xinhu_flow_log` VALUES ('537', 'kqout', '2', '1', '同意', '上级审核', '5', '2017-02-28 13:13:38', '好的', '127.0.0.1', 'Chrome', '管理员', '1', '23', 'green', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1594', 'hrsalarm', '4', '1', null, '提交', '0', '2018-09-19 21:56:17', null, '127.0.0.1', 'Chrome', '管理员', '1', '83', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1549', 'kqinfo', '134', '1', null, '提交', '0', '2018-09-07 09:35:54', null, '127.0.0.1', 'Chrome', '管理员', '1', '30', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('524', 'meet', '5', '1', null, '提交', '0', '2017-02-28 09:30:59', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('529', 'meet', '5', '0', null, '签到', '0', '2017-02-28 10:31:28', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('530', 'meet', '5', '0', null, '签到', '0', '2017-02-28 10:32:43', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', 'blue', '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('531', 'meet', '5', '0', '签到', '签到', '0', '2017-02-28 10:33:07', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', 'blue', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('561', 'fininfom', '8', '1', '同意', '上级审批', '0', '2017-03-08 09:51:28', null, '192.168.1.63', 'Chrome', '磐石', '5', '11', 'green', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('562', 'fininfom', '8', '1', null, '撤回', '0', '2017-03-08 09:51:44', null, '192.168.1.63', 'Chrome', '磐石', '5', '11', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('563', 'fininfom', '8', '2', '不同意', '上级审批', '7', '2017-03-08 09:52:30', 'lalal', '192.168.1.63', 'Chrome', '磐石', '5', '11', 'red', '1', '0', null, '0');
@@ -2633,7 +2626,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('641', 'sealapl', '2', '1', '同意', '保�
 INSERT INTO `xinhu_flow_log` VALUES ('642', 'sealapl', '2', '1', '已盖章', '申请人确认', '43', '2017-03-24 16:42:59', null, '127.0.0.1', 'Chrome', '管理员', '1', '49', null, '1', '3', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('662', 'meet', '9', '1', null, '提交', '0', '2017-04-11 09:07:15', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('663', 'meet', '10', '1', null, '提交', '0', '2017-04-11 09:18:59', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('664', 'meet', '11', '1', null, '提交', '0', '2017-04-11 12:15:45', null, '127.0.0.1', 'Chrome', '管理员', '1', '54', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('922', 'kqinfo', '14', '1', null, '短信催办', '0', '2017-08-02 16:06:32', 'weew', '127.0.0.1', 'Chrome', '管理员', '1', '5', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1394', 'project', '3', '0', null, '更新进度', '0', '2018-07-07 09:18:53', null, '127.0.0.1', 'Chrome', '管理员', '1', '22', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('667', 'project', '3', '1', null, '提交', '0', '2017-04-13 11:59:43', null, '127.0.0.1', 'Chrome', '管理员', '1', '22', null, '1', '0', null, '0');
@@ -2647,7 +2639,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('1823', 'kqout', '4', '1', '同意', '上�
 INSERT INTO `xinhu_flow_log` VALUES ('685', 'goods', '3', '1', null, '提交', '0', '2017-05-02 13:35:05', null, '127.0.0.1', 'Chrome', '管理员', '1', '9', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('697', 'fininfom', '9', '1', null, '提交', '0', '2017-05-08 19:35:20', null, '127.0.0.1', 'Chrome', '大乔', '4', '11', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('698', 'daily', '18', '1', null, '提交', '0', '2017-05-09 14:20:31', null, '127.0.0.1', 'Chrome', '管理员', '1', '3', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('700', 'knowtiku', '4', '1', null, '提交', '0', '2017-05-09 20:08:51', null, '127.0.0.1', 'Chrome', '管理员', '1', '43', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('707', 'daily', '19', '1', null, '提交', '0', '2017-05-16 20:09:02', null, '127.0.0.1', 'Chrome', '管理员', '1', '3', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('708', 'knowtraim', '1', '1', null, '提交', '0', '2017-05-16 20:35:12', null, '127.0.0.1', 'Chrome', '管理员', '1', '56', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('723', 'kqinfo', '15', '1', null, '提交', '0', '2017-05-18 12:11:37', null, '127.0.0.1', 'Safari', '管理员', '1', '6', null, '1', '0', null, '0');
@@ -2689,7 +2680,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('865', 'company', '3', '1', null, '提交',
 INSERT INTO `xinhu_flow_log` VALUES ('866', 'company', '4', '1', null, '提交', '0', '2017-07-08 14:46:21', null, '127.0.0.1', 'Chrome', '管理员', '1', '63', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('898', 'admin', '2', '0', null, '设置为管理员', '0', '2017-07-08 22:20:34', null, '127.0.0.1', 'Chrome', '管理员', '1', '10', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('900', 'admin', '2', '0', null, '取消管理员', '0', '2017-07-08 22:28:50', null, '127.0.0.1', 'Chrome', '管理员', '1', '10', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('902', 'meet', '12', '1', null, '提交', '0', '2017-07-18 10:58:50', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('906', 'daily', '20', '1', null, '提交', '0', '2017-07-24 09:04:03', null, '127.0.0.1', 'Chrome', '管理员', '1', '3', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('923', 'kqinfo', '14', '1', null, '短信催办', '0', '2017-08-02 16:31:16', 'hahaha', '127.0.0.1', 'Chrome', '管理员', '1', '5', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('924', 'kqinfo', '14', '1', null, '追加说明', '0', '2017-08-02 16:51:30', '不错啊', '127.0.0.1', 'Chrome', '管理员', '1', '5', null, '1', '0', null, '0');
@@ -2719,7 +2709,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('1038', 'flow_remind', '7', '1', null, '提
 INSERT INTO `xinhu_flow_log` VALUES ('1046', 'infor', '9', '1', null, '投票', '0', '2017-09-04 20:32:25', null, '::1', 'Chrome', '大乔', '4', '1', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1045', 'flow_remind', '8', '1', null, '提交', '0', '2017-09-03 20:12:00', null, '127.0.0.1', 'Chrome', '管理员', '1', '61', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1073', 'daily', '21', '1', null, '提交', '0', '2017-09-24 10:54:01', null, '::1', 'Chrome', '赵子龙', '7', '3', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1076', 'meet', '1', '1', null, '提交', '0', '2017-09-24 14:48:44', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1789', 'fininfom', '12', '1', null, '催办', '0', '2018-11-02 18:08:51', '嗯嗯额', '127.0.0.1', 'Chrome', '管理员', '1', '65', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1772', 'official', '2', '1', null, '提交', '0', '2018-10-27 19:23:00', null, '127.0.0.1', 'Chrome', '管理员', '1', '20', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1586', 'hrsalarm', '3', '1', null, '提交', '0', '2018-09-18 22:24:14', null, '127.0.0.1', 'Chrome', '管理员', '1', '83', null, '1', '0', null, '0');
@@ -2796,8 +2785,6 @@ INSERT INTO `xinhu_flow_log` VALUES ('1483', 'kqinfo', '104', '1', null, '保存
 INSERT INTO `xinhu_flow_log` VALUES ('1510', 'assetm', '6', '1', '维修', '维修登记', '0', '2018-08-29 18:58:03', 'e', '127.0.0.1', 'Chrome', '管理员', '1', '41', 'gray', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1509', 'assetm', '1', '1', '归还', '归还登记', '0', '2018-08-29 18:57:56', null, '127.0.0.1', 'Chrome', '管理员', '1', '41', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1508', 'assetm', '1', '1', '领用', '领用登记', '0', '2018-08-29 18:50:50', '好了', '127.0.0.1', 'Chrome', '管理员', '1', '41', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1497', 'meet', '2', '1', null, '提交', '0', '2018-08-24 20:40:50', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1498', 'meet', '3', '1', null, '提交', '0', '2018-08-24 20:41:18', null, '127.0.0.1', 'Chrome', '管理员', '1', '54', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1456', 'kqinfo', '103', '1', '同意', '上级审核', '1', '2018-07-28 21:55:39', null, '::1', 'Chrome', '貂蝉', '2', '5', 'green', '1', '1', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1455', 'kqinfo', '110', '1', '同意', '上级审核', '1', '2018-07-28 21:55:32', null, '::1', 'Chrome', '貂蝉', '2', '5', 'green', '1', '1', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1477', 'kqinfo', '104', '1', null, '保存', '0', '2018-08-19 23:40:34', null, '127.0.0.1', 'Chrome', '管理员', '1', '6', null, '1', '0', null, '0');
@@ -2868,14 +2855,8 @@ INSERT INTO `xinhu_flow_log` VALUES ('1863', 'kqinfo', '142', '1', '同意', '�
 INSERT INTO `xinhu_flow_log` VALUES ('1708', 'hrsalary', '16', '1', null, '提交', '0', '2018-10-09 19:38:14', null, '127.0.0.1', 'Chrome', '管理员', '1', '34', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1757', 'official', '1', '2', '退回到自己', '申请人流转', '88909', '2018-10-26 12:17:42', '不同意的', '127.0.0.1', 'Chrome', '管理员', '1', '19', null, '0', '2', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1756', 'official', '1', '1', '同意', '上级审批', '21', '2018-10-26 12:13:45', '很好的哦', '::1', 'Chrome', '大乔', '4', '19', 'green', '0', '1', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1937', 'meet', '7', '0', null, '停用会议', '0', '2019-03-23 21:29:41', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', 'gray', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1754', 'hrsalary', '15', '1', '同意', '人事审核', '31', '2018-10-26 11:38:34', null, '::1', 'Chrome', '大乔', '4', '34', 'green', '1', '1', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1938', 'meet', '7', '0', null, '启用会议', '0', '2019-03-23 21:30:52', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', 'green', '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1672', 'hrsalarm', '14', '1', null, '提交', '0', '2018-09-27 12:08:52', null, '127.0.0.1', 'Chrome', '管理员', '1', '83', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1645', 'meet', '6', '1', null, '提交', '0', '2018-09-22 21:42:56', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1644', 'meet', '5', '3', '取消', '取消会议', '0', '2018-09-22 18:24:58', '取消了', '127.0.0.1', 'Chrome', '管理员', '1', '2', 'gray', '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1643', 'meet', '5', '1', null, '提交', '0', '2018-09-22 18:22:50', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
-INSERT INTO `xinhu_flow_log` VALUES ('1939', 'meet', '8', '1', null, '提交', '0', '2019-03-23 21:45:43', null, '127.0.0.1', 'Chrome', '管理员', '1', '2', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1774', 'official', '2', '1', '流转', '申请人流转', '88912', '2018-10-27 21:34:54', null, '127.0.0.1', 'Chrome', '管理员', '1', '20', null, '0', '2', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1746', 'fininfom', '12', '1', null, '提交', '0', '2018-10-22 20:24:32', null, '127.0.0.1', 'Chrome', '管理员', '1', '65', null, '1', '0', null, '0');
 INSERT INTO `xinhu_flow_log` VALUES ('1665', 'hrsalarm', '13', '1', null, '提交', '0', '2018-09-26 17:34:16', null, '127.0.0.1', 'Chrome', '管理员', '1', '83', null, '1', '0', null, '0');
@@ -3225,13 +3206,13 @@ INSERT INTO `xinhu_flow_todos` VALUES ('27', 'officia', '发文单', 'official',
 INSERT INTO `xinhu_flow_todos` VALUES ('2', 'waichu', '外出出差', 'kqout', '5', '5', '2018-06-15 20:28:19', '2018-08-29 16:50:46', '1');
 INSERT INTO `xinhu_flow_todos` VALUES ('137', 'hrsalary', '薪资', 'hrsalary', '1', '4', '2018-10-09 22:48:53', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('138', 'hrsalary', '薪资', 'hrsalary', '15', '2', '2018-10-26 11:38:34', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('5', 'gong', '通知公告', 'infor', '6', '2', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('6', 'gong', '通知公告', 'infor', '6', '3', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('7', 'gong', '通知公告', 'infor', '6', '4', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('8', 'gong', '通知公告', 'infor', '6', '5', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('9', 'gong', '通知公告', 'infor', '6', '6', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('10', 'gong', '通知公告', 'infor', '6', '7', '2019-03-29 16:56:20', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('11', 'gong', '通知公告', 'infor', '6', '8', '2019-03-29 16:56:20', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('5', 'gong', '通知公告', 'infor', '6', '2', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('6', 'gong', '通知公告', 'infor', '6', '3', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('7', 'gong', '通知公告', 'infor', '6', '4', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('8', 'gong', '通知公告', 'infor', '6', '5', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('9', 'gong', '通知公告', 'infor', '6', '6', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('10', 'gong', '通知公告', 'infor', '6', '7', '2019-04-11 09:17:35', null, '0');
+INSERT INTO `xinhu_flow_todos` VALUES ('11', 'gong', '通知公告', 'infor', '6', '8', '2019-04-11 09:17:35', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('13', 'officia', '发文单', 'official', '3', '5', '2019-02-23 22:14:45', '2019-02-23 22:14:50', '1');
 INSERT INTO `xinhu_flow_todos` VALUES ('143', 'officia', '发文单', 'official', '1', '3', '2018-10-27 10:53:09', '2018-10-27 10:53:21', '1');
 INSERT INTO `xinhu_flow_todos` VALUES ('15', 'officib', '收文单', 'official', '3', '5', '2017-08-30 22:59:35', null, '0');
@@ -3289,8 +3270,8 @@ INSERT INTO `xinhu_flow_todos` VALUES ('83', 'project', '项目', 'project', '3'
 INSERT INTO `xinhu_flow_todos` VALUES ('84', 'project', '项目', 'project', '5', '6', '2018-07-07 09:20:54', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('85', 'project', '项目', 'project', '5', '7', '2018-07-07 09:20:54', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('86', 'project', '项目', 'project', '5', '8', '2018-07-07 09:20:54', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('124', 'schedule', '日程', 'schedule', '2', '1', '2019-03-29 16:55:04', null, '0');
-INSERT INTO `xinhu_flow_todos` VALUES ('125', 'gong', '通知公告', 'infor', '6', '1', '2019-03-29 16:56:20', '2019-03-29 16:57:12', '1');
+INSERT INTO `xinhu_flow_todos` VALUES ('124', 'schedule', '日程', 'schedule', '3', '1', '2019-04-10 11:55:05', '2019-04-10 23:41:19', '1');
+INSERT INTO `xinhu_flow_todos` VALUES ('125', 'gong', '通知公告', 'infor', '6', '1', '2019-04-11 09:17:35', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('119', 'hrcheck', '考核评分', 'hrcheck', '3', '3', '2018-12-02 13:47:27', null, '0');
 INSERT INTO `xinhu_flow_todos` VALUES ('141', 'finpay', '付款申请', 'fininfom', '10', '5', '2018-11-02 18:08:01', '2018-11-05 13:41:57', '1');
 INSERT INTO `xinhu_flow_todos` VALUES ('140', 'finkai', '开票申请', 'fininfom', '12', '5', '2018-11-02 18:08:51', '2018-11-05 13:42:41', '1');
@@ -3671,7 +3652,7 @@ CREATE TABLE `xinhu_goodn` (
   `couns` smallint(6) DEFAULT '0' COMMENT '已出库入库数跟count相等时就全部了',
   `sort` smallint(6) DEFAULT '0',
   `unit` varchar(5) DEFAULT NULL COMMENT '单位',
-  `price` decimal(6,2) DEFAULT '0.00' COMMENT '单价',
+  `price` decimal(10,2) DEFAULT '0.00' COMMENT '单价',
   PRIMARY KEY (`id`),
   KEY `mid` (`mid`),
   KEY `aid` (`aid`)
@@ -3746,7 +3727,7 @@ CREATE TABLE `xinhu_goodss` (
   `mid` smallint(6) DEFAULT '0' COMMENT '对应主表',
   `sort` smallint(6) DEFAULT '0',
   `unit` varchar(5) DEFAULT NULL COMMENT '单位',
-  `price` decimal(6,2) DEFAULT '0.00' COMMENT '单价',
+  `price` decimal(10,2) DEFAULT '0.00' COMMENT '单价',
   `depotid` smallint(6) DEFAULT '1' COMMENT '存放仓库ID',
   PRIMARY KEY (`id`),
   KEY `aiddepotid` (`aid`,`depotid`) USING BTREE,
@@ -3789,7 +3770,7 @@ CREATE TABLE `xinhu_group` (
   `ispir` tinyint(4) DEFAULT '1' COMMENT '是否权限验证',
   `indate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='系统组';
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COMMENT='系统组';
 
 -- ----------------------------
 -- Records of xinhu_group
@@ -3797,6 +3778,7 @@ CREATE TABLE `xinhu_group` (
 INSERT INTO `xinhu_group` VALUES ('1', '外地职工', '1', '1', '2014-09-04 17:33:47');
 INSERT INTO `xinhu_group` VALUES ('2', '本地职工', '2', '1', '2014-09-04 17:33:56');
 INSERT INTO `xinhu_group` VALUES ('3', '部门负责人', '0', '1', '2018-09-26 11:51:56');
+INSERT INTO `xinhu_group` VALUES ('4', '管理员组', '0', '1', '2019-04-01 16:12:45');
 
 -- ----------------------------
 -- Table structure for `xinhu_homeitems`
@@ -3826,7 +3808,7 @@ INSERT INTO `xinhu_homeitems` VALUES ('6', '今日会议', 'meet', null, null, '
 INSERT INTO `xinhu_homeitems` VALUES ('7', '系统日志', 'syslog', 'u1', '管理员', '3', '1', '1');
 INSERT INTO `xinhu_homeitems` VALUES ('8', '关于信呼', 'about', 'u1', '管理员', '10', '1', '1');
 INSERT INTO `xinhu_homeitems` VALUES ('9', '公文查阅', 'officic', null, null, '3', '1', '1');
-INSERT INTO `xinhu_homeitems` VALUES ('10', '快捷入口(大图标)', 'kjrko', null, null, '0', '0', '0');
+INSERT INTO `xinhu_homeitems` VALUES ('10', '快捷入口(大图标)', 'kjrko', null, null, '0', '1', '0');
 
 -- ----------------------------
 -- Table structure for `xinhu_hrcheck`
@@ -4401,7 +4383,7 @@ CREATE TABLE `xinhu_im_group` (
   `deptid` varchar(100) DEFAULT NULL COMMENT '对应部门id',
   PRIMARY KEY (`id`),
   KEY `num` (`num`)
-) ENGINE=MyISAM AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='IM会话表';
+) ENGINE=MyISAM AUTO_INCREMENT=52 DEFAULT CHARSET=utf8 COMMENT='IM会话表';
 
 -- ----------------------------
 -- Records of xinhu_im_group
@@ -4443,7 +4425,6 @@ INSERT INTO `xinhu_im_group` VALUES ('43', '收文单', '0', '公文', '2', '17'
 INSERT INTO `xinhu_im_group` VALUES ('44', '项目', '0', '任务', '2', '14', null, null, null, 'images/project.png', 'project', null, null, 'auto', '1', null, null, '#30c7b0', '0', null, null, null);
 INSERT INTO `xinhu_im_group` VALUES ('45', '排班查看', '0', '考勤', '2', '4', null, null, null, 'images/bwl2.png', 'kqpai', null, null, 'auto', '1', null, null, null, '0', null, null, null);
 INSERT INTO `xinhu_im_group` VALUES ('46', '回执确认', '0', '基础', '2', '30', null, null, null, 'images/jwcl.png', 'receipt', null, null, 'auto', '1', null, null, null, '0', null, null, null);
-INSERT INTO `xinhu_im_group` VALUES ('48', '测试会话', '0', null, '0', '0', null, null, null, null, null, null, null, null, '1', null, null, null, '0', null, null, '0');
 INSERT INTO `xinhu_im_group` VALUES ('49', '提醒消息', '0', '基础', '2', '20', null, null, null, 'images/todo.png', 'todo', null, null, 'auto', '1', null, null, null, '0', null, null, null);
 INSERT INTO `xinhu_im_group` VALUES ('50', '文档协作', '0', '资源', '2', '32', null, null, null, 'images/wjj.png', 'wordxie', null, null, 'link', '1', null, null, null, '0', 'wordxie', null, null);
 
@@ -4457,7 +4438,7 @@ CREATE TABLE `xinhu_im_groupuser` (
   `uid` smallint(6) NOT NULL DEFAULT '0',
   `istx` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=115 DEFAULT CHARSET=utf8 COMMENT='IM会话人员';
+) ENGINE=MyISAM AUTO_INCREMENT=118 DEFAULT CHARSET=utf8 COMMENT='IM会话人员';
 
 -- ----------------------------
 -- Records of xinhu_im_groupuser
@@ -4482,8 +4463,9 @@ INSERT INTO `xinhu_im_groupuser` VALUES ('105', '31', '6', '1');
 INSERT INTO `xinhu_im_groupuser` VALUES ('106', '31', '7', '1');
 INSERT INTO `xinhu_im_groupuser` VALUES ('107', '31', '8', '1');
 INSERT INTO `xinhu_im_groupuser` VALUES ('111', '47', '6', '1');
+INSERT INTO `xinhu_im_groupuser` VALUES ('117', '51', '3', '1');
 INSERT INTO `xinhu_im_groupuser` VALUES ('112', '47', '5', '1');
-INSERT INTO `xinhu_im_groupuser` VALUES ('114', '48', '1', '1');
+INSERT INTO `xinhu_im_groupuser` VALUES ('116', '51', '1', '1');
 
 -- ----------------------------
 -- Table structure for `xinhu_im_history`
@@ -4507,13 +4489,13 @@ CREATE TABLE `xinhu_im_history` (
 -- ----------------------------
 -- Records of xinhu_im_history
 -- ----------------------------
-INSERT INTO `xinhu_im_history` VALUES ('1', 'group', '2', '2', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('2', 'group', '2', '7', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('3', 'group', '2', '6', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('4', 'group', '2', '8', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('5', 'group', '2', '5', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('6', 'group', '2', '1', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
-INSERT INTO `xinhu_im_history` VALUES ('7', 'group', '2', '4', '8', '2019-03-30 09:19:52', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('1', 'group', '2', '2', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('2', 'group', '2', '7', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('3', 'group', '2', '6', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('4', 'group', '2', '8', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('5', 'group', '2', '5', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('6', 'group', '2', '1', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
+INSERT INTO `xinhu_im_history` VALUES ('7', 'group', '2', '4', '8', '2019-04-11 09:23:06', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '1', null);
 
 -- ----------------------------
 -- Table structure for `xinhu_im_menu`
@@ -4729,7 +4711,7 @@ CREATE TABLE `xinhu_im_mess` (
 -- ----------------------------
 -- Records of xinhu_im_mess
 -- ----------------------------
-INSERT INTO `xinhu_im_mess` VALUES ('1', '2019-03-30 09:19:52', '1', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '8', '2', '2,7,6,8,5,1,4', 'group', null, '0', null);
+INSERT INTO `xinhu_im_mess` VALUES ('1', '2019-04-11 09:23:06', '1', '5aSn5a625pyJ5ZWl6Zeu6aKY6L!Z6YeM6K!05ZWK77yB', '8', '2', '2,7,6,8,5,1,4', 'group', null, '0', null);
 
 -- ----------------------------
 -- Table structure for `xinhu_im_messzt`
@@ -4779,7 +4761,7 @@ CREATE TABLE `xinhu_infor` (
 -- ----------------------------
 INSERT INTO `xinhu_infor` VALUES ('1', '欢迎使用信呼工作台', '2018-04-26 17:27:10', '通知公告', '<p>\n	欢迎使用，有任何问题可以随时联系我们，帮你解答哦。&nbsp;\n</p>\n<p>\n	信呼是一款开源免费的工作台软件，可添加应用，管理，pc上，app都可以使用，我们的代码全部开放，可自由使用。\n</p>', null, null, null, '1', '管理员', null, null, '信呼开发团队', '2016-08-01', '1', null, '0', '0', '0');
 INSERT INTO `xinhu_infor` VALUES ('2', '关于写日报制度说明', '2017-05-17 20:06:00', '规则制度', '<p>\n	1、每个人工作日在下班后必须写工作日报，全天请假可不用写，只要有上班就需要写，即使你上班1分钟。\n</p>\n<p>\n	2、也可以隔天写。\n</p>\n<p>\n	<strong>未写处罚</strong> \n</p>\n<p>\n	1、未写一次扣五块，累计加倍。\n</p>', null, 'u1,u2,u3,u4,u5,u6,u7,u8,u9', null, '1', '管理员', null, null, '人力行政部', '2016-08-01', '1', 'images/kqbanner1.jpg', '0', '0', '0');
-INSERT INTO `xinhu_infor` VALUES ('6', '信呼更新发布V1.8.8版本', '2019-03-29 16:56:20', '通知公告', '<p>\n	版本添加了发布如下功能。\n</p>\n<p>\n	1、系统功能完善。\n</p>\n<p>\n	2、更新了很多，自己看<a href=\"http://www.rockoa.com/view_core.html\" target=\"_blank\">升级日志</a>。\n</p>', null, null, null, '1', '管理员', null, null, '信呼开发团队', '2019-03-29', '1', 'images/logo.png', '0', '0', '0');
+INSERT INTO `xinhu_infor` VALUES ('6', '信呼更新发布V1.8.9版本', '2019-04-11 09:17:35', '通知公告', '<p>\n	版本添加了发布如下功能。\n</p>\n<p>\n	1、系统功能完善。\n</p>\n<p>\n	2、更新了很多，自己看<a href=\"http://www.rockoa.com/view_core.html\" target=\"_blank\">升级日志</a>。\n</p>', null, null, null, '1', '管理员', null, null, '信呼开发团队', '2019-04-11', '1', 'images/logo.png', '0', '0', '0');
 INSERT INTO `xinhu_infor` VALUES ('9', '你们觉得这个系统如何？', '2017-08-29 10:25:24', '通知公告', '开始投票拉。', null, 'd1', '信呼开发团队', '1', '管理员', '2018-08-31 12:42:00', '2017-08-26 12:42:00', '开发部', '2017-08-26', '1', null, '1', '1', '0');
 
 -- ----------------------------
@@ -4847,18 +4829,14 @@ CREATE TABLE `xinhu_knowtiku` (
   `optid` smallint(6) DEFAULT '0',
   `imgurl` varchar(100) DEFAULT NULL COMMENT '相关图片地址',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='知识题库';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='知识题库';
 
 -- ----------------------------
 -- Records of xinhu_knowtiku
 -- ----------------------------
-INSERT INTO `xinhu_knowtiku` VALUES ('1', '我们开源系统的名称是？', '227', '0', '信呼', '呼信', '信乎', '信信', 'A', '0', '2016-10-27 21:33:24', '2016-10-27 21:52:48', null, '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('2', '信呼官网域名是？', '227', '1', 'xh829.com', 'bbs.xh829.com', 'www.rockoa.com', 'www.xh829.com', 'C', '0', '2016-10-27 21:43:04', '2017-08-20 14:03:51', null, '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('3', '信呼第一版本发布时间', '227', '0', '2016.01', '2016.07', '2016.06', '不知道', 'C', '0', '2016-10-27 22:14:09', '2016-10-27 22:14:09', '呵呵，其实我也不知道！', '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('4', 'PHP使用输出方式', '295', '1', 'echo', 'exit', 'print', 'die', 'AC', '0', '2017-05-09 20:08:51', '2017-05-09 20:10:49', null, '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('8', '信呼要求PHP最低版本', '227', '0', '5.2', '5.3', '5.4', '5.5', 'B', '0', '2017-08-20 14:02:05', '2017-08-20 14:02:05', '详见官网说明使用', '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('9', '信呼要求MySql最低版本', '227', '0', '5', '5.3', '5.4', '5.5', 'D', '0', '2017-08-20 14:02:05', '2017-08-20 14:02:05', '详见官网说明使用', '1', null, '1', null);
-INSERT INTO `xinhu_knowtiku` VALUES ('10', 'PHP如何连接数据库方式', '295', '0', 'mysql', 'mysqli', 'pdo', 'mssql', 'ABC', '0', '2017-08-20 14:02:05', '2017-08-20 14:02:05', 'D选项为别的数据库', '1', null, '1', null);
+INSERT INTO `xinhu_knowtiku` VALUES ('1', '信呼要求PHP最低版本', '227', '0', '5.2', '5.3', '5.4', '5.5', 'B', '0', '2019-04-10 09:40:32', '2019-04-10 09:40:32', '详见官网说明使用', '1', null, '1', null);
+INSERT INTO `xinhu_knowtiku` VALUES ('2', '信呼要求MySql最低版本', '227', '0', '5', '5.3', '5.4', '5.5', 'D', '0', '2019-04-10 09:40:32', '2019-04-10 09:40:32', '详见官网说明使用', '1', null, '1', null);
+INSERT INTO `xinhu_knowtiku` VALUES ('3', 'PHP如何连接数据库方式', '295', '1', 'mysql', 'mysqli', 'pdo', 'mssql', 'ABC', '0', '2019-04-10 09:40:32', '2019-04-10 09:40:32', 'D选项为别的数据库', '1', null, '1', null);
 
 -- ----------------------------
 -- Table structure for `xinhu_knowtraim`
@@ -4994,7 +4972,7 @@ INSERT INTO `xinhu_kqdist` VALUES ('1', '信呼开发团队', 'd1', '1', '0', '2
 INSERT INTO `xinhu_kqdist` VALUES ('4', '信呼开发团队', 'd1', '1', '1', '2014-08-01', '2021-08-31', '1', '0');
 INSERT INTO `xinhu_kqdist` VALUES ('5', '信呼开发团队', 'd1', '1', '2', '2016-11-01', '2017-12-31', '1', '0');
 INSERT INTO `xinhu_kqdist` VALUES ('6', '信呼客服', 'u8', '33', '0', '2017-05-01', '2017-05-16', '1', '0');
-INSERT INTO `xinhu_kqdist` VALUES ('7', '信呼客服', 'u8', '21', '0', '2017-05-17', '2017-05-31', '1', '0');
+INSERT INTO `xinhu_kqdist` VALUES ('7', '管理员组', 'g4', '21', '0', '2019-04-01', '2019-04-01', '1', '0');
 INSERT INTO `xinhu_kqdist` VALUES ('8', '开发部', 'd2', '2', '2', '2017-05-01', '2017-05-31', '1', '0');
 INSERT INTO `xinhu_kqdist` VALUES ('9', '赵子龙', 'u7', '44', '0', '2017-07-01', '2018-07-31', '1', '0');
 
@@ -5477,20 +5455,11 @@ CREATE TABLE `xinhu_meet` (
   `content` varchar(4000) DEFAULT NULL COMMENT '会议纪要内容',
   `issms` tinyint(1) DEFAULT '0' COMMENT '是否短信通知',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='会议';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='会议';
 
 -- ----------------------------
 -- Records of xinhu_meet
 -- ----------------------------
-INSERT INTO `xinhu_meet` VALUES ('1', '会议室1', '关于讨论信呼开发问题', '2018-04-12 15:00:00', '2018-04-12 18:00:00', '2', '1', '0', 'd2', '开发部', '0', '管理员', null, '1', '2017-09-24 14:48:44', '1', null, null, null, null, null, '0');
-INSERT INTO `xinhu_meet` VALUES ('2', '会客室', '讨论云平台系统开发', '2018-08-24 20:40:00', '2018-08-24 23:40:00', '2', '1', '0', 'd2', '开发部', '0', '管理员', null, '1', '2018-08-24 20:40:50', '1', null, null, null, null, null, '0');
-INSERT INTO `xinhu_meet` VALUES ('3', null, '讨论云平台系统开发', null, null, '0', '1', '2', 'd2', null, '2', '管理员', null, '1', '2018-08-24 20:41:18', '1', null, null, null, null, '不错的哦，哈哈。', '0');
-INSERT INTO `xinhu_meet` VALUES ('5', '会客室', '公司每月生日会', '2018-09-22 19:47:20', '2018-09-22 23:22:00', '2', '1', '0', 'd1', '信呼开发团队', '0', '管理员', null, '1', '2018-09-22 18:22:50', '1', null, null, null, null, null, '1');
-INSERT INTO `xinhu_meet` VALUES ('6', '会议室1', '新OA系统培训使用', '2018-09-22 22:00:00', '2018-09-22 23:00:00', '2', '1', '0', 'd1', '信呼开发团队', '0', '管理员', null, '1', '2018-09-22 21:46:17', '1', '新OA系统培训使用系统使用介绍。', null, null, null, null, '1');
-INSERT INTO `xinhu_meet` VALUES ('7', '会客室', '早上晨会', '2019-03-23 09:00:00', '2019-03-23 10:00:00', '2', '1', '1', 'd1', '信呼开发团队', '0', '管理员', 'd', '1', '2019-03-24 10:08:25', '1', '每天早上晨会', null, null, null, null, '0');
-INSERT INTO `xinhu_meet` VALUES ('8', '会客室', '讨论开发视频教程', '2019-03-23 22:45:00', '2019-03-23 23:45:00', '2', '1', '0', 'd2', '开发部', '0', '管理员', null, '1', '2019-03-23 21:45:43', '1', null, null, null, null, null, '0');
-INSERT INTO `xinhu_meet` VALUES ('12', '会客室', '早上晨会', '2019-03-24 09:00:00', '2019-03-24 10:00:00', '2', '1', '0', 'd1', '信呼开发团队', '7', '管理员', null, '1', '2019-03-24 10:08:25', '1', '每天早上晨会', null, null, null, null, '0');
-INSERT INTO `xinhu_meet` VALUES ('11', '会议室1', '每星期六培训员工', '2019-03-23 23:30:00', '2019-03-23 23:59:00', '2', '1', '0', 'd1', '信呼开发团队', '7', '管理员', null, '1', '2019-03-23 23:17:22', '1', '每周六培训员工大会', null, null, null, null, '0');
 
 -- ----------------------------
 -- Table structure for `xinhu_menu`
@@ -5538,7 +5507,7 @@ INSERT INTO `xinhu_menu` VALUES ('18', '服务器设置', '14', '0', 'main,xinhu
 INSERT INTO `xinhu_menu` VALUES ('20', '表单元素管理', '7', '5', 'main,flow,element', 'check', null, null, '1', '1', null, '0', '0');
 INSERT INTO `xinhu_menu` VALUES ('21', '流程模块权限', '7', '6', 'main,view', 'lock', null, null, '1', '1', null, '0', '0');
 INSERT INTO `xinhu_menu` VALUES ('22', '流程单据查看', '7', '7', 'main,flow,view', 'search', null, null, '1', '1', null, '0', '0');
-INSERT INTO `xinhu_menu` VALUES ('23', '系统升级', '46', '10', 'system,upgrade', 'arrow-up', null, null, '1', '1', null, '0', '0');
+INSERT INTO `xinhu_menu` VALUES ('23', '系统升级', '46', '10', 'system,upgrade', 'arrow-up', null, 'upgrade', '1', '1', '#ff0000', '0', '0');
 INSERT INTO `xinhu_menu` VALUES ('24', '数据选项', '7', '1', 'system,option,num=xinhu', 'cog', null, null, '1', '1', null, '0', '0');
 INSERT INTO `xinhu_menu` VALUES ('25', '初始化备份', '46', '5', 'system,beifen', null, null, null, '1', '1', null, '0', '0');
 INSERT INTO `xinhu_menu` VALUES ('26', '流程审核步骤', '7', '4', 'main,flow,course', 'resize-vertical', null, null, '1', '1', null, '0', '0');
@@ -6426,13 +6395,15 @@ CREATE TABLE `xinhu_sjoin` (
   PRIMARY KEY (`id`),
   KEY `type_mid` (`type`,`mid`) USING BTREE,
   KEY `type_sid` (`type`,`sid`)
-) ENGINE=MyISAM AUTO_INCREMENT=75 DEFAULT CHARSET=utf8 COMMENT='后台菜单权限';
+) ENGINE=MyISAM AUTO_INCREMENT=77 DEFAULT CHARSET=utf8 COMMENT='后台菜单权限';
 
 -- ----------------------------
 -- Records of xinhu_sjoin
 -- ----------------------------
 INSERT INTO `xinhu_sjoin` VALUES ('68', 'ug', '5', '3', '2018-11-16 16:37:38');
 INSERT INTO `xinhu_sjoin` VALUES ('23', 'gu', '1', '7', null);
+INSERT INTO `xinhu_sjoin` VALUES ('76', 'gu', '4', '8', null);
+INSERT INTO `xinhu_sjoin` VALUES ('75', 'gu', '4', '1', null);
 INSERT INTO `xinhu_sjoin` VALUES ('15', 'ug', '6', '1', '2017-07-08 18:51:03');
 INSERT INTO `xinhu_sjoin` VALUES ('74', 'um', '2', '135', '2019-03-24 16:23:24');
 INSERT INTO `xinhu_sjoin` VALUES ('60', 'um', '4', '196', '2018-09-28 17:09:18');
@@ -6531,7 +6502,7 @@ CREATE TABLE `xinhu_task` (
 INSERT INTO `xinhu_task` VALUES ('1', '流程从新匹配', '系统', 'flow,pipei', 'd,d', '00:10:00,12:10:00', '每天0,12点', '1', '0', null, null, '0', null, null, null, null, null);
 INSERT INTO `xinhu_task` VALUES ('2', '数据备份', '系统', 'sys,beifen', 'd', '00:20:00', '每天凌晨00:20', '1', '0', null, null, '0', null, null, null, null, null);
 INSERT INTO `xinhu_task` VALUES ('3', '系统升级提醒', '系统', 'sys,upgtx', 'd', '00:25:00', '每天凌晨00:25', '1', '0', null, null, '0', null, null, null, '1,8', '管理员,信呼客服');
-INSERT INTO `xinhu_task` VALUES ('4', '5分钟运行1次', '系统', 'minute5,run', 'i5', '00', '每5分钟运行一次', '1', '1', '2019-03-30 09:20:04', null, '0', null, 'success', null, null, null);
+INSERT INTO `xinhu_task` VALUES ('4', '5分钟运行1次', '系统', 'minute5,run', 'i5', '00', '每5分钟运行一次', '1', '0', null, null, '0', null, null, null, null, null);
 INSERT INTO `xinhu_task` VALUES ('5', '考勤信息提醒', '考勤', 'kaoqin,todo', 'd', '09:25:00', '每天9点', '1', '0', null, null, '21', null, null, '在模块【考勤信息】下设置提醒到哪些平台。', null, null);
 INSERT INTO `xinhu_task` VALUES ('6', '用户数据更新', '用户', 'sys,dataup', 'd', '00:10:00', '每天', '1', '0', null, null, '1', null, null, null, null, null);
 INSERT INTO `xinhu_task` VALUES ('7', '考勤分析', '考勤', 'kaoqin,anay', 'd', '02:15:00', '每天2点', '1', '0', null, null, '22', null, null, '分析全体人员昨天的考勤', null, null);
@@ -6905,13 +6876,11 @@ CREATE TABLE `xinhu_wotpl` (
   `modeparams` varchar(500) DEFAULT NULL COMMENT '参数设置',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='微信公众号消息模版';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='微信公众号消息模版';
 
 -- ----------------------------
 -- Records of xinhu_wotpl
 -- ----------------------------
-INSERT INTO `xinhu_wotpl` VALUES ('1', 'hfoFZ2ZC4mMzic2p3M4vbUiLbz2rNBQBWc23A_BTLjk', '物业提醒', null, null, '尊敬的业主：{{name.DATA}}\n\n您的房屋{{fangname.DATA}}需缴{{xdtype.DATA}}的费用\n金额：{{money.DATA}}\n日期：{{startdt.DATA}}\n{{remark.DATA}}', null, null, null, '0');
-INSERT INTO `xinhu_wotpl` VALUES ('2', 'J6ftlfqb58_T-tcgKa5QtmRqNxEtEMW6uUqV8FlEnHA', 'OA通知', null, null, '尊敬的{{name.DATA}}：\n\n您有的单据需要你处理。\n申请人：{{applyname.DATA}}\n模块名：{{modename.DATA}}\n{{remark.DATA}}', null, '流程待办', '{\"name\":{\"value\":\"{name}\",\"color\":\"#173177\"},\"applyname\":{\"value\":\"{applyname}\",\"color\":\"\"},\"modename\":{\"value\":\"{modename}\",\"color\":\"#ff6600\"},\"remark\":{\"value\":\"{summary}请尽快去处理。\",\"color\":\"\"}}', '1');
 
 -- ----------------------------
 -- Table structure for `xinhu_wouser`

@@ -39,8 +39,12 @@ $(document).ready(function(){
 			var is1 = (get('iskqew_{rand}').checked)?'1':'0';
 			a.setparams({key:s,kjk:is1},true);
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'借款单统计',
+				'btnobj':o1
+			});
 		}
 	};
 	js.initbtn(c);
@@ -60,7 +64,7 @@ $(document).ready(function(){
 
 	<td width="90%"></td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

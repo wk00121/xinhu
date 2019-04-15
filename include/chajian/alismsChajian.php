@@ -28,6 +28,7 @@ class alismsChajian extends Chajian{
 		$params["PhoneNumberJson"] 	= $shoujha;
 	
 		$params["TemplateCode"] 	=  $tplid;
+		unset($cans['url']);
 		foreach($shoujha as $smid){
 			$params["SignNameJson"][] 		= $qianm;
 			if($cans)$params["TemplateParamJson"][] 	= $cans;

@@ -67,6 +67,9 @@
 				if(a.dataIndex=='caozuo')can.columns[i] = this._caozuochengs(a,i);
 			}
 		};
+		this.getcolumns = function(){
+			return can.columns;
+		};
 		this._create	= function(){
 			var a	= can.columns;
 			var s 	= '',i,len=a.length,val,s1,s2='',cols,s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,dlen=this.data.length;

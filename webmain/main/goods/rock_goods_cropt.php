@@ -63,7 +63,7 @@ $(document).ready(function(){
 		&nbsp;&nbsp;<span id="megss{rand}"></span>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		
 	</td>
 </tr></table>
 </div>

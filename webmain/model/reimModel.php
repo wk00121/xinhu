@@ -819,7 +819,7 @@ class reimClassModel extends Model
 			$farr = m('file')->getone($fileid,'filesizecn,fileext,thumbpath,filename');
 			if($farr)foreach($farr as $fk=>$fv)$arr[$fk]		= $fv;
 		}
-		//给客户端发送0
+		//给服务端发送0
 		if($lx==0){
 			$receids = m('admin')->getonline($arr['receid']);
 			if($receids != ''){
@@ -1014,9 +1014,9 @@ class reimClassModel extends Model
 				$where 	= "id in($uid) and ";
 			}
 		}
-		$uwhere = "$where `status`=1 and `apptx`=1";
+		$uwhere = "$where `status`=1";
 		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','appios') and `online`=1",'`token`,`uid`,`web`','id desc');
-		$alias 	= $uida = $xmalias = array();
+		$alias 	= $uida = $xmalias = $newalias = array();
 		$uids	= '0';
 		foreach($rows as $k=>$rs){
 			$_uid 	 = $rs['uid'];
@@ -1025,11 +1025,13 @@ class reimClassModel extends Model
 			$uids	.= ','.$_uid.'';
 			if($rs['web']=='xiaomi'){
 				$xmalias[] = $rs['token'];
+			}else if(substr($rs['web'],0,4)=='app_'){
+				$newalias[] = $rs['token'];	
 			}else{
-				$alias[] = $rs['token'];
+				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'newalias'=>$newalias);
 	}
 	
 	/**
@@ -1051,7 +1053,7 @@ class reimClassModel extends Model
 	}
 	
 	/**
-	*	推送到PC提醒
+	*	推送到服务端运行
 	*/
 	public function sendpush($sendid, $receid, $conarr=array())
 	{

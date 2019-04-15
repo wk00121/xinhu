@@ -80,7 +80,9 @@ js.ajax  = function(m,a,d,funs, mod,checs, erfs, glx){
 			js.wx.unload();
 			clearTimeout(js.ajax_time);
 			if(ret.code==199){
-				js.location('?d=we&m=login&backurl='+jm.base64encode(location.href)+'');
+				js.wx.alert(ret.msg, function(){
+					js.location('?d=we&m=login&backurl='+jm.base64encode(location.href)+'');
+				});
 				return;
 			}
 			if(ret.code!=200){

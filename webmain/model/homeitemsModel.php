@@ -19,10 +19,16 @@ class homeitemsClassModel extends Model
 		if(isempt($nums))$nums = 'apply,gong,meet';
 		$numarr	= explode(',', $nums);
 		$barr 	= array();
+		$xhtype = getconfig('xinhutype');
+		$obj 	= false;
+		if(!isempt($xhtype))$obj = m($xhtype);
 		foreach($numarr as $num){
 			$act = 'get_'.$num.'_arr';
 			if(method_exists($this, $act)){
 				$barr[''.$num.'arr'] = $this->$act();
+			}else if($obj){
+				if(method_exists($obj, $act))
+					$barr[''.$num.'arr'] = $obj->$act();
 			}
 		}
 		if(in_array('kjrk', $numarr) || in_array('kjrko', $numarr))
@@ -39,15 +45,28 @@ class homeitemsClassModel extends Model
 		
 		$todo			= m('todo')->rows("uid='$uid' and `status`=0 and `tododt`<='$optdt'");
 		$arr['todo']	= $todo;
-		$arr['daiban']	= $bidb->daibanshu($uid);
-		$arr['applywtg']= $bidb->applymywgt($uid);
-		$arr['daiturn'] = $bidb->daiturntotal($uid);
-		$arr['danerror']= $bidb->errortotal();
-		$arr['workwwc']	= m('work')->getwwctotals($uid);
-		$arr['email']	= m('emailm')->wdtotal($uid);
-		$arr['flowtodo']= m('flowtodo')->getwdtotals($uid);
-		$arr['cropt']	= m('goods')->getdaishu(); //出入库操作数
-		$arr['receiptmy']	= m('flow:receipt')->getweitotal($uid);
+		
+		$obj 	= false;
+		$cbarr	= array();
+		$xhtype = getconfig('xinhutype');
+		if(!isempt($xhtype))$obj = m($xhtype);
+		if($obj){
+			if(method_exists($obj, 'menutotals')){
+				$cbarr = $obj->menutotals();
+				if(is_array($cbarr))foreach($cbarr as $k=>$v)$arr[$k]=$v;
+			}
+		}
+		
+		if(!isset($arr['daiban']))$arr['daiban']		= $bidb->daibanshu($uid);
+		if(!isset($arr['applywtg']))$arr['applywtg']	= $bidb->applymywgt($uid);
+		if(!isset($arr['daiturn']))$arr['daiturn'] 		= $bidb->daiturntotal($uid);
+		if(!isset($arr['danerror']))$arr['danerror']	= $bidb->errortotal();
+		if(!isset($arr['workwwc']))$arr['workwwc']		= m('work')->getwwctotals($uid);
+		if(!isset($arr['email']))$arr['email']			= m('emailm')->wdtotal($uid);
+		if(!isset($arr['flowtodo']))$arr['flowtodo']	= m('flowtodo')->getwdtotals($uid);
+		if(!isset($arr['cropt']))$arr['cropt']			= m('goods')->getdaishu(); //出入库操作数
+		if(!isset($arr['receiptmy']))$arr['receiptmy']	= m('flow:receipt')->getweitotal($uid);
+
 		return $arr;
 	}
 	

@@ -185,6 +185,12 @@ class flowModel extends Model
 		$this->fieldsarra	= $rows;
 	}
 	
+	//录入页上的标题
+	public function inputtitle()
+	{
+		return $this->moders['name'];
+	}
+	
 	/**
 	*	列表上要搜索的的，此方法仅用到在：webmain/flow/input/inputAction.php 行607上返回，模块接口可重写这个方法
 	*/
@@ -490,11 +496,10 @@ class flowModel extends Model
 			foreach($logrows as $k2=>$rs2){
 				$rs3 		= $_logarr[$rs2['id']];
 				$_coid 		= $rs2['courseid'];
-				if(!isempt($rs3['qmimg']))$rs3['name'] = '<img height="30" width="70" src="'.$rs3['qmimg'].'">';
+				if(!isempt($rs3['qmimg']))$rs3['name'] = '<img height="30" onclick="c.showviews(this)" width="70" src="'.$rs3['qmimg'].'">';
 				$key1 = 'course'.$_coid.'';
-				if(isempt($rs3['sm']))$rs3['sm']= $rs3['statusname'];
-				
-				
+				//if(isempt($rs3['sm']))$rs3['sm']= $rs3['statusname'];
+	
 				if(!isset($data[''.$key1.'_name'])){
 					$data[''.$key1.'_name'] = $rs3['name'];
 					$data[''.$key1.'_zt'] 	= '<font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
@@ -504,8 +509,16 @@ class flowModel extends Model
 					$data[''.$key1.'_name'] .= ','.$rs3['name'];
 					$data[''.$key1.'_sm'] 	.= ','.$rs3['sm'];
 					$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
-				}					
+				}
 				
+				//全部处理意见
+				$key2 = ''.$key1.'_all';
+				if(!isset($data[$key2]))$data[$key2]='';
+				$str1 = $rs3['name'].' '.$rs3['checkdt'].' <font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
+				
+				if(!isempt($rs3['sm']))$str1.='，'.$rs3['sm'].'';
+				if($data[$key2]!='')$data[$key2].='<hr size="1">';
+				$data[$key2].= $str1;
 			}
 			$contview 	 	= $this->rock->reparr($contview, $data);
 		}
@@ -646,10 +659,12 @@ class flowModel extends Model
 	{
 		$is 	= 0;
 		if($this->rs['status']==1 || $this->isflow==3)return $is;//自由流程不允许撤回
-		$where 	= "".$this->mwhere." and `courseid`>0 order by `id` desc";
+		$where 	= "".$this->mwhere." and `checkid`='".$this->adminid."' and `valid`=1 order by `id` desc";
 		$rs 	= $this->flogmodel->getone($where);
 		$time 	= time()-2*3600;
-		if($rs && $rs['checkid']==$this->adminid && $rs['status']!=2 && strtotime($rs['optdt'])>$time )$is = $rs['id'];
+		if($rs && $rs['status']!=2 && strtotime($rs['optdt'])>$time && 
+			($rs['courseid']>0 || $rs['iszb']=='1' ))
+			$is = $rs['id'];
 		return $is;
 	}
 	
@@ -665,8 +680,8 @@ class flowModel extends Model
 			'explain' 	=> $sm,
 			'name'		=> '撤回'
 		));
-		$barr = $this->getflow(false);
 		$this->checksmodel->delete($this->mwhere.' and `optid`='.$this->adminid.'');//删除我指定的人
+		$barr = $this->getflow(false);
 		//当前审核人空
 		if(isempt($barr['nowcheckid'])){
 			$courseid = $barr['nowcourseid'];
@@ -2869,10 +2884,11 @@ class flowModel extends Model
 	*	获取所有多行子表数据
 	*	$lx=0编辑时读取，1展示时读取
 	*/
-	public function getsuballdata($lx=0)
+	public function getsuballdata($lx=0, $mid=0)
 	{
 		$tabless	= $this->moders['tables'];
 		$subdata	= array();
+		if($mid==0)$mid = $this->id;
 		if(!isempt($tabless)){
 			$tablessa = explode(',', $tabless);
 			$namessa  = explode(',', $this->moders['names']);
@@ -2881,7 +2897,7 @@ class flowModel extends Model
 				$cis 	= substr_count($tabless1, '['.$tables.']');
 				$whes	= '';
 				if($cis>1)$whes=' and `sslx`='.$zbx.'';
-				$data 	= m($tables)->getall('mid='.$this->id.''.$whes.'','*','`sort`');
+				$data 	= m($tables)->getall('mid='.$mid.''.$whes.'','*','`sort`');
 				$data 	= $this->flowsubdata($data, $lx);
 				if($lx == 0){
 					$subdata['subdata'.$zbx.''] 	 = $data;
@@ -3142,6 +3158,33 @@ class flowModel extends Model
 				}
 			}
 		}
+		return $rows;
+	}
+	
+	/**
+	*	判断是否导出子表处理
+	*/
+	public function daochusubtable($rows)
+	{
+		if(!$this->daochubo || !$rows)return $rows;
+		$excelsubtab = $this->rock->post('excelsubtab');
+		if(isempt($excelsubtab) || isempt($this->moders['tables']))return $rows;
+		$suba		= explode(',', $excelsubtab);
+	
+		foreach($rows as $k=>$rs){
+			if(!isset($rs['id']))return $rows;
+			$subdata 	= $this->getsuballdata(1, $rs['id']);
+			foreach($suba as $zb){
+				$shuju = $subdata[$zb]['data'];
+				if($shuju){
+					$this->subsubdatastyle = 'print';
+					$rows[$k]['sub_table_'.$zb.''] = $this->getsubdata($zb, $shuju);
+				}else{
+					$rows[$k]['sub_table_'.$zb.''] = '';
+				}
+			}
+		}
+		
 		return $rows;
 	}
 	

@@ -55,8 +55,12 @@ $(document).ready(function(){
 			a.setparams({key:s,dt:get('dt1_{rand}').value},true);
 		},
 
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'物品盘点',
+				'btnobj':o1
+			});
 		},
 		loadfile:function(spd,nsd){
 			$('#megss{rand}').html(nsd);
@@ -108,7 +112,7 @@ $(document).ready(function(){
 		&nbsp;&nbsp;<span id="megss{rand}"></span>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

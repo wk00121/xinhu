@@ -93,11 +93,13 @@ class JPushChajian extends Chajian{
 		//使用官网来推送
 		$alias		= $palias['alias'];
 		$xmalias	= $palias['xmalias']; //小米的
+		$newalias	= $palias['newalias']; //最新使用的
 		$uids		= $palias['uids'];
 		if($this->app_key=='' || $this->master_secret==''){
 			$arr 	= array(
 				'alias' 	=> join(',', $alias),
 				'xmalias' 	=> join(',', $xmalias),
+				'newalias' 	=> join(',', $newalias),
 				'uids'  => $uids,
 				'title' => $this->rock->jm->base64encode($title),
 				'cont'  => $this->rock->jm->base64encode($cont),
@@ -113,7 +115,7 @@ class JPushChajian extends Chajian{
 				if(method_exists($xmpush,'push'))
 					$barr['xmpush'] = $xmpush->push($xmalias,  $title, $this->rock->jm->base64decode($desc), $cont);
 			}
-			$this->rock->debugs(json_encode($barr),'jpush');
+			//$this->rock->debugs(json_encode($barr),'jpush');
 			return $barr;
 		}	
 	}

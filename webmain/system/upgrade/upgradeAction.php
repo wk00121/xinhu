@@ -116,15 +116,15 @@ class upgradeClassAction extends Action
 		),$where);
 	}
 	
-	//获取模块忽略升级文件，停用也不升
+	//获取模块忽略升级文件
 	private function getmodeuprs()
 	{
 		$rows = m('flow_set')->getall('1=1', '`num`,`status`,`isup`','`sort`');
 		$hurs = array();
 		foreach($rows as $k=>$rs){
 			$num = $rs['num'];
-			//停用就不升级了
-			if($rs['status']=='0' || $rs['isup']=='0'){
+			//停用就不升级了$rs['status']=='0' || 
+			if($rs['isup']=='0'){
 				$hurs[] = ''.P.'/flow/input/inputjs/mode_'.$num.'.js'; //模块录入js文件
 				$hurs[] = ''.P.'/flow/input/mode_'.$num.'Action.php'; //模块控制器
 				$hurs[] = ''.P.'/flow/page/input_'.$num.'.html'; //PC录入模版

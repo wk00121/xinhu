@@ -43,8 +43,7 @@ class emailClassAction extends Action
 	
 	public function coguserbeforeshow($table)
 	{
-		$fields = '`id`,`name`,`user`,`deptallname`,`status`,`ranking`,`email`,`sort`,`face`';
-		if(getconfig('systype')!='demo')$fields.=',`emailpass`';
+		$fields = '`id`,`name`,`user`,`deptallname`,`status`,`ranking`,`email`,`sort`,`face`,`emailpass`';
 		$s 		= '';
 		$key 	= $this->post('key');
 		if($key!=''){
@@ -56,6 +55,15 @@ class emailClassAction extends Action
 			'order'	=> '`sort`'
 		);
 	}
+	public function coguseraftershow($table, $rows)
+	{
+		foreach($rows as $k=>$rs){
+			if(!isempt($rs['emailpass']))$rows[$k]['emailpass']='******';
+		}
+		return array(
+			'rows' => $rows
+		);
+	}
 	
 	public function testsendAjax()
 	{
@@ -65,8 +73,7 @@ class emailClassAction extends Action
 	
 	public function emailtotals($table, $rows)
 	{
-		$emrs = m('admin')->getone($this->adminid, 'email,emailpass');
-		if(getconfig('systype')=='demo')$emrs['emailpass']='';
+		$emrs = m('admin')->getone($this->adminid, 'email');
 		return array(
 			'rows' => $rows,
 			'email'=> $emrs,

@@ -87,8 +87,13 @@ $(document).ready(function(){
 				dt:get('dt2_{rand}').value
 			},true);
 		},
-		daochu:function(){
-			a.exceldown(nowtabs.name);
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'薪资',
+				'modenum':modenum,
+				'btnobj':o1
+			});
 		},
 		clickwin:function(o1,lx){
 			var id=0;
@@ -194,7 +199,7 @@ $(document).ready(function(){
 	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" id="xiang_{rand}" click="view" disabled type="button">详情</button> &nbsp; 
-		<button class="btn btn-default" click="daochu,1" disabled id="daochu{rand}" type="button">导出</button> 
+		<button class="btn btn-default" click="daochu,1" disabled id="daochu{rand}" type="button">导出 <i class="icon-angle-down"></i></button>  
 	</td>
 	</tr>
 	</table>

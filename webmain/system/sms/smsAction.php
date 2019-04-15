@@ -45,9 +45,9 @@ class smsClassAction extends Action
 		if($dirtype!=$lxss)return returnerror('请先保存后在测试');
 		
 		$parasm		= array(
-			'modename' 	=> '测试短信',
+			'modename' 	=> '模块测试',
 			'sericnum' 	=> 'AB-'.date('Ymd').'',
-			'applyname' => '申请人',
+			'applyname' => $this->adminname,
 		);
 		if($dirtype=='alisms'){
 			$bh 	= $this->option->getval('sms_cbnum');

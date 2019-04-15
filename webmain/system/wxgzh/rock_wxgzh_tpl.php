@@ -92,10 +92,10 @@ $(document).ready(function(){
 		},
 		testcss:function(exopid){
 			var d=a.changedata;
-			js.msg('wait','处理中...');
+			js.msg('wait','发送中...');
 			js.ajax(js.getajaxurl('testsendtpl','{mode}','{dir}',{id:d.id,openid:exopid}),false,function(ret){
 				if(ret.success){
-					js.msg('success', '发送成功');
+					js.msg('success', '发送状态：'+ret.data+'');
 				}else{
 					js.msg('msg', ret.msg);
 				}

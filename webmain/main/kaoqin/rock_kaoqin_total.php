@@ -83,8 +83,13 @@ $(document).ready(function(){
 			var dt = get('dt1_{rand}').value;
 			addtabs({num:'adminkaoqin'+d.id+'',url:'main,kaoqin,geren,uid='+d.id+',month='+dt+'',icons:'time',name:''+d.name+''+dt+'的考勤'});
 		},
-		daochu:function(){
-			a.exceldown(''+nowtabs.name+'('+get('dt1_{rand}').value+')');
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':''+nowtabs.name+'('+get('dt1_{rand}').value+')',
+				'btnobj':o1,
+				'notdingyue':true
+			});
 		},
 		//订阅
 		dingyue:function(){
@@ -144,7 +149,7 @@ $(document).ready(function(){
 	<td align="right" nowrap>
 		<button class="btn btn-info" click="xqkaoqb" disabled id="xqkaoqb_{rand}" type="button">详情考勤表</button>&nbsp;&nbsp;
 		<button class="btn btn-default" click="anaynow" type="button">全部重新分析</button>&nbsp;&nbsp;
-		<button class="btn btn-default" click="daochu" type="button">导出</button>
+		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button></button>
 	</td>
 </tr></table>
 </div>

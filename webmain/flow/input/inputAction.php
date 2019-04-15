@@ -548,7 +548,7 @@ class inputAction extends Action
 			
 			$course[]= array('name'=>'结束','id'=>-1);
 		}
-		$this->title  	= $moders['name'];
+		$this->title  					= $this->flow->inputtitle();//录入页面的标题
 		$this->smartydata['content']	= $content;
 		$this->smartydata['gongsiarr']	= $this->gongsiarr;
 		$this->smartydata['subfielsa']	= $this->subfielsa;
@@ -748,7 +748,7 @@ class inputAction extends Action
 		$data  	= c('html')->importdata($fields, $fieldss); //获取提交过来要导入的数据库
 		if(!$data)return returnerror('没有可导入的数据,注意*是必填的哦');
 		
-		
+		$msgstr = '';
 		
 		//保存前判断
 		if(method_exists($flow,'flowdaorubefore')){
@@ -764,12 +764,16 @@ class inputAction extends Action
 				$val = arrvalue($rs, $onid);
 				if(!isempt($val)){
 					$tos = $flow->rows("`$onid`='$val'");
-					if($tos>0){$bos = false;break;}
+					if($tos>0){
+						$bos = false;
+						$msgstr.='行'.($k+1).'的字段'.$onid.'存在重复;';
+						break;
+					}
 				}
 			}
 			if($bos)$ldata[] = $rs;
 		}
-		if(!$ldata)return returnerror('没有可导入的数据,可能有存在重复数据');
+		if(!$ldata)return returnerror('没有可导入的数据'.$msgstr.'');
 		$allfields = $this->db->getallfields('[Q]'.$flow->mtable.'');
 		
 		$oi 	= 0;
@@ -808,17 +812,19 @@ class inputAction extends Action
 				$rs['id'] = $bo;
 				$dorudat[]= $rs;
 				$oi++;
+			}else{
+				$msgstr.='行'.($k+1).'保存数据库错误;';
 			}
 		}
 		
-		if($oi==0)return returnerror('导入数据为0条');
+		if($oi==0)return returnerror('导入数据为0条'.$msgstr.'');
 		
 		//保存后判断
 		if(method_exists($flow,'flowdaoruafter')){
 			$flow->flowdaoruafter($dorudat);
 		}
 
-		return returnsuccess('成功导入'.$oi.'条数据');
+		return returnsuccess('成功导入'.$oi.'条数据'.$msgstr.'');
 	}
 	
 	//读取导入的excel数据

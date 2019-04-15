@@ -43,8 +43,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		clickwin:function(){
 			openinput('考勤信息','leavehr');
@@ -109,7 +113,7 @@ $(document).ready(function(){
 	&nbsp;&nbsp;<a href="<?=URLY?>view_jiaqi.html"target="_blank">帮助</a>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

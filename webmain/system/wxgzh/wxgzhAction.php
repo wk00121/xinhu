@@ -99,6 +99,6 @@ class wxgzhClassAction extends Action
 		$barr = m('wxgzh:index')->sendtpl($openid, $id, array(), true);
 		if($barr['errcode']!=0)return returnerror($barr['errcode'].'.'.$barr['msg']);
 		
-		return returnsuccess();
+		return returnsuccess($barr['msg']);
 	}
 }

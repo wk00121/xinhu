@@ -44,8 +44,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'date',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		xiashu:function(o1){
 			if(atype=='my'){
@@ -95,7 +99,7 @@ $(document).ready(function(){
 	</td>
 	<td width="80%"></td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

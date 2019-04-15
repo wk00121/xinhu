@@ -68,8 +68,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'date',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		adddaka:function(){
 			var h = $.bootsform({
@@ -155,7 +159,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
 	<td style="padding-left:10px">
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 	<td style="padding-left:10px;display:none">
 		<input class="btn btn-default" id="huoqbtsn{rand}" click="huqodidn" value="从企业微信获取打卡数据" type="button">

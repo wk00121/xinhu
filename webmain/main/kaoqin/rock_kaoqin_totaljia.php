@@ -35,7 +35,7 @@ $(document).ready(function(){
 			}
 			if(cs4.length>0){
 				var cols = getcolumns(col1,col2,cs4);
-				cols.push({text:'',dataIndex:'xingxid',renderer:function(v,d){
+				cols.push({text:'',notexcel:true,dataIndex:'xingxid',renderer:function(v,d){
 					return '<a href="javascript:;" onclick="show{rand}mx('+d.id+',\''+d.name+'\')">明细</a>';
 				}});
 				a.setColumns(cols);
@@ -50,8 +50,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'date',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		//订阅
 		dingyue:function(){
@@ -94,7 +98,7 @@ $(document).ready(function(){
 	</td>
 	<td width="80%"></td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu" type="button">导出</button>
+		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

@@ -321,6 +321,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 			$fleft[]= array('', '<font color=#ff6600>↓流程审核步骤</font>', 0);
 			$rows 	= m('flow_course')->getrows('setid='.$setid.' and `status`=1','id,name','pid,sort');
 			foreach($rows as $k=>$rs){
+				$fleft[]= array('course'.$rs['id'].'_all', ''.$rs['name'].'处理意见', 0);
 				$fleft[]= array('course'.$rs['id'].'_name', ''.$rs['name'].'处理人', 0);
 				$fleft[]= array('course'.$rs['id'].'_zt', ''.$rs['name'].'处理状态', 0);
 				$fleft[]= array('course'.$rs['id'].'_dt', ''.$rs['name'].'处理时间', 0);

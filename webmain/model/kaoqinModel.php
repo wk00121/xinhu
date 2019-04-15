@@ -114,13 +114,22 @@ class kaoqinClassModel extends Model
 		}
 		
 		$uarr[] 	= 'u'.$uid.'';
-		$deptpath 	= arrvalue($this->getusarr($uid), 'deptpath');
+		$urs 		= $this->getusarr($uid);
+		$deptpath 	= arrvalue($urs, 'deptpath');
 		if(!isempt($deptpath)){
 			$depa = explode(',', str_replace(array('[',']'), array('',''), $deptpath));
 			foreach($depa as $depas){
 				$uarr[] = 'd'.$depas.'';
 			}
 		}
+		$groupname  = arrvalue($urs, 'groupname');
+		if(!isempt($groupname)){
+			$depa = explode(',', $groupname);
+			foreach($depa as $depas){
+				$uarr[] = 'g'.$depas.'';
+			}
+		}
+		
 		if(!isset($this->getdistrows[$type])){
 			$barr = $this->getall("`status`=1 and `type`=".$type." ",'*', '`sort`');
 			foreach($barr as $k=>$rs)if(isempt($rs['enddt']))$barr[$k]['enddt'] = $rs['startdt'];
@@ -232,7 +241,7 @@ class kaoqinClassModel extends Model
 			return $uid;
 		}else{
 			if(!isset($this->userarr[$uid])){
-				$_urs = $this->db->getone('[Q]admin', "`id`='$uid'", '`id`,`deptid`,`deptpath`');
+				$_urs = $this->db->getone('[Q]admin', "`id`='$uid'", '`id`,`deptid`,`deptpath`,`groupname`');
 				$this->userarr[$uid] = $_urs;
 				return $_urs;
 			}else{

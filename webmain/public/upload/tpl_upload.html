@@ -310,7 +310,7 @@ button{ cursor:pointer}
 </head>
 <body style="padding:1px" onLoad="up.init()">
 <center>
-<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" <?php if($params['maxup']>1)echo 'multiple';?> onChange="up.change(this)"></form>
+<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" <?php if($params['maxup']!=1)echo 'multiple';?> onChange="up.change(this)"></form>
 <div align="left" style="padding:3px"></div>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>

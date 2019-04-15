@@ -29,8 +29,12 @@ $(document).ready(function(){
 			
 			a.setparams({dt1:get('dt1_{rand}').value,dt2:get('dt2_{rand}').value},true);
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'发票统计',
+				'btnobj':o1
+			});
 		}
 	};
 	js.initbtn(c);
@@ -52,7 +56,7 @@ $(document).ready(function(){
 
 	<td width="90%"></td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

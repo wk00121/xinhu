@@ -173,4 +173,15 @@ class loginClassAction extends apiAction
 		$this->showreturn($data);
 	}
 	
+	/**
+	*	创建二维码
+	*/
+	public function ewmAction()
+	{
+		header("Content-type:image/png");
+		$url = $this->jm->base64decode($this->get('url'));
+		if(substr($url,0,4)!='http')$url =''.$this->rock->getouturl().''.$url.'';
+		$img = c('qrcode')->show($url);
+		echo $img;
+	}
 }

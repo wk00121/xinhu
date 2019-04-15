@@ -267,7 +267,7 @@ class Action extends mainAction
 				}
 				$rows[$k] 				= $this->flow->flowrsreplace($rs,2);
 			}
-			$bacarr['rows'] = $rows;
+			$bacarr['rows'] = $this->flow->daochusubtable($rows);
 		}
 		if($execldown == 'true'){
 			$this->exceldown($bacarr);
@@ -276,42 +276,6 @@ class Action extends mainAction
 		$this->returnjson($bacarr);
 	}
 	
-	public function publictreestoreAjax()
-	{
-		return array();//此方法无用
-		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->rock->post('tablename_abc'),1));
-		$order	= $this->rock->iconvsql($this->rock->get('order'));
-		$fistid	= $this->rock->get('fistid','0');
-		$rows	= $this->publictreestore($fistid, $table, $order);
-		echo json_encode(Array(
-			'root'=>'.','children'=>$rows
-		));
-	}
-	public function publictreestore($pid, $table, $order){
-		$db 		= m($table);
-		$expandall	= $this->rock->get('expandall');
-		$pidfields	= $this->rock->get('pidfields','pid');
-		$idfields	= $this->rock->get('idfields','id');
-		$wheres		= $this->rock->iconvsql($this->rock->post('where'));
-		
-		$where	= "`$pidfields`='$pid' $wheres";
-		if($order!='')$where.=" order by `$order`";
-		$rows = $db->getall($where);
-		foreach($rows as $k=>$rs){
-			$id	= $rs['id'];
-			$rows[$k]['leaf'] 	= true;
-			$rows[$k]['sid']	= $id;
-			if($expandall=='true')$rows[$k]['expanded']	= true;
-			$total	= $db->rows("`$pidfields`='".$rs[$idfields]."' $wheres");
-			if($total >0){
-				$rows[$k]['leaf'] = false;
-				$rows[$k]['children'] = $this->publictreestore($rs[$idfields], $table, $order);
-			}else{
-				$rows[$k]['children'] = array();
-			}
-		}
-		return $rows;
-	}
 	
 	/**
 	*	验证签名
@@ -448,7 +412,7 @@ class Action extends mainAction
 		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->post('tablename','',1),1));
 		if(!$this->checksignature($this->post('tablename')))return '无效请求';
 		$noupf	= array('pass','user');
-		$id		= $this->post('id', '0');
+		$id		= c('check')->onlynumber($this->post('id', '0'));
 		$fields	= $this->post('fieldname');
 		if(in_array(strtolower($fields), $noupf))return 'error';
 		$value	= $this->post('value');

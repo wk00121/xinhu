@@ -129,4 +129,26 @@ class flowoptClassAction extends Action
 		
 		return $flow->receiptcheck($receiptid, $sm);
 	}
+	
+	/**
+	*	读取字段
+	*/
+	public function getfieldsAjax()
+	{
+		$modenum	= $this->get('modenum');
+		$flow 		= m('flow')->initflow($modenum);
+		$farr 		= array();
+		foreach($flow->fieldsarra as $k=>$rs){
+			$farr[] = array(
+				'fields' => $rs['fields'],
+				'name' 	=> $rs['name'],
+				'islb' 	=> $rs['islb'],
+			);
+		}
+		return array(
+			'fieldsarr' => $farr,
+			'isflow'	=> $flow->isflow,
+			'modenames'	=> $flow->moders['names'],
+		);
+	}
 }

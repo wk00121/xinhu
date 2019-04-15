@@ -66,8 +66,13 @@ $(document).ready(function(){
 				a.reload();
 			},'get','','刷新中...,刷新完成');
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'物品列表',
+				'modenum':'goods',
+				'btnobj':o1
+			});
 		},
 		
 		
@@ -124,7 +129,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="piliang" type="button">导入</button>
 	</td>
 	<td  style="padding-right:10px">
-		<button class="btn btn-default" click="daochu" type="button">导出</button>
+		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button>

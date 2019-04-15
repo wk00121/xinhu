@@ -305,6 +305,7 @@ class flowbillClassModel extends Model
 				'name' 		=> $name,
 				'deptname' 	=> $deptname,
 				'sericnum' 	=> $rs['sericnum'],
+				'updt' 		=> $rs['updt'],
 				'nowcheckid'=> $rs['nowcheckid'],
 				'nowcourseid'=> $rs['nowcourseid'], //当前步骤
 				'ishui' 	=> $ishui,

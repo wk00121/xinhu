@@ -8,6 +8,7 @@ class agentModel extends Model
 	public $agentid		= '0';
 	public $modeid		= 3;
 	public $page		= 1;
+	public $loadci		= 1;
 	public $limit		= 10;
 	public $user_id		= 0;
 	public $event		= '';
@@ -60,6 +61,7 @@ class agentModel extends Model
 				$lx  = $lxa[0];
 			}
 		}
+		$this->loadci 	= (int)$this->rock->get('loadci','0');
 		$this->getagentinfor($num);
 		$this->page 	= $page;
 		$this->user_id 	= $uid;
@@ -81,6 +83,10 @@ class agentModel extends Model
 		);
 		if(is_array($narr))foreach($narr as $k=>$v)$arr[$k]=$v;
 		$barr 			= $this->agentrows($arr['rows'],$arr['rowd'], $uid);
+		if(isset($barr['rows'])){
+			foreach($barr as $k=>$v)$arr[$k]=$v;
+			$barr = $barr['rows'];
+		}
 		$arr['rows'] 	= $this->showrowsface($barr);
 		$arr['stotal']	= $this->agenttotals($uid);
 		unset($arr['rowd']);

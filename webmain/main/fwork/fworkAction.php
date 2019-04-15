@@ -138,7 +138,7 @@ class fworkClassAction extends Action
 		if($dt2!='')$where.=" and a.`applydt`<='$dt2'";
 		
 		if($modeid>0)$where.=' and a.modeid='.$modeid.'';
-		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.`sericnum` like '$key%' or a.`nowcheckname`='$key')";
+		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.`sericnum` like '$key%' or a.`nowcheckname`='$key' or a.`modename`='$key')";
 		
 
 		

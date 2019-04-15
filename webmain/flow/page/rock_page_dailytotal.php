@@ -69,8 +69,13 @@ $(document).ready(function(){
 				a.reload();
 			});
 		},
-		daochu:function(){
-			a.exceldown('日报统计('+get('dt1_{rand}').value+')');
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'日报统计('+get('dt1_{rand}').value+')',
+				'btnobj':o1,
+				'notdingyue':true
+			});
 		}
 	};
 	
@@ -99,7 +104,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
 	<td  style="padding-left:10px">
-		<button class="btn btn-default" click="daochu" type="button">导出</button>
+		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 	<td  style="padding-left:5px">
 		

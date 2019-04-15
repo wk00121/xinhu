@@ -85,6 +85,20 @@ class wxgzh_indexClassModel extends wxgzhModel
            "url":"'.$url.'",           
            "data":'.$modeparams.'
 		}';
+		
+		//使用异步
+		if(getconfig('asynsend')){
+			m('reim')->asynurl('asynrun','wxgzhtplsend', array(
+				'body' 		=> $this->rock->jm->base64encode($body),
+			));
+			return $this->setbackarr('异步发送', 0);
+		}
+
+		return $this->sendtplasyn($body);
+	}
+	
+	public function sendtplasyn($body)
+	{
 		$token 	= $this->gettoken();
 		$url 	= $this->gettourl('URL_tplsend').'?access_token='.$token.'';
 		$result	= c('curl')->postcurl($url, $body);

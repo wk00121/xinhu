@@ -42,7 +42,7 @@ class socketChajian extends Chajian
 	*/
 	public function udppush($str, $host='', $port=0)
 	{
-		$msg 	= '';
+		$msg 	=  $bstr = '';
 		if(!function_exists('stream_socket_client'))$msg= '没有开启Socket组件';
 		if($msg==''){
 			$handle = stream_socket_client("udp://{$host}:{$port}", $errno, $errstr);
@@ -53,11 +53,11 @@ class socketChajian extends Chajian
 				fwrite($handle, $str);  
 				//$bstr = fread($handle, 1024); //去掉这个，不然容易阻塞
 				fclose($handle);
-				//if(isempt($bstr))$msg = 'error';
 			}
 		}
 		$barr['code'] = 0;
 		$barr['msg']  = 'ok';
+		$barr['data'] = $bstr;
 		if($msg!=''){
 			$barr['code'] = 2;
 			$barr['msg']  = $msg;

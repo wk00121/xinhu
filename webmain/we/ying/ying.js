@@ -1,5 +1,8 @@
 var myScroll=false,yy={
 	sousoukey:'',
+	onshowdata:function(){}, //加载到数据回调
+	loadci:0,
+	searchparams:{},
 	resizehei:function(){
 		var hei= this.getheight();
 		if(agentlx==0){
@@ -241,19 +244,29 @@ var myScroll=false,yy={
 		}
 		this.getdata(this.nowevent,p, mo);
 	},
-	getdata:function(st,p, mo){
+	getdata:function(st,p, mo, cas){
 		this.nowevent=st;
 		try{sessionStorage.setItem(''+json.num+'_event', st);}catch(e){}
 		this.nowpage = p;
+		if(!cas)cas={};
 		if(!mo)mo='mode';
-		var key = ''+this.sousoukey;
+		var key = ''+this.sousoukey,i;
+		this.loadci++;
 		if(key)key='basejm_'+jm.base64encode(key)+'';
-		js.ajax('index','getyydata',{'page':p,'event':st,'num':this.num,'key':key},function(ret){
+		var kcan = {'page':p,'event':st,'num':this.num,'key':key,'loadci':this.loadci};
+		for(i in this.searchparams)kcan[i]=this.searchparams[i];
+		for(i in cas)kcan[i]=cas[i];
+		js.ajax('index','getyydata',kcan,function(ret){
 			yy.showdata(ret);
 		},mo, false,false, 'get');
 	},
 	reload:function(){
 		this.getdata(this.nowevent,this.nowpage);
+	},
+	search:function(cans){
+		if(!cans)cans={};
+		this.searchparams=cans;
+		this.getdata(this.nowevent,1, '', cans);
 	},
 	keysou:function(key){
 		if(this.sousoukey == key)return;
@@ -446,6 +459,7 @@ var myScroll=false,yy={
 			this.showobj.html('<div class="notrecord" id="notrecord">暂无记录</div>');
 		}
 		if(this.touchobj)this.touchobj.onupok();
+		this.onshowdata(a);
 	},
 	onupbefore:function(){
 		if(this.overend)return false;

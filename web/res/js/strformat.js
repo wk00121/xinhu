@@ -260,6 +260,9 @@ var strformat = {
 				}
 				s='<img src="'+apiurl+''+d.filepath+'" '+sttr+' fid="'+d.fileid+'">';
 			}
+		}else if(d.fileext=='amr'){
+			s+='<i class="icon-volume-up"></i> '+(parseInt(d.filesize/1000))+'"';
+			s+='&nbsp;<a href="javascript:;" style="font-size:12px" onclick="js.downshow('+d.fileid+')">下载</a>';
 		}else{
 			slx = d.fileext;if(!lj)lj='';
 			if(js.fileall.indexOf(','+slx+',')<0)slx='wz';

@@ -71,7 +71,7 @@ class flow_subscribeinfoClassModel extends flowModel
 		$this->db->update('[Q]subscribe',"`lastdt`='{$this->rock->now}'", '`id`='.$id.'');
 	
 		if(!isempt($bstr) && substr($bstr, 0, 1)=='{'){
-			$publicurl	= getconfig('publicurl', URL);//公网URL
+			$publicurl	= $this->rock->getouturl();//公网URL
 			$barr 		= json_decode($bstr, true);
 			$htmlpath 	= $barr['url'];
 			

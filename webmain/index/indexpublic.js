@@ -551,18 +551,95 @@ js.subscribe=function(csns){
 }
 
 //自定义导出
-function autoexcelfun(options){
+publicdaochuobjfarr = {};
+function publicdaochuobj(options){
 	var me 		= this;
-	var cans 	= js.apply({'oncallback':function(){},isflow:0,title:'自定义列导出','params':{},objtable:false}, options);
+	var cans 	= js.apply({'oncallback':function(){},'modenum':'','modenames':'',modename:'',objtable:false,fieldsarr:[],btnobj:false,notdingyue:false}, options);
 	for(var a in cans)this[a]=cans[a];
 	this._init=function(){
-		if(!this.objtable){
-			js.msg('msg','没指定一个表格无法导出');
+		if(!this.btnobj || !this.objtable)return;
+		
+		if(!this.daochuobj)this.daochuobj=$.rockmenu({
+			width:120,top:35,donghua:false,data:[],
+			itemsclick:function(d, i){
+				me.daonchuclick(d);
+			}
+		});
+		var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3}];
+		if(!this.notdingyue)d.push({name:'订阅此列表',lx:2});
+		this.daochuobj.setData(d);
+		var lef = $(this.btnobj).offset();
+		this.daochuobj.showAt(lef.left, lef.top+35);
+	};
+	this.daonchuclick=function(d){
+		if(d.lx==0)this.objtable.exceldown();
+		if(d.lx==1)this.objtable.exceldownnow();
+		if(d.lx==2)this.subscribelist();
+		if(d.lx==3)this.excelautoinit();
+	}
+	this.subscribelist=function(){
+		var name = nowtabs.name;
+		if(this.modename!='')name=''+this.modename+'('+name+')';
+		js.subscribe({
+			title:name,
+			cont:''+name+'的列表的',
+			explain:'订阅['+name+']的列表',
+			objtable:this.objtable
+		});
+	}
+	this.excelautoinit=function(){
+		if(this.fieldsarr.length==0){
+			if(this.modenum!=''){
+				if(publicdaochuobjfarr[this.modenum]){
+					this.loadfarrshow(publicdaochuobjfarr[this.modenum]);
+				}else{
+					js.loading('读取字段中...');
+					js.ajax(js.getajaxurl('getfields','flowopt','flow'),{'modenum':this.modenum}, function(ret){
+						js.unloading();
+						me.loadfarrshow(ret);
+					},'get,json', function(st){
+						js.msgerror(st);
+					});
+				}
+			}else{
+				var farr = this.objtable.getcolumns(),i,fars=[];
+				for(i=0;i<farr.length;i++){
+					if(!farr[i].notexcel)fars.push({
+						'fields':farr[i].dataIndex,
+						'name':farr[i].text,
+						'islb':'1'
+					});
+				}
+				this.fieldsarr=fars;
+				this.excelauto();
+			}
+		}else{
+			this.excelauto();
+		}
+	}
+	this.loadfarrshow=function(ret){
+		var farr = ret.fieldsarr;
+		publicdaochuobjfarr[this.modenum]=ret;
+		this.fieldsarr=farr;
+		this.isflow = ret.isflow;
+		this.modenames = ret.modenames;
+		this.excelauto();
+	}
+	this.excelauto=function(){
+		if(this.fieldsarr.length==0){
+			js.msg('msg','没有设置字段数据');
 			return;
 		}
-		var str='<table width="100%"><tr>',i,len=this.fieldsarr.length,d1,sel,oi=0;
+		var dar=[],i,sdar;
+		for(i in this.fieldsarr)dar.push(this.fieldsarr[i]);
+		if(!isempt(this.modenames)){
+			sdar = this.modenames.split(',');
+			for(i in sdar)dar.push({'fields' : 'sub_table_'+i+'','name' : sdar[i]});
+		}
+		this.nowfieldsarr = dar;
+		var str='<table width="100%"><tr>',len=dar.length,d1,sel,oi=0;
 		for(i=0;i<len;i++){
-			d1 = this.fieldsarr[i];
+			d1 = dar[i];
 			if(this.isflow==0){
 				if(d1.fields=='base_name' || d1.fields=='base_deptname')continue;
 			}
@@ -574,7 +651,7 @@ function autoexcelfun(options){
 		}
 		str+='</tr></table>';
 		str+='<div><label><input type="checkbox" onclick="js.selall(this,\'daochufields\')">全选</label>&nbsp;&nbsp;&nbsp;导出前&nbsp;<input type="number" class="form-control" id="daolimit" style="width:100px" min="1" value="1000">&nbsp;条记录</div>';
-		js.tanbody('autoexceldao',this.title,520,410,{
+		js.tanbody('autoexceldao',''+this.modename+'自定义列导出',520,410,{
 			html:'<div>'+str+'</div>',
 			bodystyle:'padding:10px',
 			btn:[{text:'确定'}]
@@ -589,19 +666,22 @@ function autoexcelfun(options){
 			js.msg('msg','至少要选择一个列');
 			return;
 		}
-		var dida = did.split(','),i,d1,str1='',str2='';
+		var dida = did.split(','),i,d1,str1='',str2='',str3='';
 		for(i=0;i<dida.length;i++){
-			d1 = this.fieldsarr[dida[i]];
+			d1 = this.nowfieldsarr[dida[i]];
 			str1+=','+d1.name+'';
 			str2+=','+d1.fields+'';
+			if(d1.fields.indexOf('sub_table_')==0)str3+=','+d1.fields.substr(10)+'';
 		}
 		str1 = str1.substr(1);
 		str2 = str2.substr(1);
+		if(str3!='')str3 = str3.substr(1);
 		this.objtable.exceldown('',2, {
 			'page':1,
 			'limit':get('daolimit').value,
 			'excelfields':str2,
-			'excelheader':str1
+			'excelheader':str1,
+			'excelsubtab':str3
 		});
 		js.tanclose('autoexceldao');
 	}

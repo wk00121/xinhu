@@ -50,7 +50,7 @@ $(document).ready(function(){
 		},{
 			text:'操作',dataIndex:'opt',renderer:function(v,d){
 				var s = '&nbsp;';
-				if(isempt(changdata.deptid))s = '<a href="javascript:;" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
+				if(isempt(changdata.deptid)||changdata.deptid=='0')s = '<a href="javascript:;" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
 				return s;
 			}
 		}],

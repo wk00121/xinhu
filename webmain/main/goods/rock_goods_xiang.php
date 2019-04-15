@@ -52,8 +52,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown('物品出入库详情');
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'物品出入库详情',
+				'btnobj':o1
+			});
 		},
 		loadfile:function(spd,nsd){
 			$('#megss{rand}').html(nsd);
@@ -110,7 +114,7 @@ $(document).ready(function(){
 		&nbsp;&nbsp;<span id="megss{rand}"></span>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>&nbsp;&nbsp;
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>&nbsp;&nbsp;
 		<button class="btn btn-danger" id="del_{rand}" click="del" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>
 </tr></table>

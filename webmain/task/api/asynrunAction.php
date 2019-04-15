@@ -170,4 +170,13 @@ class asynrunClassAction extends apiAction
 		$page 		= (int)$this->get('page','2');
 		return m('weixinqy:daka')->getrecord('', $dt1, $dt2, $page);
 	}
+	
+	//发送模版消息
+	public function wxgzhtplsendAction()
+	{
+		$body 	= $this->jm->base64decode($this->get('body'));
+		$barr 	=  m('wxgzh:index')->sendtplasyn($body);
+		m('log')->todolog('模版消息', $barr);
+		return $barr;
+	}
 }

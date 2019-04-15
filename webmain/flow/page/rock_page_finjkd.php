@@ -67,39 +67,15 @@ $(document).ready(function(){
 			var cs = {key:'','search_fields':d.fields,'search_value':sid};
 			a.setparams(cs,true);
 		},
-		//导出
 		daochu:function(o1,lx,lx1,e){
-			if(!this.daochuobj)this.daochuobj=$.rockmenu({
-				width:120,top:35,donghua:false,data:[],
-				itemsclick:function(d, i){
-					c.daonchuclick(d);
-				}
-			});
-			var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3},{name:'订阅此列表',lx:2}];
-			this.daochuobj.setData(d);
-			var lef = $(o1).offset();
-			this.daochuobj.showAt(lef.left, lef.top+35);
-		},
-		daonchuclick:function(d){
-			if(d.lx==0)a.exceldown();
-			if(d.lx==1)a.exceldownnow();
-			if(d.lx==2)this.subscribelist();
-			if(d.lx==3)this.excelauto();
-		},
-		excelauto:function(){
-			autoexcelfun({
-				'fieldsarr':fieldsarr,
+			publicdaochuobj({
 				'objtable':a,
+				'modename':modename,
+				'fieldsarr':fieldsarr,
+				'modenum':modenum,
+				'modenames':modenames,
 				'isflow':isflow,
-				'modenames':modenames
-			});
-		},
-		subscribelist:function(){
-			js.subscribe({
-				title:'借款单('+nowtabs.name+')',
-				cont:'借款单('+nowtabs.name+')的列表的',
-				explain:'订阅[借款单]的列表',
-				objtable:a
+				'btnobj':o1
 			});
 		},
 		getacturl:function(act){
