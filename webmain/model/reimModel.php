@@ -1016,7 +1016,7 @@ class reimClassModel extends Model
 		}
 		$uwhere = "$where `status`=1";
 		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','appios') and `online`=1",'`token`,`uid`,`web`','id desc');
-		$alias 	= $uida = $xmalias = $newalias = array();
+		$alias 	= $uida = $xmalias = $oldalias = $newalias = array();
 		$uids	= '0';
 		foreach($rows as $k=>$rs){
 			$_uid 	 = $rs['uid'];
@@ -1027,11 +1027,13 @@ class reimClassModel extends Model
 				$xmalias[] = $rs['token'];
 			}else if(substr($rs['web'],0,4)=='app_'){
 				$newalias[] = $rs['token'];	
+			}else if(substr($rs['web'],0,4)=='apk_'){
+				$oldalias[] = $rs['token'];	
 			}else{
 				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'newalias'=>$newalias);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias);
 	}
 	
 	/**

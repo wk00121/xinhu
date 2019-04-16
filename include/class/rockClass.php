@@ -577,6 +577,7 @@ final class rockClass
 	public function debugs($str, $lxs='')
 	{
 		if(!DEBUG)return;
+		if(is_array($str))$str = json_encode($str);
 		$msg 	= '['.$this->now.']:'.$this->nowurl().''.chr(10).''.$str.'';
 		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
 		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.str_shuffle('abcdefghijklmn').'.log', $msg);
