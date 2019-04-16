@@ -258,12 +258,7 @@ showvies{rand}=function(oi,lx){
 	if(lx==1){
 		js.downshow(d.fileid)
 	}else{
-		if(js.isimg(d.wtype)){
-			$.imgview({url:d.filepath,downbool:false});
-		}else{
-			var urls = '?m=public&a=fileviewer&id='+d.fileid+'&wintype=max';
-			openxiangs(d.name, urls);
-		}
+		js.yulanfile(d.fileid,d.wtype,d.filepath,d.name);
 	}
 }
 $('#viewwordxie_{rand}').after('<div class="tishi">如没有在线编辑插件，可用下载下来编辑写好了在上传，上传的文档名称需一致。</div>');
@@ -321,8 +316,8 @@ upfilexiezuo{rand}=function(d){
 		</td>
 		
 		<td style="padding-left:10px">
-			<div style="width:85px" class="btn-group">
-			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
+			<div style="white-space:nowrap">
+			<button style="border-right:0;border-top-right-radius:0;border-bottom-right-radius:0" class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px;border-top-left-radius:0;border-bottom-left-radius:0"><i class="icon-angle-down"></i></button> 
 			</div>
 		</td>
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>

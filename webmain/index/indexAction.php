@@ -40,8 +40,24 @@ class indexClassAction extends Action{
 		$this->smartydata['my']			= $my;
 		$this->smartydata['afrom']		= $afrom;
 		$this->smartydata['face']		= $this->rock->repempt($my['face'], 'images/noface.png');
-		$this->smartydata['style']		= $this->rock->repempt($my['style'], '0');
 		if(!isempt($homename))$this->title = $homename;
+		
+		//样式主题处理
+		$strs = explode(',', ',cerulean,cosmo,cyborg,darkly,flatly,journal,lumen,paper,readable,sandstone,simplex,slate,spacelab,superhero,united,xinhu,yeti');
+		$zys  = count($strs)-1;
+		$style= (int)$this->rock->repempt($my['style'], '0');//默认样式
+		$styys= 'inverse';
+		$this->smartydata['style']		= $style;
+		if($style==0)$style = (int)getconfig('defstype','1');//默认的主题皮肤
+		if($style>$zys){
+			$styys= 'default';
+			$style= $style-$zys;
+		}
+		$stylecs1	= 'mode/bootstrap3.3/css/bootstrap';
+		$stylecss	= ''.$stylecs1.'_'.$strs[$style].'.css';
+		if(!file_exists($stylecss))$stylecss= ''.$stylecs1.'_cerulean.css';
+		$this->smartydata['stylecss']	= $stylecss;
+		$this->smartydata['styledev']	= $styys;
 	}
 	
 	private function menuwheres()
@@ -72,12 +88,15 @@ class indexClassAction extends Action{
 	public function getmenuAjax()
 	{
 		$pid 	= $this->get('pid');
+		$loadci = (int)$this->get('loadci');
 		$this->menuwheres();
 		$this->addmenu = m('menu')->getall("`status`=1 $this->menuwhere order by `sort`,`id`",'`id`,`num`,`url`,`icons`,`name`,`pid`');
-		$arr	= $this->getmenu($pid,0);
-		$this->returnjson($arr);
+		$barr	= array(
+			'menuarr' => $this->getmenu($pid,0)
+		);
+		if($loadci==1)$barr['menutopid'] = $this->menutopid();
+		return $barr;
 	}
-	
 	private function getmenu($pid, $lx=0)
 	{
 		$menu	= $this->addmenu;
@@ -85,6 +104,7 @@ class indexClassAction extends Action{
 		foreach($menu as $k=>$rs){
 			if($lx == 0 && $pid != $rs['pid'])continue;
 			$num			= $rs['num'];
+			$rs['bh']		= $num;
 			$sid			= $rs['id'];
 			$icons			= $rs['icons'];
 			if(isempt($num))$num 		= 'num'.$sid;
@@ -101,6 +121,23 @@ class indexClassAction extends Action{
 			$rows[] = $rs;
 		}
 		return $rows;
+	}
+	private function menutopid()
+	{
+		$pnuma  = array();
+		$gpar	= array();
+		foreach($this->addmenu as $k=>$rs)if($rs['pid']>0)$pnuma[$rs['id']]=$rs['pid'];
+		foreach($this->addmenu as $k=>$rs){
+			if($rs['pid']>0 && !isempt($rs['num'])){
+				$pid = $rs['pid'];
+				if(isset($pnuma[$pid])){
+					$pid=$pnuma[$pid];
+					if(isset($pnuma[$pid]))$pid=$pnuma[$pid];
+				}
+				$gpar[$rs['num']]=$pid;
+			}
+		}
+		return $gpar;
 	}
 	
 	public function downAction()
@@ -151,7 +188,10 @@ class indexClassAction extends Action{
 			if($bh != 'kjrko'){
 				if(in_array('kjrko',$homearrs) && $bh == 'kjrk'){
 				}else{
-					$homeitems[$rs['row']][] = $bh;
+					$homeitems[$rs['row']][] = array(
+						'num' => $bh,
+						'name'=> $rs['name']
+					);
 				}
 			}
 			

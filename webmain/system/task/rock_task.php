@@ -144,6 +144,7 @@ $(document).ready(function(){
 	};
 	
 	function btn(bo){
+		if(ISDEMO)return;
 		get('del_{rand}').disabled = bo;
 		get('edit_{rand}').disabled = bo;
 		get('yun_{rand}').disabled = bo;
@@ -163,6 +164,7 @@ $(document).ready(function(){
 			c.start(d.lx);
 		}
 	});
+	if(ISDEMO)get('randkstrt_{rand}').disabled=true;
 });
 </script>
 

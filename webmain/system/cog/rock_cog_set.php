@@ -5,11 +5,22 @@ $(document).ready(function(){
 	var barr = {};
 	var c={
 		init:function(){
+			this.loadys();
 			js.ajax(js.getajaxurl('getinfo','{mode}','{dir}'),{},function(a){
 				barr = a;
 				for(var i in a)$('#'+i+'_{rand}').val(a[i]);
 				if(a.isshou=='1')$('#benquan_{rand}').html('<font color=green>授权版</font>');
 			},'get,json');
+		},
+		loadys:function(){
+			if(!get('defstype_{rand}'))return;
+			var ysarr = 'cerulean,cosmo,cyborg,darkly,flatly,journal,lumen,paper,readable,sandstone,simplex,slate,spacelab,superhero,united,xinhu,yeti';
+			var sear = ysarr.split(','),i,len=sear.length,das = [];
+			for(i=0;i<len;i++){
+				das.push({name:sear[i],value:i+1});
+				das.push({name:sear[i]+'_def',value:i+1+len});
+			}
+			js.setselectdata(get('defstype_{rand}'),das,'value');
 		},
 		save:function(o){
 			var d={};
@@ -133,7 +144,7 @@ $(document).ready(function(){
 			<td class="tdinput"><input id="qqmapkey_{rand}" placeholder="可不设置，可到https://lbs.qq.com/下申请" class="form-control"></select></td>
 			
 			<td  align="right">登录方式：</td>
-			<td class="tdinput"><select id="loginyzm_{rand}"  class="form-control"><option value="0">仅使用帐号+密码</option><option value="1">帐号+密码/手机+验证码</option><option value="2">帐号+密码+验证码</option><option value="3">仅使用手机+验证码</option></select></td>
+			<td class="tdinput"><select id="loginyzm_{rand}"  class="form-control"><option value="0">仅使用帐号+密码</option><option value="1">帐号+密码/手机+手机验证码</option><option value="2">帐号+密码+手机验证码</option><option value="3">仅使用手机+手机验证码</option></select></td>
 			
 		</tr>
 		
@@ -142,15 +153,30 @@ $(document).ready(function(){
 			<td  align="right">文档转PDF预览：</td>
 			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
 			
-			<!--
-			<td  align="right">文件预览打开方式：</td>
-			<td class="tdinput"><select id="officedk_{rand}"  class="form-control"><option value="">模式窗口打开</option><option value="1">新窗口打开</option></select></td>
-			-->
-			
 			<td  align="right">记录用户操作：</td>
 			<td class="tdinput"><select id="useropt_{rand}"  class="form-control"><option value="">不记录</option><option value="1">记录到日志里</option></select></td>
 			
 		</tr>
+		
+		<tr>
+			<td  align="right">PC后端默认主题：</td>
+			<td class="tdinput"><select id="defstype_{rand}" style="width:80px"></select>&nbsp;必须去<a href="<?=URLY?>view_themes.html" target="_blank">下载主题包</a>，否则不能使用</td>
+			
+			<td  align="right"></td>
+			<td class="tdinput"></td>
+			
+		</tr>
+		
+		<!--
+		<tr>
+			<td  align="right">文件预览打开方式：</td>
+			<td class="tdinput"><select id="officedk_{rand}"  class="form-control"><option value="">模式窗口打开</option><option value="1">新窗口打开</option></select></td>
+			
+			
+			<td  align="right">录入详情页打开方式：</td>
+			<td class="tdinput"><select id="luopenfs_{rand}"  class="form-control"><option value="">默认(模式窗口)</option><option value="1">系统内选择卡打开</option><option value="2">新窗口打开</option></select></td>
+			
+		</tr>-->
 		
 		<tr>
 			<td  align="right"></td>

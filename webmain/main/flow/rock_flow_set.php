@@ -62,8 +62,9 @@ $(document).ready(function(){
 		}
 	});
 	function btn(bo, d){
+		if(ISDEMO)return;
 		get('edit_{rand}').disabled = bo;
-		//get('copy_{rand}').disabled = bo;
+		get('copy_{rand}').disabled = bo;
 		get('downbtn_{rand}').disabled = bo;
 		get('biaoge_{rand}').disabled = bo;
 		get('biaoges_{rand}').disabled = bo;
@@ -90,6 +91,22 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('allcreate','{mode}','{dir}'),{},function(s){
 				js.msg('success', s);
 			},'get',false,'生成中...');
+		},
+		copy:function(){
+			if(a.changeid==0)return;
+			js.prompt('输入新模块编号','将会从模块['+a.changedata.name+']复制主表子表和表单元素字段的！', function(jg,txt){
+				if(jg=='yes' && txt)c.copys(txt);
+			});
+		},
+		copys:function(txt){
+			if(a.changeid==0)return;
+			js.ajax(js.getajaxurl('copymode','{mode}','{dir}'),{id:a.changeid,name:txt},function(s){
+				if(s=='ok'){
+					a.reload();
+				}else{
+					js.msg('msg',s);
+				}
+			},'post',false,'复制中...,复制成功：还是要做其他很多事的，具体请到官网看模块开发视频。');
 		},
 		reload:function(){
 			a.reload();
@@ -224,7 +241,7 @@ $(document).ready(function(){
 		
 	</td>
 	<td align="right" nowrap>
-		<!--<button class="btn btn-default" click="tongbu,1" type="button">同步模块</button>&nbsp;-->
+		<button class="btn btn-default" id="copy_{rand}" click="copy,1" type="button">复制</button>&nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp; 
 		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>

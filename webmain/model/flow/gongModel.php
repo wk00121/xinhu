@@ -11,8 +11,8 @@ class flow_gongClassModel extends flowModel
 	protected function flowchangedata(){
 		$cont 	= c('html')->replace($this->rs['content']);
 		$fm 	= $this->rs['fengmian'];
-		if(!isempt($fm) && file_exists($fm)){
-			$cont='<div align="center"><img style="max-width:100%" src="'.URL.''.$fm.'"></div>'.$cont.'';
+		if(!isempt($fm)){
+			$cont='<div align="center"><img style="max-width:100%" src="'.$this->rock->gethttppath($fm).'"></div>'.$cont.'';
 		}
 		$this->rs['content'] = $cont;
 	}
@@ -68,6 +68,10 @@ class flow_gongClassModel extends flowModel
 	//发送推送通知
 	private function tisongtodo()
 	{
+		//还没到展示时间就不发送提醒
+		$zstart= arrvalue($this->rs, 'zstart');
+		if(!isempt($zstart) && $zstart>$this->rock->date)return;
+		
 		$h 	  = c('html');
 		$cont = $h->htmlremove($this->rs['content']);
 		$cont = $h->substrstr($cont,0, 50);
@@ -120,13 +124,26 @@ class flow_gongClassModel extends flowModel
 	protected function flowbillwhere($uid, $lx)
 	{
 		$key 	= $this->rock->post('key');
+		$typeid 	= (int)$this->rock->post('typeid','0');
 		$keywere= '';
+		$whyere = '';
 		if(!isempt($key))$keywere.=" and (`title` like '%$key%' or `typename`='$key')";
+		//我和我未读
+		if($lx=='my' || $lx=='wexx'){
+			$whyere= "and (`zstart` is null or `zstart`<='{$this->rock->date}')";
+			$whyere.= " and (`zsend` is null or `zsend`>='{$this->rock->date}')";
+		}
+		
+		if($typeid>0){
+			$typename=$this->option->getmou('name', $typeid);
+			$whyere.=" and `typename`='$typename'";
+		}
 		
 		return array(
-			'order' 	=> 'optdt desc',
+			'order' 	=> '`istop` desc,`optdt` desc',
 			'keywere' 	=> $keywere,
-			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou'
+			'where' 	=> $whyere,
+			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou,`status`,`istop`'
 		);
 	}
 	

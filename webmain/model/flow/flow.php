@@ -2217,7 +2217,7 @@ class flowModel extends Model
 			$bstr = $this->flowdeletebillbefore($sm);
 			if(!isempt($bstr))return $bstr;
 		}
-		
+		$modewhere = "`modenum`='".$this->modenum."' and `mid`=".$this->id."";
 		$this->flogmodel->delete($this->mwhere);
 		m('reads')->delete($this->mwhere);
 		m('file')->delfiles($this->mtable, $this->id);
@@ -2232,6 +2232,7 @@ class flowModel extends Model
 		$this->chaomodel->delete($this->mwhere);
 		m('remind')->delete($this->mwhere); //单据提醒的
 		m('todo')->delete($this->mwhere);
+		m('todo')->delete($modewhere);
 		m('receipt')->delete($this->mwhere); //回执
 		$this->delete($this->id);
 		$this->flowdeletebill($sm);

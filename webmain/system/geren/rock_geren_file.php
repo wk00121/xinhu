@@ -57,12 +57,7 @@ $(document).ready(function(){
 		if(lx==1){
 			js.downshow(d.id)
 		}else{
-			if(js.isimg(d.fileext)){
-				$.imgview({url:d.filepath,downbool:false});
-			}else{
-				var urls = '?m=public&a=fileviewer&id='+d.id+'&wintype=max';
-				openxiangs(d.filename, urls);
-			}
+			js.yulanfile(d.id,d.fileext,d.filepath,d.filename);
 		}
 	}
 	

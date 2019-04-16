@@ -31,6 +31,7 @@ class agent_gongClassModel extends agentModel
 		return $a;
 	}
 	protected function agentrows($rows, $rowd, $uid){
+		$typearr = array();
 		if($rows){
 			$ydarr	= explode(',', m('log')->getread('infor', $uid));
 			foreach($rowd as $k=>$rs){
@@ -43,6 +44,10 @@ class agent_gongClassModel extends agentModel
 				$rows[$k]['picurl'] = $rs['fengmian'];
 			}
 		}
-		return $rows;
+		if($this->loadci==1)$typearr = m('option')->getselectdata('gongtype', true);
+		return array(
+			'rows' =>$rows,
+			'typearr' =>$typearr,
+		);
 	}
 }

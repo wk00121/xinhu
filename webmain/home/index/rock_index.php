@@ -24,8 +24,9 @@ if(in_array('kjrko',$homearrs)){
 		<?php
 		$bili = 100 / count($homeitems);
 		echo '<td width="'.$bili.'%">';
-		if(isset($homeitems[0]))foreach($homeitems[0] as $nums){
-			$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$nums.'.php';
+		if(isset($homeitems[0]))foreach($homeitems[0] as $hi=>$hrs){
+			$itemnowname = $hrs['name'];
+			$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$hrs['num'].'.php';
 			if(file_exists($paths))include_once($paths);
 		}
 		
@@ -33,8 +34,9 @@ if(in_array('kjrko',$homearrs)){
 		
 		for($i=1;$i<=3;$i++)if(isset($homeitems[$i])){
 			echo '<td width="'.$bili.'%" style="padding-left:20px;">';
-			foreach($homeitems[$i] as $nums){
-				$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$nums.'.php';
+			foreach($homeitems[$i] as $hi=>$hrs){
+				$itemnowname = $hrs['name'];
+				$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$hrs['num'].'.php';
 				if(file_exists($paths))include_once($paths);
 			}
 			echo '</td>';
@@ -124,7 +126,8 @@ $(document).ready(function(){
 					}
 				});
 			}
-			if(a.total)for(oi in a.total)this.showtotal(a.total[oi],oi);
+			menubadge = a.total;
+			showmenubadge();//显示角标
 			var s=a.msgar[0],s1=a.msgar[1];
 			if(s!=''){
 				todocontent = s;
@@ -137,16 +140,6 @@ $(document).ready(function(){
 						return true;
 					}});
 				}
-			}
-		},
-		showtotal:function(to, sid){
-			var o = $('#'+sid+'_{rand}');
-			if(!o)return;
-			if(to<=0){
-				o.hide();
-			}else{
-				o.show();
-				o.html(to);
 			}
 		},
 		opennewtx:function(lx){

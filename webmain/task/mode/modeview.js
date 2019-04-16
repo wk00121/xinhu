@@ -353,20 +353,8 @@ var c={
 	
 	//预览文件
 	downshow:function(id, ext,pts){
-		var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
-		if(pts!=''&&js.isimg(ext)){
-			this.loadicons();
-			$.imgview({'url':pts,'ismobile':ismobile==1});
-			return false;
-		}
-		if(ismobile==1){
-			var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
-			if(docsx.indexOf(','+ext+',')==-1)
-				if(appobj1('openfile', id))return;
-			js.location(url);
-		}else{
-			js.winiframe('文件预览',url);
-		}
+		this.loadicons();
+		js.yulanfile(id, ext,pts);
 		return false;
 	},
 	changecheck_status:function(o1){

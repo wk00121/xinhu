@@ -15,20 +15,26 @@ class menuClassAction extends Action
 			$this->updatepirss();
 		}
 		$this->alldata 	= $this->db->getall('select *,(select count(1)from `[Q]menu` where `pid`=a.id '.$where.')stotal from `[Q]menu` a where 1=1 '.$where.' order by `sort`');
-		$this->getmenu(0, 1);
+		
+		$this->getmenu(0, 1, 1);
 		echo json_encode(array(
 			'totalCount'=> 0,
 			'rows'		=> $this->rows
 		));
 	}
 	
-	private function getmenu($pid, $oi)
+	private function getmenu($pid, $oi, $zt)
 	{
 		foreach($this->alldata as $k=>$rs){
 			if($pid==$rs['pid']){
 				$rs['level']	= $oi;
+				$zthui			= $rs['status'];
+				if($zt==0){
+					$rs['ishui']=1;
+					$zthui = 0;
+				}
 				$this->rows[] 	= $rs;
-				$this->getmenu($rs['id'], $oi+1);
+				$this->getmenu($rs['id'], $oi+1, $zthui);
 			}
 		}
 	}

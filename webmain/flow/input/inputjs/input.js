@@ -70,6 +70,7 @@ function initbody(){
 			c.saveken();
 		}
 	});
+	$('#view_fileidview').click(function(){c.loadicons()});
 }
 function changesubmit(d){};
 function changesubmitbefore(){};
@@ -467,20 +468,7 @@ var c={
 	
 	//预览文件
 	downshow:function(id, ext,pts){
-		var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
-		if(pts!=''&&js.isimg(ext)){
-			$.imgview({'url':pts,'ismobile':ismobile==1});
-			return false;
-		}
-		if(ismobile==1){
-			var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
-			if(docsx.indexOf(','+ext+',')==-1)
-				if(appobj1('openfile', id))return;
-			js.location(url);
-		}else{
-			js.winiframe('文件预览',url);
-		}
-		return false;
+		js.yulanfile(id, ext,pts);
 	},
 	
 	//上传文件点击

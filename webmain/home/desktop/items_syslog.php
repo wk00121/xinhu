@@ -15,15 +15,15 @@ homeobject.show_syslog_list=function(a){
 	for(i=0;i<a.length;i++){
 		a1=a[i];
 		atr='';
-		if(a1.level=='2')atr='style="color:red"';
-		s+='<a temp="list" '+atr+' class="list-group-item">◇【'+a1.type+'】'+a1.remark+'('+a1.optdt+')</a>';
+		if(a1.level=='2')atr='color:red';
+		s+='<a temp="list" style="TEXT-DECORATION:none;'+atr+'" class="list-group-item">◇【'+a1.type+'】'+a1.remark+'('+a1.optdt+')</a>';
 	}
 	$('#homesysloglist').append(s);
 }
 </script>
 <div align="left" id="homesysloglist" class="list-group">
 <div class="list-group-item  list-group-item-default">
-	<i class="icon-bookmark-empty"></i> 系统日志
+	<i class="icon-bookmark-empty"></i> <?=$itemnowname?>
 	<a style="float:right" onclick="openxtrilises()">更多&gt;&gt;</a>
 </div>
 </div>

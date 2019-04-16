@@ -4,7 +4,7 @@ $(document).ready(function(){
 	
 	var c={
 		showdata:function(a){
-			var hhu = parseInt(viewwidth/290);
+			var hhu = parseInt(viewwidth/260);
 			var j=0,lx,d,s1,i,l=0,len;
 			var strarr = [];for(i=0;i<hhu;i++)strarr[i]='';
 			for(lx in a){

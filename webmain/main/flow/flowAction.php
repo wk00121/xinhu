@@ -64,6 +64,9 @@ class flowClassAction extends Action
 		$cobj= c('check');
 		if(!$cobj->iszgen($tab))return '表名格式不对';
 		if($cobj->isnumber($num))return '编号不能为数字';
+		if(strlen($num)<4)return '编号至少要4位';
+		if($cobj->isincn($num))return '编号不能包含中文';
+		
 		if($cans['isflow']>0 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
 		$rows['num']= $this->rock->xssrepstr($num); 
 		$rows['name']= $name; 
@@ -944,20 +947,88 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		if($to>0)return '编号['.$num.']已存在';
 	}
 	
+	/**
+	*	复制模块
+	*/
 	public function copymodeAjax()
 	{
-		$id 	= $this->post('id','0');
-		$nmode 	= trim($this->post('nmode'));
-		if(isempt($nmode))return '新模块编号不能为空';
+		$id 	= (int)$this->post('id','0');
+		$bhnu 	= strtolower(trim($this->post('name')));
+		if(isempt($bhnu))return '新模块编号不能为空';
+		if(is_numeric($bhnu))return '模块编号不能用数字';
+		if(strlen($bhnu)<4)return '编号至少要4位';
+		if(c('check')->isincn($bhnu))return '编号不能包含中文';
+		
 		$dbs 	= m('mode');
+		if($dbs->rows("`num`='$bhnu'")>0)return '模块编号['.$bhnu.']已存在';
 		$mrs 	= $dbs->getone($id);
 		if(!$mrs)return '模块不存在';
-		unset($mrs['id']);
-		$mrs['name'].='复制';
-		$mrs['num']  =$nmode;
-		$mrs['num']  =$nmode;
+		$ars 	= $mrs;
+		$name	= $mrs['name'].'复制';
+		$biaom	= $bhnu;
+		$obha 	= $mrs['num'];
+		unset($ars['id']);
+		$ars['name'] = $name;
+		$ars['num']  = $bhnu;
+		$ars['table']= $biaom;
+		$tablea[]	 = $mrs['table'];
+		$tables		 = '';
+		if(!isempt($ars['tables'])){
+			$staba = explode(',', $ars['tables']);
+			foreach($staba as $kz=>$zb1){
+				$tables.=','.$biaom.'zb'.($kz+1).'';
+				if(!in_array($zb1, $tablea))$tablea[]=$zb1;
+			}
+			$tables = substr($tables, 1);
+		}
+		$ars['tables'] = $tables;
+		$modeid  = $dbs->insert($ars);
 		
+		//复制表
+		foreach($tablea as $kz=>$tabs){
+			$sqla 	   = $this->db->getall('show create table `[Q]'.$tabs.'`');
+			$createsql = $sqla[0]['Create Table'];
+			$biaom1	   = ''.PREFIX.''.$biaom.'';
+			if($kz>0)$biaom1	   = ''.PREFIX.''.$biaom.'zb'.$kz.'';
+			$createsql = str_replace('`'.PREFIX.''.$tabs.'`','`'.$biaom1.'`',$createsql);
+			$this->db->query($createsql);
+			$this->db->query('alter table `'.$biaom1.'` AUTO_INCREMENT=1');
+		}
+		//复制表单元素
+		$db1  = m('flow_element');
+		$rows = $db1->getall('mid='.$id.'');
+		foreach($rows as $k1=>$rs1){
+			$rs2 = $rs1;
+			unset($rs2['id']);
+			$rs2['mid'] = $modeid;
+			$db1->insert($rs2);
+		}
+		//复制相关布局文件
+		$hurs[] = ''.P.'/model/flow/{bh}Model.php'; //模块接口文件
+		$hurs[] = ''.P.'/flow/input/mode_{bh}Action.php'; //模块控制器
+		$hurs[] = ''.P.'/flow/input/inputjs/mode_{bh}.js'; //模块录入js文件
+		$hurs[] = ''.P.'/flow/page/input_{bh}.html'; //PC录入模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_0.html'; //PC展示模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_1.html'; //手机展示模版
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}.html'; //子模版展示
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_0.html';//子模版PC展示
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_1.html';//子模版手机展示
 		
-		echo 'eee'.$nmode.'';
+		foreach($hurs as $k=>$file){
+			$from = str_replace('{bh}',$obha,$file);
+			$to   = str_replace('{bh}',$bhnu,$file);
+			if(file_exists($from)){
+				if($k<=1){
+					$fstr = file_get_contents($from);
+					if($k==0)$fstr = str_replace('flow_'.$obha.'ClassModel','flow_'.$bhnu.'ClassModel',$fstr);
+					if($k==1)$fstr = str_replace('mode_'.$obha.'ClassAction','mode_'.$bhnu.'ClassAction',$fstr);
+					$this->rock->createtxt($to, $fstr);
+				}else{
+					@copy($from, $to);
+				}
+			}
+		}
+		
+		echo 'ok';
 	}
 }

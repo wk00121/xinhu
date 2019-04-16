@@ -70,6 +70,7 @@ class cogClassAction extends Action
 		$arr['bcolorxiang'] = getconfig('bcolorxiang');
 		$arr['qqmapkey'] 	= getconfig('qqmapkey');
 		$arr['asynsend'] 	= getconfig('asynsend');
+		$arr['defstype'] 	= getconfig('defstype','1');
 		$arr['officeyl'] 	= getconfig('officeyl'); //文档预览
 		//$arr['officedk'] 	= getconfig('officedk');
 		$arr['useropt'] 	= getconfig('useropt');
@@ -134,6 +135,7 @@ class cogClassAction extends Action
 		
 		$arr['officeyl'] 	= $this->post('officeyl');
 		$arr['useropt'] 	= $this->post('useropt');
+		$arr['defstype'] 	= $this->post('defstype','1');
 		//$arr['officedk'] 	= $this->post('officedk');
 		
 		$asynsend 		 	= $this->post('asynsend');
@@ -179,6 +181,7 @@ class cogClassAction extends Action
 		$smarr['officeyl']		= '文档Excel.Doc预览类型,0自己部署插件，1使用官网支持任何平台';
 		$smarr['officedk']		= '文件预览打开方式1新窗口打开';
 		$smarr['useropt']		= '1记录用户操作保存到日志里,空不记录';
+		$smarr['defstype']		= 'PC后台主题皮肤，可以设置1到34';
 		
 		$str1 = '';
 		foreach($arr as $k=>$v){

@@ -31,8 +31,7 @@ class homeitemsClassModel extends Model
 					$barr[''.$num.'arr'] = $obj->$act();
 			}
 		}
-		if(in_array('kjrk', $numarr) || in_array('kjrko', $numarr))
-			$barr['total'] = $this->gettotals($this->adminid); //有快捷方式才显示
+		$barr['total'] = $this->gettotals($this->adminid);//统计角标
 		return $barr;
 	}
 	
@@ -114,5 +113,17 @@ class homeitemsClassModel extends Model
 	public function get_officic_arr()
 	{
 		return m('flow')->initflow('officic')->getflowrows($this->adminid,'my');
+	}
+	
+	//读取新闻的
+	public function get_news_arr()
+	{
+		$typearr = m('option')->getdata('newstype',"and `value` like 'home%'");
+		$rows 	 = m('flow')->initflow('news')->getflowrows($this->adminid,'my');
+		
+		return array(
+			'typearr' => $typearr,
+			'rows' 	  => $rows,
+		);
 	}
 }

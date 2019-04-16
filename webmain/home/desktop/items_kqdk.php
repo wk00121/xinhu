@@ -8,7 +8,7 @@ defined('HOST') or die ('not access');
 <div class="panel panel-default">
   <div class="panel-heading">
 	<h3 class="panel-title">
-	<i class="icon-time"></i> 考勤打卡
+	<i class="icon-time"></i> <?=$itemnowname?>
 		<a style="float:right" href="javascript:;" onclick="moredakajili()">考勤表&gt;&gt;</a>
 	</h3>
   </div>

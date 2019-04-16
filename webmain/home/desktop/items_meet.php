@@ -21,7 +21,7 @@ homeobject.show_meet_list=function(a){
 </script>
 <div align="left"  id="homemeetlist" class="list-group">
 <div class="list-group-item  list-group-item-success">
-	<i class="icon-flag"></i> 今日会议
+	<i class="icon-flag"></i> <?=$itemnowname?>
 	<a style="float:right" onclick="moremeets()">更多&gt;&gt;</a>
 </div>
 

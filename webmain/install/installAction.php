@@ -18,7 +18,7 @@ class installClassAction extends ActionNot{
         foreach($dir_arr as $key=>$val){
             if($val == '.' || $val == '..'){
 			}else{               
-                unlink($dir.'/'.$val);
+                @unlink($dir.'/'.$val);
             }
         }
 		rmdir($dir);

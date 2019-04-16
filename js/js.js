@@ -18,7 +18,6 @@ $(document).ready(function(){
 		if(nwjsgui)window.focus=function(){nw.Window.get().focus()}
 		if(winobj!='')opener.js.openarr[winobj]=window;
 	}catch(e){}
-	
 	globalbody();
 	initbody();
 	$('body').click(function(e){
@@ -30,13 +29,6 @@ $(document).ready(function(){
 	});
 	var openfrom = js.request('openfrom',js.getoption('openfrom','', true));
 	js.setoption('openfrom', openfrom, true);
-	//移动端添加返回
-	if(ismobile==1 && history.length>1 && openfrom=='' && typeof(grouparr)=='undefined' && !get('header_title')){
-		//if(navigator.userAgent.indexOf('iPhone')>0){
-			//var s = '<div onclick="js.back()" style="position:fixed;left:5px;top:40%;width:30px;height:30px; background:rgba(0,0,0,0.3);z-index:9;border-radius:50%;font-size:14px;color:white;text-align:center;line-height:30px">&lt;</div>';
-			//$('body').append(s);
-		//}
-	}
 });
 var js={path:'index',url:'',bool:false,login:{},initdata:{},openarr:{},scroll:function(){}};
 var isIE=true;
@@ -78,6 +70,7 @@ js.gethost=function(){
 	try{sau = url.split('//')[1].split('/')[0];}catch(e){}
 	if(sau.indexOf('demo.rockoa.com')>=0 || sau.indexOf('demo.oaqoa.com')>=0)ISDEMO=true;
 	var lse = url.lastIndexOf('/');NOWURL = url.substr(0, lse+1);
+	QOM		= NOWURL.replace(/\./g,'').replace(/\//g,'').replace(/\:/g,'')+'_';
 	return sau;
 }
 function winHb(){
@@ -273,12 +266,13 @@ js.locationshow=function(sid){
 	js.winiframe('地图位置查看', url);
 	return false;
 }
+js.winiframemax=45;
 js.winiframe=function(tit, url){
 	var mxw= 900;
 	var hm = winHb()-150;if(hm>800)hm=800;if(hm<400)hm=400;
 	if(url.indexOf('wintype=max')>0){
 		mxw= 1000;
-		hm=winHb()-45;
+		hm=winHb()-js.winiframemax;
 	}
 	var wi = winWb()-150;if(wi>mxw)wi=mxw;if(wi<700)wi=700;
 	js.tanbody('winiframe',tit,wi,410,{
@@ -323,16 +317,38 @@ js.downupdel=function(sid, said, o1){
 	$('#fileid_'+said+'').val(s1);
 }
 js.downupshow=function(a, showid, nbj){
-	var s = '',i=0,s1='';
+	var s = '',i=0,s1='',fis;
 	var o = $('#view_'+showid+'');
 	for(i=0; i<a.length; i++){
-		s='<div onmouseover="this.style.backgroundColor=\'#f1f1f1\'" onmouseout="this.style.backgroundColor=\'\'" style="padding:4px 5px;border-bottom:1px #eeeeee solid;font-size:14px"><span>'+(i+1)+'</span><font style="display:none">'+a[i].id+'</font>、<img src="web/images/fileicons/'+js.filelxext(a[i].fileext)+'.gif" align="absmiddle"> <a class="a" onclick="return js.downshow('+a[i].id+',\''+a[i].fileext+'\')" href="javascript:;">'+a[i].filename+'</a> ('+a[i].filesizecn+')';
+		fis= 'web/images/fileicons/'+js.filelxext(a[i].fileext)+'.gif';
+		if(js.isimg(a[i].fileext) && !isempt(a[i].thumbpath))fis=a[i].thumbpath;
+		s='<div onmouseover="this.style.backgroundColor=\'#f1f1f1\'" onmouseout="this.style.backgroundColor=\'\'" style="padding:4px 5px;border-bottom:1px #eeeeee solid;font-size:14px"><span>'+(i+1)+'</span><font style="display:none">'+a[i].id+'</font>、<img src="'+fis+'" align="absmiddle" height="20" width="20"> '+a[i].filename+' ('+a[i].filesizecn+')';
+		s+=' <a class="a" temp="yula" onclick="return js.downshow('+a[i].id+',\''+a[i].fileext+'\')" href="javascript:;">下载</a>';
+		s+=' <a class="a" temp="yula" onclick="return js.yulanfile('+a[i].id+',\''+a[i].fileext+'\',\''+a[i].filepath+'\')" href="javascript:;">预览</a>';
 		s+=' <a class="a" temp="dela" onclick="return js.downupdels('+a[i].id+',\''+showid+'\', this)" href="javascript:;">×</a>';
 		s+='</div>';
 		o.append(s);
 	}
 	js.downupdel(0, showid, false);
-	if(nbj)o.find('[temp]').remove();//禁止编辑
+	if(nbj)o.find('[temp="dela"]').remove();//禁止编辑
+}
+//文件预览
+js.yulanfile=function(id, ext,pts, sne){
+	var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
+	if(pts!=''&&js.isimg(ext)){
+		$.imgview({'url':pts,'ismobile':ismobile==1,'downbool':false});
+		return false;
+	}
+	if(ismobile==1){
+		var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
+		if(docsx.indexOf(','+ext+',')==-1)
+			if(appobj1('openfile', id))return;
+		js.location(url);
+	}else{
+		if(!sne)sne='文件预览';
+		js.winiframe(sne,url);
+	}
+	return false;
 }
 js.apiurl = function(m,a,cans){
 	var url='api.php?m='+m+'&a='+a+'';
@@ -625,7 +641,7 @@ js.chao=function(obj,shuzi,span,guo){
 }
 js.debug	= function(s){
 	if(typeof(console)!='object')return;
-	console.log(s);
+	console.error(s);
 }
 js.alert = function(txt,tit,fun){
 	js.confirm(txt, fun, '', tit, 2, '');
@@ -646,7 +662,7 @@ js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 		if(!tcls)tcls='';if(!ostr)ostr='';if(!bstr)bstr='';
 		h='<div style="padding:10px;" align="center">'+ostr+'';
 		h+='<div align="left" style="padding-left:10px">'+txt+'</div>';
-		h+='<div ><textarea class="input" id="confirm_input" style="width:'+(w-40)+'px;height:60px">'+tcls+'</textarea></div>'+bstr+'';
+		h+='<div ><textarea class="input form-control" id="confirm_input" style="width:'+(w-40)+'px;height:60px">'+tcls+'</textarea></div>'+bstr+'';
 	}else if(lx==3){
 		h+='<img src="images/mloading.gif" height="32" width="32" align="absmiddle">&nbsp; '+txt+'';
 	}else{

@@ -42,6 +42,7 @@ function changesubmitbefore(){
 	}
 }
 function changesubmit(d){
+	if(d.zstart && d.zsend && d.zstart>d.zsend)return '展示截止日期必须大于开始日期';
 	if(d.mintou>0){
 		if(d.startdt=='')return '投票的开始时间不能为空';
 		if(d.enddt=='')return '投票的截止时间不能为空';

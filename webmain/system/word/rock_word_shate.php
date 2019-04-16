@@ -33,11 +33,7 @@ $(document).ready(function(){
 		if(lx==1){
 			js.downshow(d.fileid)
 		}else{
-			if(js.isimg(d.fileext)){
-				$.imgview({url:d.filepath,downbool:false});
-			}else{
-				openxiangs(d.filename,'?m=public&a=fileviewer&id='+d.fileid+'&wintype=max');
-			}
+			js.yulanfile(d.fileid,d.fileext,d.filepath,d.filename);
 		}
 	}
 	var c = {

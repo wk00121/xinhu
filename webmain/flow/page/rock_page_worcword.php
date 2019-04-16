@@ -109,12 +109,7 @@ $(document).ready(function(){
 		if(lx==1){
 			js.downshow(d.fileid)
 		}else{
-			if(js.isimg(d.fileext)){
-				$.imgview({url:d.filepath,downbool:false});
-			}else{
-				var urls = '?m=public&a=fileviewer&id='+d.fileid+'&wintype=max';
-				openxiangs(d.filename, urls);
-			}
+			js.yulanfile(d.fileid,d.fileext,d.filepath,d.filename);//预览
 		}
 	}
 	var c = {

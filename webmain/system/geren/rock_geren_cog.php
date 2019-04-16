@@ -2,8 +2,9 @@
 <script>
 $(document).ready(function(){
 	
-	var valchange = ''+adminstyle;
-	
+	var valchange = ''+adminstyle,zleng=-1;
+	var ysarr = '使用默认,cerulean,cosmo,cyborg,darkly,flatly,journal,lumen,paper,readable,sandstone,simplex,slate,spacelab,superhero,united,xinhu,yeti';
+
 	var c = {
 		init:function(){
 			js.ajax(js.getajaxurl('getinit','{mode}','{dir}'),false,function(ret){
@@ -14,7 +15,25 @@ $(document).ready(function(){
 					$('#qianmingshow').append(s);
 				}
 			},'get,json');
-			$("input[name='_stylechange']:eq("+valchange+")")[0].checked=true;
+			
+			
+			var sear = ysarr.split(','),i,len=sear.length,s='<tr>',oi=0,zarr=[],za,sel='';
+			zleng = len-1;
+			for(i=0;i<len;i++){
+				zarr.push({text:sear[i],value:i});
+				if(i>0)zarr.push({text:sear[i]+'_default',value:i+zleng});
+			}
+			for(i=0;i<zarr.length;i++){
+				za = zarr[i];
+				oi++;
+				sel = (valchange==za.value)?'checked' : '';
+				s+='<td align="center" style="padding:10px"><label><a style="TEXT-DECORATION:none">'+za.text+'</a><br><input type="radio" '+sel+' name="_stylechange" value="'+za.value+'"></label>';
+				s+='</td>';
+				if(oi%7==0)s+='</tr><tr>';
+			}
+			s+='</tr>';
+			$('#tablstal2{rand}').prepend(s);
+			if(adminid!=1)$('#zhutibao{rand}').remove();
 		},
 		savecog:function(){
 			js.msg('wait','保存中...');
@@ -95,7 +114,7 @@ $(document).ready(function(){
 		qianming:function(o1){
 			this.qianmingbo=false;
 			js.tanbody('qianming','请在空白区域写上你的姓名',500,300,{
-				html:'<div data-width="480" data-height="220" data-border="1px dashed #cccccc" data-line-color="#000000" data-auto-fit="true" id="qianmingdiv" style="margin:10px;height:220px;cursor:default"></div>',
+				html:'<div data-width="480" data-height="220" data-border="1px dashed #cccccc" data-line-color="#000000" data-auto-fit="true" id="qianmingdiv" style="margin:10px;height:220px;cursor:default;width:480px"></div>',
 				btn:[{text:'确定签名'},{text:'重写'}]
 			});
 			$('#qianmingdiv').jqSignature().on('jq.signature.changed', function() {
@@ -159,9 +178,20 @@ $(document).ready(function(){
 	}
 	
 	$("input[name='_stylechange']").click(function(){
-		var val = this.value;
+		var val = parseFloat(this.value);
 		valchange=val;
-		get('mainstylecss').href='webmain/css/style'+val+'.css?'+Math.random()+'';
+		var sear = ysarr.split(',')
+		if(val>0){
+			var xz = val+0,tou='inverse';
+			if(xz>zleng){
+				xz=xz-zleng;
+				tou='default';
+			}
+			get('navtopheader').className='navbar navbar-'+tou+' navbar-static-top';
+			get('mainstylecss').href='mode/bootstrap3.3/css/bootstrap_'+sear[xz]+'.css';
+		}else{
+			js.msg('success','使用默认主题的保存后，刷新页面即可');
+		}
 	});
 });
 </script>
@@ -169,17 +199,17 @@ $(document).ready(function(){
 	<ul id="tagsl{rand}" class="nav nav-tabs">
 	  
 	  <li click="tesgs,0" class="active">
-		<a><i class="icon-cog"></i> 基本设置</a>
+		<a style="TEXT-DECORATION:none"><i class="icon-cog"></i> 基本设置</a>
 	  </li>
 	  <li click="tesgs,1">
-		<a><i class="icon-lock"></i> 修改密码</a>
+		<a style="TEXT-DECORATION:none"><i class="icon-lock"></i> 修改密码</a>
 	  </li>
 	
 	 <li click="tesgs,2">
-		<a><i class="icon-magic"></i> 切换皮肤</a>
+		<a style="TEXT-DECORATION:none"><i class="icon-magic"></i> 切换主题皮肤</a>
 	  </li>
 	  <li click="tesgs,3">
-		<a><i class="icon-edit"></i> 签名图片</a>
+		<a style="TEXT-DECORATION:none"><i class="icon-edit"></i> 签名图片</a>
 	  </li>
 	</ul>
 
@@ -189,7 +219,7 @@ $(document).ready(function(){
 
 	<tr>
 		<td  align="right" width="100"></td>
-		<td class="tdinput"><label><input id="gerentodo{rand}" type="checkbox"> 后台不显示提醒消息</label></td>
+		<td class="tdinput"><label><input id="gerentodo{rand}" type="checkbox"> <a  style="TEXT-DECORATION:none">后台不显示提醒消息</a></label></td>
 	</tr>
 	
 	
@@ -234,20 +264,11 @@ $(document).ready(function(){
 	
 	
 	<table  id="tablstal2{rand}" style="display:none;margin-left:70px">
-		<tr>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#1389D3"></div><input type="radio" name="_stylechange" value="0"></label></td>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#1ABC9C"></div><input type="radio" name="_stylechange" value="1"></label></td>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#E95420"></div><input type="radio" name="_stylechange" value="2"></label></td>
-		</tr>
 		
 		<tr>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#996699"></div><input type="radio" name="_stylechange" value="3"></label></td>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#2C3E50"></div><input type="radio" name="_stylechange" value="4"></label></td>
-			<td align="center" style="padding:15px"><label><div style="width:60px;height:60px;overflow:hidden; background-color:#CC0033"></div><input type="radio" name="_stylechange" value="5"></label></td>
-		</tr>
-		
-		<tr>
-			<td style="padding-left:20px"><input class="btn btn-success" click="savestyle" name="submitbtn" value="保存修改" type="button"></td>
+			<td colspan="10" style="padding-left:20px"><input class="btn btn-success" click="savestyle" name="submitbtn" value="保存修改" type="button">
+			<span id="zhutibao{rand}">&nbsp;切换出现无样式请到官网<a href="<?=URLY?>view_themes.html" target="_blank">下载主题包</a>。</span>
+			</td>
 		</tr>
 	</table>
 	

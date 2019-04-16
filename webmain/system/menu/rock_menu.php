@@ -3,7 +3,7 @@
 $(document).ready(function(){
 	var a = $('#menu_{rand}').bootstable({
 		tablename:'menu',url:js.getajaxurl('data','{mode}','{dir}'),
-		tree:true,celleditor:true,bodyStyle:'height:'+(viewheight-70)+'px;overflow:auto',
+		tree:true,celleditor:!ISDEMO,bodyStyle:'height:'+(viewheight-70)+'px;overflow:auto',
 		columns:[{
 			text:'菜单名称',dataIndex:'name',align:'left',editor:true
 		},{
