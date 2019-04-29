@@ -7,6 +7,7 @@ class flow_diaoboClassModel extends flowModel
 	public function initModel()
 	{
 		$this->goodsobj = m('goods');
+		$this->cangobj = m('godepot');
 	}
 	
 	//审核完成处理,要通知仓库管理员出入库
@@ -31,13 +32,20 @@ class flow_diaoboClassModel extends flowModel
 	}
 	
 	//$lx,0默认,1详情展示，2列表显示
-	public function flowrsreplace($rs)
+	public function flowrsreplace($rs,$lx=0)
 	{
 		$rs['states']= $rs['state'];
 		$rs['state'] = $this->goodsobj->crkstate($rs['state']);
+		if(!isempt($rs['custname'])){
+			$rs['custid'] = $rs['custname'];
+		}else{
+			$rs['custid']= $this->cangobj->getmou('depotname', $rs['custid']);
+		}
 		
-		$rs['custid']= m('godepot')->getmou('depotname', $rs['custid']);
-		
+		//读取物品
+		if($lx==2){
+			$rs['wupinlist'] = $this->goodsobj->getgoodninfo($rs['id'], 1);
+		}
 		return $rs;
 	}
 }

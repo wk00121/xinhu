@@ -252,6 +252,11 @@ c.setcolumns('isvcard',{
 	type:'checkbox'
 });
 
+c.setcolumns('sex',{
+	editor:true,
+	editor:true,type:'select',store:[['男','男'],['女','女']]
+});
+
 c.setcolumns('sort',{
 	editor:true
 });

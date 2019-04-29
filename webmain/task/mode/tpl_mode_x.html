@@ -16,14 +16,23 @@
 <script type="text/javascript" src="mode/plugin/jquery-rockmodels.js"></script>
 <script>
 var mid = '<?=$da['arr']['mid']?>',adminid='<?=$da['adminid']?>',admintoken='',modenum='<?=$da['arr']['modenum']?>',ismobile=1,receiptrs=<?=json_encode($da['arr']['receiptrs'])?>,isinput=0;
-js.changeuser=function(na,lx, cans){
+js.changeuser=function(na,lx,tit, cans){
 	var can = {
 		'changetype':lx,
 		'titlebool':get('header_title'),
 		'idobj':get(na+'_id'),
-		'nameobj':get(na)
+		'nameobj':get(na),
+		'onselect':function(sna,sid){
+			js.changeuser_after(this.formname,this,sna,sid);
+		}
 	};
-	$('body').chnageuser(js.apply(can,cans));
+	var formname = get(na).name;
+	var bcar = js.changeuser_before(formname),i;
+	for(i in cans)can[i]=cans[i];
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
+	if(typeof(bcar)=='object')for(i in bcar)can[i]=bcar[i];
+	can.formname = formname;
+	$('body').chnageuser(can);
 }
 </script>
 <style>
@@ -189,7 +198,7 @@ if($da['arr']['optmenu']){
 		<tr style="display:none" id="zhuangdiv">
 			<td class="tdys1"><div  align="right" style="color:#555555">转给</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
-			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择了就会转办给对应人" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser<?=$flowinfor['zbrangelx']?>',{changerange:'<?=$flowinfor['zbrangeid']?>'})" class="webbtn">选择</a></td></tr></table>
+			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择了就会转办给对应人" class="inputs" style="width:98%" id="zhuanbanname" readonly type="text" name="zhuanbanname"><input name="zhuanbannameid" id="zhuanbanname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('zhuanbanname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('zhuanbanname','changeuser<?=$flowinfor['zbrangelx']?>','',{changerange:'<?=$flowinfor['zbrangeid']?>'})" class="webbtn">选择</a></td></tr></table>
 			</div></td>
 		</tr>
 		
@@ -200,7 +209,7 @@ if($da['arr']['optmenu']){
 		<tr style="display:none" id="nextxuandiv">
 			<td class="tdys1"><div  align="right" style="color:#555555"><font color=red>*</font>下一步处理人</div></td>
 			<td class="tdys1" style="padding:5px"><div align="left">
-			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" value="<?=$flowinfor['nextcourse']['checkname']?>" name="nextname"><input name="nextnameid" id="nextname_id" value="<?=$flowinfor['nextcourse']['checkid']?>" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
+			<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择下一步[<?=$flowinfor['nextcourse']['name']?>]处理人" class="inputs" style="width:98%" id="nextname" readonly type="text" value="<?=$flowinfor['nextcourse']['checkname']?>" name="nextname"><input name="nextnameid" id="nextname_id" value="<?=$flowinfor['nextcourse']['checkid']?>" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('nextname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('nextname','changeusercheck','',{changerange:'<?=$flowinfor['nextcourse']['checktypeid']?>'})" class="webbtn">选择</a></td></tr></table>
 			</div></td>
 		</tr>
 		<?php }

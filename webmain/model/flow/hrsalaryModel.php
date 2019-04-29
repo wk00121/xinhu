@@ -274,17 +274,19 @@ class flow_hrsalaryClassModel extends flowModel
 		$rows = m('hrsalarm')->getall("`status`=1 and `startdt`<='$month' and `enddt`>='$month'",'*','`sort`');
 		$rowa = array();
 		foreach($rows as $k=>$rs){
-			$rs['xuhao'] = $k;
+			$rs['xuhao'] = $k+1;
 			$rowa[$rs['atype']][] = $rs;
 		}
 		$kqob = m('kaoqin');
 		$dbs  = m('hrsalars');
 		$garr = array();
 		foreach($rowa as $klx=>$carr){
-			$xu = $kqob->getpipeimid($uid, $carr, 'xuhao', $carr[0]['xuhao']);
-			$nrsaa  = $rows[$xu];
-			$nrsaa['fieldsarr'] = $dbs->getall('mid='.$nrsaa['id'].'','*','`sort`');
-			$garr[] = $nrsaa;
+			$xu = $kqob->getpipeimid($uid, $carr, 'xuhao',0);
+			if($xu>0){
+				$nrsaa  = $rows[$xu-1];
+				$nrsaa['fieldsarr'] = $dbs->getall('mid='.$nrsaa['id'].'','*','`sort`');
+				$garr[] = $nrsaa;
+			}
 		}
 
 		if($bo)$this->pipeibarr = $garr; //最后匹配到的模版

@@ -29,8 +29,7 @@ $(document).ready(function(){
 			btn(false);
 		},
 		itemdblclick:function(d){
-			//openxiang('goods',d.id);
-			c.clickwin();
+			openxiangs('物品 '+d.name,'goods',d.id);
 		}
 	});
 	

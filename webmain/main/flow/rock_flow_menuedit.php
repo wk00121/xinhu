@@ -60,7 +60,7 @@ $(document).ready(function(){
 		<tr>
 			
 			<td  align="right" >类型：</td>
-			<td class="tdinput"><select name="type" class="form-control"><option value="1">弹出填写说明</option><option value="0">直接操作</option><option value="2">人员选择(单人)</option><option value="3">人员选择(多人)</option><option value="4">更新字段</option><option value="5">打开新窗口</option></select></td>
+			<td class="tdinput"><select name="type" class="form-control"><option value="1">弹出填写说明</option><option value="0">直接操作</option><option value="2">人员选择(单人)</option><option value="3">人员选择(多人)</option><option value="6">人员选择(多选部门人员组)</option><option value="4">更新字段</option><option value="5">打开新窗口</option></select></td>
 			<td  align="right" >字段名称：</td>
 			<td class="tdinput"><input name="fields" class="form-control"></td>
 		</tr>

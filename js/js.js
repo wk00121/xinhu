@@ -849,15 +849,14 @@ js.isimg = function(lx){
 	if(ftype.indexOf('|'+lx+'|')>-1)bo=true;
 	return bo;
 }
+js.changeuser_before=function(na){}
+js.changeuser_after=function(){}
 js.changeuser=function(na, lx, tits,ocans){
 	var h = winHb()-70,w=350;if(!ocans)ocans={};
 	if(h>400)h=400;if(!tits)tits='请选择...';
 	var nibo = ((lx=='changedeptusercheck'||lx=='deptusercheck') && ismobile==0);
 	if(nibo)w=650;
-	js.tanbody('changeaction',tits,w,h,{
-		html:'<div id="showuserssvie" style="height:'+h+'px"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
-		bbar:'none'
-	});
+	var formname = '';
 	var can = {
 		'changetype': lx,
 		'showview' 	: 'showuserssvie',
@@ -866,13 +865,28 @@ js.changeuser=function(na, lx, tits,ocans){
 		'changerange':'', //选择范围
 		'oncancel'	:function(){
 			js.tanclose('changeaction');
+		},
+		'onselect':function(sna,sid){
+			js.changeuser_after(this.formname,this,sna,sid);
 		}
 	};
 	if(na){
 		can.idobj = get(na+'_id');
 		can.nameobj = get(na);
+		if(can.nameobj)formname = can.nameobj.name;
 	}
-	for(var i in ocans)can[i]=ocans[i];
+	
+	can.formname= formname;
+	var bcar = js.changeuser_before(formname,1),i;
+	for(i in ocans)can[i]=ocans[i];
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
+	if(typeof(bcar)=='object')for(i in bcar)can[i]=bcar[i];
+	
+	js.tanbody('changeaction',tits,w,h,{
+		html:'<div id="showuserssvie" style="height:'+h+'px"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+		bbar:'none'
+	});
+	
 	if(nibo){
 		if(can.idobj)can.changevalue=can.idobj.value;
 		changcallback=function(sna,sid){
@@ -881,6 +895,7 @@ js.changeuser=function(na, lx, tits,ocans){
 				can.nameobj.value = sna;
 				can.nameobj.focus();
 			}
+			js.changeuser_after(formname, can, sna,sid);
 			js.tanclose('changeaction');
 			if(can.callback)can.callback(sna,sid);
 		}
@@ -896,9 +911,13 @@ js.back=function(){
 	try{api.closeWin();}catch(e){}
 }
 js.changeclear=function(na){
+	var fne  = get(na).name;
+	var bcar = js.changeuser_before(fne,0);
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
 	get(na).value='';
 	get(na+'_id').value='';
 	get(na).focus();
+	js.changeuser_after(fne,{nameobj:get(na),idobj:get(na+'_id')},'','');
 }
 js.changedate=function(o1,id,v){
 	if(!v)v='date';
@@ -982,17 +1001,16 @@ js.cliendsend=function(at, cans, fun,ferr){
 		if(bo=='object')v='base64'+jm.base64encode(v)+'';
 		url+='&'+i+'='+v+'';
 	}
-	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录REIM客户端');},500);
+	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用，可能没有登录REIM客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
 }
 
 //发送文档编辑
-js.sendeditoffice=function(id){
-	this.ajax('api.php?m=upload&a=rockofficeedit',{id:id},function(ret){
+js.sendeditoffice=function(id,lx){
+	if(!lx)lx='0';
+	this.ajax('api.php?m=upload&a=rockofficeedit',{id:id,lx:lx},function(ret){
 		if(ret.success){
-			js.cliendsend('rockoffice',{
-				paramsstr:ret.data
-			});
+			js.cliendsend('rockoffice',{paramsstr:ret.data},false,function(){js.msg('msg','无法使用，可能没有安装在线编辑插件');return true;});
 		}else{
 			js.msg('msg', ret.msg);
 		}

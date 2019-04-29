@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'godepot',modename='仓库管理',isflow=0,modeid='73',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"depotname","name":"\u4ed3\u5e93\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"cgname","name":"\u4ed3\u5e93\u7ba1\u7406\u5458","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotnum","name":"\u4ed3\u5e93\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotaddress","name":"\u4ed3\u5e93\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotexplain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"depotname","name":"\u4ed3\u5e93\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"cgname","name":"\u4ed3\u5e93\u7ba1\u7406\u5458","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotnum","name":"\u4ed3\u5e93\u7f16\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotaddress","name":"\u4ed3\u5e93\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"depotexplain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"wpshu","name":"\u7269\u54c1\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -211,7 +211,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Z29kZXBvdA::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"仓库名称",dataIndex:"depotname"},{text:"仓库管理员",dataIndex:"cgname"},{text:"仓库编号",dataIndex:"depotnum"},{text:"仓库地址",dataIndex:"depotaddress"},{text:"排序号",dataIndex:"sort"},{text:"说明",dataIndex:"depotexplain"},{
+		columns:[{text:"仓库名称",dataIndex:"depotname"},{text:"仓库管理员",dataIndex:"cgname"},{text:"仓库编号",dataIndex:"depotnum"},{text:"仓库地址",dataIndex:"depotaddress"},{text:"排序号",dataIndex:"sort"},{text:"说明",dataIndex:"depotexplain"},{text:"物品数",dataIndex:"wpshu",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -228,7 +228,20 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-
+$('#tdright_{rand}').prepend(c.getbtnstr('重新统计物品数','retotal')+'&nbsp;');
+c.retotal=function(){
+	js.ajax(this.getacturl('retotal'),{},function(s){
+		a.reload();
+	},'get',false,'统计中...,统计完成')
+}
+c.setcolumns('wpshu', {
+	renderer:function(v,d){
+		return ''+v+'<a href="javascript:;" onclick="chakanpand{rand}(\''+d.depotname+'\','+d.id+')">查看</a>';
+	}
+});
+chakanpand{rand}=function(na,id){
+	addtabs({name:'仓库['+na+']下物品',url:'main,goods,pdck,depotid='+id+'','num':'pdck'+id+''});
+}
 
 //[自定义区域end]
 

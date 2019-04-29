@@ -62,6 +62,19 @@ function callPhone(o1){
 	}
 }
 
+//选择人员前处理
+js.changeuser_before=function(na){
+	if(na=='sys_nextcoursename'){
+		var fw = '',o = form('sys_nextcourseid');
+		if(o){
+			var o1= o.options[o.selectedIndex];
+			fw = $(o1).attr('changerange');
+			return {'changerange':fw};
+		}
+	}
+	return c.changeuser_before(na);
+}
+
 //提交处理
 function check(lx){
 	var sm = form('check_explain')?form('check_explain').value:'';
@@ -108,7 +121,7 @@ function check(lx){
 	}
 	
 	//自由流程处理的
-	if(da.zt=='1' && form('sys_nextcourseid')){
+	if(da.zt=='1' && form('sys_nextcourseid') && !da.zynameid){
 		da.sys_nextcourseid 	= form('sys_nextcourseid').value;
 		da.sys_nextcoursename 	= form('sys_nextcoursename').value;
 		da.sys_nextcoursenameid = form('sys_nextcoursenameid').value;
@@ -116,7 +129,7 @@ function check(lx){
 			js.setmsg('请选择下步处理步骤');
 			return;
 		}
-		if(da.sys_nextcourseid>0 && da.sys_nextcoursenameid==''){
+		if(da.sys_nextcourseid>0 && da.sys_nextcoursenameid=='' && c.changenextbool){
 			js.setmsg('请选择下步处理人');
 			return;
 		}
@@ -200,6 +213,7 @@ var c={
 		try{parent.js.tanclose('openinput');}catch(e){}
 		if(cbo)this.close();
 	},
+	changeuser_before:function(){},
 	gurl:function(a){
 		var url=js.getajaxurl(a,'flowopt','flow');
 		return url;
@@ -381,9 +395,19 @@ var c={
 			}
 		}
 	},
-	changenextcourse:function(o1){
-		if(o1.value>0){
-			$('#sys_nextcoursediv1').show();
+	changenextbool:true,
+	changenextcourse:function(o,lx){
+		var o1= o.options[o.selectedIndex];
+		var clx = $(o1).attr('checktype');
+		this.changenextbool=true;
+		js.changeclear('changesys_nextcoursename');
+		if(o.value>0){
+			if(lx==3 || (lx==4 && clx=='change')){
+				$('#sys_nextcoursediv1').show();
+			}else{
+				$('#sys_nextcoursediv1').hide();
+				this.changenextbool=false;
+			}
 		}else{
 			$('#sys_nextcoursediv1').hide();
 		}

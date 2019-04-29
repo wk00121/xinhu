@@ -1,6 +1,18 @@
 <?php
 class goodsClassAction extends Action
 {
+	private $typenamearr= array();
+	private function gettypename($tid)
+	{
+		if(isset($this->typenamearr[$tid])){
+			return $this->typenamearr[$tid];
+		}else{
+			$varr	= $this->db->getpval('[Q]option','pid','name', $tid,'/','id',2);
+			$this->typenamearr[$tid] = $varr;
+			return $varr;
+		}
+	}
+	
 	public function aftershow($table, $rows)
 	{
 		$typearr = $depotarr = array();
@@ -8,15 +20,11 @@ class goodsClassAction extends Action
 		if($rows){
 			$aid = '0';
 			foreach($rows as $k=>$rs){
-				$tid = $rs['typeid'];
-				if(isset($typearr[$tid])){
-					$rows[$k]['typeid']	= $typearr[$tid];
-				}else{
-					$rows[$k]['typeid']	= $this->db->getpval('[Q]option','pid','name', $tid,'/','id',2);
-					$typearr[$tid] = $rows[$k]['typeid'];
-				}
+
+				$rows[$k]['typeid'] = $this->gettypename($rs['typeid']); 
 				$aid.=','.$rs['id'].'';
 				if($rs['stock']=='0')$rows[$k]['stock'] = '';
+				if($rs['stock']<0)$rows[$k]['ishui']=1;
 			}
 			$rows = $this->pandian($aid, $rows);
 		}
@@ -65,6 +73,7 @@ class goodsClassAction extends Action
 		
 		return $where;
 	}
+	
 	
 	//盘点对应仓库库存计算
 	private function pandian($aid,$rows)
@@ -324,6 +333,46 @@ class goodsClassAction extends Action
 		}
 		return array(
 			'rows' 		=> $rows
+		);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	//根据仓库统计
+	public function pdck_beforeshow($table)
+	{
+		$depotid = (int)$this->post('depotid');
+		$where	  = 'and a.`depotid`='.$depotid.'';
+		$key 	 = $this->post('key');
+		$dt 	 = $this->post('dt');
+		
+		if($key!=''){
+			$where .= " and (b.`name` like '%$key%' or b.`num` like '%$key%' or b.`guige` like '%$key%' or b.`xinghao` like '%$key%') ";
+		}
+		if($dt!=''){
+			$where .= " and a.`applydt` <= '$dt'";
+		}
+		
+		return array(
+			'table' => '`[Q]goodss` a left join `[Q]goods` b on a.`aid`=b.`id`',
+			'where' => $where,
+			'fields'=> 'b.*,sum(a.`count`) as `stock`',
+			'group' => 'a.`aid`'
+		);
+	}
+	public function pdck_aftershow($table, $rows)
+	{
+		foreach($rows as $k=>$rs){
+			$rows[$k]['typeid'] = $this->gettypename($rs['typeid']);
+			if($rs['stock']<='0')$rows[$k]['ishui']=1;
+		}
+		return array(
+			'rows' => $rows
 		);
 	}
 }

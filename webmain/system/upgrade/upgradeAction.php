@@ -262,6 +262,11 @@ class upgradeClassAction extends Action
 	private function tonbbumenu($data)
 	{
 		$db = m('menu');
+		$this->addci = $this->eddci = 0;
+		$this->tonbbumenuss($data, '0','0', $db);
+		echo '新增菜单('.$this->addci.')，更新菜单('.$this->eddci.')，';
+		/*
+		return;
 		foreach($data as $k=>$rs){
 			$id = $rs['id'];
 			if($db->rows('id='.$id.'')>0){
@@ -271,6 +276,41 @@ class upgradeClassAction extends Action
 				$db->update($rs, 'id='.$id.'');
 			}else{
 				$db->insert($rs);
+			}
+		}*/
+	}
+	//最新同步菜单的
+	private function tonbbumenuss($data, $pid,$npid, $db){
+		foreach($data as $k=>$rs){
+			if($rs['pid']==$pid){
+				$name 	= $rs['name'];
+				$id 	= $rs['id'];
+				
+				$where1 = " and `name`='$name'";
+				if(!isempt($rs['url']))$where1 = " and (`name`='$name' or `url`='".$rs['url']."')";
+				$where	= "`pid`='$npid' $where1";
+				$yid 	= (int)$db->getmou('id', $where);
+
+				unset($rs['id']);
+				$rs['optdt'] = $this->rock->now;
+				
+				//新增
+				if($yid==0){
+					$rs['pid']= $npid;
+					$this->addci++;
+					$yid= $db->insert($rs);
+				}else{
+					$this->eddci++;
+					unset($rs['status']);
+					unset($rs['ispir']);
+					unset($rs['ishs']);
+					if(isempt($rs['num']))unset($rs['num']);
+					if(isempt($rs['color']))unset($rs['color']);
+					if(isempt($rs['icons']))unset($rs['icons']);
+					$db->update($rs, $yid);
+				}
+				$npid1 = $yid;
+				$this->tonbbumenuss($data, $id, $npid1, $db);
 			}
 		}
 	}

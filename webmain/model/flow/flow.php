@@ -120,6 +120,9 @@ class flowModel extends Model
 	//是否可编辑别人单据
 	public $floweditother	= false;
 	
+	//详情边框元素
+	public $xiangbordercolor	= '';
+	
 	public function echomsg($msg)
 	{
 		if(!isajax())exit($msg);
@@ -169,6 +172,7 @@ class flowModel extends Model
 		$this->remindmodel	= m('remind'); //单据提醒表
 		$this->option		= m('option');
 		$this->tfieldsarra(); //初始化录入的表单元素
+		$this->mwhere		= "`table`='$this->mtable' and `mid`=-1";
 		$this->flowinit();
 		if($id==null)return $this;
 		$this->loaddata($id, true);
@@ -484,42 +488,46 @@ class flowModel extends Model
 				$this->replacepbr($data, $fid);
 			}
 		}
+		
+		
+		$_logarr	 = $qfields = array();
+		foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
+		//读取流程审核步骤信息，只显示同意的
+		$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `modeid`='.$this->modeid.' and `courseid`>0 and `courseid`<88888 and `status`>0 and `valid`=1');
+		foreach($logrows as $k2=>$rs2){
+			$rs3 		= $_logarr[$rs2['id']];
+			$_coid 		= $rs2['courseid'];
+			if(!isempt($rs3['qmimg']))$rs3['name'] = '<img height="30" onclick="c.showviews(this)" width="70" src="'.$rs3['qmimg'].'">';
+			$key1 = 'course'.$_coid.'';
+			//if(isempt($rs3['sm']))$rs3['sm']= $rs3['statusname'];
+
+			if(!isset($data[''.$key1.'_name'])){
+				$data[''.$key1.'_name'] = $rs3['name'];
+				$data[''.$key1.'_zt'] 	= '<font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
+				$data[''.$key1.'_sm'] 	= $rs3['sm'];
+				$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
+			}else{
+				$data[''.$key1.'_name'] .= ','.$rs3['name'];
+				$data[''.$key1.'_sm'] 	.= ','.$rs3['sm'];
+				$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
+			}
+			
+			//全部处理意见
+			$key2 = ''.$key1.'_all';
+			if(!isset($data[$key2])){
+				$qfields[$key2] = $rs2['name'];
+				$data[$key2]='';
+			}
+			$str1 = $rs3['name'].' <font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font> '.$rs3['checkdt'].'';
+			
+			if(!isempt($rs3['sm']))$str1.='，'.$rs3['sm'].'';
+			if($data[$key2]!='')$data[$key2].='<hr size="1">';
+			$data[$key2].= $str1;
+		}
 
 		//使用了自定的展示模板
 		if(file_exists($path)){
 			$contview 	 = $this->flowviewtpl(file_get_contents($path), $lx);
-			
-			$_logarr	 = array();
-			foreach($arr['logarr'] as $k1=>$rs1)$_logarr[$rs1['id']] = $rs1;			
-			//读取流程审核步骤信息，只显示同意的
-			$logrows 	 	= $this->flogmodel->getrows($this->mwhere.' and `courseid`>0 and `status`<>2 and `valid`=1');
-			foreach($logrows as $k2=>$rs2){
-				$rs3 		= $_logarr[$rs2['id']];
-				$_coid 		= $rs2['courseid'];
-				if(!isempt($rs3['qmimg']))$rs3['name'] = '<img height="30" onclick="c.showviews(this)" width="70" src="'.$rs3['qmimg'].'">';
-				$key1 = 'course'.$_coid.'';
-				//if(isempt($rs3['sm']))$rs3['sm']= $rs3['statusname'];
-	
-				if(!isset($data[''.$key1.'_name'])){
-					$data[''.$key1.'_name'] = $rs3['name'];
-					$data[''.$key1.'_zt'] 	= '<font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
-					$data[''.$key1.'_sm'] 	= $rs3['sm'];
-					$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
-				}else{
-					$data[''.$key1.'_name'] .= ','.$rs3['name'];
-					$data[''.$key1.'_sm'] 	.= ','.$rs3['sm'];
-					$data[''.$key1.'_dt'] 	= $rs3['checkdt'];
-				}
-				
-				//全部处理意见
-				$key2 = ''.$key1.'_all';
-				if(!isset($data[$key2]))$data[$key2]='';
-				$str1 = $rs3['name'].' '.$rs3['checkdt'].' <font color="'.$rs3['color'].'">'.$rs3['statusname'].'</font>';
-				
-				if(!isempt($rs3['sm']))$str1.='，'.$rs3['sm'].'';
-				if($data[$key2]!='')$data[$key2].='<hr size="1">';
-				$data[$key2].= $str1;
-			}
 			$contview 	 	= $this->rock->reparr($contview, $data);
 		}
 		$arr['isdefaultview'] = 0;
@@ -532,14 +540,17 @@ class flowModel extends Model
 				$_fields['base_deptname'] 	= '申请人部门';
 			}
 			$fields			 = array_merge($_fields, $this->getfields($lx));
-			if($lx==0)foreach($fields as $k=>$rs){$data[''.$k.'_style'] = 'width:75%';break;}
 			if($fstr!='')$fields['file_content'] 			= '相关文件';
 			foreach($subdata as $zb=>$da){
 				$fields[$da['fields']]	= $da['name'];
 			}
-			//if(!isset($fields['optdt']))$fields['optdt']	= '操作时间';
+			if($qfields)$fields = array_merge($fields,$qfields);//审核的字段显示到详情里
+			if(method_exists($this, 'flowxiangfields'))$this->flowxiangfields($fields);
 			
-			$contvimr 	= c('html')->xiangtable($fields, $data, getconfig('bcolorxiang'));
+			if($lx==0)foreach($fields as $k=>$rs){$data[''.$k.'_style'] = 'width:75%';break;}
+			$_colsr		= $this->xiangbordercolor;
+			if($_colsr=='')$_colsr = getconfig('bcolorxiang');
+			$contvimr 	= c('html')->xiangtable($fields, $data, $_colsr);
 			$contvimr 	= '<div align="center">'.$contvimr.'</div>';
 			
 			//移动默认展示
@@ -659,10 +670,10 @@ class flowModel extends Model
 	{
 		$is 	= 0;
 		if($this->rs['status']==1 || $this->isflow==3)return $is;//自由流程不允许撤回
-		$where 	= "".$this->mwhere." and `checkid`='".$this->adminid."' and `valid`=1 order by `id` desc";
+		$where 	= "".$this->mwhere." and `valid`=1 order by `id` desc";
 		$rs 	= $this->flogmodel->getone($where);
 		$time 	= time()-2*3600;
-		if($rs && $rs['status']!=2 && strtotime($rs['optdt'])>$time && 
+		if($rs && $rs['status']=='1' && $rs['checkid']==$this->adminid && strtotime($rs['optdt'])>$time && 
 			($rs['courseid']>0 || $rs['iszb']=='1' ))
 			$is = $rs['id'];
 		return $is;
@@ -1050,7 +1061,7 @@ class flowModel extends Model
 			$this->update($marr, $this->id);
 			
 			//每次编辑判断是否重新开始走审批。
-			if(arrvalue($this->moders,'isflowlx')=='1' || $this->isflow==3){
+			if(arrvalue($this->moders,'isflowlx')=='1' || $this->isflow>=3){
 				$this->checksmodel->delete($this->mwhere);
 				$this->flogmodel->update('`valid`=0', ''.$this->mwhere.' and `courseid`>0 and `valid`=1');
 			}
@@ -1188,7 +1199,9 @@ class flowModel extends Model
 		$defix 	 = $xuhao 	 = 0; //默认是0的
 		$uid 	 = arrvalue($urs,'id',0);
 		$zshu	 = count($rows);
-		//print_r($rows);
+		
+		
+		
 		foreach($rows as $k=>$rs){
 			$whereid = (int)$rs['whereid'];
 			$receid  = $rs['receid'];
@@ -1232,29 +1245,35 @@ class flowModel extends Model
 		}
 		
 		//在根据receid匹配到哪个流程
+		$pboss	= false;//是否有匹配到
 		if($shiyong){
 			$gxuha 		= $kqobj->getpipeimid($urs, $shiyong, 'xuhao', $defix); //这个匹配出来是大于0的
 			if($gxuha>0){
+				$pboss  = true;//有匹配到
 				$gxuha	= $gxuha-1;
 				$prs 	= $shiyong[$gxuha];
-				unset($prs['children']);
-				$this->pipeiCoursearrs[]= $prs['id'];
-				$this->pipeiCoursearr[] = $prs;
-				
-				if($prs['childshu']>0){
-					$this->getflowpipeis($shiyong[$gxuha]['children'], $urs, $kqobj);
-				}else{
-					//有nid下级就读取
-					$nid = arrvalue($prs,'nid','0');
-					if($nid>0 && !in_array($nid, $this->pipeiCoursearrs) && isset($this->pipeiCoursearrc, $nid)){
-						$this->getflowpipeis(array($this->pipeiCoursearrc[$nid]), $urs, $kqobj);
-					}
-				}
+				$this->getflowpipeisss($prs, $urs, $kqobj);
 			}
+		}
+		//没匹配到，可能是跳过，而且有下级需要审批
+		if(!$pboss && $zshu==1 && $rows[0]['childshu']>0){
+			$this->getflowpipeis($rows[0]['children'], $urs, $kqobj);
+		}
+	}
+	private function getflowpipeisss($prsnrs, $urs, $kqobj)
+	{
+		$prs = $prsnrs;
+		unset($prs['children']);
+		$this->pipeiCoursearrs[]= $prs['id'];
+		$this->pipeiCoursearr[] = $prs;
+		
+		if($prs['childshu']>0){
+			$this->getflowpipeis($prsnrs['children'], $urs, $kqobj);
 		}else{
-			//可能是跳过
-			if($zshu==1 && $rows[0]['checkshu']>0){
-				$this->getflowpipeis($rows[0]['children'], $urs, $kqobj);
+			//有nid下级就读取
+			$nid = arrvalue($prs,'nid','0');
+			if($nid>0 && !in_array($nid, $this->pipeiCoursearrs) && isset($this->pipeiCoursearrc, $nid)){
+				$this->getflowpipeis(array($this->pipeiCoursearrc[$nid]), $urs, $kqobj);
 			}
 		}
 	}
@@ -1536,10 +1555,12 @@ class flowModel extends Model
 			}
 		}
 		
-		$cheorws= $this->checksmodel->getall($this->mwhere.' and courseid='.$courseid.'','checkid,checkname');
+		$cheorws= $this->checksmodel->getall($this->mwhere.' and `courseid`='.$courseid.'','checkid,checkname');
 		if($cheorws){
 			foreach($cheorws as $k=>$rs){
-				$cuid.=','.$rs['checkid'].'';
+				$lxss = $rs['checkid'];
+				if(isempt($lxss) || $lxss=='0')continue;
+				$cuid.=','.$lxss.'';
 				$name.=','.$rs['checkname'].'';
 			}
 			if($cuid != ''){
@@ -1779,6 +1800,7 @@ class flowModel extends Model
 	
 	public function addcheckname($courseid, $uid, $uname, $onbo=false, $addlx=0)
 	{
+		if(isempt($uid)){$uid = '0';$uname= 'auto';}
 		$uida 	= explode(',', ''.$uid.'');
 		$uidan 	= explode(',', $uname);
 		if($onbo)$this->checksmodel->delete($this->mwhere.' and `courseid`='.$courseid.'');
@@ -1791,7 +1813,7 @@ class flowModel extends Model
 				'courseid' 	=> $courseid,
 				'optid' 	=> $this->adminid,
 				'optname' 	=> $this->adminname,
-				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加，5自定义流程
+				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加，5自由流程，6选择流程
 				'optdt' 	=> $this->rock->now,
 				'status' 	=> 0
 			);
@@ -1909,16 +1931,14 @@ class flowModel extends Model
 		$qmimgstr	= $this->rock->post('qmimgstr'); //签名图片
 		$tuiid		= (int)$this->rock->post('tuiid'); //退回到哪个flowlog.id上
 		$iszhuanyi	= $ischangenext = 0;
-		if($zt==1 && $this->isflow<3 && isempt($zynameid) && $this->rock->arrvalue($nextcourse,'checktype')=='change'){
-			if($nextnameid=='')return '请选择下一步处理人';
-			$ischangenext = 1;
+		if($zt==1 && $this->isflow!=3 && isempt($zynameid) && arrvalue($nextcourse,'checktype')=='change'){
+			$ischangenext = 1;//需要选下步处理人
 		}
 		if($zt!=2)$tuiid = 0;//只有2的状态才能退回
 		
 		$istongyi		 = in_array($zt, $this->flowstatusarr); //是否审核本步骤同意
 		
-		
-		
+		//判断是否转办
 		if($zynameid!='' && $istongyi){
 			if($zynameid==$this->adminid)return '不能转给自己';
 			$sm 	= $this->strappend($sm, '转给：'.$zyname.'');
@@ -1926,6 +1946,13 @@ class flowModel extends Model
 			$this->rs['zb_name'] 	= $zyname;
 			$this->rs['zb_nameid'] 	= $zynameid;
 		}
+		
+		
+		
+		if($nextnameid=='' && $ischangenext==1)return '请选择下一步处理人';
+		
+		
+		
 		$ufied 	= array();
 		if($iszhuanyi == 0 && $zt!=2){
 			foreach($flowinfor['checkfields'] as $chef=>$chefv){
@@ -1969,12 +1996,7 @@ class flowModel extends Model
 		
 		//指定下步审核
 		if($ischangenext==1){
-			
 			$this->addcheckname($nextcourse['id'], $nextnameid, $nextname, true, 1);
-			
-			//$_nesta = explode(',', $nextnameid);
-			//$_nestb = explode(',', $nextname);
-			//foreach($_nesta as $_i=>$_nes)$this->addcheckname($nextcourse['id'], $_nesta[$_i], $_nestb[$_i]);
 		}
 		
 		//读取退回记录

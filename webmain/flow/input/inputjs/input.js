@@ -95,13 +95,27 @@ js.apiurl = function(m,a,cans){
 	return url;
 }
 
+//选择人员前处理
+js.changeuser_before=function(na){
+	if(na=='sys_nextcoursename'){
+		var fw = '',o = form('sys_nextcourseid');
+		if(o){
+			if(o.value==''){o.focus();return '请先选择下步处理步骤'};
+			var o1= o.options[o.selectedIndex];
+			fw = $(o1).attr('changerange');
+			return {'changerange':fw};
+		}
+	}
+	return c.changeuser_before(na);
+}
+
 var c={
 	callback:function(cs, msg){
 		var calb = js.request('callback');
 		if(ismobile==1 && js.msgok)js.msgok(msg, function(){js.back()},1);
 		if(!calb){
 			if(ismobile==0){
-				try{parent.js.msg('success', msg);}catch(e){}
+				try{parent.js.msgok(msg);}catch(e){}
 				try{parent.bootstableobj[moders.num].reload();}catch(e){}
 				try{parent.js.tanclose('winiframe');}catch(e){}
 			}
@@ -109,7 +123,7 @@ var c={
 		}
 		try{parent[calb](cs);}catch(e){}
 		try{opener[calb](cs);}catch(e){}
-		try{parent.js.msg('success', msg);}catch(e){}
+		try{parent.js.msgok(msg);}catch(e){}
 		try{parent.js.tanclose('winiframe');}catch(e){}
 	},
 	
@@ -136,6 +150,8 @@ var c={
 	},
 	selectdatadata:{},
 	onselectdata:{},
+	changeuser_before:function(){},
+	onselectdatabefore:function(){},
 	onselectdataall:function(){},
 	selectdata:function(s1,ced,fid,tit,zbis){
 		if(isedit==0)return;
@@ -150,10 +166,20 @@ var c={
 			}
 			idobj=form(fids);
 		}
+		var gcan,dass,i,befs
+		gcan = {'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num,'sysmid':mid};
+		dass = this.selectdatadata[fid];
+		befs = this.onselectdatabefore(fid,zbis,s1);
+		if(befs){
+			if(typeof(befs)=='string'){js.msg('msg',befs);return;}
+			if(typeof(befs)=='object'){
+				dass=[];
+				for(i in befs)gcan[i]=befs[i];
+			}
+		}
 		$.selectdata({
-			data:this.selectdatadata[fid],title:tit,
-			fid:fid,
-			url:geturlact('getselectdata',{'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num,'sysmid':mid}),
+			data:dass,title:tit,fid:fid,
+			url:geturlact('getselectdata', gcan),
 			checked:ced, nameobj:form(fid),idobj:idobj,
 			onloaddata:function(a){
 				c.selectdatadata[fid]=a;
@@ -271,7 +297,7 @@ var c={
 				form('sys_nextcourseid').focus();
 				return false;
 			}
-			if(!d.sys_nextcoursenameid){
+			if(!d.sys_nextcoursenameid && this.changenextbool){
 				this.showtx('请选择下步处理人');
 				return false;
 			}
@@ -292,6 +318,20 @@ var c={
 		d.sysmodeid=moders.id;
 		d.sysmodenum=moders.num;
 		return d;
+	},
+	changenextbool:true,
+	changenextcourse:function(o,lx){
+		if(lx!=4)return;
+		var o1= o.options[o.selectedIndex];
+		var clx = $(o1).attr('checktype');
+		var dov = $('#sys_nextcoursediv1')
+		if(clx=='change'){
+			this.changenextbool=true;
+			dov.show();
+		}else{
+			this.changenextbool=false;
+			dov.hide();
+		}
 	},
 	subshantiss:function(i,fid,oi){
 		if(!form(fid))return;
@@ -649,6 +689,14 @@ var c={
 				this.subtablefields[i]=fname;
 			}
 		}
+		
+		//引入公式相关的js文件
+		var gongsistr='';
+		for(i=0;i<gongsiarr.length;i++)gongsistr+=','+gongsiarr[i].gongsi+'';
+		if(gongsistr!=''){
+			if(gongsistr.indexOf('AmountInWords')>-1)js.importjs('js/rmb.js');
+			if(gongsistr.indexOf('js.')>-1)js.importjs('js/jsrock.js');
+		}
 	},
 	getsubdata:function(i){
 		var d=[];
@@ -728,7 +776,9 @@ var c={
 		}
 		this.repaixuhao(xu);
 		this.initdatelx();
-		if(!isad)eventaddsubrows(xu);
+		var nusa = [""+xu+"",""+oj+"",wux,nass,nna];
+		if(!isad)eventaddsubrows(xu, oj);
+		return nusa;
 	},
 	adddatarow:function(xu, oj, d){
 		d=js.apply({sid:'0'},d);
@@ -839,7 +889,7 @@ var c={
 		if(isedit==0)return;
 		var ans=[],nae,nae2,i,len=gongsiarr.length,d,iszb,iszbs,diszb,gongsi,gs1,gs2,bgsa,lens,blarr,j,val,nams;
 		
-		if(zb==1){
+		if(zb>0){
 			ans = this.getxuandoi(o1.name);
 			nae = ans[3]; //表单name名称
 			nae2= ans[2]; //格式0_0
@@ -869,7 +919,7 @@ var c={
 				gongsi = gongsi.replace(/\]/g,'');
 				this.gongsv(d.fields, gongsi,d.gongsi);
 				
-			}else if(diszb==iszbs && zb==1){
+			}else if(diszb==iszbs && zb>0){
 				this.zhujisuags(gongsi, d.fields, nae2, false);//子表行内计算
 			}
 		}

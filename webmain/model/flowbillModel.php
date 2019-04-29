@@ -110,6 +110,7 @@ class flowbillClassModel extends Model
 			$moders = m('flow_set')->getall("`id` in($modeids)");
 			foreach($moders as $k=>$rs)$modearr[$rs['id']] = $rs;
 		}
+		$flowarrmo = array();
 		foreach($rows as $k=>$rs){
 			$modename	= $rs['modename'];
 			$summary	= '';
@@ -123,7 +124,12 @@ class flowbillClassModel extends Model
 			if(isset($modearr[$rs['modeid']])){
 				$mors 		= $modearr[$rs['modeid']];
 				$modenum 	= $mors['num'];
-				$flow 		= m('flow:'.$modenum.'')->initdata($mors);
+				if(!isset($flowarrmo[$modenum])){
+					$flow 	= m('flow:'.$modenum.'')->initdata($mors);
+					$flowarrmo[$modenum] = $flow;
+				}else{
+					$flow	= $flowarrmo[$modenum];
+				}
 				$modename 	= $mors['name'];
 				$rers 		= $this->db->getone('[Q]'.$rs['table'].'', $rs['mid']);
 				if($rers){
@@ -266,6 +272,7 @@ class flowbillClassModel extends Model
 			foreach($moders as $k=>$rs)$modearr[$rs['id']] = $rs;
 		}
 		$flow = m('flow:user');
+		$flowarrmo = array();
 		foreach($rows as $k=>$rs){
 			$modename	= $rs['modename'];
 			$summary	= '';
@@ -279,9 +286,18 @@ class flowbillClassModel extends Model
 				$modename 	= $mors['name'];
 				$summary 	= $mors['summary'];
 				$modenum 	= $mors['num'];	
+				if(!isset($flowarrmo[$modenum])){
+					$flow 	= m('flow:'.$modenum.'')->initdata($mors);
+					$flowarrmo[$modenum] = $flow;
+				}else{
+					$flow	= $flowarrmo[$modenum];
+				}
 				$rers 		= $this->db->getone('[Q]'.$rs['table'].'', $rs['mid']);
 				$summary	= $this->rock->reparr($summary, $rers);
 				if($rers){
+					$tihsrs  = $flow->flowrsreplace($rers, 2);
+					$summary = $this->rock->reparr($mors['summary'], $tihsrs);
+					
 					$nowsets	 = $rs['nowcheckname']; //当前审核人
 					$ztarr 		 = $flow->getstatus($rers, $mors['statusstr'], $nowsets);
 					$statustext  = $ztarr[0];

@@ -554,13 +554,15 @@ class inputAction extends Action
 		$this->smartydata['subfielsa']	= $this->subfielsa;
 		$this->smartydata['mid']		= $mid;
 		$this->smartydata['isflow']		= $isflow;
-		$this->smartydata['course']		= $course;
+		
 		$this->smartydata['zbnamearr']	= $nameaas;
 		$this->smartydata['zbshu']		= $zbshu;//子表数
 		$this->smartydata['isupfile']	= $isupfile;//是否有上传
 		$this->assign('inputobj', c('input'));
 		
 		
+		
+		$this->smartydata['course']		= $course;
 	}
 	
 	//多行子表内替换

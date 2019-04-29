@@ -377,7 +377,7 @@
 			var s='<div style="z-index:1;width:100%;height:100%;overflow:hidden;left:0px;top:0px; background:rgba(0,0,0,0.3);position:fixed;z-index:9" id="selectdata_'+rand+'">';
 			s+='<div tsid="main" id="mints_'+rand+'" style="position:absolute;top:30%; background:white;width:'+ws+';box-shadow:0px 0px 5px rgba(0,0,0,0.3)">';
 			s+='	<div onmousedown="js.move(\'mints_'+rand+'\')" style="line-height:40px; background:#2c3e50;color:white;font-size:16px"> &nbsp; &nbsp;'+this.title+'</div>';
-			s+='	<div style="height:40px;overflow:hidden;border-bottom:1px #cccccc solid;"><table width="100%"><tr><td><select id="selxuan_'+this.rand+'" style="width:100px;border:none;background:none;display:none"></select></td><td width="100%" height="40"><input id="changekey_'+this.rand+'" placeholder="搜索关键词" style="height:30px;border:none;background:none;width:100%;margin:0px 10px;outline:none"></td><td><button style="background:none;color:#666666;" class="changeuserbotton" id="changesoubtn_'+this.rand+'" type="button" >查找</button></td></tr></table></div>';
+			s+='	<div style="height:40px;overflow:hidden;border-bottom:1px #cccccc solid;"><table width="100%"><tr><td><select id="selxuan_'+this.rand+'" style="width:120px;border:none;background:none;display:none"><option value="">选择所有</option></select></td><td width="100%" height="40"><input id="changekey_'+this.rand+'" placeholder="搜索关键词" style="height:30px;border:none;background:none;width:100%;margin:0px 10px;outline:none"></td><td><button style="background:none;color:#666666;" class="changeuserbotton" id="changesoubtn_'+this.rand+'" type="button" >查找</button></td></tr></table></div>';
 			s+='	<div style="-webkit-overflow-scrolling:touch;height:300px;overflow:auto; background:#f1f1f1" id="selectlist_'+rand+'" class="changeuserlist"></div>';
 			s+='	<div style="height:50px;line-height:50px;border-top:1px #cccccc solid" align="right"><table width="100%"><tr><td width="10" nowrap>&nbsp;</td><td width="80%"><font color="#888888" tsid="count"></font></td><td><button type="button" id="changereload_'+rand+'" class="changeuserbotton">刷新</button></td><td width="10" nowrap>&nbsp;</td><td><button class="changeuserbotton" type="button" id="changecancl_'+rand+'">取消</button></td><td width="10" nowrap>&nbsp;</td><td height="50"><button style="background:#1389D3;" id="changeok_'+rand+'" type="button" class="changeuserbotton">确定</button></td><td width="10" nowrap>&nbsp;</td></tr></table></div>';
 			s+='</div>';
@@ -451,6 +451,8 @@
 		};
 		this.showdata=function(a,inb){
 			if(!a)a=[];
+			this.showselectdata(a.selectdata);
+			if(a.rows)a = a.rows;
 			var s='',len=a.length,s1='';
 			if(len==0){
 				s='<div align="center" style="margin-top:30px;color:#cccccc;font-size:16px">无记录</div>';
@@ -462,6 +464,21 @@
 			var o = $('#selectlist_'+rand+'');
 			o.html(s);
 			if(!inb && len==0)this.loaddata();
+		};
+		this.seldatsse=[];
+		this.showselectdata=function(da){
+			if(this.showselbo || !da)return;
+			var o = get('selxuan_'+this.rand+'');
+			js.setselectdata(o,da,'value');
+			if(da.length>0){
+				this.showselbo=true;
+			}
+			$(o).change(function(){
+				me._changeselval(this);
+			}).show();
+		};
+		this._changeselval=function(o){
+			this.loaddata(o.value);
 		};
 		this.showhtml=function(a){
 			this.nowdata = a;
@@ -475,8 +492,8 @@
 				ched='';
 				d = a[i];
 				if(!isempt(d.value) && oldvel.indexOf(','+d.value+',')>-1)ched='checked';
+				if(d.disabled)ched+=' disabled';
 				s2 = '<input xu="'+i+'" '+ched+' name="changeuserinput_'+rand+'" xname="'+d.name+'" value="'+d.value+'" style="width:18px;height:18px;" align="absmiddle" type="'+type+'">';
-				if(d.disabled)s2='';
 				atr = '';
 				if(d.padding)atr='style="padding-left:'+d.padding+'px"';
 				if(!d.iconswidth)d.iconswidth=18;
@@ -487,8 +504,9 @@
 			}
 			return s;
 		};
-		this.loaddata=function(){
+		this.loaddata=function(svel){
 			var url = this.url;
+			if(svel)url+='&selvalue='+svel+'';
 			if(url=='')return;
 			$('#selectlist_'+rand+'').html('<div align="center" style="margin-top:30px"><img src="images/mloading.gif"></div>');
 			$.getJSON(url, function(a){
@@ -506,6 +524,7 @@
 		this._searchkey = function(bo){
 			var key = $('#changekey_'+this.rand+'').val(),a=[],d=[],d1,len,i,oi=0,s;
 			a=this.data;
+			if(a.rows)a=a.rows;
 			len=a.length;if(len==0)return;
 			if(key!='')for(i=0;i<len;i++){
 				d1 = a[i];
@@ -517,7 +536,7 @@
 			}
 			len = d.length;
 			if(len==0){
-				s=this.showhtml(this.data);
+				s=this.showhtml(a);
 			}else{
 				s=this.showhtml(d);
 			}

@@ -22,14 +22,23 @@
 <script type="text/javascript">
 var editor,arr=<?=$da['fieldsjson']?>,moders=<?=json_encode($da['moders'])?>,gongsiarr=<?=json_encode($da['gongsiarr'])?>,subfielsa=<?=json_encode($da['subfielsa'])?>,zbnamearr=<?=json_encode($da['zbnamearr'])?>,isedit=0,mid='<?=$da['mid']?>',isinput=1,data={};
 ismobile=1;
-js.changeuser=function(na,lx, cans){
+js.changeuser=function(na,lx,tit,cans){
 	var can = {
 		'changetype':lx,
 		'titlebool':get('header_title'),
 		'idobj':get(na+'_id'),
-		'nameobj':get(na)
+		'nameobj':get(na),
+		'onselect':function(sna,sid){
+			js.changeuser_after(this.formname,this,sna,sid);
+		}
 	};
-	$('body').chnageuser(js.apply(can,cans));
+	var formname = get(na).name;
+	var bcar = js.changeuser_before(formname),i;
+	for(i in cans)can[i]=cans[i];
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
+	if(typeof(bcar)=='object')for(i in bcar)can[i]=bcar[i];
+	can.formname = formname;
+	$('body').chnageuser(can);
 }
 function clearuser(na){
 	get(na).value='';
@@ -124,7 +133,7 @@ if($showheader==1)echo '<div id="header_title" class="header"><span onclick="js.
 				}
 				$stsp.= ''.$firstrs['name'].':</td>';
 				$stsp.= '<td><div class="divinput"><table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input  class="inputs" style="width:99%" id="sysnextchange" value="'.$firstrs['sysnextopt'].'" placeholder="'.$placeholder.'" readonly type="text" name="sysnextopt"><input name="sysnextoptid" value="'.$firstrs['sysnextoptid'].'" id="sysnextchange_id" type="hidden"><input name="sysnextcustidid" value="'.$firstrs['id'].'" type="hidden"></td>';
-				$stsp.= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'sysnextchange\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_recename" onclick="js.changeuser(\'sysnextchange\',\'changeusercheck\',{changerange:\''.$firstrs['checktypeid'].'\'})" class="webbtn">选择</a></td></tr></table></div></td>';
+				$stsp.= '<td nowrap><a href="javascript:;" onclick="js.changeclear(\'sysnextchange\')" class="webbtn">×</a><a href="javascript:;" id="btnchange_recename" onclick="js.changeuser(\'sysnextchange\',\'changeusercheck\',\'\',{changerange:\''.$firstrs['checktypeid'].'\'})" class="webbtn">选择</a></td></tr></table></div></td>';
 				$stsp.= '</tr>';
 				echo $stsp;
 			}

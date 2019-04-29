@@ -12,7 +12,7 @@ class userinfoClassAction extends Action
 		return array(
 			'table' => $table,
 			'where'	=> $s,
-			'fields'=> 'a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,b.dkip,b.dkmac,b.iskq,b.isdwdk,b.isdaily'
+			'fields'=> 'a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,b.dkip,b.dkmac,b.iskq,b.isdwdk,b.isdaily,b.finger'
 		);
 	}
 	

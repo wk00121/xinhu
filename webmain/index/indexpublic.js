@@ -196,8 +196,9 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		if(lx==996){this.xiang(d.oi, d.nbo);return;}
 		if(lx==11){this.openedit();return;}
 		this.changdatsss = d;
-		if(lx==2 || lx==3){
+		if(lx==2 || lx==3 || lx==6){
 			var clx='user';if(lx==3)clx='usercheck';
+			if(lx==6)clx='deptusercheck';
 			js.getuser({type:clx,title:d.name,callback:function(na,nid){me.changeuser(na,nid);}});
 			return;
 		}
@@ -697,11 +698,10 @@ js.tanbody=function(act,title,w,h,can1){
 	var s	= '';
 	var mid	= ''+act+'_main';
 	$('#'+mid+'').remove();
-	var heis='',dhs=' fade';
-	if(can.html.indexOf('<iframe')>0)dhs='';
+	var heis='';
 	if(can.bodyheight)heis='height:'+can.bodyheight+';overflow:auto;';	
-	var s = '<div class="modal'+dhs+'" id="'+mid+'" tabindex="-1" role="dialog" style="left:3px;top:0px" aria-labelledby="myModalLabel">';
-	s+='<div id="xpbg_bodydds" xpbody="'+act+'" class="modal-dialog" style="width:'+w+'px" role="document">';
+	var s = '<div class="modal" id="'+mid+'" tabindex="-1" role="dialog" style="left:3px;top:'+t+'px" aria-labelledby="myModalLabel">';
+	s+='<div id="xpbg_bodydds" xpbody="'+act+'" class="modal-dialog" style="width:'+w+'px;margin:0px auto" role="document">';
 	s+=' 	<div class="modal-content">';
 	s+=' 		<div class="modal-header" >';
 	s+='			<button id="'+act+'_spancancel" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
@@ -733,6 +733,7 @@ js.tanbody=function(act,title,w,h,can1){
 	this.modalobj.on('hidden.bs.modal',function(){
 		$('#'+mid+'').remove();
 	});
+	this.tanoffset(act);
 	can.showfun(act);
 }
 
@@ -741,4 +742,12 @@ js.tanclose=function(act, guan){
 	$($('.modal-backdrop')[0]).remove();
 	js.xpbody(act,'none');
 	return false;
+}
+
+js.tanoffset=function(act){
+	var mid=''+act+'_main';
+	var lh=$('#'+mid+'').find('div[xpbody]').height(),l,t;
+	t=(winHb()-lh-40)*0.5;
+	if(t<0)t=1;
+	$('#'+mid+'').css({'top':''+t+'px'});
 }

@@ -25,7 +25,7 @@ $(document).ready(function(){
 				if(v=='1')s='顺序流程';
 				if(v=='2')s='顺序前置';
 				if(v=='3')s='自由流程';
-				if(v=='4')s='自定义流程';
+				if(v=='4')s='选择流程';
 				return s;
 			}
 		},{
@@ -241,7 +241,7 @@ $(document).ready(function(){
 		
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" id="copy_{rand}" click="copy,1" type="button">复制</button>&nbsp; 
+		<button class="btn btn-default" id="copy_{rand}" click="copy,1" disabled type="button">复制</button>&nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp; 
 		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>

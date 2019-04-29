@@ -97,8 +97,8 @@
 				
 				<tr><td  colspan="2" height="60" align="left" style="padding-left:80px"><a href="javascript:" onclick="backabc()" class="blue" ><u>&lt;&lt;返回</u></a>&nbsp; &nbsp; 
 				<?php
-				if(version_compare(PHP_VERSION, '5.3.0','<')){
-					echo '<font color=red>您当前php版本太低了，至少需要5.3+以上版本</font>';
+				if(version_compare(PHP_VERSION, '5.2.0','<')){
+					echo '<font color=red>您当前php版本太低了，至少需要5.2+以上版本</font>';
 				}else{
 					echo '<a class="webbtn" style="padding:10px 20px;font-size:16px" onclick="submitla()" href="javascript:">提交安装</a>';
 				}

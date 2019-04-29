@@ -65,6 +65,7 @@ class homeitemsClassModel extends Model
 		if(!isset($arr['flowtodo']))$arr['flowtodo']	= m('flowtodo')->getwdtotals($uid);
 		if(!isset($arr['cropt']))$arr['cropt']			= m('goods')->getdaishu(); //出入库操作数
 		if(!isset($arr['receiptmy']))$arr['receiptmy']	= m('flow:receipt')->getweitotal($uid);
+		if(!isset($arr['myhong']))$arr['myhong'] 		= m('official')->rows('`uid`='.$uid.' and `type`=0 and `status`=1 and `thid`=0');//统计未套红的
 
 		return $arr;
 	}

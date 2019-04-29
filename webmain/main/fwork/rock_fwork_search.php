@@ -38,3 +38,4 @@ $(document).ready(function(){
 </script>
 
 <div id="view_{rand}"></div>
+

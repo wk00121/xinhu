@@ -368,9 +368,9 @@
 			});
 		};
 		this._itemclick= function(o1, e){
-			this.trobj.css('background','');
+			this.trobj.removeClass(can.selectcls);
 			var o = $(o1);
-			o.css('background', can.selectColor);
+			o.addClass(can.selectcls);
 			var oi = parseFloat(o.attr('oi'));
 			var a  = this.data[oi];
 			this.changedata = a;
@@ -778,7 +778,7 @@
 	$.fn.bootstable	= function(options){
 		var defaultVal = {
 			columns:[],		//表头
-			selectColor:'#DFF0D8', //选中时行颜色
+			selectColor:'#DFF0D8', //(弃用)选中时行颜色
 			pageSize:15,   	//默认分页数
 			limit:0,		//没有分页时展示条数
 			bodyStyle:'',	

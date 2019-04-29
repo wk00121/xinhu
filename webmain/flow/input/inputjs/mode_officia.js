@@ -1,8 +1,12 @@
 //初始函数
 function initbodys(){
+	
+	if(!form('zinum'))return;
 	$(form('zinum')).change(function(){
 		getfilenum();
 	});
+	$('#inputtitle').css('color','red');
+	$('body').append('<style>.ys1,.ys2{border-color:red;color:red}</style>');
 }
 
 //得到文件编号：类别+年份+三位编号

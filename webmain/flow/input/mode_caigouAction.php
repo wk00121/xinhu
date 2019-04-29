@@ -28,7 +28,7 @@ class mode_caigouClassAction extends inputAction{
 	
 	public function getgoodsdata()
 	{
-		return m('goods')->getgoodsdata();
+		return m('goods')->getgoodsdata(2);
 	}
 	
 	public function getcustgong()

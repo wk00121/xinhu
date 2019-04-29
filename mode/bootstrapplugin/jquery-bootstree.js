@@ -42,7 +42,7 @@
 			this.changedata = false;
 			if(!can.hideHeaders){
 				s+='<div>';
-				s+='<ul style="border-bottom:1px #dedede solid;border-top-width:0px">';
+				s+='<ul style="border-bottom:1px #dedede solid;border-top-width:0px;margin:0">';
 				if(can.checked)s+='<li style="width:40px;text-align:center"><input id="seltablecheck_'+rand+'" type="checkbox"></li>';
 				for(i=0;i<len;i++){
 					hs = '';
@@ -120,7 +120,7 @@
 				this._zoi++;
 				ov	= d[i];
 				this._zoiarr[this._zoi] = ov;
-				s+='<ul oi="'+this._zoi+'" dataid="'+ov.id+'">';
+				s+='<ul oi="'+this._zoi+'" style="margin:0" dataid="'+ov.id+'">';
 				if(can.checked){
 					s+='<li style="width:40px;text-align:center"><input name="treecheck_'+rand+'" value="'+this._zoi+'" type="checkbox"></li>';
 				}

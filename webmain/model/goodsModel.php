@@ -56,11 +56,13 @@ class goodsClassModel extends Model
 		return $to>0;
 	}
 	
-	public function getgoodstype()
+	public function getgoodstype($lx=0)
 	{
 		$dbs 	= m('option');
 		$rowss  = $dbs->getdata('goodstype');
 		$rows	= array();
+		$str1   = '	&nbsp;	&nbsp; ';
+		if($lx==1)$str1='	';
 		foreach($rowss as $k=>$rs){
 			$rows[] = array(
 				'name' => $rs['name'],
@@ -69,7 +71,7 @@ class goodsClassModel extends Model
 			$rowsa = $dbs->getdata($rs['id']);
 			if($rowsa)foreach($rowsa as $k1=>$rs1){
 				$rows[] = array(
-					'name' => '	&nbsp;	&nbsp; ├'.$rs1['name'],
+					'name' => ''.$str1.'├'.$rs1['name'],
 					'value' => $rs1['id'],
 				);
 			}
@@ -77,19 +79,59 @@ class goodsClassModel extends Model
 		return $rows;
 	}
 	
-	public function getgoodsdata()
+	/**
+	*	$lx=0默认，1领用，2采购，3调拨
+	*/
+	public function getgoodsdata($lx=0)
 	{
-		$rowss  = m('goods')->getall('1=1','id,name,xinghao');
+		$typeid	= $this->rock->get('selvalue');
+		$where 	= '1=1';
+		if(!isempt($typeid)){
+			$alltpeid = m('option')->getalldownid($typeid);
+			$where = 'a.`typeid` in('.$alltpeid.')';
+		}
+		$stockarr = array();
+		if($lx==3){
+			$ckid = $this->rock->get('ckid');
+			$aids = '0';
+			if(!isempt($ckid)){
+				$rowss= $this->db->getall("select `aid`,sum(`count`)as counts from `[Q]goodss` where `depotid`='$ckid' group by `aid`");
+				foreach($rowss as $k=>$rs){
+					$aids.=','.$rs['aid'].'';
+					$stockarr[$rs['aid']] = $rs['counts'];
+				}
+			}
+			$where.= ' and a.`id` in('.$aids.')';
+		}
+		$rowss  = $this->db->getall('select a.`id`,a.`name`,a.`xinghao`,a.`stock`,a.`price`,a.`unit`,b.`name` as `typename` from `[Q]goods` a left join `[Q]option` b on a.`typeid`=b.`id` where '.$where.'');
 		$rows	= array();
 		foreach($rowss as $k=>$rs){
 			$name 	= $rs['name'];
 			if(!isempt($rs['xinghao']))$name.='('.$rs['xinghao'].')';
-			$rows[] = array(
+			$stock	= $rs['stock'];
+			if($lx==3){
+				$stock = arrvalue($stockarr,$rs['id'],'0');
+			}
+			$baar	= array(
 				'name' 	=> $name,
 				'value' => $rs['id'],
+				'price' => $rs['price'],
+				'unit' => $rs['unit'],
+				'stock' => $stock,
+				'subname' => $rs['typename'],
 			);
+			if(($lx==1 || $lx==3) && $stock<='0'){
+				$baar['disabled']= true;//领用没有库存了
+				$baar['subname'].= ' 无库存';
+			}
+			$rows[] = $baar;
 		}
-		return $rows;
+		if($lx==0)return $rows;
+		$selectdata = $this->getgoodstype(1);
+		return array(
+			'rows' => $rows,
+			'selectdata'=>$selectdata
+		);
 	}
 	
 	/**

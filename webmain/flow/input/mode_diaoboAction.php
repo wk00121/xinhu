@@ -16,6 +16,11 @@ class mode_diaoboClassAction extends inputAction{
 				}
 			}
 		}
+		$rows = array();
+		$rows['custname'] = m('godepot')->getmou('depotname', $arr['custid']);
+		return array(
+			'rows' => $rows
+		);
 	}
 	
 		
@@ -31,7 +36,7 @@ class mode_diaoboClassAction extends inputAction{
 	
 	public function getgoodsdata()
 	{
-		return m('goods')->getgoodsdata();
+		return m('goods')->getgoodsdata(3);
 	}
 }	
 			

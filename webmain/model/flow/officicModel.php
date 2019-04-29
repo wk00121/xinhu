@@ -2,7 +2,7 @@
 //公文查阅
 class flow_officicClassModel extends flowModel
 {
-
+	public $xiangbordercolor = 'red';//默认边框颜色
 	
 	public function initModel()
 	{
@@ -34,9 +34,10 @@ class flow_officicClassModel extends flowModel
 	protected function flowdatalog($arr)
 	{
 		
-		$arr['title'] 		= '';
+		$arr['title'] 		= $this->moders['name'];
 
 		return $arr;
 	}
+	
 	
 }

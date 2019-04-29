@@ -194,6 +194,7 @@ class uploadClassAction extends apiAction
 	public function rockofficeeditAction()
 	{
 		$fileid = (int)$this->get('id');
+		$lx 	= (int)$this->get('lx');
 		$frs 	= m('file')->getone($fileid);
 		if(!$frs)return returnerror('文件不存在了');
 		$filepath = $frs['filepath'];
@@ -202,15 +203,21 @@ class uploadClassAction extends apiAction
 		
 		$uptype = '|doc|docx|xls|xlsx|ppt|pptx|';
 		if(!contain($uptype,'|'.$frs['fileext'].'|'))return returnerror('不是文档类型无法在线编辑');
+		$filename 	= $frs['filename'];
+		$utes		= 'edit';
+		if($lx==1){
+			$filename = '(只读)'.$filename.'';
+			$utes     = 'yulan';
+		}
 		
 		$arr[]  = URL;
-		$arr[]  = $frs['filename'];
+		$arr[]  = $filename;
 		$arr[]  = ''.md5(URL).'_'.$frs['filesize'].'_'.$fileid.'.'.$frs['fileext'].'';
 		$arr[]  = $this->rock->gethttppath($filepath); //下载地址
 		$arr[]  = $fileid;
 		$arr[]  = $this->adminid;
 		$arr[]  = $this->token;
-		$arr[]  = 'edit';
+		$arr[]  = $utes;
 		$arr[]  = $frs['fileext'];
 		
 		$str 	= '';

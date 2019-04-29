@@ -1,7 +1,12 @@
 <?php
-class flow_officiaClassModel extends flowModel
+class flow_officibClassModel extends flowModel
 {
 	public $xiangbordercolor = 'red';//默认边框颜色
+	
+	public function initModel()
+	{
+		
+	}
 
 	protected function flowdatalog($arr)
 	{
@@ -12,18 +17,20 @@ class flow_officiaClassModel extends flowModel
 	
 	protected function flowxiangfields(&$fields)
 	{
-		$fields['base_name'] 	= '拟办人';
-		$fields['base_deptname'] = '拟办人部门';
+		$fields['base_name'] 	= '登记人';
+		$fields['base_deptname'] = '登记人部门';
 	}
 	
 	public function flowsearchfields()
 	{
-		$arr[] = array('name'=>'拟办人...','fields'=>'uid');
+		$arr[] = array('name'=>'登记人...','fields'=>'uid');
 		return $arr;
 	}
 	
+	//录入页面标题
 	public function inputtitle()
 	{
-		return '拟办发文稿纸';
+		return '收文登记';
 	}
+	
 }
