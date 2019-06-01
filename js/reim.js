@@ -346,6 +346,7 @@ var reim = {
 		
 		this.shownowci = 0;
 		this.showconfig(ret.config);
+		if(ret.editpass==0)this.editpass('请先修改密码后在使用','none');
 	},
 	loaddata:function(type){
 		this.ajax(this.apiurl('indexreim','ldata'),{type:type}, function(ret){
@@ -725,7 +726,16 @@ var reim = {
 		if(face)d.face = face;
 		this.showhistorys(d, true);
 	},
-	
+	editpass:function(bt,cse){
+		if(!bt)bt='修改密码';
+		if(!cse)cse='';
+		js.tanbody('winiframe',bt,260,300,{
+			html:'<div style="height:250px;overflow:hidden"><iframe src="" name="openinputiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+			bbar:'none',
+			closed:cse
+		});
+		openinputiframe.location.href='?m=index&d=we&a=editpass&hideheader=true&ofrom=reim';
+	},
 	//别的地方登录
 	otherlogins:function(){
 		this.otherlogin = true;

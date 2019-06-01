@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：company.公司单位，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：company.公司单位
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.公司单位]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'company',modename='公司单位',isflow=0,modeid='63',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"nameen","name":"\u5bf9\u5e94\u82f1\u6587\u540d","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"pid","name":"\u6240\u5c5e\u5355\u4f4d","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"fuzename","name":"\u5bf9\u5e94\u8d1f\u8d23\u4eba","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"city","name":"\u6240\u5728\u57ce\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"tel","name":"\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"fax","name":"\u4f20\u771f","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"id","name":"ID","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"logo","name":"\u5bf9\u5e94logo","fieldstype":"uploadimg","ispx":"0","isalign":"0","islb":"1"},{"fields":"oaname","name":"\u663e\u793aOA\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"oanemes","name":"\u79fb\u52a8\u7aef\u663e\u793a","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"nameen","name":"\u5bf9\u5e94\u82f1\u6587\u540d","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"pid","name":"\u6240\u5c5e\u5355\u4f4d","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"fuzename","name":"\u5bf9\u5e94\u8d1f\u8d23\u4eba","fieldstype":"changeusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"city","name":"\u6240\u5728\u57ce\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"1","islb":"0"},{"fields":"tel","name":"\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"fax","name":"\u4f20\u771f","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"0","isalign":"0","islb":"1"},{"fields":"id","name":"ID","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -35,7 +35,6 @@ $(document).ready(function(){
 			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -85,7 +84,8 @@ $(document).ready(function(){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -204,14 +204,13 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y29tcGFueQ::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"名称",dataIndex:"name",align:"left"},{text:"对应负责人",dataIndex:"fuzename"},{text:"所在城市",dataIndex:"city"},{text:"地址",dataIndex:"address",align:"left"},{text:"电话",dataIndex:"tel"},{text:"传真",dataIndex:"fax"},{text:"排序号",dataIndex:"sort"},{text:"ID",dataIndex:"id"},{
+		columns:[{text:"名称",dataIndex:"name",align:"left"},{text:"对应logo",dataIndex:"logo"},{text:"显示OA名称",dataIndex:"oaname"},{text:"移动端显示",dataIndex:"oanemes"},{text:"对应负责人",dataIndex:"fuzename"},{text:"所在城市",dataIndex:"city"},{text:"排序号",dataIndex:"sort"},{text:"ID",dataIndex:"id"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -233,6 +232,25 @@ bootparams.celleditor=true;
 bootparams.tree=true;
 c.setcolumns('sort',{
 	'editor':true
+});
+c.setcolumns('city',{
+	'editor':true
+});
+c.setcolumns('oaname',{
+	'editor':true
+});
+c.setcolumns('oanemes',{
+	'editor':true
+});
+c.setcolumns('logo',{
+	'renderer':function(v){
+		if(!isempt(v)){
+			v='<img src="'+v+'" width="30" height="30">';
+		}else{
+			v='&nbsp;';
+		}
+		return v;
+	}
 });
 
 //[自定义区域end]

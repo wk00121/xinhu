@@ -57,16 +57,25 @@ class kaoqinClassModel extends Model
 		$rows 	= arrvalue($this->_pipeiarr, $key);
 		if($rows)return $rows;
 		$mid 	= $this->getdistid($uid, $dt, 0);
-		$rows 	= $this->db->getrows('[Q]kqsjgz','pid='.$mid.'','id,name,stime,etime,qtype,iskq,iskt,isxx','`sort`');
+		$rows 	= $this->getkqsjs($mid);
 		if($lx==1){
 			$this->_pipeiarr[$key] = $rows;
 			return $rows;
 		}
 		foreach($rows as $k=>$rs){
-			$rows[$k]['children'] = $this->db->getrows('[Q]kqsjgz','pid='.$rs['id'].'','id,name,stime,etime,qtype,sort,iskt,iskq','`sort`');
+			$rows[$k]['children'] = $this->getkqsjs($rs['id']);
 		}
 		$this->_pipeiarr[$key] = $rows;
 		return $rows;
+	}
+	private $getkqsjsarr = array();
+	private function getkqsjs($id)
+	{
+		if(!isset($this->getkqsjsarr[$id])){
+			$rows 	= $this->db->getrows('[Q]kqsjgz','pid='.$id.'','id,name,stime,etime,qtype,sort,iskt,iskq,isxx','`sort`');
+			$this->getkqsjsarr[$id] = $rows;
+		}
+		return $this->getkqsjsarr[$id];
 	}
 	
 	/**
@@ -322,6 +331,7 @@ class kaoqinClassModel extends Model
 	
 	//返回条件
 	private $limitfenqxi = 20;//一次分析20人
+	private $qingjiaarr	 = array();//读取对应人请假的数字[$uid][$month] = [{}];
 	public function kqanayallfirst($month,$glx=0)
 	{
 		$month	= substr($month, 0, 7);
@@ -376,6 +386,7 @@ class kaoqinClassModel extends Model
 		$month	= substr($month, 0, 7);
 		if(!$urs)$urs 	= $this->admindb->getone($uid, '`workdate`,`quitdt`,`id`');
 		if($max==0)$max = $this->dtobj->getmaxdt($month);
+		$this->getqingjiaqj($uid, $month);
 		for($i=1; $i<=$max; $i++){
 			$oi = $i;if($oi<10)$oi='0'.$i.'';
 			$dt = ''.$month.'-'.$oi.'';
@@ -384,6 +395,34 @@ class kaoqinClassModel extends Model
 			$this->kqanay($uid, $dt);
 		}
 		$this->delquitwork($urs, $month, $max);
+	}
+	
+	//读取请假和外出记录
+	private function getqingjiaqj($uid, $month)
+	{
+		$month	= substr($month, 0, 7);
+		$rows 	= $this->db->getall("select `stime`,`etime`,`qjkind` from `[Q]kqinfo` where `uid`='$uid' and `status`=1 and `isturn`=1 and `kind`='请假' and `stime` like '$month%' order by `stime`");
+		$this->qingjiaarr[$uid][$month]['qingjia'] = $rows;
+		
+		$rows 	= $this->db->getall("select `outtime` as `stime`,`intime` as `etime`,`atype` from `[Q]kqout` where `uid`='$uid' and `status`=1 and `isturn`=1 and `outtime` like '$month%' order by `outtime`");
+		$this->qingjiaarr[$uid][$month]['waichu'] = $rows;
+	}
+	//读取当天请假和外出的
+	private function getqingjiaqjs($uid, $dt, $lx)
+	{
+		$dt 	= substr($dt, 0, 10);
+		$month	= substr($dt, 0, 7);
+		if(!isset($this->qingjiaarr[$uid]) || !isset($this->qingjiaarr[$uid][$month])){
+			$this->getqingjiaqj($uid, $dt);
+		}
+		$rows = $this->qingjiaarr[$uid][$month][$lx];
+		$barr = array();
+		if($rows)foreach($rows as $k=>$rs){
+			$stime = substr($rs['stime'], 0, 10);
+			$etime = substr($rs['etime'], 0, 10);
+			if($dt>=$stime && $dt<=$etime)$barr[]=$rs;//在对应日期里
+		}
+		return $barr;
 	}
 	
 	private function delquitwork($urs, $month, $max)
@@ -441,27 +480,27 @@ class kaoqinClassModel extends Model
 		}
 		
 		$this->_dkarr = $dkarr;
+		$zshu		  = count($sjarr);
+		$this->tempsbstatus = '';
+		if($zshu==4)$this->tempsbstatus = $this->getstatessqj($sjarr[0], $dt, $uid); //[特殊判断]上午请假状态
+		
 		foreach($sjarr as $k=>$rs){
 			$ztname = $rs['name'];
-			$arrs 	= $this->kqanaysss($uid, $dt, $rs, $this->_dkarr);
+			$arrs 	= $this->kqanaysss($uid, $dt, $rs, $this->_dkarr, $k, $zshu);
 			$state	= $arrs['state'];
 			$states	= $arrs['states'];
 			$timesb	= $timeys = 0;
 			
 			//判断是否有请假和外出。。
 			if($iswork==1 && $state !='正常'){
-				$zcarr	= array();
-				foreach($rs['children'] as $k2=>$cog2){
-					if($cog2['name']=='正常')$zcarr = $cog2;
-				}
-				if($zcarr)$states = $this->getstates($zcarr, $dt, $uid);	
+				$zcarr	= $arrs['zcarr'];
+				if($zcarr && $states=='')$states = $this->getstates($zcarr, $dt, $uid);	
 			}
-			
-			
+	
 			$emiao	= $arrs['emiao']; //迟到早退秒数
 			$time	= $arrs['time'];
 			
-			
+			//是工作时间段
 			if($rs['isxx']=='0'){
 				$mshu	= strtotime(''.$dt.' '.$rs['stime'].'') - strtotime(''.$dt.' '.$rs['etime'].'');
 				$timesb	= abs(round($mshu / 60 / 60,1));
@@ -473,7 +512,6 @@ class kaoqinClassModel extends Model
 					}
 				}
 			}
-			
 			$arr	= array(
 				'ztname' 	=> $ztname,
 				'state' 	=> $state,
@@ -498,10 +536,15 @@ class kaoqinClassModel extends Model
 		}
 		$db->delete("id not in ($ids) and `uid`='$uid' and `dt`='$dt'");
 	}
-	private function kqanaysss($uid, $dt, $kqrs, $dkarr)
+	private function kqanaysss($uid, $dt, $kqrs, $dkarr, $noi, $zshu)
 	{
 		$kqarr	= $kqrs['children'];
 		$state	= '未打卡';$states = $remark = ''; $emiao	= 0; $tpk=-1; $time	= ''; $pdtime	= 0;
+		$zcarr	= array();
+		foreach($kqarr as $k2=>$cog2){
+			if($cog2['name']=='正常')$zcarr = $cog2;//正常状态的
+		}
+		
 		if($dkarr && $kqarr)foreach($kqarr as $k=>$rs){
 			$stime 	= strtotime(''.$dt.' '.$rs['stime'].'');
 			$etime 	= strtotime(''.$dt.' '.$rs['etime'].'');
@@ -538,11 +581,19 @@ class kaoqinClassModel extends Model
 			if($qtype==1)$pdtime = $etime;
 			if($time!='')break;
 		}
+		
+		//4个状态，第2个状态需要额外处理，判断是不是请假的，上午全请假才需要判断
+		$lxs = '';
+		if($zshu==4 && $noi==1 && $zcarr){
+			$lxs = $this->tempsbstatus;
+			if($lxs!='')$states = $this->getstates($zcarr, $dt, $uid);
+		}
+		
 		if($time!=''){
 			if($state!='正常'){
 				$emiao = $pdtime-$time;
 			}
-			unset($this->_dkarr[$tpk]);//一次打卡记录只能使用一次
+			if($lxs=='')unset($this->_dkarr[$tpk]);//一次打卡记录只能使用一次
 		}
 		$barr['state'] 		= $state;
 		$barr['emiao'] 		= abs($emiao);
@@ -550,49 +601,66 @@ class kaoqinClassModel extends Model
 		$barr['time'] 		= $time;
 		$barr['states'] 	= $states;
 		$barr['remark'] 	= $remark;
+		$barr['zcarr'] 		= $zcarr;
 		if($pdtime!=0)$barr['pdtime'] = date('Y-m-d H:i:s', $pdtime);
 		return $barr;
 	}
 	
-	
+	//【2019-05-12】判断是不是半天请假和外出了，只用于有每天4个考勤状态的
+	private function getstatessqj($sbarr, $dts, $uid)
+	{
+		$rows 	= $this->getqingjiaqjs($uid, $dts,'qingjia');
+		$st1	= strtotime($dts.' '.$sbarr['stime']);
+		$et1	= strtotime($dts.' '.$sbarr['etime']);
+		$lxs	= '';
+		foreach($rows as $k=>$rs){
+			$qst = strtotime($rs['stime']);
+			$qet = strtotime($rs['etime']);
+			if($qst<=$st1 && $qet>=$et1){
+				$lxs = $rs['qjkind'];
+			}
+		}
+		if($lxs==''){
+			$rows 	= $this->getqingjiaqjs($uid, $dts,'waichu');
+			foreach($rows as $k=>$rs){
+				$qst = strtotime($rs['stime']);
+				$qet = strtotime($rs['etime']);
+				if($qst<=$st1 && $qet>=$et1){
+					$lxs = $rs['atype'];
+				}
+			}
+		}
+		return $lxs;
+	}
 
-	
 	/**
 	*	上班: (当前qtype==0)请假开始时间小于等于 设置正常的截止时间（取最小值）
 	*	下班: (当前qtype==1)请假截止时间大于等于 设置正常的开始时间（取最大值）
+	*	最新取消
 	*/
 	private function getstates($ztarr, $dts, $uid)
 	{
 		$st1	= strtotime($dts.' '.$ztarr['stime']);
 		$et1	= strtotime($dts.' '.$ztarr['etime']);
 		$s 		= '';
-		$rows 	= $this->db->getall("select `stime`,`etime`,`qjkind` from `[Q]kqinfo` where `uid`='$uid' and `status`=1 and `isturn`=1 and `kind`='请假' and `stime`<='$dts 23:59:59' and `etime`>='$dts 00:00:00'");
+		
+		$rows 	= $this->getqingjiaqjs($uid, $dts,'qingjia');
 		foreach($rows as $k=>$rs){
 			$qst = strtotime($rs['stime']);
 			$qet = strtotime($rs['etime']);
-			if($ztarr['qtype']==1){
-				if($qet >= $st1){
-					$s = $rs['qjkind'];
-				}
-			}else{
-				if($qst <= $et1){
-					$s = $rs['qjkind'];
-				}
+			if(($st1>=$qst && $st1<=$qet) || ($et1>=$qst && $et1<=$qet)){
+				$s = $rs['qjkind'];
+				break;
 			}
 		}
 		if($s==''){
-			$rows 	= $this->db->getall("select `outtime`,`intime`,`atype` from `[Q]kqout` where `uid`='$uid' and `status`=1 and `isturn`=1 and `outtime`<='$dts 23:59:59' and `intime`>='$dts 00:00:00'");
+			$rows 	= $this->getqingjiaqjs($uid, $dts,'waichu');
 			foreach($rows as $k=>$rs){
-				$qst = strtotime($rs['outtime']);
-				$qet = strtotime($rs['intime']);
-				if($ztarr['qtype']==1){
-					if($qet >= $st1){
-						$s = $rs['atype'];
-					}
-				}else{
-					if($qst <= $et1){
-						$s = $rs['atype'];
-					}
+				$qst = strtotime($rs['stime']);
+				$qet = strtotime($rs['etime']);
+				if(($st1>=$qst && $st1<=$qet) || ($et1>=$qst && $et1<=$qet)){
+					$s = $rs['atype'];
+					break;
 				}
 			}
 		}
@@ -735,12 +803,15 @@ class kaoqinClassModel extends Model
 		if($uid==0)$uid = $this->adminid;
 		$rows = $this->db->getall("select `kind` from `[Q]kqinfo` where `uid`='$uid' and `status`=1 and `kind` like '增加%' group by `kind`");
 		$tx   = $this->getqjsytime($uid, '调休', $dt, $id);
-		$str  = '可调休('.$tx.'小时)';
+		$str  = '';
+		if($tx>0)$str  = '可调休('.$tx.'小时)';
 		foreach($rows as $k=>$rs){
 			$type = str_replace('增加', '', $rs['kind']);
 			$sj   = $this->getqjsytime($uid, $type, $dt, $id);
-			$str  .= '，'.$type.'('.$sj.'小时)';
+			if($str!='')$str  .= '，';
+			$str  .= ''.$type.'('.$sj.'小时)';
 		}
+		if($str=='')$str='无剩余假期';
 		return $str;
 	}
 	

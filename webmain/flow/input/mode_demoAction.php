@@ -47,10 +47,12 @@ class mode_demoClassAction extends inputAction{
 	public function tanxuan()
 	{
 		$rows[] = array(
-			'name' => '第一个数据'
+			'name' => '第一个数据',
+			'value'=> '0'
 		);
 		$rows[] = array(
-			'name' => '第二个数据'
+			'name' => '第二个数据',
+			'value'=> '1'
 		);
 		return $rows;
 	}
@@ -58,8 +60,34 @@ class mode_demoClassAction extends inputAction{
 	//弹出下拉选择多选
 	public function tanxuancheck()
 	{
+		$rows = array();
+		$tanxuanid = $this->get('tanxuanid'); //根据id过滤数据
+		
+		//咱们就根据这个id来读取数据源吧
+		if($tanxuanid==0){
+			$rows[] = array(
+				'name' => '数据0'
+			);
+			$rows[] = array(
+				'name' => '数据1'
+			);
+		}
+		
+		if($tanxuanid==1){
+			$rows[] = array(
+				'name' => '选择数据0'
+			);
+			$rows[] = array(
+				'name' => '选择数据1'
+			);
+		}
+		
+		//这个数据源只是简单处理，更复杂就需要自己的业务逻辑了，如读取操作数据库等。
+		
+		
+		return $rows;
 		$rows[] = array(
-			'name' => '数据1'
+			'name' => '数据1:'.$tanxuan.''
 		);
 		$rows[] = array(
 			'name' => '数据2'

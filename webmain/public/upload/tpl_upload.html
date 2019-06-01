@@ -130,16 +130,30 @@ var up={
 				return false;
 			}
 		}
+		
+		var arr={filename:filename,filesize:filesize,filesizecn:filesizecn,filetype:filetype,fileext:fileext,xu:this.moi,fileobj:file};
+		var noi = this.filearr.push(arr);
+		var fis= 'web/images/fileicons/'+js.filelxext(fileext)+'.gif';
 		var s='<div class="mdiv" upload="true">'+
-		'<div class="div01"><span></span>'+fileext+'：'+filename+'</div>'+
+		'<div class="div01"><span>1. </span><img src="'+fis+'" width="16" height="16" align="absmiddle"> <font>'+filename+'</font>，<a onclick="up.editname('+(noi-1)+', this)" href="javascript:;">改名</a></div>'+
 		'<div class="div02">'+filesizecn+'</div>'+
 		'<div class="div03" id="updeng'+this.moi+'">初始化文件...</div>'+
 		'</div>';
+		
 		this.obj.append(s);
-		var arr={filename:filename,filesize:filesize,filesizecn:filesizecn,filetype:filetype,fileext:fileext,xu:this.moi,fileobj:file};
-		this.filearr.push(arr);
 		$('#updeng'+up.moi+'').html('等待上传...<a href="javascript:" temp="del" onclick="return up.del(this,'+olen+')">×</a>');
 		setTimeout('up.change1('+(oi+1)+');',5);
+	},
+	editname:function(oi,o1){
+		var arr = this.filearr[oi];
+		var nae = arr.filename.replace('.'+arr.fileext+'','');
+		js.prompt('改名','输入新的文件名称',function(jg,txt){
+			if(jg=='yes' && txt){
+				var nname = txt+'.'+arr.fileext+'';
+				up.filearr[oi].filename = nname;
+				$(o1).parent().find('font').html(nname);
+			}
+		}, nae);
 	},
 	del:function(o,oi)
 	{
@@ -222,7 +236,7 @@ var up={
 			$('#'+up.updengid+'').html('<font color=red>上传失败0</font>');
 		}, false); 
 		var fd = new FormData();  
-		fd.append('file', this.suarr.fileobj); 
+		fd.append('file', this.suarr.fileobj, this.suarr.filename); 
 		xhr.send(fd);
 	},
 	upsuccess:function(bstr, code){

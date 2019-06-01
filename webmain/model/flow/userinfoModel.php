@@ -157,6 +157,7 @@ class flow_userinfoClassModel extends flowModel
 	public function flowdaorubefore($rows)
 	{
 		$inarr	= array();
+		$dba  	= m('admin');
 		//根据手机号关联用户
 		foreach($rows as $k=>$rs){
 			
@@ -177,6 +178,12 @@ class flow_userinfoClassModel extends flowModel
 				}
 			}
 			$arr['state'] 		= $zt;
+			
+			//更新入职日期
+			$workdate = arrvalue($arr, 'workdate');
+			if(!isempt($workdate)){
+				$dba->update("`workdate`='$workdate'", $arr['id']);
+			}
 			
 			$inarr[] = $arr;
 		}

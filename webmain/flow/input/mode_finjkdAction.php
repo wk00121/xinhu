@@ -3,7 +3,10 @@ class mode_finjkdClassAction extends inputAction{
 	
 
 	protected function savebefore($table, $arr, $id, $addbo){
-		
+		$rows['type'] = '2';//一定要是2，不能去掉
+		return array(
+			'rows'=>$rows
+		);
 	}
 
 	protected function saveafter($table, $arr, $id, $addbo){

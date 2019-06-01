@@ -35,6 +35,7 @@ class indexreimClassAction extends apiAction
 		$arr['config'] 		= $dbs->getreims();
 		$arr['loaddt'] 		= $this->now;
 		$arr['ip'] 			= $this->ip;
+		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
 		m('login')->uplastdt();
 		
 		$this->showreturn($arr);
@@ -63,6 +64,7 @@ class indexreimClassAction extends apiAction
 		$arr['config'] 		= $dbs->getreims();
 		$arr['loaddt'] 		= $this->now;
 		$arr['ip'] 			= $this->ip;
+		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
 		m('login')->uplastdt();
 		
 		$this->showreturn($arr);
@@ -80,6 +82,7 @@ class indexreimClassAction extends apiAction
 		$arr['agentjson']	= json_encode($agentarr['rows']);
 		$arr['historyjson'] = json_encode($historyarr);
 		$arr['loaddt'] 		= $this->now;
+		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
 		m('login')->uplastdt();
 		$this->showreturn($arr);
 	}

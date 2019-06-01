@@ -25,6 +25,7 @@ class kaoqinClassAction extends Action
 		if($reimbo->installwx(1)){
 			$barr 	= m('weixinqy:daka')->getrecord($uids, $dt1, $dt2, 1);
 			//加入异步
+			$send = 0;
 			if($uids=='' && $barr['errcode']==0 && $barr['maxpage']>1){
 				for($i=1;$i<=$barr['maxpage'];$i++){
 					if($i>1)$reimbo->asynurl('asynrun','wxdkjl', array(
@@ -33,8 +34,14 @@ class kaoqinClassAction extends Action
 						'page' 		=> $i
 					));
 				}
+				$send++;
 			}
-			if($barr['errcode']!=0)$msg .= ',企业微信('.$barr['msg'].')';
+			if($barr['errcode']!=0){
+				$msg .= ',企业微信('.$barr['msg'].')';
+			}else{
+				if(isset($barr['zongts']))$msg .= ',微信打卡(共'.$barr['zongts'].'条,新增'.$barr['okload'].'条)';
+				if($send>0)$msg .= ',并发送异步请求'.$send.'条';
+			}
 		}
 		
 		//钉钉
@@ -309,11 +316,15 @@ class kaoqinClassAction extends Action
 		$whe 	= '';
 		if($atype=='my')$whe=' and id='.$this->adminid.'';
 		m('kaoqin')->kqanayall($dt, $whe);
-		echo 'ok';
 	}
 	public function kqanayallinitAjax()
 	{
 		$dt 	= $this->post('dt');
+		$atype 	= $this->post('atype');
+		if($atype=='my'){
+			$this->kqanayallAjax();
+			return '{"zong":"ok"}';
+		}
 		return m('kaoqin')->kqanayallfirst($dt, 1);
 	}
 	public function kqanayallpageAjax()

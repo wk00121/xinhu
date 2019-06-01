@@ -320,8 +320,14 @@ class flowModel extends Model
 		if(!$bo){
 			$bo 	= $this->isreadqxs();
 		}
+		//监控流程也是可以查看
+		if(!$bo){
+			$tos 	= $this->isjiankongqx();
+			if($tos>0)$bo=true;
+		}
+		
 		if($glx==1)return $bo;
-		if(!$bo)$this->echomsg('无权限查看模块['.$this->modenum.'.'.$this->modename.']'.$this->uname.'的数据，'.c('xinhu')->helpstr('cxqx').'');
+		if(!$bo)$this->echomsg('无权限查看模块['.$this->modenum.'.'.$this->modename.']'.$this->uname.'的数据，请联系管理员到[流程模块→流程模块权限]下设置');
 	}
 	
 	/**
@@ -352,7 +358,7 @@ class flowModel extends Model
 			if($this->rs['status']==1)$bo=0;
 		}
 		if($bo==0){
-			$where 	= $this->viewmodel->editwhere($this->moders, $this->adminid);
+			$where 	= $this->viewmodel->editwhere($this->moders, $this->adminid, $this->flowviewufieds);
 			$where	= str_replace('{asqom}','', $where);
 			$tos 	= $this->rows("`id`='$this->id'  $where ");
 			if($tos>0)$bo=1;
@@ -375,7 +381,7 @@ class flowModel extends Model
 			if($this->rs['status']==1)$bo=0;
 		}
 		if($bo==0){
-			$where 	= $this->viewmodel->deletewhere($this->moders, $this->adminid);
+			$where 	= $this->viewmodel->deletewhere($this->moders, $this->adminid, $this->flowviewufieds);
 			$where	= str_replace('{asqom}','', $where);
 			$tos 	= $this->rows("`id`='$this->id'  $where ");
 			if($tos>0)$bo=1;
@@ -384,6 +390,21 @@ class flowModel extends Model
 		$isd 	= $this->flowisdeleteqx();
 		if(is_numeric($isd) && $isd <= 1)$bo = $isd;
 		
+		return $bo;
+	}
+	
+	/**
+	*	判断是否监控权限
+	*/
+	public function isjiankongqx()
+	{
+		$bo = 0;
+		if($bo==0){
+			$where 	= $this->viewmodel->jiankongwhere($this->moders, $this->adminid, $this->flowviewufieds);
+			$where	= str_replace('{asqom}','', $where);
+			$tos 	= $this->rows("`id`='$this->id'  $where ");
+			if($tos>0)$bo=1;
+		}
 		return $bo;
 	}
 	
@@ -750,6 +771,7 @@ class flowModel extends Model
 		$ischange= 0;
 		$str	 = '';
 		$arr 	 = $this->getflow();
+		if($arr['nowcheckid'] != $this->billrs['nowcheckid'])$this->getflowsave($arr, true);
 		$nstatus = $this->rs['status'];
 		$isturn  = $this->rs['isturn'];
 		$nowcheckid = ','.$arr['nowcheckid'].',';
@@ -1038,7 +1060,7 @@ class flowModel extends Model
 		$fileid			= $this->rock->post('fileid'); //这个是审批处理时下的上传文件
 		if($fileid!='')m('file')->addfile($fileid, 'flow_log', $ssid, $this->modenum.'|'.$this->id);
 		$logfileid		= $this->rock->post('logfileid'); //这个是从单据操作菜单添加追加时
-		if($logfileid!='')m('file')->addfile($logfileid, $this->mtable, $this->id, $this->modenum);
+		if($logfileid!='')m('file')->addfile($logfileid, 'flow_log', $ssid, $this->modenum.'|'.$this->id);
 		$addarr['id'] 	= $ssid;
 		$this->flowaddlog($addarr);
 		$this->getlogrows	= array();
@@ -1089,8 +1111,8 @@ class flowModel extends Model
 		$csname 	= $this->rock->post('syschaosong');
 		$csnameid 	= $this->rock->post('syschaosongid');
 		if(!isempt($csnameid)){
-			$csid 			= (int)$this->chaomodel->getmou('id', $this->mwhere);
-			$where 			= ''.$this->mwhere;
+			$where 			= $this->mwhere.' and `type`=0';
+			$csid 			= (int)$this->chaomodel->getmou('id', $where);
 			if($csid==0)$where = '';
 			$this->chaomodel->record(array(
 				'modeid' => $this->modeid,
@@ -1115,9 +1137,9 @@ class flowModel extends Model
 	public function getcsname($id=0)
 	{
 		if($id>0){
-			$where= "`table`='$this->mtable' and `mid`='$id'";
+			$where= "`table`='$this->mtable' and `mid`='$id' and `type`=0";
 		}else{
-			$where= "`modeid`={$this->modeid} and `uid`={$this->adminid}";
+			$where= "`modeid`={$this->modeid} and `uid`={$this->adminid} and `type`=0";
 		}
 		$ors 	= $this->chaomodel->getone($where,'*','`id` desc');
 		$csname = $csnameid = '';
@@ -1813,7 +1835,7 @@ class flowModel extends Model
 				'courseid' 	=> $courseid,
 				'optid' 	=> $this->adminid,
 				'optname' 	=> $this->adminname,
-				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加，5自由流程，6选择流程
+				'addlx' 	=> $addlx, //添加类型:1自定义,2撤回添加,3退回添加,4转移添加，5自由流程，6选择流程，7监控转办
 				'optdt' 	=> $this->rock->now,
 				'status' 	=> 0
 			);
@@ -2107,6 +2129,7 @@ class flowModel extends Model
 		if($num=='')$num = $this->modenum;
 		if($id==0)$id 	 = $this->id;
 		$url 	= URL;
+		if($lx=='auto')$lx = ($this->ismobile==1)?'x':'p';
 		if($lx=='x')$url = $this->rock->getouturl();//移动端
 		$url 	= ''.$url.'task.php?a='.$lx.'&num='.$num.'&mid='.$id.'';
 		return $url;
@@ -2437,11 +2460,17 @@ class flowModel extends Model
 				$arr[] = array('name'=>'追加说明...','lx'=>1,'issm'=>1,'optmenuid'=>-12);
 			}
 			
-			if(!in_array($status, array(1,5)) && $ismy){
+			$isjk 	= $this->isjiankongqx();//监控权限
+			
+			if(!in_array($status, array(1,5)) && ($ismy || $isjk)){
 				$arr[] = array('name'=>'作废申请...','lx'=>16,'issm'=>1,'nup'=>1,'optmenuid'=>-16); //可直接作废
+				if($isjk){
+					$arr[] = array('name'=>'监控转办...','color'=>'blue','lx'=>3,'issm'=>1,'nup'=>1,'optmenuid'=>-18); 
+					//$arr[] = array('name'=>'撤回上一步处理','color'=>'#ff6600','lx'=>1,'issm'=>1,'nup'=>1,'optmenuid'=>-19); 
+				}
 			}
 			
-			if(!in_array($status, array(1,2,5)) && $ismy){
+			if(!in_array($status, array(1,2,5)) && ($ismy || $isjk)){
 				$arr[] = array('name'=>'催办...','lx'=>13,'issm'=>1,'nup'=>1,'optmenuid'=>-13);
 				if($this->option->getval('sms_iscb')=='1')$arr[] = array('name'=>'短信催办...','lx'=>17,'issm'=>1,'nup'=>1,'optmenuid'=>-17);
 			}
@@ -2502,6 +2531,12 @@ class flowModel extends Model
 		$cname 	 = $this->rock->post('changename');
 		$cnameid = $this->rock->post('changenameid');
 		$cdate   = $this->rock->post('changedate');
+		$darr	 = array(
+			'cname' 	=> $cname,
+			'cnameid' 	=> $cnameid,
+			'cdate' 	=> $cdate,
+			'sm' 		=> $sm,
+		);
 		if($czid==-9){
 			$msg = $this->deletebill($sm);
 		}else if($czid==-10){
@@ -2528,6 +2563,8 @@ class flowModel extends Model
 			$this->zuofeibill($sm); //撤销申请也就是作废了
 		}else if($czid==-17){
 			$msg = $this->smschuiban($sm); //短信催办
+		}else if($czid==-18){
+			$msg = $this->jiankongzb($darr);
 		}else{
 			$ors 	 = m('flow_menu')->getone("`id`='$czid' and `setid`='$this->modeid' and `status`=1");
 			if(!$ors)return '菜单不存在';
@@ -2578,6 +2615,32 @@ class flowModel extends Model
 	}
 	
 	/**
+	*	监控人操作转办
+	*/
+	public function jiankongzb($darr)
+	{
+		$cnameid = $darr['cnameid'];
+		$cname   = $darr['cname'];
+		if(isempt($cnameid))return '没有选择人员';
+		$barr = $this->getflow();
+		$nowcourseid = arrvalue($barr, 'nowcourseid');
+		if(isempt($nowcourseid))return '此单据当前没审核步骤';
+		
+		$sm = '将['.$this->nowcourse['name'].']转办给：'.$cname.'';
+		$this->addlog(array(
+			'explain' 	=> $sm,
+			'name'		=> '监控转办',
+		));
+		
+		$this->addcheckname($nowcourseid, $cnameid, $cname, true, 7);
+		$barr = $this->getflow();
+		$this->getflowsave($barr, true);
+		$this->nexttodo($barr['nowcheckid'], 'next', $sm);
+		
+		return 'ok';
+	}
+	
+	/**
 	*	单据展示条件搜索
 	*/
 	public function billwhere($uid, $lx)
@@ -2598,7 +2661,7 @@ class flowModel extends Model
 		}
 		//抄送的
 		if($lx=='chaos'){
-			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
+			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and `type`=0 and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
 		}
 		//经我处理
 		if($lx=='mychuli'){
@@ -3049,6 +3112,12 @@ class flowModel extends Model
 		$where 	= $narr['where'];
 		$table	= $narr['table'];
 		if(!contain($table,' '))$table = '[Q]'.$table.'';
+		
+		$gwhere		= $this->rock->post('where');
+		if(!isempt($gwhere)){
+			$gwhere = $this->rock->jm->uncrypt($this->rock->iconvsql($gwhere));
+			$where .= ' '.$gwhere.'';
+		}
 		
 		$sql 	= 'select '.$fields.' as `name`,'.$tofiels.' as value from '.$table.' where 1=1 '.$where.' group by '.$fields.'';
 		$sql 	= str_replace('[A]', $narr['asqom'], $sql);

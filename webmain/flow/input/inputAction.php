@@ -781,20 +781,7 @@ class inputAction extends Action
 		$oi 	= 0;
 		$dorudat= array();
 		foreach($ldata as $k=>$rs){
-			
-			if(!isset($rs['uid']) && in_array('uid', $allfields))$rs['uid'] = $this->adminid;
-			if(!isset($rs['optid']) && in_array('optid', $allfields))$rs['optid'] = $this->adminid;
-			if(!isset($rs['createid']) && in_array('createid', $allfields))$rs['createid'] = $this->adminid;
-			
-			if(!isset($rs['optname']) && in_array('optname', $allfields))$rs['optname'] = $this->adminname;
-			if(!isset($rs['createname']) && in_array('createname', $allfields))$rs['createname'] = $this->adminname;
-			if(!isset($rs['optdt']) && in_array('optdt', $allfields))$rs['optdt'] = $this->now;
-			if(!isset($rs['adddt']) && in_array('adddt', $allfields))$rs['adddt'] = $this->now;
-			if(!isset($rs['createdt']) && in_array('createdt', $allfields))$rs['createdt'] = $this->now;
-			
-			if(!isset($rs['applydt']) && in_array('applydt', $allfields))$rs['applydt'] = $this->date;
-			
-			
+		
 			$id 	= (int)arrvalue($rs,'id','0');
 			$where 	= '';
 			if($id>0){
@@ -804,6 +791,20 @@ class inputAction extends Action
 					$id = 0;
 				}
 			}
+
+			if($id==0){
+				if(!isset($rs['createid']) && in_array('createid', $allfields))$rs['createid'] = $this->adminid;
+				if(!isset($rs['createname']) && in_array('createname', $allfields))$rs['createname'] = $this->adminname;
+				if(!isset($rs['adddt']) && in_array('adddt', $allfields))$rs['adddt'] = $this->now;
+				if(!isset($rs['createdt']) && in_array('createdt', $allfields))$rs['createdt'] = $this->now;
+			}
+			
+			if(!isset($rs['uid']) && in_array('uid', $allfields))$rs['uid'] = $this->adminid;
+			if(!isset($rs['optid']) && in_array('optid', $allfields))$rs['optid'] = $this->adminid;
+			if(!isset($rs['optname']) && in_array('optname', $allfields))$rs['optname'] = $this->adminname;
+			if(!isset($rs['optdt']) && in_array('optdt', $allfields))$rs['optdt'] = $this->now;
+			if(!isset($rs['applydt']) && in_array('applydt', $allfields))$rs['applydt'] = $this->date;
+			
 			if($id==0){
 				$bo = $flow->insert($rs);
 			}else{
@@ -814,6 +815,16 @@ class inputAction extends Action
 				$rs['id'] = $bo;
 				$dorudat[]= $rs;
 				$oi++;
+				
+				//有流程的模块就要提交操作
+				$status = arrvalue($rs,'status','0'); //状态
+				$isturn = arrvalue($rs,'isturn','1'); //默认是提交的
+				if($flow->isflow>0 && $status=='0'){
+					$flow->loaddata($rs['id'], false);
+					$na = ($isturn=='1') ? '提交' : '保存';
+					$flow->submit($na);
+				}
+				
 			}else{
 				$msgstr.='行'.($k+1).'保存数据库错误;';
 			}

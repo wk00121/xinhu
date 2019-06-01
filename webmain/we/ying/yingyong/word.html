@@ -209,6 +209,7 @@ var c = {
 		var d = this.tempda;
 		if(js.isimg(d.fileext)){
 			$.imgview({url:apiurl+d.filepath,ismobile:1});
+			$.get(js.apiurl('upload','logs',{'fileid':d.fileid,'type':0}));//记录图片预览记录
 		}else{
 			var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
 			if(docsx.indexOf(','+d.fileext+',')==-1)

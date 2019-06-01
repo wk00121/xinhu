@@ -9,7 +9,7 @@ class assetmClassAction extends Action
 		foreach($rows as $k=>$rs){
 			$rows[$k]['url'] = $this->jm->base64encode('task.php?a=x&num=assetm&mid='.$rs['id'].'');
 		}
-
+		$this->title = '固定资产二维码打印';
 		$this->assign('rows', $rows);
 	}
 }

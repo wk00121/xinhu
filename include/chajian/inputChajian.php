@@ -57,8 +57,11 @@ class inputChajian extends Chajian
 		if($fid=='base_deptname'){
 			$str = '<input class="inputs" style="border:none;background:none" name="base_deptname" value="'.$this->urs['deptname'].'" readonly>';
 		}
+		if($fid=='base_sericnum'){
+			$str = '<input class="inputs" style="border:none;background:none" name="base_sericnum" value="'.$this->flow->createnum().'" readonly>';
+		}
 		if($fid=='file_content'){
-			$str = '<input name="fileid" type="hidden" id="fileidview-inputEl"><div id="view_fileidview" style="width:98%;height:80px;border:1px #cccccc solid; background:white;overflow:auto"></div><div id="fileupaddbtn"><a href="javascript:;" class="blue" onclick="c.upload()"><u>＋添加文件</u></a></div>';
+			$str = '<input name="fileid" type="hidden" id="fileidview-inputEl"><div id="view_fileidview" style="width:98%;height:auto;min-height:60px;border:1px #cccccc solid; background:white;overflow:auto"></div><div id="fileupaddbtn"><a href="javascript:;" class="blue" onclick="c.upload()"><u>＋添加文件</u></a></div>';
 		}
 
 		if($fid=='删'){

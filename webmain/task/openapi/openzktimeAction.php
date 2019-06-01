@@ -29,7 +29,7 @@ class openzktimeClassAction extends openapiAction
 	
 	public function testAction()
 	{
-		return 'ok';
+		return 'oknew';
 	}
 	
 	/**
@@ -52,6 +52,21 @@ class openzktimeClassAction extends openapiAction
 			$data = join('ROCKZK', $batr);
 		}
 		return $data;
+	}
+	
+	/**
+	*	获取人员关系
+	*/
+	public function getuserAction()
+	{
+		$uarr = $this->db->getall('select a.`id`,a.`name`,b.`finger` from `[Q]admin` a left join `[Q]userinfo` b on a.`id`=b.`id` where a.`status`=1');
+		$batr = array();
+		foreach($uarr as $k=>$rs){
+			$cid = $rs['finger'];
+			if(isempt($cid))$cid=$rs['id'];
+			$batr[] = '0,'.$cid.','.$rs['name'].','.$rs['id'].'';
+		}
+		return join('ROCKZK', $batr);
 	}
 	
 	/**
@@ -93,7 +108,7 @@ class openzktimeClassAction extends openapiAction
 			$oi 	= 0;
 			$ids 	= '';
 			foreach($arr as $k=>$rs){
-				$barr =  $kqcmd->adddkjl($this->snid, $rs, $type, $db);
+				$barr =  $kqcmd->adddkjl($this->snid, $rs, $type, $db, 1);
 				$oi++;
 				foreach($barr as $k1=>$v1)$fenxiarr[$k1] = $v1;
 				$ids .= ','.$rs['id'].'';

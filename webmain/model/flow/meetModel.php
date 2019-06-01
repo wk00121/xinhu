@@ -199,14 +199,15 @@ class flow_meetClassModel extends flowModel
 	
 	
 	//每天运行计划任务将固定会议生成普通会议通知对应人
-	public function createmeet($id=0)
+	public function createmeet($id=0, $nowdt='', $gbrr=false)
 	{
 		$owhe 	= '';
 		if($id>0)$owhe='`id`='.$id.' and ';
 		$narr 	= $this->getall(''.$owhe.'`type`=1 and `status`=1');
 		$dtobj	= c('date');
+		$jlarr 	= array();
 		foreach($narr as $k=>$rs){
-			$gdt = $dtobj->daterate($rs['rate'], $rs['startdt']);
+			$gdt = $dtobj->daterate($rs['rate'], $rs['startdt'], $nowdt);
 			if(!$gdt)continue;
 			$startdt = ''.$gdt.' '.substr($rs['startdt'],11).'';
 			$enddt 	 = ''.$gdt.' '.substr($rs['enddt'],11).'';
@@ -228,14 +229,18 @@ class flow_meetClassModel extends flowModel
 				$iid	= $ors['id'];
 				$uwerew = "`id`='$iid'";
 			}
+			$jlarr[] = $ars;
+			
+			if($gbrr)continue; //不写入数据库里
+			
 			$this->record($ars, $uwerew);
-			
-			
 			if($iid==0){
 				$iid = $this->db->insert_id();
 				$this->loaddata($iid, false);
 				$this->tisongtodo();//通知
 			}
 		}
+		
+		return $jlarr;
 	}
 }

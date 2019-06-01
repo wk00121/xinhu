@@ -45,6 +45,8 @@ class modeClassModel extends Model
 		if($lxss==1 && !file_exists($path))return 'none';
 		
 		$flow	= m('flow')->initflow($num);
+		$chufarr= array();
+		if(method_exists($flow, 'flowxiangfields'))$chufarr = $flow->flowxiangfields($chufarr);
 		
 		$table	= $mors['table'];
 		$name	= $mors['name'];
@@ -54,11 +56,12 @@ class modeClassModel extends Model
 		$columnsstr = '';
 		$showzt	= false;
 		if($isflow>0){
-			$columnsstr = '{text:"申请人",dataIndex:"base_name",sortable:true},{text:"申请人部门",dataIndex:"base_deptname",sortable:true},{text:"单号",dataIndex:"sericnum"},';
+			$columnsstr = '{text:"'.arrvalue($chufarr, 'base_name', '申请人').'",dataIndex:"base_name",sortable:true},{text:"'.arrvalue($chufarr, 'base_deptname', '申请人部门').'",dataIndex:"base_deptname",sortable:true},{text:"'.arrvalue($chufarr, 'base_sericnum', '单号').'",dataIndex:"sericnum"},';
 		}
-		$farr[] = array('name'=>'申请人','fields'=>'base_name');
-		$farr[] = array('name'=>'申请人部门','fields'=>'base_deptname');
-		$farr[] = array('name'=>'单号','fields'=>'sericnum');
+		
+		$farr[] = array('name'=>arrvalue($chufarr, 'base_name', '申请人'),'fields'=>'base_name');
+		$farr[] = array('name'=>arrvalue($chufarr, 'base_deptname', '申请人部门'),'fields'=>'base_deptname');
+		$farr[] = array('name'=>arrvalue($chufarr, 'base_sericnum', '单号'),'fields'=>'sericnum');
 		$farrs 	= m('flow_element')->getall("`mid`='$modeid' and `iszb`=0",'`fields`,`name`,`fieldstype`,`ispx`,`isalign`,`islb`','`sort`');
 		foreach($farrs as $k=>$rs){
 			$farr[] = $rs;
@@ -135,8 +138,8 @@ $html= "".$hstart."
 ".$hendts."";		
 $str = "<?php
 /**
-*	模块：".$num.".".$name."，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：".$num.".".$name."
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.".$name."]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -170,7 +173,6 @@ $(document).ready(function(){
 			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -220,7 +222,8 @@ $(document).ready(function(){
 			$(\"button[id^='changatype{rand}']\").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -280,8 +283,8 @@ $(document).ready(function(){
 			var nstr= fieldsselarr[num];if(!nstr)nstr='';
 			if(nstr)nstr=','+nstr+',';
 			if(nstr=='' && isflow>0){
-				d.push({text:'申请人',dataIndex:'base_name',sortable:true});
-				d.push({text:'申请人部门',dataIndex:'base_deptname',sortable:true});
+				d.push({text:'".arrvalue($chufarr, 'base_name', '申请人')."',dataIndex:'base_name',sortable:true});
+				d.push({text:'".arrvalue($chufarr, 'base_deptname', '申请人部门')."',dataIndex:'base_deptname',sortable:true});
 			}
 			for(i=0;i<len;i++){
 				d1 = fieldsarr[i];
@@ -339,9 +342,8 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('".$this->rock->jm->base64encode($table)."'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',

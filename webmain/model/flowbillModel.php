@@ -33,6 +33,7 @@ class flowbillClassModel extends Model
 	public function getrecord($uid, $lx, $page, $limit, $glx=0)
 	{
 		$srows	= array();
+		$modeid = (int)$this->rock->get('modeid','0');
 		$where	= '(`uid`='.$uid.' or `optid`='.$uid.')';
 		$isdb	= 0;
 		//未通过
@@ -98,9 +99,24 @@ class flowbillClassModel extends Model
 			}
 		}
 		
+		//监控
+		if($lx=='jiankong'){
+			$where ='1=2';
+			if($modeid>0){
+				$wwhere = m('view')->jiankongwhere($modeid, $this->adminid);//返回主表的条件
+				$wwhere = str_replace('{asqom}','', $wwhere);
+				$moders = $this->db->getone('[Q]flow_set', $modeid);
+				$where ='`isturn`=1 and `mid` in(select `id` from `[Q]'.$moders['table'].'` where 1=1 '.$wwhere.')';
+			}
+		}
+		//我关注单据(未开发)
+		if($lx=='follow'){
+			$where ='1=2';
+		}
+		
 		$key 	= $this->rock->post('key');
 		if(!isempt($key))$where.=" and (`optname` like '%$key%' or `modename` like '%$key%' or `sericnum` like '$key%')";
-		
+		if($modeid>0)$where.=' and `modeid`='.$modeid.'';
 		$arr 	= $this->getlimit('`isdel`=0 and '.$where, $page,'*','`optdt` desc', $limit);
 		$rows 	= $arr['rows'];
 		$modeids= '0';

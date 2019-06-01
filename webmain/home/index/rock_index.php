@@ -141,9 +141,19 @@ $(document).ready(function(){
 					}});
 				}
 			}
+			if(a.editpass==0)this.showeditpass();
 		},
 		opennewtx:function(lx){
 			return '0';
+		},
+		showeditpass:function(){
+			loadmenu = clickmenu=function(){
+				js.msgerror('请先修改密码后在使用');
+			}
+			this.shumiao=function(){};
+			js.alert('系统开启强制修改密码，请先修改后在使用','修改密码提示', function(){
+				addtabs({num:'grcog',url:'system,geren,cog,stype=pass',hideclose:true,name:'修改密码',icons:'lock'});
+			});
 		}
 	}
 	

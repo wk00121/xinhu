@@ -56,7 +56,8 @@ var reim={
 		
 		uploadobj = $.rockupload({
 			inputfile:'allfileinput',
-			initpdbool:true,
+			initpdbool:false,
+			updir:'reimchat',
 			onchange:function(d){
 				im.sendfileshow(d);
 			},
@@ -255,6 +256,7 @@ var reim={
 		this.showagent(false);
 		this.myip 			= ret.ip;
 		this.showhistory(this.maindata.harr);
+		if(ret.editpass==0)this.editpass('请先修改密码后在使用','none');
 	},
 	//搜索联系人/会话/应用
 	searchss:function(){
@@ -878,7 +880,7 @@ var reim={
 				reim.clickcogclick(d);
 			}
 		});
-		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'设置',lx:'cog'},{'name':'创建会话',lx:'create'},{'name':'退出',lx:'exit'}];
+		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'设置',lx:'cog'},{'name':'创建会话',lx:'create'},{'name':'修改密码',lx:'pass'},{'name':'退出',lx:'exit'}];
 		this.cogmenu.setData(d);
 		var off = $(o1).offset();
 		this.cogmenu.showAt(40,off.top-d.length*36);
@@ -905,6 +907,9 @@ var reim={
 		if(lx=='create'){
 			this.creategroup();
 		}
+		if(lx=='pass'){
+			this.editpass();
+		}
 	},
 	//创建会话
 	creategroup:function(){
@@ -920,6 +925,16 @@ var reim={
 			}
 		});
 		return false;
+	},
+	editpass:function(bt,cse){
+		if(!bt)bt='修改密码';
+		if(!cse)cse='';
+		js.tanbody('winiframe',bt,350,300,{
+			html:'<div style="height:250px;overflow:hidden"><iframe src="" name="openinputiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+			bbar:'none',
+			closed:cse
+		});
+		openinputiframe.location.href='?m=index&d=we&a=editpass&hideheader=true&ofrom=reim';
 	},
 	exitlogin:function(bo){
 		if(!bo){

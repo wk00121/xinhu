@@ -160,7 +160,7 @@ var c={
 		var a1 = s1.split(','),idobj=false,acttyle='act';
 		var fids = a1[1];
 		if(fids){
-			if(zbis==1){
+			if(zbis>=1){//说明是子表
 				var gezs = this.getxuandoi(fid);
 				fids+=gezs[2];
 			}

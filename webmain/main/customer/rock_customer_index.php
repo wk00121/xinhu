@@ -21,7 +21,7 @@ $(document).ready(function(){
 	});
 	
 	obj[1] = $('#view1_{rand}').bootstable({
-		tablename:'custract',params:{'atype':'my'},fanye:false,modenum:'custract',modename:'合同',limit:5,moreurl:'main,customer,ract,atype=my',morenum:'num108',
+		tablename:'custract',params:{'atype':'my'},fanye:false,modenum:'custract',modename:'合同',limit:5,moreurl:'flow,page,custract,atype=my',morenum:'num108',
 		columns:[{
 			text:'合同编号',dataIndex:'num'
 		},{
@@ -41,7 +41,7 @@ $(document).ready(function(){
 	});
 	
 	obj[2] = $('#view2_{rand}').bootstable({
-		tablename:'custfina',params:{'atype':'myskdws'},modenum:'custfina',modename:'收款单',limit:5,moreurl:'main,customer,fina,atype=myskd',morenum:'num106',
+		tablename:'custfina',params:{'atype':'myskdws'},modenum:'custfina',modename:'收款单',limit:5,moreurl:'flow,page,custfina,atype=myskdws',morenum:'num106',
 		columns:[{
 			text:'所属日期',dataIndex:'dt'
 		},{
@@ -59,7 +59,7 @@ $(document).ready(function(){
 	});
 	
 	obj[3] = $('#view3_{rand}').bootstable({
-		tablename:'custfina',params:{'atype':'myfkdwf'},modenum:'custfina',modename:'付款单',limit:5,moreurl:'main,customer,fina,atype=myfkd',morenum:'num107',
+		tablename:'custfina',params:{'atype':'myfkdwf'},modenum:'custfina',modename:'付款单',limit:5,moreurl:'flow,page,custfina,atype=myfkdwf,pnum=fkd',morenum:'num107',
 		columns:[{
 			text:'所属日期',dataIndex:'dt'
 		},{
@@ -70,6 +70,24 @@ $(document).ready(function(){
 			text:'金额',dataIndex:'money',sortable:true
 		},{
 			text:'状态',dataIndex:'ispay'
+		}],
+		itemdblclick:function(d){
+			openxiangs(this.modename,this.modenum,d.id);
+		}
+	});
+	
+	obj[4] = $('#view4_{rand}').bootstable({
+		tablename:'goodm',params:{'atype':'my'},modenum:'custxiao',modename:'销售单',limit:5,moreurl:'flow,page,custxiao,atype=my',morenum:'num300',statuschange:false,
+		columns:[{
+			text:'销售日期',dataIndex:'applydt'
+		},{
+			text:'销售单号',dataIndex:'num'
+		},{
+			text:'客户',dataIndex:'custname',align:'left'
+		},{
+			text:'金额',dataIndex:'money',sortable:true
+		},{
+			text:'状态',dataIndex:'statustext'
 		}],
 		itemdblclick:function(d){
 			openxiangs(this.modename,this.modenum,d.id);
@@ -116,6 +134,15 @@ $(document).ready(function(){
 		</td>
 		
 		<td style="padding-left:20px;">
+			
+			<div align="left" class="list-group">
+			<div class="list-group-item  list-group-item-info">
+				<i class="icon-money"></i> 销售单
+				<span style="float:right" ><a click="reload,4"><i class="icon-refresh"></i></a>&nbsp;<a click="more,4">更多&gt;&gt;</a></span>
+			</div>
+			<div id="view4_{rand}"></div>
+			</div>
+		
 			<div align="left" class="list-group">
 			<div class="list-group-item  list-group-item-success">
 				<i class="icon-money"></i> 待收款单

@@ -72,11 +72,19 @@ $(document).ready(function(){
 				js.msg('msg','请选择月份');
 				return;
 			}
-			js.msg('wait','['+dt+']月份的考勤分析中...');
-			js.ajax(js.getajaxurl('kqanayall','{mode}','{dir}'),{dt:dt,atype:atype},function(){
-				js.msg('success','分析成功');
-				a.reload();
-			});
+			js.msg('wait','分析中...');
+			js.ajax(js.getajaxurl('kqanayallinit','{mode}','{dir}'),{dt:dt,atype:atype},function(ret){
+				if(ret.zong=='ok'){
+					a.reload();
+					js.msg('success','分析完成');
+					return;
+				}
+				var oi=0,zong=ret.maxpage,i,cans,dar=[];
+				for(i=1;i<=zong;i++){
+					dar.push(js.getajaxurl('kqanayallpage','{mode}','{dir}',{dt:dt,page:i}));
+				}
+				queue.addlist(dar,function(){a.reload();},'['+dt+']月份的考勤分析');
+			},'get,json');
 		},
 		xqkaoqb:function(){
 			var d=a.changedata;

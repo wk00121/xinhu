@@ -51,7 +51,7 @@ class flowClassAction extends Action
 		$id		= (int)$this->get('id');
 		$data	= m('flow_where')->getone($id);
 		$arr 	= array(
-			'data'		=> $data
+			'data'		=> $data,
 		);
 		echo json_encode($arr);
 	}
@@ -697,45 +697,23 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		if(!$mrs)return '模块不存在';
 		$num 	= $mrs['num'];
 		if($num!='demo' && $mrs['type']=='系统')return '系统类型模块不能删除清空';
-	
+		$flow	= m('flow')->initflow($num);
 		$table 	= $mrs['table'];
-		m('flow_bill')->delete("`modeid`='$id'");
-		$where = $mrs['where'];
+		$where 	= $mrs['where'];
 		if(!isempt($where)){
 			$where = $this->rock->covexec($where);
 			$where = "and $where";
 		}else{
 			$where = '';
 		}
+		
 		$rows  = m($table)->getrows('1=1 '.$where.'');
-		$allids= '0';
 		foreach($rows as $k=>$rs){
 			$ssid 	= $rs['id'];
-			$allids.= ','.$ssid.'';
-			$dwhere	= "`table`='$table' and `mid`='$ssid'";
-			m('file')->delfiles($table, $ssid);
+			$flow->loaddata($ssid, false);
+			$flow->deletebill('清空模块数据', false);
 		}
 		
-		//删除子表
-		$tables = $mrs['tables'];
-		if(!isempt($tables)){
-			$tablesa = explode(',', $tables);
-			foreach($tablesa as $tab1){
-				m($tab1)->delete("mid in($allids)");
-				$this->db->query("alter table `[Q]$tab1` AUTO_INCREMENT=1");
-			}
-		}
-		m($table)->delete('1=1 '.$where.'');
-		
-		$dehwhe = "`table`='$table' and `mid` in($allids)";
-		m('editrecord')->delete($dehwhe);
-		m('todo')->delete($dehwhe);
-		m('reads')->delete($dehwhe);
-		m('receipt')->delete($dehwhe);
-		m('flow_log')->delete($dehwhe);
-		m('flow_checks')->delete($dehwhe);
-		m('flow_chao')->delete($dehwhe);
-		m('flow_remind')->delete($dehwhe);
 		$name 	= $mrs['name'];
 		if($dm){
 			m('flow_set')->delete("`id`='$id'");

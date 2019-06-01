@@ -126,6 +126,23 @@ class fworkClassAction extends Action
 			}
 		}
 		
+		//流程监控
+		if($lx=='jiankong'){
+			$where =' and 1=2';
+			$this->modeids = '0';
+			if($modeid==0){
+				$rows = m('view')->getjilu($this->adminid);
+				foreach($rows as $k1=>$rs1){
+					$this->modeids.=','.$rs1['modeid'].'';
+				}
+			}else{
+				$wwhere = m('view')->jiankongwhere($modeid, $this->adminid);//返回主表的条件
+				$wwhere = str_replace('{asqom}','', $wwhere);
+				$moders = $this->db->getone('[Q]flow_set', $modeid);
+				$where =' and `mid` in(select `id` from `[Q]'.$moders['table'].'` where 1=1 '.$wwhere.')';
+			}
+		}
+		
 		if($zt!=''){
 			if($zt!='6'){
 				$where.=" and a.`status`='$zt'";

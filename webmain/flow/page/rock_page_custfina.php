@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：custfina.收付款单，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：custfina.收付款单
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.收付款单]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'custfina',modename='收付款单',isflow=0,modeid='36',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"optname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"htid","name":"\u5408\u540c","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"htnum","name":"\u5408\u540c\u7f16\u53f7","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"1"},{"fields":"dt","name":"\u6240\u5c5e\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"custname","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"selectdatafalse","ispx":"1","isalign":"0","islb":"1"},{"fields":"custid","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"money","name":"\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"ispay","name":"\u662f\u5426\u4ed8\u6b3e","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"paydt","name":"\u6536\u4ed8\u6b3e\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"createname","name":"\u521b\u5efa\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"optname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"htid","name":"\u5408\u540c","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"htnum","name":"\u5408\u540c\/\u9500\u552e\u5355","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"1"},{"fields":"dt","name":"\u6240\u5c5e\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"custname","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"selectdatafalse","ispx":"1","isalign":"0","islb":"1"},{"fields":"custid","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"type","name":"\u7c7b\u578b","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"money","name":"\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"ispay","name":"\u662f\u5426\u4ed8\u6b3e","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"paydt","name":"\u6536\u4ed8\u6b3e\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"createname","name":"\u521b\u5efa\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -35,7 +35,6 @@ $(document).ready(function(){
 			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -85,7 +84,8 @@ $(document).ready(function(){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -204,14 +204,13 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y3VzdGZpbmE:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"所属人",dataIndex:"optname",sortable:true},{text:"合同编号",dataIndex:"htnum"},{text:"所属日期",dataIndex:"dt"},{text:"客户名称",dataIndex:"custname",sortable:true},{text:"类型",dataIndex:"type"},{text:"金额",dataIndex:"money",sortable:true},{text:"是否付款",dataIndex:"ispay",sortable:true},{text:"收付款时间",dataIndex:"paydt"},{text:"说明",dataIndex:"explain"},{text:"创建人",dataIndex:"createname",sortable:true},{
+		columns:[{text:"所属人",dataIndex:"optname",sortable:true},{text:"合同/销售单",dataIndex:"htnum"},{text:"所属日期",dataIndex:"dt"},{text:"客户名称",dataIndex:"custname",sortable:true},{text:"类型",dataIndex:"type"},{text:"金额",dataIndex:"money",sortable:true},{text:"是否付款",dataIndex:"ispay",sortable:true},{text:"收付款时间",dataIndex:"paydt"},{text:"说明",dataIndex:"explain"},{text:"创建人",dataIndex:"createname",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){

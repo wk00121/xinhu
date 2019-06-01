@@ -59,7 +59,8 @@ class cogClassAction extends Action
 	public function getinfoAjax()
 	{
 		$arr['title'] 		= getconfig('title');
-		$arr['url'] 		= getconfig('url');
+		$arr['outurl'] 		= getconfig('outurl');
+		$arr['url'] 		= arrvalue($GLOBALS['_tempconf'],'url');
 		$arr['localurl'] 	= getconfig('localurl');
 		$arr['apptitle'] 	= getconfig('apptitle');
 		$arr['reimtitle'] 	= getconfig('reimtitle');
@@ -78,12 +79,18 @@ class cogClassAction extends Action
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
 		$arr['mobile_show'] = getconfig('mobile_show') ? '1' : '0';
+		$arr['compaymode'] 	= getconfig('compaymode') ? '1' : '0';
 		$arr['isshou'] 		= $this->isshouquan() ? '1' : '0';
+		$arr['editpass'] 	= getconfig('editpass','0');
+		
+		$arr['asyntest'] 	= $this->option->getval('asyntest');
 		
 		$loginyzm			= getconfig('loginyzm');
 		if(!$loginyzm)$loginyzm	= '0';
 		$arr['loginyzm'] 	= $loginyzm;
 		if(getconfig('systype')=='demo')$arr['xinhukey']='';
+		if(!isempt($arr['xinhukey']))$arr['xinhukey'] = substr($arr['xinhukey'],0,5).'*****'.substr($arr['xinhukey'],-5);
+		
 		$this->returnjson($arr);
 	}
 	
@@ -111,6 +118,7 @@ class cogClassAction extends Action
 		if(!isempt($title))$arr['title'] = $title;
 		
 		$arr['url'] 		= $this->post('url');
+		$arr['outurl'] 		= $this->post('outurl');
 		$arr['reimtitle'] 	= $this->post('reimtitle');
 		$arr['qqmapkey'] 	= $this->post('qqmapkey');
 		
@@ -130,23 +138,26 @@ class cogClassAction extends Action
 		
 		$arr['localurl'] 	= $this->post('localurl');
 		$arr['openkey']  	= $this->post('openkey');
+		
 		$arr['xinhukey'] 	= $this->post('xinhukey');
+		if(contain($arr['xinhukey'],'**'))$arr['xinhukey'] = getconfig('xinhukey');
+		
 		$arr['bcolorxiang'] = $this->post('bcolorxiang');
 		
 		$arr['officeyl'] 	= $this->post('officeyl');
 		$arr['useropt'] 	= $this->post('useropt');
+		$arr['editpass'] 	= $this->post('editpass');
 		$arr['defstype'] 	= $this->post('defstype','1');
 		//$arr['officedk'] 	= $this->post('officedk');
 		
 		$asynsend 		 	= $this->post('asynsend');
 		$arr['asynsend'] 	= $asynsend;
 		
-		//if($arr['asynsend'] && !m('reim')->asynurlbo())exit('没有开启服务端不能使用异步');
-		
-		$arr['sqllog'] 	 = $this->post('sqllog')=='1';
-		$arr['debug'] 	 = $this->post('debug')=='1';
-		$arr['reim_show'] 	 = $this->post('reim_show')=='1';
-		$arr['mobile_show']  = $this->post('mobile_show')=='1';
+		$arr['sqllog'] 	 	= $this->post('sqllog')=='1';
+		$arr['debug'] 	 	= $this->post('debug')=='1';
+		$arr['reim_show'] 	= $this->post('reim_show')=='1';
+		$arr['mobile_show'] = $this->post('mobile_show')=='1';
+		$arr['compaymode']  = $this->post('compaymode')=='1';
 		$arr['loginyzm']  	= $this->post('loginyzm');
 		
 		if($asynsend == '1' && isempt($puurl))exit('未安装或开启服务端不能使用异步发送消息');
@@ -182,6 +193,9 @@ class cogClassAction extends Action
 		$smarr['officedk']		= '文件预览打开方式1新窗口打开';
 		$smarr['useropt']		= '1记录用户操作保存到日志里,空不记录';
 		$smarr['defstype']		= 'PC后台主题皮肤，可以设置1到34';
+		$smarr['editpass']		= '用户登录修改密码：0不用修改，1强制用户必须修改';
+		$smarr['compaymode']	= '多单位模式，true就是开启';
+		$smarr['outurl']		= '这个地址当你内网地址访问时向手机推送消息的地址';
 		
 		$str1 = '';
 		foreach($arr as $k=>$v){

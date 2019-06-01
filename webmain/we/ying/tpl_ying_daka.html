@@ -33,7 +33,9 @@ function initbody(){
 	for(var i in kqors)kqallrs.push(kqors[i]);
 	
 	addkqinfor(0);
+	
 }
+
 
 function addkqinfor(bo){
 	js.ajax('kaoqin','getshang',{},function(ret){
@@ -189,6 +191,27 @@ function changetab(lx){
 	if(lx==3)url='?m=ying&d=we&num=kqpai';
 	js.location(url);
 }
+
+
+function paizhao(){
+	if(js.jssdkstate!=1){
+		js.wx.alert('非微信下的jssdk无法使用拍照');
+		return;
+	}
+	wx.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['camera'],
+        defaultCameraMode: "normal", 
+        isSaveToAlbum: 0,
+        success: function (res) {
+			var localIds = res.localIds;
+        }
+    });
+}
+function showimgs(o1){
+	$.imgview({'url':o1.src,'ismobile':true});
+}
 </script>
 <style>
 .addbtns{ background:#C5E0F7;padding:5px;margin-top:20px;width:100px;height:100px;border-radius:50%}
@@ -218,6 +241,9 @@ function changetab(lx){
 	<div id="dwshow" style="font-size:14px;color:#aaaaaa;padding:0px 10px">等待定位</div>
 
 </div>
+
+<div style="display:none;position:fixed;z-index:2;left:1px;top:60px;width:120px;height:80px;overflow:hidden;"><img width="100%" onclick="showimgs(this)" id="paizhaoimg" src="images/noimg.jpg"></div>
+
 <div class="r-padding10 r-border-t" style="background:white;padding:15px 10px; background-color:#f5f5f5">考勤范围：<font color="#888888" id="weizhi">没设置考勤位置</font></div>
 <div id="shangbshow" style="background:white">
 <table width="100%"  class="r-border-t">
@@ -231,7 +257,7 @@ function changetab(lx){
 		<div class="addbtnss" id="dkbtn" onclick="addkaoqin(this)">第1次打卡</div>
 	</div>
 </div>
-<div class="r-padding10" align="center" style="font-size:14px;"><a id="beshuomdiv" onclick="addbeizhu(this)" href="javascript:;">加备注...</a><!--&nbsp;&nbsp;<a href="javascript:;"><i class="icon-camera"></i>拍照</a>--></div>
+<div class="r-padding10" align="center" style="font-size:14px;"><a id="beshuomdiv" onclick="addbeizhu(this)" href="javascript:;">加备注...</a><!--&nbsp;&nbsp;<a href="javascript:;" onclick="paizhao()"><i class="icon-camera"></i>拍照</a>--></div>
 <div class="r-padding10 r-wrap" align="center" style="font-size:14px;color:#888888;">今日打卡：<span id="todyadak">无</span></div>
 
 
@@ -262,5 +288,7 @@ function changetab(lx){
 		<p class="weui_tabbar_label">我的排班</p>
 	</a>
 </div>
+
+
 </body>
 </html>

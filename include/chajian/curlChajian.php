@@ -58,7 +58,7 @@ class curlChajian extends Chajian{
 			)  
 		 );  
 		$cxContext 	= stream_context_create($opts);  
-		@$sFile 		= file_get_contents($url, false, $cxContext);  
+		@$sFile 	= file_get_contents($url, false, $cxContext);  
 		return $sFile;
 	}
 	
@@ -102,6 +102,7 @@ class curlChajian extends Chajian{
 		@curl_setopt($ch, CURLOPT_POSTFIELDS, $cont);
 		if($ishttps==1){
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			//curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,  false);
 		}
 		//设置head
 		if($headarr){

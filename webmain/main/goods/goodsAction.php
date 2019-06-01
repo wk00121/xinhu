@@ -375,4 +375,19 @@ class goodsClassAction extends Action
 			'rows' => $rows
 		);
 	}
+	
+	//打印二维码
+	public function printewmAction()
+	{
+		$sid = c('check')->onlynumber($this->get('sid'));
+		$rows= m('goods')->getall('id in('.$sid.')');
+		
+		foreach($rows as $k=>$rs){
+			$rows[$k]['url'] = $this->jm->base64encode('task.php?a=x&num=goods&mid='.$rs['id'].'');
+		}
+
+		$this->assign('rows', $rows);
+		$this->displayfile = ''.P.'/main/assetm/tpl_assetm_printewm.html';
+		$this->title = '物品二维码打印';
+	}
 }

@@ -16,9 +16,9 @@ $(document).ready(function(){
 			text:'在线打卡IP',dataIndex:'dkip',editor:true
 		},{
 			text:'在线打卡MAC地址',dataIndex:'dkmac',editor:true
-		}/*,{
-			text:'关联考勤机工号',dataIndex:'finger',editor:true
-		}*/,{
+		},{
+			text:'关联中控考勤机工号',dataIndex:'finger',editor:true
+		},{
 			text:'需要考勤',dataIndex:'iskq',type:'checkbox',editor:true
 		},{
 			text:'需要写日报',dataIndex:'isdaily',type:'checkbox',editor:true

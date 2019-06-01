@@ -22,8 +22,8 @@ return array(
 	
 	'updir'		=> 'upload',	//默认上传的目录文件夹
 	
-	'xinhukey'	=> '',	//信呼官网key，用于在线升级使用
-	
+	'xinhukey'	=> '',			//信呼官网key，用于在线升级使用
+	'editpass'	=> '1',			//用户登录修改密码：0不用修改，1强制用户必须修改
 	'phppath'	=> '',	//php.exe的地址，win下如：F:\php\php-5.4.14\php.exe，Linux下如：/usr/bin/php
 	
 	'qom'		=> 'xinhu_',		//session、cookie前缀

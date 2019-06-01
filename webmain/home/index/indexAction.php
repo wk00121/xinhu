@@ -6,7 +6,9 @@ class indexClassAction extends Action{
 		$myext	= $this->getsession('adminallmenuid');
 		$where	= '';
 		if($myext != '-1'){	
-			$where	= ' and `id` in('.str_replace(array('[',']'), array('',''), $myext).')';
+			$caids  = str_replace(array('[',']'), array('',''), $myext);
+			if(isempt($caids))$caids='0';
+			$where	= ' and `id` in('.$caids.')';
 		}
 		$mrows = m('menu')->getrows("`ishs`=1 and `status`=1 $where ", "`id`,`num`,`name`,`url`,`color`,`icons`",'`sort`');
 		return $mrows;
@@ -18,7 +20,9 @@ class indexClassAction extends Action{
 		$optdta	= $this->get('optdt');
 		$optdt 	= $this->now;
 		$uid 	= $this->adminid;
-		if(m('admin')->rows("`id`='$uid' and `status`=1")==0)exit('用户不存在');
+		$urs	= m('admin')->getone("`id`='$uid' and `status`=1");
+		if(!$urs)exit('用户不存在');
+		
 		$arr['optdt']	= $optdt;
 		$todo			= m('todo')->rows("uid='$uid' and `status`=0 and `tododt`<='$optdt'");
 		$arr['todo']	= $todo;
@@ -59,6 +63,8 @@ class indexClassAction extends Action{
 		foreach($itemsarr as $k=>$v)$arr[$k] = $v;
 		
 		$arr['notodo']	= $this->option->getval('gerennotodo_'.$uid.'');
+		
+		$arr['editpass']= m('admin')->iseditpass($uid);
 		
 		return $arr;
 	}

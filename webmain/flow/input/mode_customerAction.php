@@ -14,6 +14,7 @@ class mode_customerClassAction extends inputAction{
 		m('custract')->update("`custname`='$name'", "`custid`='$id'");
 		m('custsale')->update("`custname`='$name'", "`custid`='$id'");
 		m('custappy')->update("`custname`='$name'", "`custid`='$id'");
+		m('goodm')->update("`custname`='$name'", "`custid`='$id' and `type` in(1,2)");//1采购,2销售
 	}
 	
 	
@@ -31,6 +32,9 @@ class mode_customerClassAction extends inputAction{
 		if($ind==4){
 			$bh='custfina';
 			$atype = 'allfkd';//所有付款单！
+		}
+		if($ind==5){
+			$bh='custxiao';
 		}
 			
 		//读取数据

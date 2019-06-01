@@ -6,6 +6,7 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
 		url:publicstore('{mode}','{dir}'),modename:'物品',storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		checked:true,
 		columns:[{
 			text:'编号',dataIndex:'num'
 		},{
@@ -73,7 +74,15 @@ $(document).ready(function(){
 				'btnobj':o1
 			});
 		},
-		
+		prinwem:function(){
+			var sid = a.getchecked();
+			if(sid==''){
+				js.msg('msg','没有选中记录');
+				return;
+			}
+			var url = '?a=printewm&m=goods&d=main&sid='+sid+'';
+			window.open(url);
+		},
 		
 		
 		mobj:a,
@@ -131,6 +140,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 	<td align="right" nowrap>
+		<button class="btn btn-default"  click="prinwem" type="button">打印二维码</button>&nbsp;
 		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button>
 		
 	</td>

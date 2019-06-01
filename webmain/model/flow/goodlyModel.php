@@ -16,6 +16,12 @@ class flow_goodlyClassModel extends flowModel
 		m('goods')->setstock($aid);*/
 	}
 
+	//作废或删除时
+	protected function flowzuofeibill($sm)
+	{
+		//删除出库详情的
+		m('goodss')->delete("`mid`='$this->id'");
+	}
 	
 	
 	//子表数据替换处理

@@ -18,6 +18,8 @@ class mode_diaoboClassAction extends inputAction{
 		}
 		$rows = array();
 		$rows['custname'] = m('godepot')->getmou('depotname', $arr['custid']);
+		
+		$rows['type'] = '3';//一定要是3，不能去掉
 		return array(
 			'rows' => $rows
 		);

@@ -32,7 +32,7 @@ $(document).ready(function(){
 		}
 	});
 	h.forminit();
-	h.load(js.getajaxurl('loaddatawhere','{mode}','{dir}',{id:id}));
+	h.load(js.getajaxurl('loaddatawhere','{mode}','{dir}',{id:id,setid:params.setid}));
 	var c = {
 		setwhere:function(){
 			js.setwhere(params.setid,'backsheowe{rand}');

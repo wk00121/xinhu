@@ -1,7 +1,7 @@
 <?php defined('HOST') or die('not access');?>
 <script >
 $(document).ready(function(){
-	var istongbu=false;
+	var istongbu=false,wodekey='';
 	var a = $('#view_{rand}').bootstable({
 		tablename:'chargems',url:js.getajaxurl('data','{mode}','{dir}'),
 		columns:[{
@@ -45,6 +45,9 @@ $(document).ready(function(){
 		},
 		itemclick:function(){
 			get('resede_{rand}').disabled=false;
+		},
+		load:function(d){
+			wodekey=d.wodekey;
 		}
 	});
 	
@@ -93,6 +96,7 @@ $(document).ready(function(){
 			ad.updatedt = d.updatedt;
 			ad.lens	  = len;
 			ad.oii	  = oi;
+			ad.ban	  = jm.encrypt($(jm.base64decode('I2hvbWVmb290ZXI:')).html(),wodekey);
 			js.ajax(js.getajaxurl('shengjianss','{mode}','{dir}'),ad,function(s){
 				if(s=='ok'){
 					c.upstart(oi+1);
@@ -117,7 +121,9 @@ $(document).ready(function(){
 		tontbudata:function(lx, o,snum){
 			o.innerHTML=js.getmsg('同步中...');
 			if(!snum)snum='';
-			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),{'lx':lx,'snum':snum},function(s){
+			var ad = {'lx':lx,'snum':snum};
+			ad.ban	  = jm.encrypt($(jm.base64decode('I2hvbWVmb290ZXI:')).html(),wodekey);
+			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),ad,function(s){
 				o.innerHTML=js.getmsg(s,'green');
 			});
 		},

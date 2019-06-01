@@ -109,9 +109,10 @@ js.wx.load=function(txt){
 	if(txt=='none')return;
 	if(!txt)txt='加载中...';
 	var s='';
+	var t = winHb()-150;
 	s+='<div id="loadingToastsss" class="weui_loading_toast">'+
     '<div class="weui_mask_transparent"></div>'+
-    '<div class="weui_toast">'+
+    '<div class="weui_toast" style="top:'+(t*0.5)+'px">'+
     '    <div class="weui_loading">'+
     '        <div class="weui_loading_leaf weui_loading_leaf_0"></div>'+
     '        <div class="weui_loading_leaf weui_loading_leaf_1"></div>'+
@@ -139,9 +140,10 @@ js.wx.msgok=function(txt,fun,ms){
 	clearTimeout(this.msgtime);
 	if(txt=='none')return;
 	if(!ms)ms=3;
+	var t = winHb()-150;
 	var s='<div id="toastssss">';
 	s+='<div class="weui_mask_transparent"></div>';
-	s+=	'<div class="weui_toast">';
+	s+=	'<div class="weui_toast" style="top:'+(t*0.5)+'px">';
 	s+=		'<i class="weui_icon_toast"></i>';
 	s+=		'<p class="weui_toast_content">'+txt+'</p>';
 	s+=	'</div>';
@@ -231,14 +233,14 @@ js.jssdkcall  = function(bo){
 js.jssdkstate = 0;
 js.jssdkwixin = function(qxlist,afe){
 	if(!js.iswxbo())return js.jssdkcall(false);
-	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.1.0.js';
-	if(js.isqywx)wxurl = 'https://res.wx.qq.com/wwopen/js/jsapi/jweixin-1.0.0.js';
+	//if(js.isqywx)var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.1.0.js';
+	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.2.0.js';
 	if(!afe)$.getScript(wxurl, function(){
 		js.jssdkwixin(qxlist, true);
 	});
 	if(!afe)return;
 	var surl= location.href;
-	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','previewImage'];
+	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','getLocalImgData','previewImage'];
 	js.ajax('weixin','getsign',{url:jm.base64encode(surl),agentid:js.request('agentid')},function(ret){
 		if(!ret.appId)return js.jssdkcall(false);
 		wx.config({
@@ -270,7 +272,7 @@ js.jssdkwxgzh = function(qxlist,afe){
 	});
 	if(!afe)return;
 	var surl= location.href;
-	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','previewImage'];
+	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','getLocalImgData','previewImage'];
 	js.ajax('wxgzh','getsign',{url:jm.base64encode(surl)},function(ret){
 		if(!ret.appId)return js.jssdkcall(false);
 		wx.config({

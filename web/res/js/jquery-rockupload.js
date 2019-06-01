@@ -10,7 +10,7 @@
 	maxupgloble = 0;
 	function rockupload(opts){
 		var me 		= this;
-		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},onsuccess:function(){},xu:0,fileallarr:[],autoup:true,
+		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},updir:'',onsuccess:function(){},quality:0.7,xu:0,fileallarr:[],autoup:true,
 		onerror:function(){},fileidinput:'fileid',
 		onabort:function(){},
 		allsuccess:function(){}
@@ -100,16 +100,88 @@
 			a.f 		 = f;
 			for(var i in this.oparams)a[i]=this.oparams[i];
 			this.filearr = a;
-			this.fileallarr.push(a);
+			var zc=this.fileallarr.push(a);
+			
+			//如果是图片压缩一下超过1M
+			if(f.size>1024*1024 && a.isimg && this.quality<1){
+				this.compressimg(a.imgviewurl,f,function(nf){
+					a.filesize 	 = nf.size;
+					a.filesizecn = js.formatsize(nf.size);
+					me.fileallarr[zc-1].f = nf;
+					me.nnonchagn(a, nf, zc);
+				});
+			}else{
+				this.nnonchagn(a, f, zc);
+			}
+		};
+		this.nnonchagn=function(a,f,zc){
 			this.xu++;
 			this.onchange(a);
 			this.reset();
 			if(!this.autoup){
-				var s='<div style="padding:3px;font-size:14px;border-bottom:1px #dddddd solid">'+filename+'('+a.filesizecn+')&nbsp;<span style="color:#ff6600" id="'+this.fileview+'_'+a.xu+'"></span>&nbsp;<a onclick="$(this).parent().remove()" href="javascript:;">×</a></div>';
+				var s='<div style="padding:3px;font-size:14px;border-bottom:1px #dddddd solid"><font>'+a.filename+'</font>('+a.filesizecn+')&nbsp;<span style="color:#ff6600" id="'+this.fileview+'_'+a.xu+'"></span>&nbsp;<a oi="'+(zc-1)+'" id="gm'+this.fileview+'_'+a.xu+'" href="javascript:;">改名</a>&nbsp;<a onclick="$(this).parent().remove()" href="javascript:;">×</a></div>';
 				$('#'+this.fileview+'').append(s);
+				$('#gm'+this.fileview+'_'+a.xu+'').click(function(){
+					me.s_gaiming(this);
+				});
 				return;
 			}
 			this._startup(f);
+		};
+		this.s_gaiming=function(o1){
+			var o,oi,one,fa;
+			o  = $(o1);
+			oi = parseFloat($(o1).attr('oi'));
+			fa = this.fileallarr[oi];
+			one= o.parent().find('font').html().replace('.'+fa.fileext+'','');
+			if(get('confirm_main')){
+				var nr = prompt('新文件名', one);
+				if(nr){
+					var newfie = nr+'.'+fa.fileext;
+					o.parent().find('font').html(newfie);
+					me.fileallarr[oi].filename=newfie;
+				}
+			}else{
+				js.prompt('修改文件名','新文件名', function(jg,nr){
+					if(jg=='yes' && nr){
+						var newfie = nr+'.'+fa.fileext;
+						o.parent().find('font').html(newfie);
+						me.fileallarr[oi].filename=newfie;
+					}
+				}, one);
+			}
+		};
+		this.compressimg=function(path,fobj,call){
+			var img = new Image();
+            img.src = path;
+			if(!call)call=function(){};
+			img.onload = function(){
+				var that = this;
+                var w = that.width,
+                    h = that.height,
+                    scale = w / h;
+                var quality = me.quality;//压缩图片质量
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                var anw = document.createAttribute("width");
+                anw.nodeValue = w;
+                var anh = document.createAttribute("height");
+                anh.nodeValue = h;
+                canvas.setAttributeNode(anw);
+                canvas.setAttributeNode(anh);
+                ctx.drawImage(that, 0, 0, w, h);
+				var base64 = canvas.toDataURL(fobj.type, quality);
+				var nfobj  = me.base64toblob(base64);
+				call(nfobj);
+			}
+		};
+		this.base64toblob=function(urlData){
+			var arr = urlData.split(','), mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+			while(n--){
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new Blob([u8arr], {type:mime});
 		};
 		this.getimgview=function(o1){
 			try{
@@ -193,25 +265,16 @@
 			if(this.initpdbool && fs && !bos){this._initfile(fs);return;}
 			try{var xhr = new XMLHttpRequest();}catch(e){js.msg('msg','当前浏览器不支持2');return;}
 			var url = js.apiurl('upload','upfile', {'maxsize':this.maxsize});
-			if(nr)url = js.apiurl('upload','upcont');
+			if(this.updir)url+='&updir='+this.updir+'';
 			xhr.open('POST', url, true); 
 			xhr.onreadystatechange = function(){me._statechange(this);};
 			xhr.upload.addEventListener("progress", function(evt){me._onprogress(evt, this);}, false);  
 			xhr.addEventListener("load", function(){me._onsuccess(this);}, false);  
 			xhr.addEventListener("error", function(){me._error(false,this);}, false); 
-			if(fs){
-				var fd = new FormData();  
-				fd.append('file', fs); 
-				xhr.send(fd);
-			}
-			if(nr){
-				xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");  
-				nr = nr.substr(nr.indexOf(',')+1);
-				nr = nr.replace(/\+/g, '!');	
-				nr = nr.replace(/\//g, '.');	
-				nr = nr.replace(/\=/g, ':');
-				xhr.send('content='+nr+'');
-			}
+			if(nr)fs = this.base64toblob(nr);
+			var fd = new FormData();  
+			fd.append('file', fs, this.filearr.filename); 
+			xhr.send(fd);
 			this.xhr = xhr;
 		};
 		this.onsuccessa=function(){

@@ -10,6 +10,7 @@ $(document).ready(function(){
 				barr = a;
 				for(var i in a)$('#'+i+'_{rand}').val(a[i]);
 				if(a.isshou=='1')$('#benquan_{rand}').html('<font color=green>授权版</font>');
+				if(isempt(a.asyntest))get('asynsend_{rand}').length=1;
 			},'get,json');
 		},
 		loadys:function(){
@@ -90,11 +91,20 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right">系统URL地址：</td>
-			<td class="tdinput"><input id="url_{rand}" class="form-control"><font color="#888888">可以为空不用设置的，<a onclick="get('url_{rand}').value=''" href="javascript:;">[清空]</a></font></td>
+			<td class="tdinput"><input id="url_{rand}" placeholder="为空默认自动识别" class="form-control"><font color="#888888">可以为空不用设置的，<a onclick="get('url_{rand}').value=''" href="javascript:;">[清空]</a></font></td>
 		
 			<td  align="right">系统本地地址：</td>
 			<td class="tdinput"><input id="localurl_{rand}" class="form-control">
 			<font color="#888888">用于计划任务异步任务使用，没有可跟系统URL一样</font></td>
+		</tr>
+		
+		
+		<tr>
+			<td  align="right">系统外网地址：</td>
+			<td class="tdinput"><input id="outurl_{rand}" placeholder="不知道做啥的，就不要去设置" class="form-control"></td>
+		
+			<td  align="right"></td>
+			<td class="tdinput"></td>
 		</tr>
 		
 	
@@ -150,8 +160,11 @@ $(document).ready(function(){
 		
 			
 		<tr>
-			<td  align="right">文档转PDF预览：</td>
-			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转化插件</option><option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option></select></td>
+			<td  align="right">文档在线预览编辑：</td>
+			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转PDF服务</option>
+			<option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option>
+			<!--<option value="2">自己部署信呼文件管理平台</option>-->
+			</select></td>
 			
 			<td  align="right">记录用户操作：</td>
 			<td class="tdinput"><select id="useropt_{rand}"  class="form-control"><option value="">不记录</option><option value="1">记录到日志里</option></select></td>
@@ -162,21 +175,21 @@ $(document).ready(function(){
 			<td  align="right">PC后端默认主题：</td>
 			<td class="tdinput"><select id="defstype_{rand}" style="width:80px"></select>&nbsp;必须去<a href="<?=URLY?>view_themes.html" target="_blank">下载主题包</a>，否则不能使用</td>
 			
-			<td  align="right"></td>
-			<td class="tdinput"></td>
+			<td align="right">登录修改密码：</td>
+			<td class="tdinput"><select id="editpass_{rand}"  class="form-control"><option value="0">不用修改</option><option value="1">强制用户必须修改</option></select></td>
 			
 		</tr>
 		
-		<!--
 		<tr>
-			<td  align="right">文件预览打开方式：</td>
-			<td class="tdinput"><select id="officedk_{rand}"  class="form-control"><option value="">模式窗口打开</option><option value="1">新窗口打开</option></select></td>
 			
 			
-			<td  align="right">录入详情页打开方式：</td>
-			<td class="tdinput"><select id="luopenfs_{rand}"  class="form-control"><option value="">默认(模式窗口)</option><option value="1">系统内选择卡打开</option><option value="2">新窗口打开</option></select></td>
+			<td align="right">多单位模式：</td>
+			<td class="tdinput"><select id="compaymode_{rand}"  class="form-control"><option value="0">不开启</option><option value="1">开启(各单位分开数据管理)(待开发)</option></select></td>
 			
-		</tr>-->
+		</tr>
+		
+		
+		
 		
 		<tr>
 			<td  align="right"></td>

@@ -153,6 +153,11 @@ var im={
 			im.showagent(js.decode(ret.agentjson));
 			im.showhistory(js.decode(ret.historyjson));
 			im.reloadok();
+			if(ret.editpass==0){
+				js.wx.alert('请先修改密码后在使用', function(){
+					im.editpass();
+				});
+			}
 		}, lx, false, function(){
 			im.showerror();
 		});

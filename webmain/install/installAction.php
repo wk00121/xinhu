@@ -21,7 +21,7 @@ class installClassAction extends ActionNot{
                 @unlink($dir.'/'.$val);
             }
         }
-		rmdir($dir);
+		@rmdir($dir);
     }   
 	
 	public function delinstallAjax()
@@ -128,6 +128,7 @@ return array(
 	'updir'		=> 'upload',	//默认上传目录
 	'sqllog'	=> false,		//是否记录sql日志保存upload/sqllog下
 	'asynsend'	=> false,		//是否异步发送提醒消息，为true需开启服务端
+	'editpass'	=> '1',			//用户登录修改密码：0不用修改，1强制用户必须修改
 	'install'	=> true			//已安装，不要去掉啊
 );";
 		$this->rock->createtxt($paths, $txt);

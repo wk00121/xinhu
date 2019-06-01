@@ -405,10 +405,25 @@ class kqjcmdClassModel extends Model
 	}
 	
 	//添加打卡记录$rs = {time,ccid,pic,verify}
-	public function adddkjl($snid, $rs, $type=1, $ddbs=null)
+	private $uinfoarr = array();
+	public function adddkjl($snid, $rs, $type=1, $ddbs=null, $iszk=0)
 	{
 		$dkdt 	= $rs['time'];
 		$uid 	= $rs['ccid']; //用户ID
+		//是中控考勤机来的
+		if($iszk==1){
+			if(isset($this->uinfoarr[$uid])){
+				$uid 	= $this->uinfoarr[$uid];
+			}else{
+				$unfo 	= $this->db->getone('[Q]userinfo',"`finger`='$uid'");
+				if($unfo){
+					$this->uinfoarr[$uid] = $unfo['id'];
+					$uid = $unfo['id'];
+				}else{
+					$this->uinfoarr[$uid] = $uid;
+				}
+			}
+		}
 		$pic	= arrvalue($rs,'pic');	 //现成照片
 		$sntype = $rs['verify'];//打卡方式
 		$where 	= "`uid`='$uid' and `dkdt`='$dkdt' and `type`='$type'";
@@ -582,7 +597,9 @@ class kqjcmdClassModel extends Model
 	//人员上传
 	private function usertosn($uids)
 	{
-		$uarr = m('admin')->getall('id in('.$uids.') and `status`=1');
+		//$uarr = m('admin')->getall('id in('.$uids.') and `status`=1');
+		$uarr = $this->db->getall('select a.*,b.`finger` from `[Q]admin` a left join `[Q]userinfo` b on a.`id`=b.`id` where a.`id` in('.$uids.') and a.`status`=1');
+		
 		if(!$uarr)return 0;
 		$data 	= array();
 		$ids  	= '';
@@ -594,6 +611,7 @@ class kqjcmdClassModel extends Model
 				'do' 	=> 'update',
 				'data' 	=> 'user',
 				'ccid' 	=> $rs['id'],
+				'finger' => $this->rock->repempt($rs['finger']),
 				'name' 	=> $rs['name'],
 				'passwd'=> $rs['pass'], // 密码
 				'card' 	=> $rs['user'],
@@ -724,7 +742,7 @@ class kqjcmdClassModel extends Model
 		$snrs = $this->getsninfo($snid);
 		$userids = $snrs['userids'];
 		if(isempt($userids))return array();
-		$uarr = m('admin')->getall('`id` in('.$userids.') and `status`=1');
+		$uarr = m('admin')->getall('`status`=1');
 		$ccid = array();
 		foreach($uarr as $k=>$rs){
 			$ccid[] = $rs['id'];

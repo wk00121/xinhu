@@ -17,7 +17,7 @@ class userClassAction extends apiAction
 			}
 		}
 		if($msg == ''){
-			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."'", "`id`='$id'"))$msg	= $this->db->error();
+			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."',`editpass`=`editpass`+1", "`id`='$id'"))$msg	= $this->db->error();
 		}
 		if($msg==''){
 			$this->showreturn('success');

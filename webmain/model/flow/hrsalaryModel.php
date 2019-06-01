@@ -257,11 +257,11 @@ class flow_hrsalaryClassModel extends flowModel
 	{
 		foreach($drdata as $k=>$rs){
 			//
-			if($rs['status']==0 && $rs['isturn']==1){
-				$id = $rs['id'];
-				$this->loaddata($id, false);
-				$this->submit('提交');
-			}
+			//if($rs['status']==0 && $rs['isturn']==1){
+			//	$id = $rs['id'];
+			//	$this->loaddata($id, false);
+			//	$this->submit('提交');
+			//}
 		}
 	}
 	

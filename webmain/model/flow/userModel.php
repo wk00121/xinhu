@@ -18,6 +18,8 @@ class flow_userClassModel extends flowModel
 		return $arr;
 	}
 	
+	
+	
 	/**
 	*	用户显示展示
 	*/
@@ -73,6 +75,14 @@ class flow_userClassModel extends flowModel
 		$rs['groupname'] = m('sjoin')->getgroupid($rs['id']);
 		$rs['pass']		 = '';
 		unset($rs['deptallname']);
+		$dwid = arrvalue($rs,'dwid');
+		$temp_dwid = '';
+		if(!isempt($dwid)){
+			$dwarr = m('company')->getall('`id` in('.$dwid.')');
+			foreach($dwarr as $k1=>$rs1)$temp_dwid.=','.$rs1['name'].'';
+			if($temp_dwid!='')$temp_dwid = substr($temp_dwid, 1);
+		}
+		$rs['temp_dwid'] = $temp_dwid;
 		return $rs;
 	}
 	

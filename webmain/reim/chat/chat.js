@@ -373,7 +373,8 @@ var im={
 	initupfile:function(){
 		if(typeof(uploadobj)=='undefined')uploadobj = $.rockupload({
 			inputfile:'allfileinput',
-			initpdbool:true,
+			initpdbool:false,
+			updir:'reimchat',
 			onchange:function(f){
 				im.sendfileshow(f);
 			},

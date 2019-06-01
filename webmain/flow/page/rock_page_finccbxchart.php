@@ -13,6 +13,7 @@ $(document).ready(function(){
 			var cans = {
 				tablename:'todo',url:js.getajaxurl('flowtotal','flowopt','flow'),modenum:'finfybx',
 				params:{atype:'all',total_fields:tfid,total_type:'sum|money'},xuhao:xu,chatlx:chatlx,
+				where:'and a.`status` in(0,1)',
 				columns:[{
 					text:nas,dataIndex:'name'
 				},{
@@ -140,3 +141,4 @@ $(document).ready(function(){
 	</tr>
 	</table>
 </div>
+<div>只统计已审核和待审核的的记录，也就是status=0和1的</div>

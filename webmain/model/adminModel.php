@@ -670,4 +670,49 @@ class adminClassModel extends Model
 		
 		return $strs;
 	}
+	
+	/**
+	*	是否已修改密码了
+	*/
+	public function iseditpass($uid)
+	{
+		$editpass = (int)getconfig('editpass','0');
+		$stype	  = getconfig('systype');
+		if($editpass==0 || $stype=='dev' || $stype=='demo')return 1;
+		$urs 	  = $this->getone('`id`='.$uid.'');
+		$editpass = (int)arrvalue($urs, 'editpass','0');
+		return $editpass;
+	}
+	
+	/**
+	*	获取单位的信息
+	*/
+	public function getcompanyinfo($uid, $nid=0)
+	{
+		$urs 	  	 = $this->getone('`id`='.$uid.'');
+		$companyid	 = $urs['companyid'];
+		if(isempt($companyid))$companyid = '1';
+		$alldwid	 = $companyid;
+		$dwid= arrvalue($urs, 'dwid');
+		if(!isempt($dwid))$alldwid.=','.$dwid.'';
+		$companyinfo 	= array();
+		$companyinfoall = m('company')->getall('`id` in('.$alldwid.')','*','`pid`,`sort`');
+		if($nid==0)$nid = $companyid;
+		foreach($companyinfoall as $k=>$rs){
+			$nlogo = 'images/nologo.png';
+			$logo  = $rs['logo'];
+			if(isempt($logo)){
+				$logo = $nlogo;
+			}else{
+				if(substr($logo,0,4)!='http' && !file_exists($logo))
+					$logo = $nlogo;
+			}
+			$companyinfoall[$k]['logo'] = $rs['logo'] = $this->getface($logo, $nlogo);
+			if($rs['id']==$nid)$companyinfo = $rs;
+		}
+		return array(
+			'companyinfoall' => $companyinfoall,
+			'companyinfo' 	 => $companyinfo
+		);
+	}
 }

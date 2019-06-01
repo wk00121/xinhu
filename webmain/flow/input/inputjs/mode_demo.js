@@ -22,6 +22,16 @@ function initbodys(){
 		js.msg('success','选中的数据：'+JSON.stringify(d)+'');
 	}
 	
+	
+	c.onselectdatabefore=function(fid,zb){
+		if(fid=='tanxuancheck'){
+			if(form('tanxuan').value=='')return '请先选择弹出下拉单选';
+		}
+		
+		return {'tanxuanid':form('tanxuanid').value};//返回参数让第二个可以过滤
+	}
+	
+	
 	//弹出多选触发
 	c.onselectdata['tanxuancheck']=function(d){
 		console.log(d);

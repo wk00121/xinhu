@@ -11,7 +11,17 @@ class uploadClassAction extends apiAction
 		$upimg	= c('upfile');
 		$maxsize= (int)$this->get('maxsize', $upimg->getmaxzhao());//上传最大M
 		$uptypes= '*';
-		$upimg->initupfile($uptypes, ''.UPDIR.'|'.date('Y-m').'', $maxsize);
+		$updir		= $this->get('updir');
+		if(isempt($updir)){
+			$updir=date('Y-m');
+		}else{
+			$updir=str_replace(array(' ','.'),'', trim($updir));
+			$updir=str_replace('{month}',date('Y-m'), $updir);
+			$updir=str_replace('{Year}',date('Y'), $updir);
+			$updir=str_replace(array('{','}'),'', $updir);
+			$updir=str_replace(',','|', $updir);
+		}
+		$upimg->initupfile($uptypes, ''.UPDIR.'|'.$updir.'', $maxsize);
 		$upses	= $upimg->up('file');
 		if(!is_array($upses))exit($upses);
 		$arr 	= c('down')->uploadback($upses);
@@ -187,6 +197,14 @@ class uploadClassAction extends apiAction
 		m('file')->show($id);
 	}
 	
+	//记录预览记录
+	public function logsAction()
+	{
+		$fileid = (int)$this->post('fileid',0);
+		$type 	= (int)$this->post('type',0);
+		m('file')->addlogs($fileid, $type);
+	}
+	
 	
 	/**
 	*	发送编辑权限
@@ -209,16 +227,16 @@ class uploadClassAction extends apiAction
 			$filename = '(只读)'.$filename.'';
 			$utes     = 'yulan';
 		}
-		
-		$arr[]  = URL;
-		$arr[]  = $filename;
-		$arr[]  = ''.md5(URL).'_'.$frs['filesize'].'_'.$fileid.'.'.$frs['fileext'].'';
-		$arr[]  = $this->rock->gethttppath($filepath); //下载地址
-		$arr[]  = $fileid;
-		$arr[]  = $this->adminid;
-		$arr[]  = $this->token;
-		$arr[]  = $utes;
-		$arr[]  = $frs['fileext'];
+		$arr	 = array();
+		$arr[0]  = URL; 
+		$arr[1]  = $filename;
+		$arr[2]  = ''.md5(URL).'_'.$frs['filesize'].'_'.$fileid.'.'.$frs['fileext'].'';//生成键值
+		$arr[3]  = $this->rock->gethttppath($filepath); //下载地址
+		$arr[4]  = $fileid;
+		$arr[5]  = $this->adminid;
+		$arr[6]  = $this->token;
+		$arr[7]  = $utes;
+		$arr[8]  = $frs['fileext'];
 		
 		$str 	= '';
 		foreach($arr as $s1)$str.=','.$s1.'';

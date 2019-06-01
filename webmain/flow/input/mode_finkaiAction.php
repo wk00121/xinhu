@@ -6,7 +6,10 @@ class mode_finkaiClassAction extends inputAction{
 	
 	
 	protected function savebefore($table, $arr, $id, $addbo){
-		
+		$rows['type'] = '5';//一定要是5，不能去掉
+		return array(
+			'rows'=>$rows
+		);
 	}
 	
 		

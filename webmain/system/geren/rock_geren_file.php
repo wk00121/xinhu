@@ -29,7 +29,9 @@ $(document).ready(function(){
 		},{
 			text:'浏览器',dataIndex:'web'
 		},{
-			text:'下载次数',dataIndex:'downci',sortable:true
+			text:'下载次数',dataIndex:'downci',sortable:true,renderer:function(v,d,oi){
+				return ''+v+'<a href="javascript:;" onclick="showvies{rand}('+oi+',2)">查看</a>';
+			}
 		},{
 			text:'关联表',dataIndex:'mtype'
 		},{
@@ -49,11 +51,18 @@ $(document).ready(function(){
 		}],
 		itemclick:function(){
 			btn(false);
+		},
+		itemdblclick:function(d){
+			c.openlogs(d);
 		}
 	});
 	
 	showvies{rand}=function(oi,lx){
 		var d=a.getData(oi);
+		if(lx==2){
+			c.openlogs(d);
+			return;
+		}
 		if(lx==1){
 			js.downshow(d.id)
 		}else{
@@ -68,6 +77,9 @@ $(document).ready(function(){
 		search:function(){
 			var s=get('key_{rand}').value;
 			a.setparams({key:s},true);
+		},
+		openlogs:function(d){
+			addtabs({name:'文件操作记录','num':'files'+d.id+'',url:'system,geren,files,fileid='+d.id+',filename='+jm.base64encode(d.filename)+''});
 		}
 	};
 	

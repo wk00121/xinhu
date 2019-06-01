@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：demo.演示测试，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：demo.演示测试
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.演示测试]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'demo',modename='演示测试',isflow=1,modeid='72',atype = params.atype,pnum=params.pnum,modenames='';
+	var modenum = 'demo',modename='演示测试',isflow=4,modeid='72',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"custid","name":"\u5ba2\u6237id","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"custname","name":"\u5ba2\u6237","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"1"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"1"},{"fields":"sheng","name":"\u7701","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"shi","name":"\u5e02","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"xian","name":"\u53bf(\u533a)","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"tanxuan","name":"\u5f39\u51fa\u4e0b\u62c9\u5355\u9009","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"1"},{"fields":"tanxuancheck","name":"\u5f39\u6846\u4e0b\u62c9\u591a\u9009","fieldstype":"selectdatatrue","ispx":"0","isalign":"0","islb":"1"},{"fields":"upfile1","name":"\u6587\u4ef6\u4e0a\u4f201","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"},{"fields":"upfile2","name":"\u6587\u4ef6\u4e0a\u4f202","fieldstype":"uploadfile","ispx":"0","isalign":"0","islb":"0"},{"fields":"testfirs","name":"\u6d4b\u8bd5\u5b57\u6bb5","fieldstype":"checkboxall","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
@@ -35,7 +35,6 @@ $(document).ready(function(){
 			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -85,7 +84,8 @@ $(document).ready(function(){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -204,9 +204,8 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('ZGVtbw::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',

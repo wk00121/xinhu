@@ -75,6 +75,7 @@ class crmClassModel extends Model
 		return $moneys;
 	}
 	
+	
 	/**
 	*	对应人统计金额
 	*/
@@ -208,5 +209,42 @@ class crmClassModel extends Model
 		if(isempt($name))return false;
 		$rs = $this->getone("(`name`='$name' or `unitname`='$name')");
 		return $rs;
+	}
+	
+	
+	/**
+	*	销售单是收款状态
+	*/
+	public function xiaozhuantai($rs, $lx=0, $csid=0)
+	{
+		$str = '';
+		$wshou1 = 0;
+		if($rs['status']=='5')return ($lx==0)?'作废了':0;
+		
+		if($rs['custractid']=='0'){
+			$finrows = $this->db->getall('select * from `[Q]custfina` where `htid`=-'.$rs['id'].' and `id`<>'.$csid.'');
+			$shou	 = 0;
+			$shou1	 = 0;//已创建金额
+			$ispay	 = '0';
+			foreach($finrows as $k1=>$rs1){
+				if($rs1['ispay']=='1')$shou+=floatval($rs1['money']);
+				$shou1+=floatval($rs1['money']);
+			}
+			$wshou	  = floatval($rs['money'])-$shou;
+			$wshou1	  = floatval($rs['money'])-$shou1;
+			if($wshou<0)$wshou = 0; 
+			if($wshou1<=0){
+				$wshou1 = 0;//未创建
+				$ispay	= '1';
+			}
+			if($wshou==0){
+				$str = '<font color=green>已全部收款</font>';
+			}else{
+				$str = '待收<font color=#ff6600>'.$wshou.'</font>';
+			}
+			if($ispay!=$rs['ispay'])$this->db->update('[Q]goodm','`ispay`='.$ispay.'', '`id`='.$rs['id'].'');
+		}
+		if($lx==1)return $wshou1;
+		return $str;
 	}
 }

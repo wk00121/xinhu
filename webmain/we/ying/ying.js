@@ -275,6 +275,10 @@ var myScroll=false,yy={
 	},
 	xiang:function(oi){
 		var d = this.data[oi-1];
+		if(d.xiangurl){
+			js.location(d.xiangurl+'&show=we');
+			return;
+		}
 		var ids = d.id,nus=d.modenum,modne=d.modename;
 		if(!ids)return;
 		if(!nus||nus=='undefined')nus = this.num;
@@ -436,6 +440,9 @@ var myScroll=false,yy={
 				if(d.id && d.modenum){
 					s+='<div class="xq r-border-t"><font onclick="yy.showmenu('+oi+')">操作<i class="icon-angle-down"></i></font><span onclick="yy.xiang('+oi+')">详情&gt;&gt;</span>';
 					s+='</div>';
+				}
+				if(d.xiangurl){
+					s+='<div class="xq r-border-t" onclick="yy.xiang('+oi+')"><font>详情&gt;&gt;</font></div>';
 				}
 				if(d.statustext)s+='<div style="background-color:'+d.statuscolor+';opacity:0.7" class="zt">'+d.statustext+'</div>';
 				s+='</div>';

@@ -9,6 +9,22 @@ class fileClassModel extends Model
 		$this->mimitype =  c('file')->getAllMime();
 	}
 	
+	/***
+	*	添加预览和下载记录
+	*/
+	public function addlogs($fileid, $type)
+	{
+		$uarr = array();
+		$uarr['fileid'] = $fileid;
+		$uarr['type'] = $type;
+		$uarr['optname'] = $this->adminname;
+		$uarr['optid'] = $this->adminid;
+		$uarr['ip'] 	= $this->rock->ip;
+		$uarr['web'] 	= $this->rock->web;
+		$uarr['optdt'] 	= $this->rock->now;
+		return m('files')->insert($uarr);
+	}
+	
 	public function getmime($lx)
 	{
 		if(!isset($this->mimitype[$lx]))$lx = 'unkown';
@@ -235,6 +251,7 @@ class fileClassModel extends Model
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
 		$this->update("`downci`=`downci`+1", $id);
+		$this->addlogs($id, 1);
 		$filepath	= $rs['filepath'];
 		$filename	= $rs['filename'];
 		$filesize 	= $rs['filesize'];
@@ -268,14 +285,16 @@ class fileClassModel extends Model
 		if($id==0)exit('Sorry!');
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
-		$this->update("`downci`=`downci`+1", $id);
 		$filepath	= $rs['filepath'];
-		
 		$ielx  = substr($filepath,0,strlen(UPDIR));
 		$ielx1 = substr($filepath,0,6);
 		if($ielx!=UPDIR && $ielx1!='upload' && $ielx1!='images')exit('无效操作2');
 		
 		if(!file_exists($filepath))exit('404 Not find files');
+		
+		$this->update("`downci`=`downci`+1", $id);
+		$this->addlogs($id, 1);
+		
 		$filename	= $rs['filename'];
 		$filesize 	= $rs['filesize'];
 		if(substr($filepath,-4)=='temp'){

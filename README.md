@@ -6,17 +6,17 @@
 官网网站：http://www.rockoa.com/  
 源码仅供学习二次开发使用，禁止用于商业用途出售等(违者必究)  
 版权：Copyright @2016-2019 信呼开发团队  
-版本整理时间：2019-04-29 23:59:59  
-版本号：V1.9.1   
+版本整理时间：2019-06-01 23:59:59  
+版本号：V1.9.2   
 
 
-### V1.9.1更新说明
+### V1.9.2更新说明
 1、完善系统安全性。  
 2、更多升级日志详见：http://www.rockoa.com/view_core.html  
 
 
 ### 安装说明
-1、环境要求：可以运行在Win/Linux系统下，php5.3+，mysql5.3+  
+1、环境要求：可以运行在Win/Linux系统下，php5.2+，mysql5.3+  
 2、测试环境搭建详见：http://www.rockoa.com/view_install.html  
 3、自己手动安装详见：http://www.rockoa.com/view_anzz.html  
 4、配置文件：webmain/webmainConfig.php，也可到【系统→系统工具→系统设置】下修改  

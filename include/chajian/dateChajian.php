@@ -264,11 +264,12 @@ class dateChajian extends Chajian
 	*	计算周期$rate:d1,d2,$dt开始时间
 	*	返回日期，根据日期判断是不是今天
 	*/
-	public function daterate($rate, $dt)
+	public function daterate($rate, $dt, $nowdt='')
 	{
 		if(isempt($rate) || isempt($dt))return false;//没有周期
 		$dt 	= substr($dt,0, 10);//日期的类型
-		$nowdt 	= $this->rock->date;
+		if($nowdt=='')$nowdt 	= $this->rock->date;
+		$nowdt	= substr($nowdt, 0, 10);
 		$jg 	= str_replace(array('m','d','w','y'),array('','','',''),$rate);
 		if($jg=='')$jg='1';
 		$jg = (int)$jg;

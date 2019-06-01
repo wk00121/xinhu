@@ -253,8 +253,8 @@ js.upload=function(call,can, glx){
 	for(var a in can)url+='&'+a+'='+can[a]+'';
 	if(glx=='url')return url;
 	var s='',tit=can.title;if(!tit)tit='上传文件';
-	js.tanbody('uploadwin',tit,450,300,{
-		html:'<div style="height:260px;overflow:hidden"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+	js.tanbody('uploadwin',tit,500,300,{
+		html:'<div style="height:280px;overflow:hidden"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
 		bbar:'none'
 	});
 	winiframe.location.href=url;
@@ -337,6 +337,7 @@ js.yulanfile=function(id, ext,pts, sne){
 	var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
 	if(pts!=''&&js.isimg(ext)){
 		$.imgview({'url':pts,'ismobile':ismobile==1,'downbool':false});
+		$.get('api.php?m=upload&a=logs&fileid='+id+'&type=0');
 		return false;
 	}
 	if(ismobile==1){

@@ -23,7 +23,7 @@ class mode_godepotClassAction extends inputAction{
 		$rows = $db1->getall('1=1');
 		foreach($rows as $k=>$rs){
 			$wpshu = 0;
-			$sql = 'SELECT `aid`,sum(`count`) as stttso FROM `xinhu_goodss` where `depotid`='.$rs['id'].' GROUP BY aid';
+			$sql = 'SELECT `aid`,sum(`count`) as stttso FROM `[Q]goodss` where `depotid`='.$rs['id'].' GROUP BY aid';
 			$ros1 = $this->db->getall($sql);
 			foreach($ros1 as $k1=>$rs1)if($rs1['stttso']>0)$wpshu++;
 			$db1->update('`wpshu`='.$wpshu.'', $rs['id']);

@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：hrkaohem.考核项目，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：hrkaohem.考核项目
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.考核项目]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -35,7 +35,6 @@ $(document).ready(function(){
 			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -85,7 +84,8 @@ $(document).ready(function(){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -204,9 +204,8 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aHJrYW9oZW0:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',

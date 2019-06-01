@@ -80,7 +80,7 @@ class goodsClassModel extends Model
 	}
 	
 	/**
-	*	$lx=0默认，1领用，2采购，3调拨
+	*	$lx=0默认，1领用销售，2采购，3调拨
 	*/
 	public function getgoodsdata($lx=0)
 	{

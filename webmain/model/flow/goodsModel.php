@@ -22,6 +22,27 @@ class flow_goodsClassModel extends flowModel
 		);
 	}
 	
+	public function flowxiangfields(&$fields)
+	{
+		$fields['stock'] 	 = '总库存';
+		$kcrow = m('godepot')->getall('1=1','*','`sort`');
+		foreach($kcrow as $k1=>$rs1){
+			$fields['stock_'.$rs1['id'].''] 	 = $rs1['depotname'];
+		}
+		return $fields;
+	}
+	
+	//
+	public function flowrsreplace($rs, $lx=0)
+	{
+		//详情页下显示对应仓库库存
+		if($lx==1){
+			$drows = $this->db->getall("SELECT `depotid`,sum(count)count FROM `[Q]goodss` where aid=".$rs['id']." and `status`=1 GROUP BY `depotid`");
+			foreach($drows as $k1=>$rs1)$rs['stock_'.$rs1['depotid'].''] = $rs1['count'];
+		}
+		return $rs;
+	}
+	
 	//导入之前
 	public function flowdaorubefore($rows)
 	{
@@ -46,6 +67,13 @@ class flow_goodsClassModel extends flowModel
 	//导入后处理（刷新库存）
 	public function flowdaoruafter()
 	{
+		m('goods')->setstock();
+	}
+	
+	//删除时
+	protected function flowdeletebill($sm)
+	{
+		m('goodss')->delete('`aid`='.$this->id.'');
 		m('goods')->setstock();
 	}
 }

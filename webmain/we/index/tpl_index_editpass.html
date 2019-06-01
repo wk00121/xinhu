@@ -16,6 +16,7 @@ ismobile = 1;
 function loginsubmit(){
 	var opass	= $('#oldpass').val();
 	var pass	= $('#newpass').val();
+	var pass1	= $('#newpass1').val();
 	
 	if(opass==''){
 		js.msg('msg','旧密码不能为空');
@@ -34,17 +35,28 @@ function loginsubmit(){
 		js.msg('msg','新密码不能和旧密码相同');
 		return false;
 	}
+	if(pass!=pass1){
+		js.msg('msg','确认密码不一致');
+		return false;
+	}
 	js.ajax('user','editpass',{passoldPost:opass,passwordPost:pass},function(){
 		js.wx.msgok('密码修改成功',function(){
-			js.back();
+			if(js.request('ofrom')=='reim'){
+				parent.js.tanclose('winiframe');
+			}else{
+				js.back();
+			}
 		},1);
 	});
+}
+function initbody(){
+	
 }
 </script>
 </head>
 
 
-<body>
+<body style="overflow:hidden">
 <?php if($showheader==1){?>
 <div>
 	<div class="r-header">
@@ -60,14 +72,20 @@ function loginsubmit(){
 	<div class="weui_cell">
 		<div class="weui_cell_hd"><label class="weui_label">旧密码</label></div>
 		<div class="weui_cell_bd weui_cell_primary">
-			<input class="weui_input" type="text" id="oldpass" maxlength="20"  placeholder="请输入旧密码"/>
+			<input class="weui_input" type="text" id="oldpass" placeholder="请输入旧密码"/>
 		</div>
 	</div>
 	
 	<div class="weui_cell">
 		<div class="weui_cell_hd"><label class="weui_label">新密码</label></div>
 		<div class="weui_cell_bd weui_cell_primary">
-			<input class="weui_input" id="newpass" maxlength="20" type="password" placeholder="请输入新密码"/>
+			<input class="weui_input" id="newpass"  type="password" placeholder="至少4位字母+数字组合"/>
+		</div>
+	</div>
+	<div class="weui_cell">
+		<div class="weui_cell_hd"><label class="weui_label">确认密码</label></div>
+		<div class="weui_cell_bd weui_cell_primary">
+			<input class="weui_input" id="newpass1" type="password" placeholder="请输入"/>
 		</div>
 	</div>
 </div>

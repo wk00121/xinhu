@@ -1,10 +1,11 @@
 <?php if(!defined('HOST'))die('not access');?>
 <script>
 $(document).ready(function(){
-	
+	{params}
+	var stype = params.stype;
 	var valchange = ''+adminstyle,zleng=-1;
 	var ysarr = '使用默认,cerulean,cosmo,cyborg,darkly,flatly,journal,lumen,paper,readable,sandstone,simplex,slate,spacelab,superhero,united,xinhu,yeti';
-
+	var companyinfoall;
 	var c = {
 		init:function(){
 			js.ajax(js.getajaxurl('getinit','{mode}','{dir}'),false,function(ret){
@@ -14,6 +15,7 @@ $(document).ready(function(){
 					var s = '<br><img id="imgqianming" src="'+imgs+'"  height="90">';
 					$('#qianmingshow').append(s);
 				}
+				c.showcompany(ret.carr);
 			},'get,json');
 			
 			
@@ -34,6 +36,27 @@ $(document).ready(function(){
 			s+='</tr>';
 			$('#tablstal2{rand}').prepend(s);
 			if(adminid!=1)$('#zhutibao{rand}').remove();
+		},
+		showcompany:function(ad){
+			var s='',a1,i,col;
+			var darr = ad.companyinfoall,s1='',act;
+			companyinfoall = darr;
+			$('#companylist{rand} a[temp]').remove();
+			for(i=0;i<darr.length;i++){
+				a1=darr[i];
+				s1=a1.name;
+				act='';
+				//if(a1.id==ad.companyinfo.id)act=' active';
+				if(!isempt(a1.city))s1+='<font color=#aaaaaa>('+a1.city+''+a1.address+')</font>';
+				s+='<a temp="list" style="TEXT-DECORATION:none" class="list-group-item'+act+'"><img src="'+a1.logo+'" align="absmiddle" height="20" width="20"> '+s1+'';
+				if(a1.id==ad.companyinfo.id){
+					s+=' <span class="label label-success"><i class="icon-ok"></i>当前</span>';
+				}else{
+					s+=' <button type="button" onclick="qiehun{rand}('+i+')" class="btn btn-default btn-xs">切换</button>';
+				}
+				s+='</a>';
+			}
+			$('#companylist{rand}').append(s);
 		},
 		savecog:function(){
 			js.msg('wait','保存中...');
@@ -85,7 +108,13 @@ $(document).ready(function(){
 			js.setmsg('修改中...','#ff6600', msgview);
 			$.post(js.getajaxurl('editpass','geren','system'),data,function(da){
 				if(da=='success'){
-					js.setmsg('密码修改成功','green', msgview);
+					var msg = '密码修改成功';
+					js.setmsg(msg,'green', msgview);
+					if(stype=='pass'){
+						js.alert(msg+'，点确定后继续使用系统','', function(){
+							location.reload();
+						});
+					}
 				}else{
 					if(da=='')da='修改失败';
 					js.setmsg(da,'red', msgview);
@@ -193,15 +222,27 @@ $(document).ready(function(){
 			js.msg('success','使用默认主题的保存后，刷新页面即可');
 		}
 	});
+	if(stype=='pass'){
+		c.tesgs(get('passli{rand}'),1);
+		changetabs=c.tesgs=function(){}
+	}
+	
+	qiehun{rand}=function(oi){
+		var d1 = companyinfoall[oi];
+		js.confirm('确定要切换到单位上“'+d1.name+'”吗？', function(jg){
+			if(jg=='yes')js.msgok('待开发');
+		});
+	}
 });
 </script>
 <div style="padding:10px">
+	
 	<ul id="tagsl{rand}" class="nav nav-tabs">
 	  
 	  <li click="tesgs,0" class="active">
 		<a style="TEXT-DECORATION:none"><i class="icon-cog"></i> 基本设置</a>
 	  </li>
-	  <li click="tesgs,1">
+	  <li id="passli{rand}" click="tesgs,1">
 		<a style="TEXT-DECORATION:none"><i class="icon-lock"></i> 修改密码</a>
 	  </li>
 	
@@ -216,11 +257,23 @@ $(document).ready(function(){
 	<div style="padding-top:20px">
 	
 		<table cellspacing="0" id="tablstal0{rand}" border="0" cellpadding="0">
+		
+		<tr>
+	
+		<td colspan="2">
 
-	<tr>
-		<td  align="right" width="100"></td>
-		<td class="tdinput"><label><input id="gerentodo{rand}" type="checkbox"> <a  style="TEXT-DECORATION:none">后台不显示提醒消息</a></label></td>
-	</tr>
+			<div align="left" id="companylist{rand}" style="max-width:400px;margin-left:50px" class="list-group">
+				<div class="list-group-item  list-group-item-info">
+				我加入的单位
+				</div>
+			</div>
+		</td>
+		</tr>
+
+		<tr>
+			<td  align="right" width="80"></td>
+			<td class="tdinput"><label><input id="gerentodo{rand}" type="checkbox"> <a  style="TEXT-DECORATION:none">后台不显示提醒消息</a></label></td>
+		</tr>
 	
 	
 	
@@ -243,7 +296,7 @@ $(document).ready(function(){
 	
 	<tr>
 		<td align="right" height="70">新密码：</td>
-		<td><input style="width:250px" name="passwordPost" type="password" class="form-control"></td>
+		<td><input style="width:250px" name="passwordPost" placeholder="至少4位字母+数字组合" type="password" class="form-control"></td>
 	</tr>
 	
 	<tr>

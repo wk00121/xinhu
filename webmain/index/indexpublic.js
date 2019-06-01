@@ -1,4 +1,4 @@
-﻿var objcont,tabs_title,tabsarr={},nowtabs,opentabs=[],menutabs,menuarr,admintype='0';
+var objcont,tabs_title,tabsarr={},nowtabs,opentabs=[],menutabs,menuarr,admintype='0';
 var viewwidth,viewheight,optmenudatas=[];
 
 js.initbtn = function(obj){
@@ -427,8 +427,8 @@ function highsearchclass(options){
 	this.searchhighshowinput=function(b){
 		var type = b.fieldstype,name = 'soufields_'+b.fields+'';
 		var s = '<input placeholder="关键词包含" type="text" class="inputs" name="'+name+'">';
-		if(type=='date' || type=='datetime' || type=='month'){
-			s='<input style="width:150px" onclick="js.datechange(this,\'date\')" class="inputs datesss" readonly  name="'+name+'_start"> 至 <input onclick="js.datechange(this,\'date\')" style="width:150px" class="inputs datesss" readonly name="'+name+'_end"> ';
+		if(type=='date' || type=='datetime'){
+			s='<input style="width:150px" onclick="js.datechange(this,\''+type+'\')" class="inputs datesss" readonly  name="'+name+'_start"> 至 <input onclick="js.datechange(this,\''+type+'\')" style="width:150px" class="inputs datesss" readonly name="'+name+'_end"> ';
 		}
 		if(type=='month'){
 			s='<input style="width:150px" onclick="js.datechange(this,\''+type+'\')" class="inputs datesss" readonly name="'+name+'">';
@@ -547,6 +547,7 @@ function classubscribe(options){
 	this._init();
 }
 
+
 js.subscribe=function(csns){
 	return new classubscribe(csns);
 }
@@ -642,7 +643,7 @@ function publicdaochuobj(options){
 		for(i=0;i<len;i++){
 			d1 = dar[i];
 			if(this.isflow==0){
-				if(d1.fields=='base_name' || d1.fields=='base_deptname')continue;
+				if(d1.fields=='base_name' || d1.fields=='base_deptname' || d1.fields=='sericnum')continue;
 			}
 			oi++;
 			sel = '';

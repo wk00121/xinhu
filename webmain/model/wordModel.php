@@ -356,18 +356,21 @@ class wordClassModel extends Model
 		//发通知给对应人说共享了
 		if(!isempt($arr['shateid'])){
 			$names= '';
-			$rows = $this->db->getall('select a.name,b.filename from `[Q]word` a left join `[Q]file` b on a.fileid=b.id where a.`id` in('.$ids.')');
+			$rows = $this->db->getall('select a.name,b.filename,a.id from `[Q]word` a left join `[Q]file` b on a.fileid=b.id where a.`id` in('.$ids.')');
+			$id   = 0;
 			foreach($rows as $k=>$rs){
 				$nas = $rs['name'];
 				if(isempt($nas))$nas = $rs['filename'];
 				if(!isempt($nas))$names.=','.$nas.'';
+				if($id==0)$id = $rs['id'];
 			}
 			if($names!=''){
 				$names= substr($names, 1);
 				$cont = "{$this->adminname}共享了文件“{$names}”";
 				$flow = m('flow')->initflow('word');
 				$flow->push($arr['shateid'],'文档', $cont, ''.$this->adminname.'发来共享文件',0, array(
-					'wxurl' => $flow->getwxurl()
+					'wxurl' => $flow->getwxurl(),
+					'id'	=> $id
 				));
 			}
 		}

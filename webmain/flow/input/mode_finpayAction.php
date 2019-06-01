@@ -4,6 +4,14 @@
 */ 
 class mode_finpayClassAction extends inputAction{
 	
+	
+	protected function savebefore($table, $arr, $id, $addbo){
+		$rows['type'] = '4';//一定要是4，不能去掉
+		return array(
+			'rows'=>$rows
+		);
+	}
+	
 	public function selectcust()
 	{
 		$rows = m('crm')->getmycust($this->adminid, $this->rock->arrvalue($this->rs, 'custid'));

@@ -166,7 +166,7 @@ $(document).ready(function(){
 	
 	<tr>
 		<td  align="right">使用短信签名编号：</td>
-		<td class="tdinput"><input id="sms_qmnum_{rand}" placeholder="编号到[短信签名]下获取，可不用设置。"  maxlength="8" value="" class="form-control"></td>
+		<td class="tdinput"><input id="sms_qmnum_{rand}" placeholder="编号到[短信签名]下获取，可不用设置。"  maxlength="50" value="" class="form-control"></td>
 	</tr>
 	
 	<tr>

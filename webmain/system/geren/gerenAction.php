@@ -4,10 +4,12 @@ class gerenClassAction extends Action
 	public function getinitAjax()
 	{
 		$uid = $this->adminid;
+		$carr= m('admin')->getcompanyinfo($uid);
 		
 		return array(
 			'gerentodo' => $this->option->getval('gerennotodo_'.$uid.''),
-			'qmimgstr' 	=> $this->option->getval('qmimgstr_'.$uid.'')
+			'qmimgstr' 	=> $this->option->getval('qmimgstr_'.$uid.''),
+			'carr' 		=> $carr,
 		);
 	}
 	
@@ -115,7 +117,7 @@ class gerenClassAction extends Action
 			}
 		}
 		if($msg == ''){
-			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."'", "`id`='$id'"))$msg	= $this->db->error();
+			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."',`editpass`=`editpass`+1", "`id`='$id'"))$msg	= $this->db->error();
 		}
 		if($msg=='')$msg='success';
 		echo $msg;
@@ -173,5 +175,20 @@ class gerenClassAction extends Action
 			$oi++;
 		}
 		backmsg('','成功导入'.$oi.'条数据');
+	}
+	
+	public function filelogs_before($table)
+	{
+		$where = '';
+		$fileid = (int)$this->post('fileid','0');
+		$where = "and `fileid`='$fileid'";
+		return $where;
+	}
+	
+	public function delfilelogsAjax()
+	{
+		$id = (int)$this->post('id','0');
+		m('files')->delete($id);
+		backmsg();
 	}
 }
