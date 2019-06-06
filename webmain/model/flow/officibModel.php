@@ -15,10 +15,11 @@ class flow_officibClassModel extends flowModel
 		return $arr;
 	}
 	
-	protected function flowxiangfields(&$fields)
+	public function flowxiangfields(&$fields)
 	{
 		$fields['base_name'] 	= '登记人';
 		$fields['base_deptname'] = '登记人部门';
+		return $fields;
 	}
 	
 	public function flowsearchfields()
