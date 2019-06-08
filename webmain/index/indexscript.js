@@ -64,7 +64,7 @@ function initbody(){
 	function _loadjsurl(){
 		js.importjs('web/res/mode/echarts/echarts.common.min.js');
 	}
-	setTimeout(_loadjsurl,1000);
+	setTimeout(_loadjsurl,100);
 	
 	//禁止后退
 	$(document.body).keydown(function(e){

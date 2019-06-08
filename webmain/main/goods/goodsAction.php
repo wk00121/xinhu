@@ -31,7 +31,8 @@ class goodsClassAction extends Action
 		if($this->loadci==1){
 			$type	= (int)$this->post('type');
 			$typearr= $this->option->getdata('kutype'.$type.'');
-			$depotarr = m('godepot')->getall('1=1','id,depotname as name,depotnum','`sort`');
+			$where  = m('admin')->getcompanywhere(1);
+			$depotarr = m('godepot')->getall('1=1'.$where.'','id,depotname as name,depotnum','`sort`');
 			foreach($depotarr as $k=>$rs){
 				$depotarr[$k]['namea']= $rs['name'];
 				$depotarr[$k]['name'] = ''.$rs['depotnum'].'.'.$rs['name'].'';
@@ -57,6 +58,9 @@ class goodsClassAction extends Action
 		if($key!=''){
 			$where .= " and (`name` like '%$key%' or `num` like '%$key%' or `guige` like '%$key%' or `xinghao` like '%$key%') ";
 		}
+		
+		$where.=m('admin')->getcompanywhere(1);
+		
 		if($mid>0){
 			/*
 			$carro = m('goodn')->getall('mid='.$mid.' and `couns`<`count`');
@@ -117,7 +121,7 @@ class goodsClassAction extends Action
 		if($depotid>0){
 			$where .= " and a.`depotid`='$depotid'";
 		}
-		
+		$where .= m('admin')->getcompanywhere(1,'a.');
 		$table	= '`[Q]goodss` a left join `[Q]goods` b on a.aid=b.id left join `[Q]godepot` c on a.depotid=c.id';
 		$fields	= 'a.id,b.name,a.count,c.depotname,a.type,a.kind,a.status,a.optname,b.typeid,b.xinghao,b.guige,a.applydt,a.explain,a.mid';
 		return array(
@@ -189,6 +193,7 @@ class goodsClassAction extends Action
 		$arr['uid'] 	= $this->adminid;
 		$arr['optid'] 	= $this->adminid;
 		$arr['optdt'] 	= $this->now;
+		$arr['comid'] 	= m('admin')->getcompanyid();
 		$arr['optname'] = $this->adminname;
 		$arr['status'] 	= 1;
 		$aid 			= '0';
@@ -212,6 +217,7 @@ class goodsClassAction extends Action
 				); 
 			}
 			$mtype = (int)$mrs['type']; //3就是调拨
+			$arr['comid'] = $mrs['comid'];
 		}
 		
 		//调拨必须先出库原来的
@@ -312,6 +318,7 @@ class goodsClassAction extends Action
 		if($key!=''){
 			$where.=" and (b.`uname` like '%$key%' or b.`sericnum` like '$key%')";
 		}
+		$where .= m('admin')->getcompanywhere(1,'a.');
 		return array(
 			'where' => 'and a.`status`=1 and a.`state`<>1 '.$where.'',
 			'table' => '`[Q]'.$table.'` a left join `[Q]flow_bill` b on a.id=b.mid and b.`table`=\''.$table.'\'',

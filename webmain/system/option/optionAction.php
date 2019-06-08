@@ -34,6 +34,7 @@ class optionClassAction extends Action
 	{
 		$num 	= $this->get('num');
 		if($num=='')exit('error;');
+		if(ISMORECOM && $cnum=m('admin')->getcompanynum())$num.='_'.$cnum.'';
 		$pid 	= $this->option->getnumtoid($num,''.$num.'选项', false);
 		$rows 	= $this->option->gettreedata($pid);
 		$rows	= array(

@@ -6,10 +6,20 @@ class extentClassAction extends Action
 		$key	= $this->post('key');
 		$where  = '';
 		if(!isempt($key))$where = m('admin')->getkeywhere($key);
+		if($this->adminid>1)$where.=m('admin')->getcompanywhere();
 		return array(
 			'where' => 'and `status`=1 and `type`=0 '.$where.'',
 			'fields'=> '`id`,`name`,`user`,`deptname`'
 		);
+	}
+	
+	public function beforeextentgroup($table)
+	{
+		$where = '';
+		if($this->adminid>1 && ISMORECOM){
+			$where.= 'and `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $where;
 	}
 
 	/**

@@ -65,7 +65,8 @@ class kaoqinjClassAction extends Action
 		}
 		$kqsnarr = array();
 		if($this->loadci==1){
-			$kqsnarr = m('kqjsn')->getall('status=1','id,name,num','sort');
+			$where1  = m('admin')->getcompanywhere(1);
+			$kqsnarr = m('kqjsn')->getall('status=1 '.$where1.'','id,name,num','sort');
 			foreach($kqsnarr as $k=>$rs){
 				$kqsnarr[$k]['name'] = ''.$rs['id'].'.'.$rs['name'].'('.$rs['num'].')';
 			}
@@ -159,7 +160,8 @@ class kaoqinjClassAction extends Action
 		if($this->loadci==1){
 			$drows = m('dept')->getdata('sd');
 			$barr['deptdata'] = $this->depttreeshu($drows,'0');
-			$kqsnarr = m('kqjsn')->getall('status=1','id,name,num','sort');
+			$where1  = m('admin')->getcompanywhere(1);
+			$kqsnarr = m('kqjsn')->getall('status=1 '.$where1.'','id,name,num','sort');
 			foreach($kqsnarr as $k=>$rs){
 				$kqsnarr[$k]['name'] = ''.$rs['id'].'.'.$rs['name'].'('.$rs['num'].')';
 			}
@@ -179,6 +181,8 @@ class kaoqinjClassAction extends Action
 		if($detpid>1){
 			$where.= " and instr(`deptpath`,'[$detpid]')>0";
 		}
+		if(ISMORECOM)$where .=' and `companyid` in('.m('admin')->getcompanyid().')';
+		
 		return array(
 			'fields'=>'id,name,deptname,ranking,status,face',
 			'where'=>$where,

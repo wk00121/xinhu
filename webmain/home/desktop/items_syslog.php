@@ -24,6 +24,6 @@ homeobject.show_syslog_list=function(a){
 <div align="left" id="homesysloglist" class="list-group">
 <div class="list-group-item  list-group-item-default">
 	<i class="icon-bookmark-empty"></i> <?=$itemnowname?>
-	<a style="float:right" onclick="openxtrilises()">更多&gt;&gt;</a>
+	<a style="float:right;TEXT-DECORATION:none" onclick="openxtrilises()">更多&gt;&gt;</a>
 </div>
 </div>

@@ -28,7 +28,8 @@ class mode_sealaplClassAction extends inputAction{
 	//获取印章
 	public function getsealdata()
 	{
-		$rows = m('seal')->getall('1=1','`id`as value,`name`,`type`','`sort`');
+		$where= m('admin')->getcompanywhere(1);
+		$rows = m('seal')->getall('1=1 '.$where.'','`id`as value,`name`,`type`','`sort`');
 		$aaar = $barr = array();
 		foreach($rows as $k=>$rs){
 			$optgroup = '印章';

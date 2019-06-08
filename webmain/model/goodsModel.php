@@ -45,7 +45,8 @@ class goodsClassModel extends Model
 	//待出入库数量
 	public function getdaishu()
 	{
-		return $this->db->rows('`[Q]goodm`','`status`=1 and `state`<>1');
+		$where = m('admin')->getcompanywhere(1);
+		return $this->db->rows('`[Q]goodm`','`status`=1 and `state`<>1 '.$where.'');
 	}
 	
 	//判断是否存在相同库存
@@ -59,7 +60,10 @@ class goodsClassModel extends Model
 	public function getgoodstype($lx=0)
 	{
 		$dbs 	= m('option');
-		$rowss  = $dbs->getdata('goodstype');
+		$num  	= 'goodstype';
+		if(ISMORECOM && $cnum=m('admin')->getcompanynum())$num.='_'.$cnum.'';
+		
+		$rowss  = $dbs->getdata($num);
 		$rows	= array();
 		$str1   = '	&nbsp;	&nbsp; ';
 		if($lx==1)$str1='	';
@@ -103,6 +107,7 @@ class goodsClassModel extends Model
 			}
 			$where.= ' and a.`id` in('.$aids.')';
 		}
+		$where .= m('admin')->getcompanywhere(1,'a.');
 		$rowss  = $this->db->getall('select a.`id`,a.`name`,a.`xinghao`,a.`stock`,a.`price`,a.`unit`,b.`name` as `typename` from `[Q]goods` a left join `[Q]option` b on a.`typeid`=b.`id` where '.$where.'');
 		$rows	= array();
 		foreach($rowss as $k=>$rs){
@@ -165,7 +170,8 @@ class goodsClassModel extends Model
 	*/
 	public function getgys()
 	{
-		$arows 	= m('customer')->getall('`status`=1 and `isgys`=1','id as value,name');
+		$where  = m('admin')->getcompanywhere(1);
+		$arows 	= m('customer')->getall('`status`=1 and `isgys`=1 '.$where.'','id as value,name');
 		return $arows;
 	}
 	
@@ -174,7 +180,8 @@ class goodsClassModel extends Model
 	*/
 	public function godepotarr()
 	{
-		$depotarr = m('godepot')->getall('1=1','id,depotname as name,depotnum','`sort`');
+		$where 	  = m('admin')->getcompanywhere(1);
+		$depotarr = m('godepot')->getall('1=1'.$where.'','id,depotname as name,depotnum','`sort`');
 		$rows 		= array();
 		foreach($depotarr as $k=>$rs){
 			$rows[] = array(

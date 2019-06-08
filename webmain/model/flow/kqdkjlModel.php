@@ -1,6 +1,9 @@
 <?php
 class flow_kqdkjlClassModel extends flowModel
 {
+	
+	protected $flowcompanyidfieds	= 'uid'; //多单位用这个关联 
+	
 	public function initModel()
 	{
 		$this->dateobj = c('date');
@@ -97,5 +100,48 @@ class flow_kqdkjlClassModel extends flowModel
 		}
 		
 		return $inarr;
+	}
+	
+	/**
+	*	首页考勤打卡记录
+	*/
+	public function homekqtotal()
+	{
+		$dt   = $this->rock->date;
+		$where= $this->adminmodel->getcompanywhere(5,'a.');
+		$uarr = $this->db->getall('select a.id from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where b.`iskq`=1 and a.`status`=1 '.$where.'');
+		$uids = '0';
+		$uarrs = array();
+		foreach($uarr as $k=>$rs){
+			$uids.=','.$rs['id'].'';
+			$uarrs[$rs['id']] = '未打卡';
+		}
+		$rows = $this->db->getall("SELECT * FROM `xinhu_kqanay` where `uid` in($uids) and `dt`='$dt' and sort=0");
+		foreach($rows as $k=>$rs){
+			$state = $rs['state'];
+			if(!isempt($rs['states']))$state = $rs['states'];
+			$uarrs[$rs['uid']] = $state;
+		}
+		
+		$ztarr = array();
+		foreach($uarrs as $uid=>$zt){
+			if(!isset($ztarr[$zt]))$ztarr[$zt]=0;
+			$ztarr[$zt]++;
+		}
+	
+		$rows = array();
+		$data = array();
+		foreach($ztarr as $zt=>$vs){
+			$rows[] = array(
+				'value' => $vs,
+				'name'	=> $zt
+			);
+			$data[] = $zt;
+		}
+		return array(
+			'rows' => $rows,
+			'data' => $data,
+			'dt' => $dt,
+		);
 	}
 }

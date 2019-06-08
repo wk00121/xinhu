@@ -10,7 +10,8 @@
 function initbody(){
 	c.init();
 }
-
+companymode		= <?=(getconfig('companymode')? 'true' : 'false')?>;
+uidid		= <?=$da['adminid']?>;
 var c = {
 	maxshow:300,
 	grouparr:[],
@@ -191,6 +192,10 @@ var c = {
 			s1='['+d.id+'.部门]';
 			if(id==1)s1='<span class="label">全员</span>';
 			s='<div id="d_'+d.id+'" onclick="$(this).remove()" class="listsss">'+s1+'<font>'+d.name+'</font></div>';
+			if(companymode && id==1 && uidid>1){
+				//s='';
+				//js.msg('msg','多单位模式下不运行选择最顶级部门');
+			}
 		}
 		if(lx=='g'){
 			d = this.grouparr[oi];

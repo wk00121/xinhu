@@ -12,7 +12,8 @@ class worcClassModel extends Model
 		$dbs  = m('word');
 		$str  = $db->getjoinstr('receid', $uid, 1);
 		$utype= arrvalue($db->nowurs,'type','0');
-		$rows = $this->getall('1=1 and ('.$str.')','id,name,guanname,guanid,uptype','`sort`');
+		$where= $db->getcompanywhere(1);
+		$rows = $this->getall('1=1 and ('.$str.')'.$where.'','id,name,guanname,guanid,uptype','`sort`');
 		$ids  = '';
 		foreach($rows as $k=>$rs){
 			$ids.=','.$rs['id'].'';

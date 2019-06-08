@@ -257,7 +257,7 @@ $(document).ready(function(){
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字/申请人/单号">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待接收</option><option style="color:green" value="1">已接收</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待接收</option><option style="color:green" value="1">已接收</option><option style="color:red" value="2">拒收</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
 			<div style="white-space:nowrap">
 			<button style="border-right:0;border-top-right-radius:0;border-bottom-right-radius:0" class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px;border-top-left-radius:0;border-bottom-left-radius:0"><i class="icon-angle-down"></i></button> 

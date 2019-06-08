@@ -18,6 +18,7 @@ class agent_gongClassModel extends agentModel
 		$where	= "id not in($ydid) and `status`=1";
 		$meswh	= m('admin')->getjoinstr('receid', $uid);
 		$where .= $meswh;
+		$where .= m('admin')->getcompanywhere(1);
 		$stotal	= m('infor')->rows($where);
 		return $stotal;
 	}

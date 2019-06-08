@@ -12,7 +12,7 @@ $(document).ready(function(){
 				s1 ='<div align="left" style="margin:20px;width:230px" class="list-group">';
 				s1+='<div class="list-group-item  list-group-item-success"><i class="icon-plus"></i> '+lx+'('+len+')</div>';
 				for(i=0;i<len;i++){
-					s1+='<a onclick="opencoluske_{rand}(\''+d[i].name+'\',\''+d[i].num+'\',\''+d[i].atype+'\')" class="list-group-item">'+d[i].name+'</a>';
+					s1+='<a style="TEXT-DECORATION:none" onclick="opencoluske_{rand}(\''+d[i].name+'\',\''+d[i].num+'\',\''+d[i].atype+'\')" class="list-group-item">'+d[i].name+'</a>';
 				}
 				s1+='</div>';
 				strarr[l]+=s1;

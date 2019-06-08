@@ -9,7 +9,7 @@
 <!--[if IE 7 ]><link rel="stylesheet" type="text/css" href="web/res/fontawesome/css/font-awesome-ie7.min.css"><![endif]-->
 <link rel="stylesheet" type="text/css" href="web/res/mode/menu/jquery-rockmenu.css"/>
 <link rel="stylesheet" type="text/css" href="mode/plugin/css/jquery-rockdatepicker.css"/>
-<link rel="shortcut icon" href="favicon.ico" />
+<link rel="shortcut icon" href="<?=$da['icon']?>" />
 <script type="text/javascript" src="web/res/js/jquery.1.9.1.min.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
 <script type="text/javascript" src="js/worker.js"></script>
@@ -22,6 +22,7 @@ js.servernow	= '<?=$da['now']?>';
 PROJECT			= '<?=$da['p']?>';
 adminip			= '<?=$da['ip']?>';
 VERSION			= '<?=VERSION?>';
+companymode		= <?=(getconfig('companymode')? 'true' : 'false')?>;
 var show_key 	= '<?=$da['showkey']?>',homeurl = '<?=$da['homeurl']?>',homename='<?=$da['homename']?>';
 function globalbody(){
 	adminid		= '<?=$da['adminid']?>';
@@ -49,7 +50,7 @@ function globalbody(){
 				<span class="icon-bar"></span>
 			</button>
 			<a class="navbar-brand" href="">
-			   <img src="images/xh829.png" style="display:inline;" align="absmiddle" height="24" width="24"> <?=TITLE?>
+			   <img src="<?=$da['logo']?>" style="display:inline;" align="absmiddle" height="24" width="24"> <?=$da['title']?>
 			</a>
 		</div>
 		<div class="collapse navbar-collapse" id="app-navbar-collapse">

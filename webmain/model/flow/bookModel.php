@@ -43,8 +43,10 @@ class flow_bookClassModel extends flowModel
 	public function flowdaorubefore($rows)
 	{
 		$inarr = array();
+		$num 	= 'booktype';
+		if(ISMORECOM && $cnum=$this->adminmodel->getcompanynum())$num.='_'.$cnum.'';
 		foreach($rows as $k=>$rs){
-			$rs['typeid'] 	= $this->option->gettypeid('booktype',$rs['typeid']);
+			$rs['typeid'] 	= $this->option->gettypeid($num,$rs['typeid']);
 			$inarr[] = $rs;
 		}
 		

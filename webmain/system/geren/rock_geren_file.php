@@ -3,8 +3,9 @@
 $(document).ready(function(){
 	{params};
 	var atype=params.atype;
+	var checkeds = adminid==1;
 	var a = $('#veiw_{rand}').bootstable({
-		tablename:'file',celleditor:true,sort:'id',dir:'desc',modedir:'{mode}:{dir}',params:{'atype':atype},fanye:true,
+		tablename:'file',celleditor:true,sort:'id',dir:'desc',modedir:'{mode}:{dir}',params:{'atype':atype},fanye:true,checked:checkeds,
 		storebeforeaction:'filebefore',storeafteraction:'fileafter',
 		columns:[{
 			text:'类型',dataIndex:'fileext',renderer:function(v, d){
@@ -72,7 +73,7 @@ $(document).ready(function(){
 	
 	var c = {
 		del:function(){
-			a.del({url:js.getajaxurl('delfile','{mode}','{dir}')});
+			a.del({url:js.getajaxurl('delfile','{mode}','{dir}'),checked:checkeds});
 		},
 		search:function(){
 			var s=get('key_{rand}').value;
@@ -84,7 +85,7 @@ $(document).ready(function(){
 	};
 	
 	function btn(bo){
-		get('del_{rand}').disabled = bo;
+		//get('del_{rand}').disabled = bo;
 	}
 	js.initbtn(c);
 });
@@ -107,7 +108,7 @@ $(document).ready(function(){
 	<td width="80%"></td>
 	<td align="right" nowrap>
 	
-		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button>
+		<button class="btn btn-danger" id="del_{rand}" click="del" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>
 </tr>
 </table>

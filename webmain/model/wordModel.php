@@ -50,6 +50,7 @@ class wordClassModel extends Model
 		$arr['name'] 	= $name;
 		$arr['cid'] 	= $cqid;
 		$arr['typeid']  = $typeid;
+		$arr['comid'] 	= m('admin')->getcompanyid();
 		$arr['type'] 	= 1; //说明是文件夹
 		$arr['id']		= $this->insert($arr);
 		return $arr;
@@ -137,12 +138,14 @@ class wordClassModel extends Model
 				$alltyids.=','.$rs1['id'].'';
 				foreach($afflow as $k2=>$rs2)$alltyids.=','.$rs2['id'].'';
 			}
-			$where = 'a.`type`=0 and ((1 '.$where1.') or (a.`typeid` in('.$alltyids.')))';
+			$where  = 'a.`type`=0 and ((1 '.$where1.') or (a.`typeid` in('.$alltyids.')))';
+			$where .= m('admin')->getcompanywhere(1);
 		}
 		
 		//我共享的
 		if($lx==2){
-			$where = 'a.`type`=0 and a.`shateid` is not null and a.`optid`='.$uid.'';
+			$where  = 'a.`type`=0 and a.`shateid` is not null and a.`optid`='.$uid.'';
+			$where .= m('admin')->getcompanywhere(1);
 		}
 		
 		//关键词的搜索
@@ -214,6 +217,7 @@ class wordClassModel extends Model
 		$arr['optname'] = $this->adminname;
 		$arr['optdt'] 	= $this->rock->now;
 		$arr['cid'] 	= $cid;
+		$arr['comid'] 	= m('admin')->getcompanyid();
 		$arr['typeid'] 	= $typeid;
 		$file 			= m('file');
 		foreach($sadid as $fid){

@@ -74,7 +74,7 @@ class kaoqinClassAction extends Action
 		$s 		= '';
 		
 		if($atype=='all'){
-			$s = '';
+			$s = m('admin')->getcompanywhere(4);
 		}
 		if($atype=='my'){
 			$s = 'and uid='.$uid.'';
@@ -281,6 +281,7 @@ class kaoqinClassAction extends Action
 		if(!isempt($dt2))$s.=" and a.`dt` <= '$dt2'";
 		if(!isempt($key))$s.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%')";
 		$fields = 'a.*,b.name,b.deptname';
+		if(ISMORECOM && $this->adminid>1)$s.=' and b.`companyid`='.m('admin')->getcompanyid().'';
 		$table  = '[Q]'.$table.' a left join `[Q]userinfo` b on a.uid=b.id';
 		return array('where'=>$s,'table'=>$table, 'fields'=>$fields,'order'=>'a.`dt` desc,a.`uid`,`sort`');
 	}
@@ -438,6 +439,7 @@ class kaoqinClassAction extends Action
 			$s = 'and id='.$this->adminid.'';
 		}else{
 			if($iskq=='1')$s.=" and `iskq`=$iskq";
+			if(ISMORECOM)$s.=" and `companyid`=".m('admin')->getcompanyid()."";
 		}
 	
 		if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
@@ -623,8 +625,11 @@ class kaoqinClassAction extends Action
 		
 		//根据组
 		if($pblx==1){
+			$where1 = '';
+			if(ISMORECOM)$where1='and `companyid` in(0,'.m('admin')->getcompanyid().')';
 			return array(
-				'table' => '`[Q]group`'
+				'table' => '`[Q]group`',
+				'where' => $where1
 			);
 		}
 		
@@ -635,6 +640,8 @@ class kaoqinClassAction extends Action
 		$s 		= m('admin')->monthuwhere($dt1,'a.');
 		if($atype=='my'){
 			$s = 'and a.`id`='.$this->adminid.'';
+		}else{
+			if(ISMORECOM)$s.='and a.`companyid`='.m('admin')->getcompanyid().'';
 		}
 		
 		if(!isempt($key))$s.=" and (a.`name` like '%$key%' or a.`ranking` like '%$key%' or a.`deptname` like '%$key%')";

@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
   <div class="panel-heading">
 	<h3 class="panel-title">
 	<i class="icon-time"></i> <?=$itemnowname?>
-		<a style="float:right" href="javascript:;" onclick="moredakajili()">考勤表&gt;&gt;</a>
+		<a style="float:right;TEXT-DECORATION:none" href="javascript:;" onclick="moredakajili()">考勤表&gt;&gt;</a>
 	</h3>
   </div>
   <div class="panel-body">

@@ -44,6 +44,7 @@ class gerenClassAction extends Action
 		$where	 = 'and optid='.$this->adminid.'';
 		if($atype=='all'){
 			$where='';
+			if($this->adminid>1)$where=m('admin')->getcompanywhere(3);
 		}
 		if($key!=''){
 			$where.=" and (`optname` like '%$key%' or `filename` like '%$key%' or `mtype`='$key')";
@@ -76,7 +77,7 @@ class gerenClassAction extends Action
 	
 	public function delfileAjax()
 	{
-		$id = (int)$this->post('id','0');
+		$id = c('check')->onlynumber($this->post('id','0'));
 		m('file')->delfile($id);
 		backmsg();
 	}

@@ -28,7 +28,7 @@ class flow_custxiaoClassModel extends flowModel
 	{
 		$num = $this->sericnum;
 		$this->update(array('num'=>$num),$this->id);
-		m('custfina')->update("`htnum`='$num'", "`htid`='-".$id."'");
+		m('custfina')->update("`htnum`='$num'", "`htid`='-".$this->id."'");
 	}
 	
 	//子表数据替换处理

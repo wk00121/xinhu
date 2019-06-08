@@ -9,11 +9,11 @@ defined('HOST') or die ('not access');
 $(document).ready(function(){
 	var myChart = [],darr=[];
 	var c = {
-		getparams:function(xu,tfid,nas,chatlx){
+		getparams:function(xu,tfid,nas,chatlx,dz){
 			var cans = {
 				tablename:'todo',url:js.getajaxurl('flowtotal','flowopt','flow'),modenum:'finfybx',
 				params:{atype:'all',total_fields:tfid,total_type:'sum|money'},xuhao:xu,chatlx:chatlx,
-				where:'and a.`status` in(0,1)',
+				where:'and a.`status` in(1)',
 				columns:[{
 					text:nas,dataIndex:'name'
 				},{
@@ -25,6 +25,7 @@ $(document).ready(function(){
 					c.loadcharts(this.xuhao,this.chatlx);
 				}
 			};
+			if(dz)cans.url=dz;
 			return cans;
 		},
 		reload:function(o1,lx){
@@ -71,12 +72,13 @@ $(document).ready(function(){
 			};
 			darr[0].setparams(cnas, true);
 			darr[1].setparams(cnas, true);
+			darr[2].setparams(cnas, true);
 		}
 	};
 	
 	darr[0] = $('#view0_{rand}').bootstable(c.getparams(0,'b.`udeptname`','部门','pie'));
 	darr[1] = $('#view1_{rand}').bootstable(c.getparams(1,'left(a.`applydt`,7)','月份','line'));
-	
+	darr[2] = $('#view2_{rand}').bootstable(c.getparams(2,'','报销项目','pie', publicmodeurl('finfybx','itemtotal')));
 	js.initbtn(c);
 });
 </script>
@@ -118,6 +120,15 @@ $(document).ready(function(){
 			</div>
 			<div id="view0_{rand}"></div>
 			<div id="viewchats0_{rand}" style="width:100%;height:250px;border:1px #dddddd solid;border-top:0px"></div>
+			</div>
+			
+			<div align="left" style="min-width:300px" class="list-group">
+			<div class="list-group-item  list-group-item-info">
+				<i class="icon-bar-chart"></i> 根据报销项目统计
+				<span style="float:right" ><a click="reload,2"><i class="icon-refresh"></i></a></span>
+			</div>
+			<div id="view2_{rand}"></div>
+			<div id="viewchats2_{rand}" style="width:100%;height:250px;border:1px #dddddd solid;border-top:0px"></div>
 			</div>
 			
 		</td>

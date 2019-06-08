@@ -27,8 +27,8 @@ class mode_finpiaoClassAction extends inputAction{
 		$enddt = $dtobj->getenddt($dt2);
 		$jg    = $dtobj->datediff('m', $dt1.'-01', $dt2.'-01');
 		
-		
-		$drows  = m('finpiao')->getall("`opendt`>='$start' and `opendt`<='$enddt' and `status`=1");
+		$where  = m('admin')->getcompanywhere(1);
+		$drows  = m('finpiao')->getall("`opendt`>='$start' and `opendt`<='$enddt' and `status`=1 ".$where."");
 		$toarr	= array();
 		foreach($drows as $k=>$rs){
 			$rq = substr($rs['opendt'],0,7);

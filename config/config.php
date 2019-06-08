@@ -50,7 +50,8 @@ $config		= array(
 	'mobile_show' 	=> true,	//首页是否显示手机版
 	'accesslogs' 	=> false,	//是否记录访问日志和限制IP
 	'upurl'			=> '', 		//上传文件附件地址(还不能使用)
-	'authorkey'		=> '' 		//系统授权的key，请联系官网获取
+	'authorkey'		=> '', 		//系统授权的key，请联系官网获取
+	'companymode'	=> false 	//是否开启多单位模式切换
 );
 
 //引入配置文件
@@ -90,6 +91,7 @@ define('VERSION', $config['version']);
 define('HIGHPASS', $config['highpass']);
 define('SYSURL', ''.URL.PATH.'.php');
 define('UPURL', $config['upurl']);
+define('ISMORECOM', $config['companymode']);
 
 $_confpath	= ''.ROOT_PATH.'/config/iplogs.php'; //这个用来限制IP访问的
 if(file_exists($_confpath))include_once($_confpath);

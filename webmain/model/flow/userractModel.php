@@ -1,6 +1,7 @@
 <?php
 class flow_userractClassModel extends flowModel
 {
+	protected $flowcompanyidfieds	= 'companyid';
 
 	public function initModel()
 	{

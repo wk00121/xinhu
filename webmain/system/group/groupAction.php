@@ -16,13 +16,21 @@ class groupClassAction extends Action
 	
 	public function groupafter($table, $rows)
 	{
-		
+		$carr	= m('admin')->getcompanyinfo();
+		$dbs 	= m('company');
 		foreach($rows as $k=>$rs){
 			$gid = $rs['id'];
 			$s 	 = "( id in( select `sid` from `[Q]sjoin` where `type`='gu' and `mid`='$gid') or id in( select `mid` from `[Q]sjoin` where `type`='ug' and `sid`='$gid') )";
 			$rows[$k]['utotal'] = $this->db->rows('[Q]admin', $s);
+			$companyname = '';
+			if($rs['companyid']>0 && getconfig('companymode'))$companyname = $dbs->getmou('name', $rs['companyid']);
+			$rows[$k]['companyname'] = $companyname;
 		}
-		return array('rows'=>$rows);
+		
+		return array(
+			'rows' => $rows,
+			'carr' => $carr,
+		);
 	}
 	
 	public function saveuserAjax()

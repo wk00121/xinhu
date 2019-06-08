@@ -160,16 +160,16 @@ $(document).ready(function(){
 	<div class="blank10"></div>
 	<div align="left" class="list-group">
 		<div class="list-group-item active">我的邮件</div>
-		<a class="list-group-item" click="change,0">收件箱 &nbsp;<font id="zztotal_{rand}">(0/0)</font></a>
-		<a class="list-group-item" click="change,1">草稿箱 &nbsp;<font id="cgtotal_{rand}">(0)</font></a>
-		<a class="list-group-item" click="change,2">已发送 &nbsp;<font color="#aaaaaa" id="yftotal_{rand}">(0)</font></a>
-		<a class="list-group-item" click="change,3">已删除 &nbsp;<font color="#aaaaaa" id="sctotal_{rand}">(0)</font></a>
-		<a click="cogemail" class="list-group-item"><i class="icon-cog"></i> 邮箱设置</a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,0">收件箱 &nbsp;<font id="zztotal_{rand}">(0/0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,1">草稿箱 &nbsp;<font id="cgtotal_{rand}">(0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,2">已发送 &nbsp;<font color="#aaaaaa" id="yftotal_{rand}">(0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,3">已删除 &nbsp;<font color="#aaaaaa" id="sctotal_{rand}">(0)</font></a>
+		<a click="cogemail" style="TEXT-DECORATION:none" class="list-group-item"><i class="icon-cog"></i> 邮箱设置</a>
 	</div>
 	
 	<div align="left" style="display:none" class="list-group">
 		<div class="list-group-item active">邮件文件夹</div>
-		<a class="list-group-item"><i class="icon-plus"></i> 新建文件夹</a>
+		<a class="list-group-item" style="TEXT-DECORATION:none"><i class="icon-plus"></i> 新建文件夹</a>
 	</div>
 </td>
 <td width="10" nowrap></td>

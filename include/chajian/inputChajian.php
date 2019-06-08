@@ -288,11 +288,16 @@ class inputChajian extends Chajian
 		
 		//用:读取model上的数据
 		if(!$fopt && !isempt($datanum) && contain($datanum,':')){
-			$acta = explode(':', $datanum);
+			$tata = explode(',', $datanum);
+			$acta = explode(':', $tata[0]);
 			$objs = m($acta[0]);
 			$tacs = $acta[1];
+			$cshu1= arrvalue($tata, 1);
 			if(method_exists($objs, $tacs)){
-				$fopt = $objs->$tacs();
+				$fopt = $objs->$tacs($cshu1);
+				if(is_array($fopt)){
+					return $fopt;
+				}
 			}
 		}
 		

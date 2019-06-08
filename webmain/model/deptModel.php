@@ -8,6 +8,7 @@ class deptClassModel extends Model
 	{
 		$darr = $dtotal =array();
 		$gids = '0';
+		$dbs  = m('admin');
 		//要权限判断
 		if(is_array($uarr)){
 			$did  = '0';
@@ -26,7 +27,7 @@ class deptClassModel extends Model
 			}
 			foreach($darr as $k1=>$v1)$did.=','.$k1.'';
 			$where= 'id in('.$did.')';
-			$dbs  = m('admin');
+			
 			if(isempt($this->rock->get('changerange'))){
 				if((int)$dbs->getmou('type', $this->adminid)==1){
 					$where = '1=1'; //管理员可看全部
@@ -42,6 +43,13 @@ class deptClassModel extends Model
 		}else{
 			$where = '1=1';
 		}
+		
+		//多单位
+		if(ISMORECOM && $this->adminid>1){
+			$comid = $dbs->getcompanyid();
+			$where.=' and `companyid` in(0,'.$comid.')';
+		}
+		
 		$rows = $this->getall($where,'`id`,`name`,`pid`,`sort`','`pid`,`sort`');
 		if(is_array($uarr))foreach($rows as $k=>$rs){
 			$stotal = $dbs->rows("`status`=1 and instr(`deptpath`,'[".$rs['id']."]')>0");
@@ -73,7 +81,10 @@ class deptClassModel extends Model
 		
 		$deptarr 	= $this->getdata($userarr);
 		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
-		$grouparr	= m('group')->getall('id >0','id,name','`sort`');
+		$where1		= '';
+		if(ISMORECOM && $this->adminid>1)$where1=' and `companyid` in(0,'.$admindb->getcompanyid().')';
+		$grouparr	= m('group')->getall('id >0'.$where1.'','id,name','`sort`');
+		
 		foreach($grouparr as $k=>$rs){
 			$uids = $admindb->getgrouptouid($rs['id']);
 			$usershu = 0;

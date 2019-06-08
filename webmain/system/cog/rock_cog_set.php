@@ -184,7 +184,7 @@ $(document).ready(function(){
 			
 			
 			<td align="right">多单位模式：</td>
-			<td class="tdinput"><select id="compaymode_{rand}"  class="form-control"><option value="0">不开启</option><option value="1">开启(各单位分开数据管理)(待开发)</option></select></td>
+			<td class="tdinput"><select id="companymode_{rand}"  class="form-control"><option value="0">不开启</option><option value="1">开启(各单位分开数据管理)</option></select></td>
 			
 		</tr>
 		

@@ -16,6 +16,8 @@ class indexClassAction extends Action{
 			$isadmin	= 0;	
 			$mewhere	= ' and `id` in('.str_replace(array('[',']'), array('',''), $myext).')';
 		}
+		if($this->adminid!=1)$mewhere.=' and `type`=0';
+		
 		$this->rock->savesession(array(
 			'adminallmenuid'	=> $allmenuid,
 			'isadmin'			=> $isadmin,
@@ -58,6 +60,17 @@ class indexClassAction extends Action{
 		if(!file_exists($stylecss))$stylecss= ''.$stylecs1.'_cerulean.css';
 		$this->smartydata['stylecss']	= $stylecss;
 		$this->smartydata['styledev']	= $styys;
+		
+		//读取单位
+		if(ISMORECOM){
+			$companyinfo = m('admin')->getcompanyinfo($this->adminid, 1);
+			$this->title = arrvalue($companyinfo, 'oaname', TITLE);
+			$this->smartydata['logo'] = arrvalue($companyinfo, 'logo');
+			$this->smartydata['icon'] = $this->smartydata['logo'];
+		}else{
+			$this->smartydata['logo'] = 'images/xh829.png';
+			$this->smartydata['icon'] = 'favicon.ico';
+		}
 	}
 	
 	private function menuwheres()
@@ -68,6 +81,7 @@ class indexClassAction extends Action{
 		if($myext != '-1'){	
 			$this->menuwhere	= ' and `id` in('.str_replace(array('[',']'), array('',''), $myext).')';
 		}
+		if($this->adminid!=1)$this->menuwhere.=' and `type`=0';//非admin只能看普通菜单
 	}
 	
 	/**

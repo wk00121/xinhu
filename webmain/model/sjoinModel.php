@@ -80,13 +80,21 @@ class sjoinClassModel extends Model
 	*/
 	public function getgrouparr()
 	{
-		return $this->db->getall("select `id`,`name` from `[Q]group` order by `sort`");
+		$where = '';
+		if(ISMORECOM){
+			$where='where `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $this->db->getall("select `id`,`name` from `[Q]group` $where order by `sort`");
 	}
 	/**
 	*	获取组列表
 	*/
 	public function getgrouparrs()
 	{
-		return $this->db->getall("select `id` as value,`name` from `[Q]group` order by `sort`");
+		$where = '';
+		if(ISMORECOM){
+			$where='where `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $this->db->getall("select `id` as value,`name` from `[Q]group` $where order by `sort`");
 	}
 }

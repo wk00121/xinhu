@@ -83,6 +83,7 @@ class flowClassAction extends Action
 `id` int(11) NOT NULL AUTO_INCREMENT,
 `mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id',
 `sort` int(11) DEFAULT '0' COMMENT '排序号',
+`comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',
 PRIMARY KEY (`id`),KEY `mid` (`mid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 			$bo = $this->db->query($sql);
@@ -91,6 +92,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 			$str 	= '';
 			if(!in_array('mid', $fields))$str.=",add `mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id'";
 			if(!in_array('sort', $fields))$str.=",add `sort` int(11) DEFAULT '0' COMMENT '排序号'";
+			if(!in_array('comid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
 			if($slxbo && !in_array('sslx', $fields)){
 				$ssma = explode(',', $ssm);
 				$ss1  = '';
@@ -127,8 +129,16 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		if(!$alltabls)$alltabls 	= $this->db->getalltable();
 		if($isflow==0){
 			if(!in_array(''.PREFIX.''.$tab.'', $alltabls)){
-				$sql = "CREATE TABLE `[Q]".$tab."` (`id` int(11) NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))ENGINE=MyISAM  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+				$sql = "CREATE TABLE `[Q]".$tab."` (`id` int(11) NOT NULL AUTO_INCREMENT,`comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',PRIMARY KEY (`id`))ENGINE=MyISAM  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 				$bo = $this->db->query($sql);
+			}else{
+				$fields = $this->db->getallfields(''.PREFIX.''.$tab.'');
+				$str 	= '';
+				if(!in_array('comid', $fields) && !in_array('companyid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
+				if($str!=''){
+					$sql = 'alter table `'.PREFIX.''.$tab.'` '.substr($str,1).'';
+					$this->db->query($sql);
+				}
 			}
 			return;
 		}
@@ -138,12 +148,13 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT '0',
   `optdt` datetime DEFAULT NULL COMMENT '操作时间',
-  `optid`  smallint(6) DEFAULT '0',
+  `optid`  int(11) DEFAULT '0',
   `optname` varchar(20) DEFAULT NULL COMMENT '操作人',
   `applydt` date DEFAULT NULL COMMENT '申请日期',
   `explain` varchar(500) DEFAULT NULL COMMENT '说明',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态',
   `isturn` tinyint(1) DEFAULT '1' COMMENT '是否提交',
+  `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',
   PRIMARY KEY (`id`)
 ) ENGINE=".getconfig('db_engine','MyISAM')." AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 			$bo = $this->db->query($sql);
@@ -158,6 +169,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 			if(!in_array('explain', $fields))$str.=",add `explain` varchar(500) DEFAULT NULL COMMENT '说明'";
 			if(!in_array('status', $fields))$str.=",add `status` tinyint(1) DEFAULT '1' COMMENT '状态'";
 			if(!in_array('isturn', $fields))$str.=",add `isturn` tinyint(1) DEFAULT '1' COMMENT '是否提交'";
+			if(!in_array('comid', $fields) && !in_array('companyid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
 			if($str!=''){
 				$sql = 'alter table `'.PREFIX.''.$tab.'` '.substr($str,1).'';
 				$this->db->query($sql);

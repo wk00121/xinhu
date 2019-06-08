@@ -9,8 +9,8 @@ class menuClassAction extends Action
 		$where 			= '';
 		//权限那来的
 		if($type != ''){
-			$where		= 'and `status`=1 and `ispir`=1';
-			if($type=='view')$where = 'and `status`=1';
+			$where		= 'and `status`=1 and `ispir`=1 and `type`=0';
+			if($type=='view')$where = 'and `status`=1 and `type`=0';
 		}else{
 			$this->updatepirss();
 		}

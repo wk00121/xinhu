@@ -23,6 +23,6 @@ homeobject.show_apply_list=function(a){
 <div align="left" id="myapplylist" style="min-width:300px" class="list-group">
 <div class="list-group-item  list-group-item-info">
 	<i class="icon-align-left"></i> <?=$itemnowname?>(<span id="myapplylisttotal">0</span>)
-	<a style="float:right" onclick="moemyapplylist()">更多&gt;&gt;</a>
+	<a style="float:right;TEXT-DECORATION:none" onclick="moemyapplylist()">更多&gt;&gt;</a>
 </div>
 </div>

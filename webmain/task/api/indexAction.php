@@ -104,4 +104,16 @@ class indexClassAction extends apiAction
 		$this->option->setval($randkey, $val);
 		$this->showreturn($lxarr[$lx]);
 	}
+	
+	/**
+	*	切换公司
+	*/
+	public function changecompanyAction()
+	{
+		$id = (int)$this->get('id');
+		$db = m('admin');
+		$db->update('comid='.$id.'', '`id`='.$this->adminid.'');
+		$db->getcompanyinfo();
+		return returnsuccess();
+	}
 }

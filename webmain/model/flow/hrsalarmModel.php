@@ -1,6 +1,9 @@
 <?php
+//薪资模版
 class flow_hrsalarmClassModel extends flowModel
 {
+	protected $flowcompanyidfieds	= 'none'; //不要多单位判断，是共享的
+	
 	public function initModel()
 	{
 		

@@ -15,6 +15,9 @@ class customerClassAction extends Action
 			$s 		= m('admin')->getdownwheres('id', $uid, 0);
 			$where 	=' and ('.$s.' or `id`='.$uid.')';
 		}
+		if($lx!='my' && $lx!='down'){
+			$where  = m('admin')->getcompanywhere(5);
+		}
 		if($key!=''){
 			$where .= m('admin')->getkeywhere($key);
 		}

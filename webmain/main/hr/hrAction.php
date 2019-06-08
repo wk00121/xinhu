@@ -23,7 +23,7 @@ class hrClassAction extends Action
 		$tkids	= $ors['tkids'];
 		$tkrows= array();
 		if(!isempt($tkids)){
-			$tkarr = m('knowtiku')->getall('id in('.$tkids.')','`id`,`title`,`typeid`,`type`,`ana`,`anb`,`anc`,`and`');
+			$tkarr = m('knowtiku')->getall('id in('.$tkids.')','`id`,`title`,`typeid`,`type`,`content`,`ana`,`anb`,`anc`,`and`,`ane`');
 			$tkidsa= explode(',', $tkids);
 			foreach($tkidsa as $ids){
 				foreach($tkarr as $k=>$rs){

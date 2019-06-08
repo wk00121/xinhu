@@ -65,7 +65,7 @@ homeobject.shownewsss=function(das){
 <div class="panel panel-danger">
   <div class="panel-heading">
 	<h3  class="panel-title"><i class="icon-globe"></i> <?=$itemnowname?>
-	<a style="float:right" href="javascript:;" onclick="morenewss()">更多&gt;&gt;</a>
+	<a style="float:right;TEXT-DECORATION:none" href="javascript:;" onclick="morenewss()">更多&gt;&gt;</a>
 	</h3>
   </div>
   <div class="panel-body" id="homenewslist{rand}" style="padding:0px">

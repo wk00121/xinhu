@@ -5,27 +5,39 @@ $(document).ready(function(){
 		tablename:'menu',url:js.getajaxurl('data','{mode}','{dir}'),
 		tree:true,celleditor:!ISDEMO,bodyStyle:'height:'+(viewheight-70)+'px;overflow:auto',
 		columns:[{
-			text:'菜单名称',dataIndex:'name',align:'left',editor:true
+			text:'菜单名称',dataIndex:'name',align:'left',editor:true,renderstyle:function(v,d){
+				return 'min-width:220px';
+			}
 		},{
-			text:'编号',dataIndex:'num'	,editor:true
+			text:'编号',dataIndex:'num'	,editor:true,renderstyle:function(v,d){
+				return 'width:70px';
+			}
 		},{
 			text:'URL',dataIndex:'url',editor:true,repEmpty:true,renderstyle:function(v,d){
-				return 'word-wrap:break-word;word-break:break-all;white-space:normal;width:200px';
+				return 'word-wrap:break-word;word-break:break-all;white-space:normal;width:180px';
 			}
 		},{
 			text:'PID',dataIndex:'pid',editor:true
 		},{
-			text:'图标',dataIndex:'icons',editor:true
+			text:'图标',dataIndex:'icons',editor:true,renderstyle:function(v,d){
+				return 'width:70px';
+			}
 		},{
 			text:'启用',dataIndex:'status',type:'checkbox',editor:true
 		},{
 			text:'验证',dataIndex:'ispir',type:'checkbox',editor:true
 		},{
-			text:'显示首页',dataIndex:'ishs',type:'checkbox',editor:true
+			text:'显首',dataIndex:'ishs',type:'checkbox',editor:true
 		},{
-			text:'排序号',dataIndex:'sort'	,editor:true
+			text:'排序',dataIndex:'sort'	,editor:true
 		},{
 			text:'颜色',dataIndex:'color',editor:true
+		},{
+			text:'级别',dataIndex:'type',editor:true,renderer:function(v){
+				var s='&nbsp;';
+				if(v==1)s='系统';
+				return s;
+			},type:'select',store:[['0','普通'],['1','系统']]
 		},{
 			text:'ID',dataIndex:'id'	
 		}],

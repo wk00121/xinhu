@@ -10,6 +10,7 @@ class Action extends mainAction
 	public $adminuser	= '';
 	public $adminname	= '';
 	public $admintoken	= '';
+	public $companyid	= 0;
 	public $loadci		= 0;
 	public $flow;
 	
@@ -22,6 +23,7 @@ class Action extends mainAction
 		$this->adminuser	= $this->getsession('adminuser');
 		$this->adminname	= $this->getsession('adminname');
 		$this->admintoken	= $this->getsession('admintoken');
+		$this->companyid	= $this->getsession('companyid');
 		$this->setNowUser($this->adminid, $this->adminname, $this->adminuser);
 		$agid	= $this->rock->get('agentid');
 		if($agid!='')$this->rock->savesession(array('wxqyagentid' => $agid));

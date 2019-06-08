@@ -127,4 +127,9 @@ class homeitemsClassModel extends Model
 			'rows' 	  => $rows,
 		);
 	}
+	
+	public function get_kqtotal_arr()
+	{
+		return m('flow')->initflow('kqdkjl')->homekqtotal();
+	}
 }

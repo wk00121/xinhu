@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="yes" />
 
 <title><?=$mrs['title']?>_培训考试</title>
-<link rel="stylesheet" type="text/css" href="mode/bootstrap3.3/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="mode/bootstrap3.3/css/bootstrap_cerulean.css"/>
 <link rel="stylesheet" type="text/css" href="web/res/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="webmain/css/webmain.css"/>
 <link rel="shortcut icon" href="favicon.ico" />
@@ -72,10 +72,15 @@ var c = {
 		if(d.type=='1'){
 			ty1 = 'checkbox';ty2='多选';
 		}
-		$('#titletm').html('题目'+oi+'、'+d.title+'<font style="font-size:12px" color="#888888">('+ty2+')</font>');
-		var arrs = ['ana','anb','anc','and'],arrs1 = ['A','B','C','D'];
+		if(d.type=='2'){
+			ty2='判断';
+		}
+		var str = '<div>题目'+oi+'、<b>'+d.title+'</b><font style="font-size:12px" color="#888888">('+ty2+')</font></div>';
+		if(!isempt(d.content))str+='<div style="padding:10px">'+d.content+'</div>';
+		$('#titletm').html(str);
+		var arrs = ['ana','anb','anc','and','ane'],arrs1 = ['A','B','C','D','E'];
 		var s = '',v1;
-		for(var i=0;i<4;i++){
+		for(var i=0;i<5;i++){
 			v1 = d[arrs[i]];
 			if(!isempt(v1))s+='<div><label><input name="changede[]" value="'+arrs1[i]+'" type="'+ty1+'"> '+arrs1[i]+'、'+v1+'</label></div>';
 		}
@@ -161,6 +166,7 @@ if(!$rock->ismobile()){
 		<div>考试时间：<?=$mrs['kstime']?>分钟</div><div class="blank5"></div>
 		<div>单选题目：<?=$mrs['dsshu']?>题</div><div class="blank5"></div>
 		<div>多选题目：<?=$mrs['dxshu']?>题</div><div class="blank5"></div>
+		<div>判断题目：<?=$mrs['pdshu']?>题</div><div class="blank5"></div>
 		<div>总分：<?=$mrs['zfenshu']?>分</div><div class="blank10"></div>
 		<div align="center"><input type="button" onclick="c.start(this)" class="btn btn-success" value="开始考试"></div>
 	</div>

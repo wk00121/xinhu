@@ -7,7 +7,8 @@ class mode_carmwxClassAction extends inputAction{
 	
 	public function getcardata()
 	{
-		$rows = m('carm')->getall("1=1",'carnum as name,id as value');
+		$where= m('admin')->getcompanywhere(1);
+		$rows = m('carm')->getall("1=1 ".$where."",'carnum as name,id as value');
 		return $rows;
 	}
 	

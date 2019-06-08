@@ -35,7 +35,11 @@ class mode_finjkdClassAction extends inputAction{
 			$str   = m('fina')->getjkdwhere();
 			$where.=" and `id` in($str)";
 		}
-		if($atype=='my')$where='and id='.$this->adminid.'';
+		if($atype=='my'){
+			$where='and id='.$this->adminid.'';
+		}else{
+			$where.= m('admin')->getcompanywhere(5);
+		}
 		
 		$fields = 'id,name,deptname,ranking,workdate,state';
 		return array('where'=>$where,'fields'=>$fields,'order'=>'`id`');

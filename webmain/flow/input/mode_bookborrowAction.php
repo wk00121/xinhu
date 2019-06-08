@@ -17,7 +17,8 @@ class mode_bookborrowClassAction extends inputAction{
 	
 	public function getbookdata()
 	{
-		$rows 	= m('book')->getrows('shul>0','id,title,typeid','typeid');
+		$where  = m('admin')->getcompanywhere(1);
+		$rows 	= m('book')->getrows('shul>0'.$where.'','id,title,typeid','typeid');
 		$arr 	= array();
 		foreach($rows as $k=>$rs){
 			$arr[] = array('value'=>$rs['id'],'name'=>$rs['title']);

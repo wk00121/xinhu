@@ -1,6 +1,8 @@
 <?php
 class flow_hrshebaoClassModel extends flowModel
 {
+	protected $flowcompanyidfieds	= 'none'; //不要多单位判断，是共享的
+	
 	public function initModel()
 	{
 		

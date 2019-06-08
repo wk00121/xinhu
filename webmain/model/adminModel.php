@@ -429,7 +429,7 @@ class adminClassModel extends Model
 			$uid  	= $this->adminid;
 			$where	= m('view')->viewwhere('user', $uid, 'id');
 			$range 	= $this->rock->get('changerange'); //指定了人
-			$rangeno 	= $this->rock->get('changerangeno'); //no指定了人
+			$rangeno= $this->rock->get('changerangeno'); //no指定了人
 			$where1 = '';$where2 = '';
 			if(!isempt($range)){
 				//本部门||下级部门
@@ -459,6 +459,7 @@ class adminClassModel extends Model
 				$where2 = 'and not('.$where2.')';
 			}
 			if($lx==0)$where.=' and `isvcard`=1'; //通讯录显示
+			
 			//读取我可查看权限
 			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
@@ -554,7 +555,7 @@ class adminClassModel extends Model
 	public function updateuserinfo($whe='')
 	{
 		$db 	= m('userinfo');
-		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,b.state,a.num,a.companyid,a.deptnames,a.rankings,a.deptallname from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
+		$rows	= $this->db->getall('select a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,a.sex,a.tel,a.mobile,a.email,a.workdate,a.quitdt,b.state,a.num,a.companyid,a.dwid,a.deptnames,a.rankings,a.deptallname from `[Q]admin` a left join `[Q]userinfo` b on a.id=b.id where a.id>0 '.$whe.' ');
 		$xbo 	= 0;
 		foreach($rows as $k=>$rs){
 			$uparr = array(
@@ -573,6 +574,7 @@ class adminClassModel extends Model
 				'quitdt' 	=> $rs['quitdt'],
 				'num' 		=> $rs['num'],
 				'companyid' => $rs['companyid'],
+				'dwid' 		=> $rs['dwid'],
 			);
 			if(isempt($rs['quitdt'])){
 				if($rs['state']=='5')$uparr['state'] = 0;
@@ -687,19 +689,23 @@ class adminClassModel extends Model
 	/**
 	*	获取单位的信息
 	*/
-	public function getcompanyinfo($uid, $nid=0)
+	public function getcompanyinfo($uid=0, $glx=0)
 	{
+		if($uid==0)$uid = $this->adminid;
 		$urs 	  	 = $this->getone('`id`='.$uid.'');
 		$companyid	 = $urs['companyid'];
+		$comid	 	 = (int)arrvalue($urs, 'comid', '0');
 		if(isempt($companyid))$companyid = '1';
 		$alldwid	 = $companyid;
 		$dwid= arrvalue($urs, 'dwid');
 		if(!isempt($dwid))$alldwid.=','.$dwid.'';
 		$companyinfo 	= array();
+		$companyinfd 	= false;
 		$companyinfoall = m('company')->getall('`id` in('.$alldwid.')','*','`pid`,`sort`');
-		if($nid==0)$nid = $companyid;
+		$nid			= $companyid;
+		$allid			= array(0);
 		foreach($companyinfoall as $k=>$rs){
-			$nlogo = 'images/nologo.png';
+			$nlogo = 'images/logo.png';
 			$logo  = $rs['logo'];
 			if(isempt($logo)){
 				$logo = $nlogo;
@@ -708,11 +714,43 @@ class adminClassModel extends Model
 					$logo = $nlogo;
 			}
 			$companyinfoall[$k]['logo'] = $rs['logo'] = $this->getface($logo, $nlogo);
+			
 			if($rs['id']==$nid)$companyinfo = $rs;
+			if($rs['id']==$comid)$companyinfd = $rs;
+			$allid[] = $rs['id'];
 		}
+		if($companyinfd)$companyinfo = $companyinfd;
+		$this->rock->setsession('companyid', $companyinfo['id']);
+		if($glx==1)return $companyinfo;
+		if($glx==2)return $companyinfo['id'];
 		return array(
 			'companyinfoall' => $companyinfoall,
-			'companyinfo' 	 => $companyinfo
+			'companyallid' 	 => $allid,
+			'companyinfo' 	 => $companyinfo,
+			'companyid'		 => $companyinfo['id']
 		);
+	}
+	
+	public function getcompanyid($uid=0)
+	{
+		$comid = (int)$this->rock->session('companyid','0');
+		if($comid==0)$comid = $this->getcompanyinfo($uid,2);
+		return $comid;
+	}
+	
+	public function getcompanywhere($lx=0, $qz='')
+	{
+		$where = '';
+		
+		return $where;
+	}
+	
+	public function getcompanynum($uid=0)
+	{
+		$num  ='';
+		$carr = $this->getcompanyinfo($uid);
+		$num  = $carr['companyinfo']['num'];
+		if(isempt($num))$num='';
+		return $num;
 	}
 }

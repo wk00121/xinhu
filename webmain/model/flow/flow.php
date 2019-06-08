@@ -95,7 +95,10 @@ class flowModel extends Model
 	protected function flowbillwhere($lx, $uid){return '';}
 	
 	protected $flowweixinarr	= array();
-	protected $flowviewufieds	= 'uid';
+	protected $flowviewufieds		= 'uid';
+	
+	//关联单位id字段默认是comid
+	protected $flowcompanyidfieds	= 'comid'; 
 	
 	protected $flowfieldstype	= 0; //获取字段类型0默认*，1根据字段元素设置得到字段
 	
@@ -171,6 +174,7 @@ class flowModel extends Model
 		$this->adminmodel	= m('admin');
 		$this->remindmodel	= m('remind'); //单据提醒表
 		$this->option		= m('option');
+		$this->companyid	= $this->adminmodel->getcompanyid();
 		$this->tfieldsarra(); //初始化录入的表单元素
 		$this->mwhere		= "`table`='$this->mtable' and `mid`=-1";
 		$this->flowinit();
@@ -2653,6 +2657,7 @@ class flowModel extends Model
 		$arr['keywhere']= '';
 		$arr['asqom'] 	= ''; //主表别名
 		$arr['onlywhere'] 	= ''; //只要我的一个搜索
+		$arr['companywhere']= ''; //多单位显示搜索
 		$this->atype 	= $lx;
 		$nas 			= $this->flowbillwhere($uid, $lx);
 		$inwhere		= '';
@@ -2670,7 +2675,7 @@ class flowModel extends Model
 		$_wehs			= '';
 		if(is_array($nas)){
 			if(isset($nas['where']))$_wehs = $nas['where'];
-			$ftears	= explode(',','asqom,order,fields,fieldsleft,table,group,onlywhere,keywhere,tableleft');
+			$ftears	= explode(',','asqom,order,fields,fieldsleft,table,group,companywhere,onlywhere,keywhere,tableleft');
 			foreach($ftears as $fid)if(isset($nas[$fid]))$arr[$fid]  = $nas[$fid];
 		}else{
 			$_wehs	= $nas;
@@ -2789,10 +2794,14 @@ class flowModel extends Model
 			if($_kearr && $arr['onlywhere']=='')$arr['keywhere'] = "and (".join($_kearr, ' or ').")";
 		}
 		
+		if(!isempt($arr['companywhere']) && getconfig('companymode'))$where  .= ' '.$arr['companywhere'];
 		if(!isempt($arr['onlywhere']))$where .= ' '.$arr['onlywhere'];
 		if(!isempt($arr['keywhere']))$where  .= ' '.$arr['keywhere'];
-
+		
 		if($highwhere!='')$where .= ' '.$highwhere;
+		
+		
+		
 		$where 			= str_replace('{asqom}', $arr['asqom'], $where);
 		$arr['order'] 	= str_replace('{asqom}', $arr['asqom'], $arr['order']);
 		$where 			= str_replace('[A]', $arr['asqom'], $where);

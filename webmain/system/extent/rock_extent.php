@@ -33,7 +33,7 @@ $(document).ready(function(){
 	};
 	
 	var gcans = {
-		tablename:'group',sort:'sort',dir:'asc',title:'组',
+		tablename:'group',sort:'sort',dir:'asc',title:'组',modedir:'{mode}:{dir}',storebeforeaction:'beforeextentgroup',
 		columns:[{
 			text:'组名',dataIndex:'name',sortable:true
 		},{

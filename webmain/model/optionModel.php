@@ -83,6 +83,7 @@ class optionClassModel extends Model
 			'num'	=> $num,
 			'value'	=> $val,
 			'optid'	=> $this->adminid,
+			'comid'	=> m('admin')->getcompanyid(),
 			'optdt'	=> $this->rock->now
 		);
 		if(isset($numa[1]))$arr['pid'] 	= $numa[1];
@@ -182,5 +183,21 @@ class optionClassModel extends Model
 		if($djid != $dsja)$sid 	= $djid;
 		$this->getypsarr[$s] 	= $sid;
 		return $sid;
+	}
+	
+	
+	public function getcnumdata($num)
+	{
+		if(ISMORECOM && $cnum=m('admin')->getcompanynum())$num.='_'.$cnum.'';
+		$rows = $this->getselectdata($num, true);
+		$arr  = array();
+		foreach($rows as $k=>$rs){
+			$arr[] = array(
+				'value' => $rs['id'],
+				'name' => $rs['name'],
+				'padding' => $rs['padding'],
+			);
+		}
+		return $arr;
 	}
 }

@@ -18,5 +18,6 @@ class mode_assetmClassAction extends inputAction{
 		$num 	= ''.$val.'-';
 		return $this->db->sericnum($num,'[Q]assetm','num', 3);
 	}
+	
 }	
 			

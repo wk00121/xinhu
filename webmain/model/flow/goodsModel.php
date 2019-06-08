@@ -48,15 +48,17 @@ class flow_goodsClassModel extends flowModel
 	{
 		$inarr = array();
 		$db 	= m('goods');
+		$num 	= 'goodstype';
+		if(ISMORECOM && $cnum=$this->adminmodel->getcompanynum())$num.='_'.$cnum.'';
 		foreach($rows as $k=>$rs){
-			$rs['typeid'] 	= $this->option->gettypeid('goodstype',$rs['typeid']);
+			$rs['typeid'] 	= $this->option->gettypeid($num,$rs['typeid']);
 			
 			//判断是否存在
 			$odi 			= $db->existsgoods($rs);
 			if($odi)continue;
 			
 			$rs['price']	= floatval($this->rock->repempt($rs['price'],'0')); //金额
-			$rs['stockcs']	= (int)$this->rock->repempt($rs['stockcs'],'0'); //初始库存
+			//$rs['stockcs']	= (int)$this->rock->repempt(arrvalue($rs,'stockcs','0')); //无用
 
 			$inarr[] = $rs;
 		}
@@ -65,8 +67,9 @@ class flow_goodsClassModel extends flowModel
 	}
 	
 	//导入后处理（刷新库存）
-	public function flowdaoruafter()
+	public function flowdaoruafter($ddoa=array())
 	{
+		//初始库存
 		m('goods')->setstock();
 	}
 	

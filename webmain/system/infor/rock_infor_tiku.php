@@ -20,6 +20,8 @@ $(document).ready(function(){
 		},{
 			text:'D',dataIndex:'and'
 		},{
+			text:'E',dataIndex:'ane'
+		},{
 			text:'答案',dataIndex:'answer',editor:true
 		},{
 			text:'排序',dataIndex:'sort',sortable:true,editor:true

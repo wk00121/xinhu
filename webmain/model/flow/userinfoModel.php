@@ -3,6 +3,7 @@ class flow_userinfoClassModel extends flowModel
 {
 	public  $uidfields = 'id';
 	protected  $flowviewufieds = 'id';
+	protected  $flowcompanyidfieds = 'companyid';
 	
 	public function flowsearchfields()
 	{
@@ -42,6 +43,20 @@ class flow_userinfoClassModel extends flowModel
 
 		return $barr;
 	}
+	
+	private function getdwname($rs)
+	{
+		$dwid1 = arrvalue($rs,'companyid','0');
+		$dwid  = arrvalue($rs,'dwid','0');
+		$dwid .= ','.$dwid1.'';
+		$temp_dwid = '';
+		if(!isempt($dwid)){
+			$dwarr = m('company')->getall('`id` in('.$dwid.')');
+			foreach($dwarr as $k1=>$rs1)$temp_dwid.=','.$rs1['name'].'';
+			if($temp_dwid!='')$temp_dwid = substr($temp_dwid, 1);
+		}
+		return $temp_dwid;
+	}
 
 	public function flowrsreplace($rs, $lx=0)
 	{
@@ -61,7 +76,9 @@ class flow_userinfoClassModel extends flowModel
 		
 		$rs['birtype']		= $this->birtypearr[$rs['birtype']];
 		
-		if(isset($rs['companyid']) && $lx==1)$rs['companyid'] = m('company')->getmou('name',"`id`='".$rs['companyid']."'");
+		if($lx==1){
+			$rs['companyid'] = $this->getdwname($rs);
+		}
 		
 		if(getconfig('systype')=='demo' && isset($rs['mobile']))$rs['mobile']='';
 		

@@ -79,7 +79,7 @@ class cogClassAction extends Action
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
 		$arr['reim_show'] 	= getconfig('reim_show') ? '1' : '0';
 		$arr['mobile_show'] = getconfig('mobile_show') ? '1' : '0';
-		$arr['compaymode'] 	= getconfig('compaymode') ? '1' : '0';
+		$arr['companymode'] = getconfig('companymode') ? '1' : '0';
 		$arr['isshou'] 		= $this->isshouquan() ? '1' : '0';
 		$arr['editpass'] 	= getconfig('editpass','0');
 		
@@ -157,7 +157,7 @@ class cogClassAction extends Action
 		$arr['debug'] 	 	= $this->post('debug')=='1';
 		$arr['reim_show'] 	= $this->post('reim_show')=='1';
 		$arr['mobile_show'] = $this->post('mobile_show')=='1';
-		$arr['compaymode']  = $this->post('compaymode')=='1';
+		$arr['companymode'] = $this->post('companymode')=='1';
 		$arr['loginyzm']  	= $this->post('loginyzm');
 		
 		if($asynsend == '1' && isempt($puurl))exit('未安装或开启服务端不能使用异步发送消息');
@@ -194,7 +194,7 @@ class cogClassAction extends Action
 		$smarr['useropt']		= '1记录用户操作保存到日志里,空不记录';
 		$smarr['defstype']		= 'PC后台主题皮肤，可以设置1到34';
 		$smarr['editpass']		= '用户登录修改密码：0不用修改，1强制用户必须修改';
-		$smarr['compaymode']	= '多单位模式，true就是开启';
+		$smarr['companymode']	= '多单位模式，true就是开启';
 		$smarr['outurl']		= '这个地址当你内网地址访问时向手机推送消息的地址';
 		
 		$str1 = '';

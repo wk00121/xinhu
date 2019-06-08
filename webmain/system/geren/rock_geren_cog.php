@@ -230,9 +230,17 @@ $(document).ready(function(){
 	qiehun{rand}=function(oi){
 		var d1 = companyinfoall[oi];
 		js.confirm('确定要切换到单位上“'+d1.name+'”吗？', function(jg){
-			if(jg=='yes')js.msgok('待开发');
+			if(jg=='yes'){
+				js.loading('切换中...');
+				js.ajax('api.php?m=index&a=changecompany',{id:d1.id}, function(){
+					js.msgok('切换成功');
+					location.reload();
+				});
+			}
 		});
 	}
+	
+	if(!companymode)$('#companylist{rand}').hide();
 });
 </script>
 <div style="padding:10px">

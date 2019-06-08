@@ -42,7 +42,7 @@ opentabsshowshwo=function(oi,o1){
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<div style="font-size:14px"><i class="icon-refresh"></i> <?=$itemnowname?>
-		<a style="float:right" click="refresh" id="refresh_text">刷新</a>
+		<a style="float:right;TEXT-DECORATION:none" click="refresh" id="refresh_text">刷新</a>
 		</div>
 	</div>
 	<div id="kuailistdonw"></div>

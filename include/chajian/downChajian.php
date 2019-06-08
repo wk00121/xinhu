@@ -127,7 +127,8 @@ class downChajian extends Chajian{
 				'filesizecn'=> $upses['filesizecn'],
 				'filepath'	=> str_replace('../','',$upses['allfilename']),
 				'optid'		=> $this->adminid,
-				'optname'	=> $this->adminname
+				'optname'	=> $this->adminname,
+				'comid'		=> m('admin')->getcompanyid(),
 			);
 			$arrs['filetype'] = m('file')->getmime($arrs['fileext']);
 			$thumbpath	= $arrs['filepath'];

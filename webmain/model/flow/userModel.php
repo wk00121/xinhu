@@ -66,6 +66,9 @@ class flow_userClassModel extends flowModel
 			}
 		}
 		$rs['online'] = $online;
+		if($lx==1){
+			$rs['temp_dwid'] = $this->getdwname($rs);
+		}
 		return $rs;
 	}
 	
@@ -75,6 +78,13 @@ class flow_userClassModel extends flowModel
 		$rs['groupname'] = m('sjoin')->getgroupid($rs['id']);
 		$rs['pass']		 = '';
 		unset($rs['deptallname']);
+		
+		$rs['temp_dwid'] = $this->getdwname($rs);
+		return $rs;
+	}
+	
+	private function getdwname($rs)
+	{
 		$dwid = arrvalue($rs,'dwid');
 		$temp_dwid = '';
 		if(!isempt($dwid)){
@@ -82,8 +92,7 @@ class flow_userClassModel extends flowModel
 			foreach($dwarr as $k1=>$rs1)$temp_dwid.=','.$rs1['name'].'';
 			if($temp_dwid!='')$temp_dwid = substr($temp_dwid, 1);
 		}
-		$rs['temp_dwid'] = $temp_dwid;
-		return $rs;
+		return $temp_dwid;
 	}
 	
 	//删除用户时

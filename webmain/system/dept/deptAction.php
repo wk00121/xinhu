@@ -8,12 +8,16 @@ class deptClassAction extends Action
 	
 	public function dataAjax()
 	{
+		$carr		= m('admin')->getcompanyinfo();
+		$this->allid= $carr['companyallid'];
+		
 		$this->rows	= array();
 		$this->getdept(0, 1);
 		
 		echo json_encode(array(
 			'totalCount'=> 0,
-			'rows'		=> $this->rows
+			'rows'		=> $this->rows,
+			'carr'		=> $carr
 		));
 	}
 	
@@ -22,12 +26,21 @@ class deptClassAction extends Action
 		$db		= m('dept');
 		$menu	= $db->getall("`pid`='$pid' order by `sort`",'*');
 		foreach($menu as $k=>$rs){
+			$comid 			= $rs['companyid'];
+			
+			//开启单位模式只能看到自己单位下的组织结构
+			if(!in_array($comid, $this->allid) && $this->adminid>1 && getconfig('companymode'))continue;
+			
+			$companyname	= '';
+			if($comid>0 && getconfig('companymode'))$companyname = m('company')->getmou('name', $comid);
+			$rs['companyname'] = $companyname;
 			$sid			= $rs['id'];
 			$rs['level']	= $oi;
 			$rs['stotal']	= $db->rows("`pid`='$sid'");
 			$this->rows[] = $rs;
 			
 			$this->getdept($sid, $oi+1);
+			
 		}
 	}
 	

@@ -23,6 +23,6 @@ homeobject.show_gong_list=function(a){
 <div align="left" id="homegonglist" style="min-width:300px" class="list-group">
 <div class="list-group-item  list-group-item-info">
 	<i class="icon-volume-up"></i> <?=$itemnowname?>
-	<a style="float:right" onclick="moregonggao()">更多&gt;&gt;</a>
+	<a style="float:right;TEXT-DECORATION:none" onclick="moregonggao()">更多&gt;&gt;</a>
 </div>
 </div>

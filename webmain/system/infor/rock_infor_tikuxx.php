@@ -39,6 +39,8 @@ $(document).ready(function(){
 		},{
 			text:'D',dataIndex:'and'
 		},{
+			text:'E',dataIndex:'ane'
+		},{
 			text:'答案',dataIndex:'answer',renderer:function(v,d,oi){
 				return '<a href="javascript:;" onclick="openxiangs(\'知识学习\',\'knowtiku\','+d.id+')">查看</a>';
 			}

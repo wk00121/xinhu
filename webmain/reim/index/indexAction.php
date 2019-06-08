@@ -28,5 +28,14 @@ class indexClassAction extends ActionNot
 		
 		$this->smartydata['my']			= $my;
 		$this->smartydata['face']		= $this->rock->repempt($my['face'], 'images/noface.png');
+		$this->smartydata['logo']		= 'images/logo.png';
+		$this->smartydata['showtitle']	= TITLE;
+		
+		if(ISMORECOM){
+			$companyinfo = m('admin')->getcompanyinfo($this->adminid, 1);
+			$oaname 	 = $companyinfo['oaname'];
+			if(!isempt($oaname))$this->smartydata['showtitle'] = $oaname;
+			$this->smartydata['logo'] = $companyinfo['logo'];
+		}
 	}
 }

@@ -157,6 +157,13 @@ class inputAction extends Action
 			if(in_array('createid', $allfields))$uaarr['createid'] = $this->adminid;
 			if(in_array('createname', $allfields))$uaarr['createname'] = $this->adminname;
 		}
+		
+		//保存公司的
+		if(in_array('comid', $allfields)){
+			if($addbo)$uaarr['comid'] = m('admin')->getcompanyid();
+			if(arrvalue($oldrs,'comid')=='0')$uaarr['comid'] = m('admin')->getcompanyid();
+		}
+		
 		if($isflow>0){
 			$uaarr['status']= '0';
 			if($sysisturn==0){
@@ -222,6 +229,9 @@ class inputAction extends Action
 		if($id==0)$id = $this->db->insert_id();
 		m('file')->addfile($this->post('fileid'), $table, $id, $modenum);
 		if($otherfileid!='')m('file')->addfile(substr($otherfileid,1), '', $id, $modenum);
+		$newrs 	= $db->getone($id);
+		$this->companyid 	= isset($newrs['companyid']) ? (int)$newrs['companyid'] : (int)arrvalue($newrs, 'comid', '0');
+		if($this->companyid==0)$this->companyid = m('admin')->getcompanyid();
 		
 		//保存多行子表
 		$tabless	 = $this->moders['tables'];
@@ -238,8 +248,8 @@ class inputAction extends Action
 		//保存修改记录
 		$editcont = '';
 		if($oldrs){
-			$newrs = $db->getone($id);
-			$editcont = m('edit')->recordsave($farrs, $table, $id, $oldrs, $newrs);
+			$newrs 		= $db->getone($id);
+			$editcont 	= m('edit')->recordsave($farrs, $table, $id, $oldrs, $newrs);
 		}
 		$msg 	= '';
 		$this->flow->editcont = $editcont;
@@ -313,6 +323,8 @@ class inputAction extends Action
 			$oarray['sslx']	= $xu;
 			$whes			= ' and `sslx`='.$xu.'';
 		}
+		
+		if(in_array('comid', $allfields))$oarray['comid'] 		= $this->companyid;
 		
 		if($data)foreach($data as $k=>$uaarr){
 			$sid 			= $uaarr['id'];
@@ -797,6 +809,7 @@ class inputAction extends Action
 				if(!isset($rs['createname']) && in_array('createname', $allfields))$rs['createname'] = $this->adminname;
 				if(!isset($rs['adddt']) && in_array('adddt', $allfields))$rs['adddt'] = $this->now;
 				if(!isset($rs['createdt']) && in_array('createdt', $allfields))$rs['createdt'] = $this->now;
+				if(!isset($rs['comid']) && in_array('comid', $allfields))$rs['comid'] = m('admin')->getcompanyid();
 			}
 			
 			if(!isset($rs['uid']) && in_array('uid', $allfields))$rs['uid'] = $this->adminid;
