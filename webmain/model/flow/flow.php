@@ -29,7 +29,7 @@ class flowModel extends Model
 	public $minwidth= 100;		//录入页面子表最小宽度
 	public $atype	= '';
 	public $daochubo= false;	//是否导出操作
-	
+	public $companyid= 1;		//默认单位Id
 	
 	//当初始化模块后调用
 	protected function flowinit(){}

@@ -179,7 +179,7 @@ class flow_userClassModel extends flowModel
 			$arr['sort']  		= $sort+$k+1;
 			$arr['workdate']  	= arrvalue($rs,'workdate', $this->rock->date);
 			$arr['adddt']  		= $this->rock->now;
-			$arr['companyid']  	= 1; //默认公司Id为1
+			$arr['companyid']  	= $this->companyid; //默认单位
 			
 			//读取上级主管Id
 			if(isset($arr['superman'])){
