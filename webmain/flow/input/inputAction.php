@@ -921,8 +921,7 @@ class inputAction extends Action
 		$flow 		= m('flow')->initflow($modenum);
 		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1 and `iszb`=0','name,isbt,fields','`sort`,`id`');
 		if(!$rows)return '对应模块没有设置导入字段';
-		
-		$testdata	= array();
+		$testdata	= $texdata = array();
 		if(method_exists($flow,'flowdaorutestdata')){
 			$testdata = $flow->flowdaorutestdata();
 		}
@@ -930,10 +929,13 @@ class inputAction extends Action
 		$str1 	= '';
 		$str2 	= '';
 		$col 	= 0;
+		$headArr	= array();
 		foreach($rows as $k=>$rs){
 			$col++;
 			$xi 	= $rs['isbt']=='1'? '<font color=red>*</font>' : '';
+			$x1 	= $rs['isbt']=='1'? '*' : '';
 			$str1.='<td style="border:.5pt #000000 solid; background:#cdf79e" height="30" align="center">'.$xi.'<b>'.$rs['name'].'('.$rs['fields'].')</b></td>';
+			$headArr[$rs['fields']] = ''.$x1.''.$rs['name'].'('.$rs['fields'].')';
 		}
 		if($testdata){
 			$texdata = $testdata;
@@ -959,7 +961,17 @@ class inputAction extends Action
 		}
 		$str.= '</table>';
 		
-		return $str;
+		$pexecl = c('PHPExcel');
+		if($pexecl->isBool()){
+			$pexecl->title 		= ''.$modenum.'_import';
+			$pexecl->titlebool 	= false;
+			$pexecl->borderbool = false;
+			$pexecl->headArr 	= $headArr;
+			$pexecl->rows 		= $texdata;
+			$pexecl->display('xls', 'down');
+		}else{
+			return $str;
+		}
 	}
 	
 	public function getuinfoAjax()
