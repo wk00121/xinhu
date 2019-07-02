@@ -603,6 +603,7 @@ var reim = {
 		});
 		if(id==adminid){
 			this.upfaceobj=$.rockupload({inputfile:'upfacess',uptype:'image',
+				urlparams:{noasyn:'yes'},
 				onsuccess:function(f,str){
 					var a=js.decode(str);
 					if(!a.id)return;

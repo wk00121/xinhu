@@ -97,6 +97,8 @@ $(document).ready(function(){
 			if(homeobject.showtime)homeobject.showtime();
 		},
 		gettotalshow:function(a){
+			miao = a.miaoshu;
+			if(a.tanwidth)js.winiframewidth=a.tanwidth;
 			this.shumiao(miao);
 			loadci++;
 			optdt = a.optdt;

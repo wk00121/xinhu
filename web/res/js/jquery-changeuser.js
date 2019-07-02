@@ -19,6 +19,7 @@
 		var me		= this;
 		this.rand	= rand;
 		this.changesel = '';
+		this.firstpid  = 0;
 		
 		this._init	= function(){
 			for(var i in options)this[i]=options[i];
@@ -133,10 +134,10 @@
 					ssu+=this._showuser(pid,s1,type,sel);
 				}
 			}
-			
-			$('#showdiv'+rand+'_'+pid+'').html(ssu+s).attr('show','true');
+			var xud = (oi==0)?'0' : pid;
+			$('#showdiv'+rand+'_'+xud+'').html(ssu+s).attr('show','true');
 			if(sel==''){
-				if(pid==0)this.showlist(this.fid, 1);
+				if(oi==0)this.showlist(this.fid, 1);
 				$('#showdiv'+rand+'_0 [deptxu]').unbind('click').click(function(){
 					me._deptclicks(this);
 				});
@@ -173,6 +174,7 @@
 			len=a.length;
 			for(i=0;i<len;i++){
 				if(a[i].pid==pid || sel=='2'){
+					this.fid = a[i].id;
 					wjj= 'images/files.png';
 					if(a[i].ntotal=='0' && uob)wjj= 'images/file.png';
 					s2 = '<input name="changeuserinput_'+rand+'" xls="d" xname="'+a[i].name+'" xu="'+i+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'">';
@@ -217,7 +219,7 @@
 		this._changesel=function(o1){
 			var val = o1.value;
 			this.changesel = val;
-			this.showlist(0, 0);
+			this.showlist(this.firstpid, 0);
 		};
 		this._searchkeys=function(e){
 			clearTimeout(this._searchkeystime);
@@ -281,7 +283,8 @@
 		this.show=function(){
 			this.creatediv();
 			if(this.deptarr.length>0){
-				this.showlist(0,0);
+				this.firstpid = this.deptarr[0].pid;
+				this.showlist(this.firstpid,0);
 			}else{
 				this._loaddata();
 			}
@@ -320,7 +323,9 @@
 			this.userarr = js.decode(ret.userjson);
 			this.deptarr = js.decode(ret.deptjson);
 			this.grouparr = js.decode(ret.groupjson);
-			this.showlist(0, 0);
+			this.firstpid = 0;
+			if(this.deptarr[0])this.firstpid = this.deptarr[0].pid;
+			this.showlist(this.firstpid, 0);
 		};
 		this._changboxxuan=function(os){
 			var ns= 'changeuserinput_'+rand+'';

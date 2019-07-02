@@ -78,6 +78,25 @@ class loginClassAction extends apiAction
 	}
 	
 	/**
+	*	下载图片新
+	*/
+	public function downimgnewAction()
+	{
+		$paths= urldecode($this->get('path'));
+		$path = str_replace(URL, '', $paths);
+		$obj  = c('upfile');
+		$str  = '';
+		$ext  = $obj->getext($path);
+		if($obj->isimg($ext) && (file_exists($path) || substr($path,0,4)=='http')){
+			$str = base64_encode(file_get_contents($path));
+		}
+		$this->showreturn(array(
+			'result' => $str,
+			'path'	 => $paths
+		));
+	}
+	
+	/**
 	*	读取可上传最大M
 	*/
 	public function getmaxupAction()

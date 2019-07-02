@@ -98,8 +98,8 @@ $(document).ready(function(){
 	};
 	
 	function btn(bo,d){
+		if(!bo && companymode && d.id==1 && adminid>1)bo=true;//非超级管理员不能修改顶级名称
 		get('edit_{rand}').disabled = bo;
-		if(!bo && companymode && d.id==1 && adminid>1)get('edit_{rand}').disabled=true;//非超级管理员不能修改顶级名称
 		get('down_{rand}').disabled = bo;
 		if(d.id==1)bo=true;
 		get('del_{rand}').disabled = bo;

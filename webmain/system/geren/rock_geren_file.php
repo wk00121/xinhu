@@ -65,9 +65,9 @@ $(document).ready(function(){
 			return;
 		}
 		if(lx==1){
-			js.downshow(d.id)
+			js.downshow(d.id,d.filenum)
 		}else{
-			js.yulanfile(d.id,d.fileext,d.filepath,d.filename);
+			js.yulanfile(d.id,d.fileext,d.filepath,d.filename,d.filenum);
 		}
 	}
 	

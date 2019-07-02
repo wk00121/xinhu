@@ -42,12 +42,19 @@ class flow_userClassModel extends flowModel
 		);
 	}
 	
+	
 	//替换
 	public function flowrsreplace($rs, $lx=0)
 	{
-		if(getconfig('systype')=='demo' && isset($rs['mobile']))$rs['mobile']='';
+		
+		if(isset($rs['mobile'])){
+			$sjhao = $rs['mobile'];
+			if($lx==2)$rs['mobile']	= substr($rs['mobile'],0,3).'****'.substr($rs['mobile'],-4);
+		}
+		if(getconfig('systype')=='demo')$rs['mobile']='';
+		
 		if($this->rock->ismobile()){
-			if(isset($rs['mobile']) && !isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
+			if(isset($rs['mobile']) && !isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(\''.$sjhao.'\')" href="tel:'.$sjhao.'">'.$rs['mobile'].'</a>';
 			if(isset($rs['tel']) && !isempt($rs['tel']))$rs['tel']='<a onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
 		}
 		$type = arrvalue($rs,'type');
@@ -80,6 +87,7 @@ class flow_userClassModel extends flowModel
 		unset($rs['deptallname']);
 		
 		$rs['temp_dwid'] = $this->getdwname($rs);
+		if(getconfig('systype')=='demo')$rs['mobile']	 = '';
 		return $rs;
 	}
 	

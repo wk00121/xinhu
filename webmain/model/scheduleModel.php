@@ -101,6 +101,7 @@ class scheduleClassModel extends Model
 		foreach($barr as $uid=>$rows){
 			$str ='';
 			$sid 	= 0;
+			$GLOBALS['adminid'] = $uid;
 			foreach($rows as $k=>$rs){
 				$txsj 	= strtotime($rs['time']);
 				$jg 	= $txsj-$time;

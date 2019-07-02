@@ -425,9 +425,11 @@ class kaoqinClassAction extends Action
 	{
 		$dt1			= $this->post('month', date('Y-m'));
 		$iskq			= $this->post('iskq','1');
+		$iskq			= $this->post('iskq','1');
 		$this->months 	= $dt1;
 		$key	= $this->post('key');
 		$atype	= $this->post('atype');
+		$receid	= $this->post('receid');
 		$s 		= m('admin')->monthuwhere($dt1);
 		
 		//下属,userinfo下的
@@ -441,8 +443,13 @@ class kaoqinClassAction extends Action
 			if($iskq=='1')$s.=" and `iskq`=$iskq";
 			if(ISMORECOM)$s.=" and `companyid`=".m('admin')->getcompanyid()."";
 		}
-	
-		if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
+		if(isempt($receid)){
+			if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
+		}else{
+			$ofval = m('admin')->gjoin($receid,'', 'all');
+			if(!$ofval)$ofval='0';
+			$s	.= ' and `id` in ('.$ofval.')';
+		}
 		
 		$fields = 'id,name,deptname,ranking,workdate,state';
 		return array('where'=>$s,'fields'=>$fields,'order'=>'`id`');
@@ -465,7 +472,9 @@ class kaoqinClassAction extends Action
 		if($pnum=='all'){
 			$dt 	= $this->months.'-01';
 			//获取每天考勤几个状态
-			$sbarr	= $kqobj->getsbarr($this->adminid, $dt);
+			$nuuid	= $this->adminid;
+			if($rows)$nuuid = $rows[0]['id'];
+			$sbarr	= $kqobj->getsbarr($nuuid, $dt);
 			$lenz 	= count($sbarr); //每天考勤几个状态
 			$touar 	= array();
 			

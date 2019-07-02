@@ -124,6 +124,7 @@ class logClassModel extends Model
 			$dt = substr($optdt,0,10);
 			$where.=" and `workdate`<='$dt'";
 		}
+		$where .= $dbs->getcompanywhere();
 		$uarr 	= $dbs->getall('`status`=1'.$where.'','`id`,`name`,`face`','`sort`');
 		
 		$receas	= explode(',', str_replace('u','', $receid));

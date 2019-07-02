@@ -99,7 +99,8 @@ $(document).ready(function(){
 	showvies{rand}=function(oi,lx){
 		var d=a.getData(oi);
 		if(lx==3){
-			js.sendeditoffice(d.fileid);
+			//js.sendeditoffice(d.fileid);
+			js.fileopt(d.fileid,2);
 			return;
 		}
 		if(lx==2){
@@ -107,9 +108,9 @@ $(document).ready(function(){
 			return;
 		}
 		if(lx==1){
-			js.downshow(d.fileid)
+			js.downshow(d.fileid,d.filenum);
 		}else{
-			js.yulanfile(d.fileid,d.fileext,d.filepath,d.filename);//预览
+			js.yulanfile(d.fileid,d.fileext,d.filepath,d.filename,d.filenum);//预览
 		}
 	}
 	var c = {

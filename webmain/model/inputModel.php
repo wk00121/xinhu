@@ -19,12 +19,16 @@ class inputClassModel extends Model
 		$str.='<tr>';
 		$str.='<td width="10%" nowrap>序号</td>';
 		$yfsr= array('hidden','fixed');
+		$yczd= array();
 		$zlen= 0;
 		foreach($rows as $k=>$rs){
 			$zlen++;
 			$xh = '';
 			if($rs['isbt']==1)$xh='*';
-			if(in_array($rs['fieldstype'], $yfsr))continue;
+			if(in_array($rs['fieldstype'], $yfsr)){
+				$yczd[] = $rs['fields'];
+				continue;
+			}
 			$str.='<td nowrap>'.$xh.''.$rs['name'].'</td>';
 		}
 		$str.='<td width="5%" nowrap>操作</td>';
@@ -32,11 +36,16 @@ class inputClassModel extends Model
 		for($j=0;$j<$hang;$j++){
 			$str.='<tr>';
 			$str.='<td>[xuhao'.$xu.','.$j.']</td>';
+			$yoi =0;
 			foreach($rows as $k=>$rs){
 				if(in_array($rs['fieldstype'], $yfsr))continue;
 				$str.='<td>['.$rs['fields'].''.$xu.','.$j.']';
 				if(isset($rows[$k+1]) && in_array($rows[$k+1]['fieldstype'], $yfsr))$str.='['.$rows[$k+1]['fields'].''.$xu.','.$j.']';
+				if($yczd && $yoi==0){
+					
+				}
 				$str.='</td>';
+				$yoi++;
 			}
 			$str.='<td>{删,'.$xu.'}</td>';
 			$str.='</tr>';

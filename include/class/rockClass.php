@@ -658,10 +658,17 @@ final class rockClass
 	/**
 	*	一个完整绝对路径
 	*/
-	public function gethttppath($fpath, $url='')
+	public function gethttppath($path, $url='', $dev='')
 	{
 		if($url=='')$url = URL;
-		if(substr($fpath,0,4)!='http')$fpath = ''.$url.''.$fpath.'';
-		return $fpath;
+		if(isempt($path))return $dev;
+		if(contain($path, '{PLATURL}')){
+			$platurl = getconfig('xinhudoc_platury');
+			if(!$platurl)$platurl = getconfig('xinhudoc_platurl');
+			if(substr($platurl,-1)!='/')$platurl.='/';
+			$path = str_replace('{PLATURL}',$platurl,$path);
+		}
+		if(substr($path,0,4)!='http')$path = ''.$url.''.$path.'';
+		return $path;
 	}
 }

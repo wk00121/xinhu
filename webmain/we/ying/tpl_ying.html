@@ -56,7 +56,8 @@ function initbody(){
 	yingyonginit();
 }
 function callPhone(o1){
-	if(appobj1('callPhone',$(o1).text())){
+	if(typeof(o1)!='string')o1 = $(o1).text();
+	if(appobj1('callPhone', o1)){
 		return false;
 	}else{
 		return true;

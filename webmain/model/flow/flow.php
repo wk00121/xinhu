@@ -185,7 +185,7 @@ class flowModel extends Model
 	
 	private function tfieldsarra()
 	{
-		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`iszs`,`fieldstype`,`savewhere`,`data`,`iszb`,`issou`,`islu`,`islb`,`isonly`','`sort`');
+		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`iszs`,`fieldstype`,`savewhere`,`data`,`isdr`,`iszb`,`issou`,`islu`,`islb`,`isonly`','`sort`');
 		$this->fieldsarr = array();
 		if($rows)foreach($rows as $k=>$rs){
 			if($rs['islu']==1)$this->fieldsarr[] = $rs;
@@ -504,7 +504,7 @@ class flowModel extends Model
 			if($fty=='uploadimg'){
 				$fval 	= $this->rock->arrvalue($data, $fid);
 				if(!isempt($fval) && substr($fval,0,4)!='<img'){
-					if(substr($fval,0,4)!='http')$fval=''.URL.$fval.'';
+					$fval = $this->rock->gethttppath($fval);
 					$data[$fid] = '<img src="'.$fval.'" onclick="c.showviews(this)" height="100">';	
 				}
 			}
@@ -741,22 +741,35 @@ class flowModel extends Model
 		$arr['isedit'] 	= $this->iseditqx();
 		$arr['isflow'] 	= $this->isflow;
 		$arr['user'] 	= $this->urs;
-		$arr['status'] 	= $this->rs['status'];
-		$arr['filers'] 	= $fobj->getfile($this->mtable,$this->id);
+		$arr['status'] 	= $this->rs['status'];	
+		
+		$filers			= $fobj->getfile($this->mtable,$this->id);
+		foreach($filers as $fk=>$frs1)$filers[$fk]['thumbpath']=$fobj->getthumbpath($frs1);//缩略图显示
+		$arr['filers'] 	= $filers;
+		
 		$arr['subdata'] = $this->getsuballdata();
 		$uploadfile		= $this->rock->post('uploadfile');
 		$filearr 		= array();
 		foreach($this->fieldsarr as $k=>$rs){
+			$fid 	= $rs['fields'];
+			$flx 	= $rs['fieldstype'];
 			
 			//读取文件详情
-			if($rs['fieldstype']=='uploadfile'){
-				$fid 	= $rs['fields'];
+			if($flx=='uploadfile'){
 				$fval 	= arrvalue($this->rssust, $fid);
 				if(isempt($fval))$fval='0';
 				if($fval != '0'){
 					$fvalsa = explode(',', $fval);
-					foreach($fvalsa as $fval1)$filearr['f'.$fval1.''] = $fobj->getone($fval1,'filename,id,filesizecn,fileext,optname,thumbpath');
+					foreach($fvalsa as $fval1){
+						$frs1 = $fobj->getone($fval1,'filename,id,filesizecn,fileext,optname,thumbpath,thumbplat');
+						if($frs1)$frs1['thumbpath'] = $fobj->getthumbpath($frs1);
+						$filearr['f'.$fval1.'']	= $frs1;
+					}
 				}
+			}
+			
+			if($flx=='uploadimg'){
+				$arr['data'][''.$fid.'_view'] = $this->rock->gethttppath($arr['data'][$fid]);
 			}
 		}
 		$arr['filearr'] = $filearr;
@@ -1024,7 +1037,7 @@ class flowModel extends Model
 					}
 				}
 				$rows[$k]['qmimg']  = $qmimg;
-				if(!isempt($qmimg))$rows[$k]['explain']= '<img height="24" src="'.$qmimg.'">'.$rs['explain'].'';	
+				if(!isempt($qmimg))$rows[$k]['explain']= '<img height="30" width="70" src="'.$qmimg.'">'.$rs['explain'].'';	
 				
 			}				
 		}
@@ -1625,7 +1638,8 @@ class flowModel extends Model
 		if($type=='rank'){
 			$rank = $crs['checktypename'];
 			if(!$this->isempt($rank)){
-				$rnurs	= $this->db->getrows('[Q]admin',"`status`=1 and `ranking`='$rank'",'id,name','sort');
+				$wheer1 = $this->adminmodel->getcompanywhere(5);
+				$rnurs	= $this->db->getrows('[Q]admin',"`status`=1 and `ranking`='$rank' ".$wheer1."",'id,name','sort');
 				foreach($rnurs as $k=>$rns){
 					$cuid.=','.$rns['id'].'';
 					$name.=','.$rns['name'].'';
@@ -2186,7 +2200,7 @@ class flowModel extends Model
 			'modename'	=> $modename,
 			'modenum'	=> $modenum,
 		));
-		$reim->pushagent($uids, $gname, $cont, $title, $url, $wxurl, $slx);
+		$reim->pushagent($uids, $gname, $cont, $title, $url, $wxurl, $slx, ''.$modenum.'|'.$id.'');
 		$this->flowchangetodo($uids, $gname);
 		
 		if(isempt($title))$title = $modename;
@@ -3197,7 +3211,10 @@ class flowModel extends Model
 	{
 		$rows 		= $this->getflowrows($this->adminid,$atype,$limit,$where);
 		$headstr	= '@xuhaos,,center';
-		foreach($this->fieldsarra as $k=>$rs)if($rs['iszs']==1)$headstr.='@'.$rs['fields'].','.$rs['name'].'';
+		foreach($this->fieldsarra as $k=>$rs){
+			if($rs['islb']==1 && $rs['iszb']=='0')
+				$headstr.='@'.$rs['fields'].','.$rs['name'].'';
+		}
 		if($this->isflow>0){
 			$headstr.='@statustext,状态';
 			if(is_array($rows))foreach($rows as $k=>$rs){

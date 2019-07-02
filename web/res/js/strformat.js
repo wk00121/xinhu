@@ -251,22 +251,22 @@ var strformat = {
 		if(js.isimg(d.fileext)){
 			sttr='';
 			if(d.thumbpath){
-				s='<img src="'+apiurl+''+d.thumbpath+'" fid="'+d.fileid+'">';
+				s='<img src="'+d.thumbpath+'" fid="'+d.fileid+'">';
 			}else{
 				if(d.width){
 					if(d.width>150)sttr='width="150"';
 				}else{
 					sttr='width="150"';
 				}
-				s='<img src="'+apiurl+''+d.filepath+'" '+sttr+' fid="'+d.fileid+'">';
+				s='<img src="'+d.filepath+'" '+sttr+' fid="'+d.fileid+'">';
 			}
 		}else if(d.fileext=='amr'){
 			s+='<i class="icon-volume-up"></i> '+(parseInt(d.filesize/1000))+'"';
-			s+='&nbsp;<a href="javascript:;" style="font-size:12px" onclick="js.downshow('+d.fileid+')">下载</a>';
+			s+='&nbsp;<a href="javascript:;" style="font-size:12px" onclick="js.fileopt('+d.fileid+',1)">下载</a>';
 		}else{
 			slx = d.fileext;if(!lj)lj='';
 			if(js.fileall.indexOf(','+slx+',')<0)slx='wz';
-			s=''+d.filename+'<br><a href="javascript:;" onclick="js.downshow('+d.fileid+')">下载</a>&nbsp;&nbsp;<a href="javascript:;" onclick="im.fileyulan(\''+d.filename+'\','+d.fileid+')">预览</a>&nbsp;'+d.filesizecn+'';
+			s=''+d.filename+'<br><a href="javascript:;" onclick="js.fileopt('+d.fileid+',1)">下载</a>&nbsp;&nbsp;<a href="javascript:;" onclick="js.fileopt('+d.fileid+',0)">预览</a>&nbsp;'+d.filesizecn+'';
 			s='<table><tr><td><div class="qipaofile">'+d.fileext.toUpperCase()+'</div></td><td>'+s+'</td></tr></table>';
 		}
 		return s;

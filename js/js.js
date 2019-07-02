@@ -211,6 +211,9 @@ js.email=function(str){
 	if(reg.test(str))return false ;
 	return true;
 }
+js.reload=function(){
+	location.reload();
+}
 js.move=function(id,rl){
 	var _left=0,_top=0,_x=0,_right=0,_y=0;
 	var obj	= id;if(!rl)rl='left';
@@ -250,7 +253,7 @@ js.upload=function(call,can, glx){
 	if(!can)can={};
 	js.uploadrand	= js.now('YmdHis')+parseInt(Math.random()*999999);
 	var url = 'index.php?m=upload&d=public&callback='+call+'&upkey='+js.uploadrand+'';
-	for(var a in can)url+='&'+a+'='+can[a]+'';
+	for(var i in can)if(i!='title')url+='&'+i+'='+can[i]+'';
 	if(glx=='url')return url;
 	var s='',tit=can.title;if(!tit)tit='上传文件';
 	js.tanbody('uploadwin',tit,500,300,{
@@ -267,11 +270,14 @@ js.locationshow=function(sid){
 	return false;
 }
 js.winiframemax=45;
+js.winiframewidth = '900x800'; //默认的宽x高
 js.winiframe=function(tit, url){
-	var mxw= 900;
-	var hm = winHb()-150;if(hm>800)hm=800;if(hm<400)hm=400;
+	var mxw= 900,mxh=800,tar = this.winiframewidth.split('x');
+	if(tar[0])mxw=parseFloat(tar[0]);
+	if(tar[1])mxh=parseFloat(tar[1]);
+	var hm = winHb()-150;if(hm>mxh)hm=mxh;if(hm<400)hm=400;
 	if(url.indexOf('wintype=max')>0){
-		mxw= 1000;
+		if(mxw<1000)mxw= 1000;
 		hm=winHb()-js.winiframemax;
 	}
 	var wi = winWb()-150;if(wi>mxw)wi=mxw;if(wi<700)wi=700;
@@ -282,14 +288,14 @@ js.winiframe=function(tit, url){
 	openinputiframe.location.href=url;
 	return false;	
 }
-js.downshow=function(id){
+
+//下载
+js.downshow=function(id, fnun, cans){
 	if(appobj1('openfile', id))return;
-	var url = '?id='+id+'&a=down';
-	if(nwjsgui){
-		this.location(url);
-	}else{
-		js.open(url,600,350);
-	}
+	if(!isempt(fnun)){this.fileopt(id, 1);return false;}
+	var url = 'api.php?m=upload&id='+id+'&a=down';
+	if(cans)for(var i in cans)url+='&'+i+'='+cans[i]+'';
+	this.location(url);
 	return false;
 }
 js.downupdels=function(sid, said, o1){
@@ -323,8 +329,8 @@ js.downupshow=function(a, showid, nbj){
 		fis= 'web/images/fileicons/'+js.filelxext(a[i].fileext)+'.gif';
 		if(js.isimg(a[i].fileext) && !isempt(a[i].thumbpath))fis=a[i].thumbpath;
 		s='<div onmouseover="this.style.backgroundColor=\'#f1f1f1\'" onmouseout="this.style.backgroundColor=\'\'" style="padding:4px 5px;border-bottom:1px #eeeeee solid;font-size:14px"><span>'+(i+1)+'</span><font style="display:none">'+a[i].id+'</font>、<img src="'+fis+'" align="absmiddle" height="20" width="20"> '+a[i].filename+' ('+a[i].filesizecn+')';
-		s+=' <a class="a" temp="yula" onclick="return js.downshow('+a[i].id+',\''+a[i].fileext+'\')" href="javascript:;">下载</a>';
-		s+=' <a class="a" temp="yula" onclick="return js.yulanfile('+a[i].id+',\''+a[i].fileext+'\',\''+a[i].filepath+'\')" href="javascript:;">预览</a>';
+		s+=' <a class="a" temp="yula" onclick="return js.fileopt('+a[i].id+',1)" href="javascript:;">下载</a>';
+		s+=' <a class="a" temp="yula" onclick="return js.fileopt('+a[i].id+',0)" href="javascript:;">预览</a>';
 		s+=' <a class="a" temp="dela" onclick="return js.downupdels('+a[i].id+',\''+showid+'\', this)" href="javascript:;">×</a>';
 		s+='</div>';
 		o.append(s);
@@ -332,8 +338,64 @@ js.downupshow=function(a, showid, nbj){
 	js.downupdel(0, showid, false);
 	if(nbj)o.find('[temp="dela"]').remove();//禁止编辑
 }
+js.loading=function(txt){
+	js.msg('wait',txt);
+}
+js.msgerror=function(txt){
+	js.msg('msg',txt);
+}
+js.unloading=function(){js.msg();}
+//文件操作id文件id,lx0预览,1下载,2编辑
+js.fileopt=function(id,lx){
+	if(!lx)lx=0;
+	js.loading('加载中...');
+	var gurl = 'api.php?a=fileinfo&m=upload&id='+id+'&type='+lx+'&ismobile='+ismobile+'';
+	$.ajax({
+		type:'get',url:gurl,dataType:'json',
+		success:function(ret){
+			js.unloading();
+			if(ret.success){
+				var da = ret.data;
+				ext	   = da.fileext;
+				var url= da.url;
+				if(ismobile==1){
+					if(da.type==0 && !da.isview && appobj1('openfile', id))return; //不能预览就用app打开
+					if(da.type==1 && appobj1('openfile', id))return; //下载用app的
+					if(da.type==0 && !js.isimg(ext)){
+						if(appobj1('openWindow', url))return;
+					}
+				}
+				if(da.type==1){js.location(url);return;}//下载直接跳转
+				if(js.isimg(ext)){
+					$.imgview({'url':url,'ismobile':ismobile==1,'downbool':false});
+				}else if(ext=='rockoffice'){
+					js.sendeditoffices(url);
+				}else{
+					url+='&wintype=max';
+					if(ismobile==0){
+						if(!nwjsgui){
+							js.winiframe(da.filename,url);
+						}else{
+							js.open(url, 900,500);
+						}
+					}else{
+						js.location(url);
+					}
+				}
+			}else{
+				js.msgerror(ret.msg);
+			}
+		},
+		error:function(e){
+			js.unloading();
+			js.msg('msg','处理出错:'+e.responseText+'');
+		}
+	});
+}
+
 //文件预览
-js.yulanfile=function(id, ext,pts, sne){
+js.yulanfile=function(id, ext,pts, sne, fnun){
+	if(!isempt(fnun)){this.fileopt(id, 0);return false;}
 	var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
 	if(pts!=''&&js.isimg(ext)){
 		$.imgview({'url':pts,'ismobile':ismobile==1,'downbool':false});
@@ -344,6 +406,7 @@ js.yulanfile=function(id, ext,pts, sne){
 		var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
 		if(docsx.indexOf(','+ext+',')==-1)
 			if(appobj1('openfile', id))return;
+		if(appobj1('openWindow', url))return;
 		js.location(url);
 	}else{
 		if(!sne)sne='文件预览';
@@ -1011,11 +1074,14 @@ js.sendeditoffice=function(id,lx){
 	if(!lx)lx='0';
 	this.ajax('api.php?m=upload&a=rockofficeedit',{id:id,lx:lx},function(ret){
 		if(ret.success){
-			js.cliendsend('rockoffice',{paramsstr:ret.data},false,function(){js.msg('msg','无法使用，可能没有安装在线编辑插件');return true;});
+			js.sendeditoffices(ret.data);
 		}else{
 			js.msg('msg', ret.msg);
 		}
 	},'get,json');
+}
+js.sendeditoffices=function(str){
+	js.cliendsend('rockoffice',{paramsstr:str},false,function(){js.msg('msg','无法使用，可能没有安装在线编辑插件');return true;});
 }
 
 js.ontabsclicks=function(){};

@@ -94,6 +94,7 @@ class modeClassAction extends ActionNot
 			$inputjspath = '';
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
+		$this->smartydata['xiangwidth']		= $this->option->getval('xiangwidth', 700);
 		$this->assign('inputobj', c('input'));
 	}
 	

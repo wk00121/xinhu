@@ -58,6 +58,7 @@ var reim={
 			inputfile:'allfileinput',
 			initpdbool:false,
 			updir:'reimchat',
+			urlparams:{noasyn:'yes'}, //不需要同步到文件平台上
 			onchange:function(d){
 				im.sendfileshow(d);
 			},
@@ -226,6 +227,7 @@ var reim={
 			if(bo)reim.reloaduser();
 		});
 	},
+	firstpid:0,
 	showdata:function(ret){
 		if(!ret.userjson)return;
 		this.lastloaddt		= ret.loaddt;
@@ -233,6 +235,7 @@ var reim={
 		this.maindata.uarr 	= js.decode(ret.userjson);
 		this.maindata.garr  = js.decode(ret.groupjson);
 		this.maindata.harr 	= js.decode(ret.historyjson);
+		this.firstpid		= this.maindata.darr[0].pid;
 		if(!this.showconfigarr){
 			this.showconfigarr	= ret.config;
 			this.websocketlink(ret.config);
@@ -413,7 +416,7 @@ var reim={
 	},
 	reloaduser:function(){
 		$('#showdept').html('');
-		this.showuserlists(0,0, 'showdept');
+		this.showuserlists(this.firstpid,0, 'showdept');
 		this.showgroup();
 	},
 	
@@ -487,7 +490,7 @@ var reim={
 				s+='</div>';
 				s+='<span id="showdept_'+d.id+'"></span>';
 				o.append(s);
-				if(pid==0)this.showuserlists(d.id, xu+1, 'showdept_'+d.id+'');
+				if(xu==0)this.showuserlists(d.id, xu+1, 'showdept_'+d.id+'');
 			}
 		}
 	},
@@ -517,9 +520,11 @@ var reim={
 		}
 		if(i>0)$('#historylist_tems').hide();
 	},
+	showhistorydata:{},
 	showhistorys:function(d,pad, lex){
 		var s,ty,o=$('#historylist'),d1,st,attr;
 		var num = ''+d.type+'_'+d.receid+'';
+		this.showhistorydata[num]=d;
 		$('#history_'+num+'').remove();
 		st	= d.stotal;if(st=='0')st='';
 		var ops = d.optdt.substr(11,5);
@@ -535,10 +540,10 @@ var reim={
 		var s1 = '';
 		if(d.deptid=='1')s1=' <span class="reimlabel">全员</span>';
 		if(d.deptid>'1')s1=' <span class="reimlabel1">部门</span>';
-		s	= '<div class="lists'+cls+'" rtype="hist" oncontextmenu="reim.historyright(this,event)" tsaid="'+d.receid+'" tsaype="'+d.type+'"  temp="hist" id="history_'+num+'" onclick="reim.openchat(\''+ty+'\',\''+d.receid+'\',\''+d.name+'\',\''+d.face+'\')">';
+		s	= '<div class="lists'+cls+'" rtype="hist" oncontextmenu="reim.historyright(this,event,\''+num+'\')" tsaid="'+d.receid+'" tsaype="'+d.type+'"  temp="hist" id="history_'+num+'" onclick="reim.openchat(\''+ty+'\',\''+d.receid+'\',\''+d.name+'\',\''+d.face+'\')">';
 		s+='<table cellpadding="0" border="0" width="100%"><tr>';
 		s+='<td style="padding-right:8px"><div style="height:30px;overflow:hidden"><img src="'+d.face+'"></div></td>';
-		s+='<td align="left" width="100%"><div class="name">'+na+''+s1+'</div><div class="huicont">'+jm.base64decode(d.cont)+'</div></td>';
+		s+='<td align="left" width="100%"><div title="'+na+'" class="name">'+na+''+s1+'</div><div class="huicont">'+jm.base64decode(d.cont)+'</div></td>';
 		s+='<td align="right" nowrap><span id="chat_stotal_'+num+'" class="badge red">'+st+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
 		s+='</tr></table>';
 		s+='</div>';
@@ -546,15 +551,16 @@ var reim={
 		$('#historylist_tems').hide();
 		this.showbadge('chat');
 	},
-	historyright:function(o1,e){
+	historyright:function(o1,e,num){
 		var rt = $(o1).attr('rtype');
 		if(isempt(rt))return false;
 		this.rightdivobj = o1;
-		var d=[{name:'打开',lx:0}];
+		var da=[{name:'打开',lx:0}],d=this.showhistorydata[num];
+		if(d && d.stotal>0)da.push({name:'标识已读',lx:1});
 		if(rt.indexOf('hist')>-1){
-			d.push({name:'删除此记录',lx:2});
+			da.push({name:'删除此记录',lx:2});
 		}
-		this.righthistroboj.setData(d);
+		this.righthistroboj.setData(da);
 		this.righthistroboj.showAt(e.clientX-3,e.clientY-3);
 		return false;
 	},
@@ -570,7 +576,15 @@ var reim={
 			var tst=$('#historylist').text();if(tst=='')$('#historylist_tems').show();
 			js.ajax(this.getapiurl('reim','delhistory'),{type:tsayp,gid:tsaid},false,'get');
 			this.showbadge('chat');
-		}	
+		}
+		if(lx==1){
+			var num = ''+tsayp+'_'+tsaid+'';
+			$('#chat_stotal_'+num+'').html('');
+			var d=this.showhistorydata[num];
+			if(d)d.stotal='0';
+			this.showbadge('chat');
+			this.biaoyd('agent',tsaid);
+		}
 	},
 	openmyinfo:function(){
 		this.showuserinfo(0,userarr[adminid]);
@@ -588,7 +602,10 @@ var reim={
 		s+='</div></div>';
 		this.addtabs(num,s);
 		if(d.id==adminid){
-			if(!this.upfaceobj)this.upfaceobj=$.rockupload({inputfile:'upfacess',uptype:'image',
+			if(!this.upfaceobj)this.upfaceobj=$.rockupload({
+				inputfile:'upfacess',
+				uptype:'image',
+				urlparams:{noasyn:'yes'}, //不需要同步到文件平台上
 				onsuccess:function(f,str){
 					var a=js.decode(str);
 					if(!a.id)return;
@@ -616,7 +633,19 @@ var reim={
 		$('#chat_stotal_'+num+'').html('');
 		this.showbadge('chat');
 		if(type=='agent'){
-			this.openagenh(reid);
+			var d = this.showhistorydata[num];
+			var url='';
+			if(d && d.stotal>0 && !isempt(d.xgurl)){
+				d.stotal='0';
+				var xga = d.xgurl.split('|');
+				if(xga[1])url='task.php?a=p&num='+xga[0]+'&mid='+xga[1]+'';
+			}
+			if(url==''){
+				this.openagenh(reid);
+			}else{
+				this.biaoyd('agent',reid);
+				js.open(url,760,500);
+			}
 			return;
 		}
 		var s = '<div style="background:#f5f9ff">';
@@ -880,7 +909,10 @@ var reim={
 				reim.clickcogclick(d);
 			}
 		});
-		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'设置',lx:'cog'},{'name':'创建会话',lx:'create'},{'name':'修改密码',lx:'pass'},{'name':'退出',lx:'exit'}];
+		var d = [{'name':'消息记录',lx:'jl'},{'name':'刷新',lx:'sx'},{'name':'创建会话',lx:'create'},{'name':'修改密码',lx:'pass'}];
+		if(companymode)d.push({'name':'切换单位',lx:'qhqy'});
+		d.push({'name':'设置',lx:'cog'});
+		d.push({'name':'退出',lx:'exit'});
 		this.cogmenu.setData(d);
 		var off = $(o1).offset();
 		this.cogmenu.showAt(40,off.top-d.length*36);
@@ -910,6 +942,9 @@ var reim={
 		if(lx=='pass'){
 			this.editpass();
 		}
+		if(lx=='qhqy'){
+			this.changecom();
+		}
 	},
 	//创建会话
 	creategroup:function(){
@@ -935,6 +970,18 @@ var reim={
 			closed:cse
 		});
 		openinputiframe.location.href='?m=index&d=we&a=editpass&hideheader=true&ofrom=reim';
+	},
+	changecom:function(){
+		js.tanbody('winiframe','切换单位',350,300,{
+			html:'<div style="height:250px;overflow:hidden"><iframe src="" name="openinputiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+			bbar:'none'
+		});
+		openinputiframe.location.href='?m=index&d=we&a=company&hideheader=true&ofrom=reim';
+	},
+	changecomok:function(){
+		js.tanclose('winiframe');
+		js.msgok('切换成功');
+		location.reload();
 	},
 	exitlogin:function(bo){
 		if(!bo){

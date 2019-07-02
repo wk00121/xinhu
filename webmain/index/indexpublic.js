@@ -66,7 +66,7 @@ function publicsave(mo, dos,oans){
 }
 
 function editfacechang(xid,nems){
-	js.upload('_editfacechangback',{maxup:'1',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid});	
+	js.upload('_editfacechangback',{maxup:'1',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid,'urlparams':'noasyn:yes'});	
 }
 function _editfacechangback(a,xid){
 	var f = a[0];
@@ -112,7 +112,8 @@ function openxiangs(name,num,id,cbal){
 	if(!id)id=0;
 	if(!cbal)cbal='';
 	var url = 'task.php?a=p&num='+num+'&mid='+id+'';
-	if(num.indexOf('?')>-1){url=num+'&callback='+cbal+'';}else{url+='&callback='+cbal+'';}
+	var jg  = num.indexOf('?')>-1 ? '&' : '?';
+	if(num.indexOf('?')>-1 || num.substr(0,4)=='http'){url=num+''+jg+'callback='+cbal+'';}else{url+='&callback='+cbal+'';}
 	js.winiframe(name,url);
 	return false;
 }
@@ -178,7 +179,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		openinput(this.modename,this.modenum,this.mid, this.callbackstr);
 	};
 	this.getupgurl=function(str){
-		if(str.substr(0,4)=='http')return str;
+		if(str.substr(0,4)=='http' || str.indexOf('|')==-1)return str;
 		var a1 = str.split('|'),lx = a1[0],mk = a1[1],cs=a1[2];
 		var url= '';
 		if(lx=='add')url='?a=lu&m=input&d=flow&num='+mk+'';
@@ -748,7 +749,7 @@ js.tanclose=function(act, guan){
 js.tanoffset=function(act){
 	var mid=''+act+'_main';
 	var lh=$('#'+mid+'').find('div[xpbody]').height(),l,t;
-	t=(winHb()-lh-40)*0.5;
+	t=(winHb()-lh-20)*0.5;
 	if(t<0)t=1;
 	$('#'+mid+'').css({'top':''+t+'px'});
 }

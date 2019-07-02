@@ -29,7 +29,7 @@
 		}
 		if(lx=='msg' || !lx){
 			if(!txt)txt='提示';
-			s+='<div style="font-size:40px;color:red">！</div>';
+			s+='<div style="font-size:40px;color:red">☹</div>';
 			s+='<div style="color:red">'+txt+'</div>';
 		}
 		s+='</div>';

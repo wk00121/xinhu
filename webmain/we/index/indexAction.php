@@ -21,6 +21,8 @@ class indexClassAction extends ActionNot{
 		
 	}
 	
+	
+	
 	/**
 	*	用户信息
 	*/
@@ -37,5 +39,11 @@ class indexClassAction extends ActionNot{
 		
 		if(isempt($urs['face']))$urs['face']='images/noface.png';
 		$this->assign('arr', $urs);
+	}
+	
+	public function companyAction()
+	{
+		$this->assign('carr', m('admin')->getcompanyinfo($this->adminid));
+		$this->assign('ofrom', $this->get('ofrom'));
 	}
 }

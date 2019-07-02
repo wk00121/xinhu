@@ -62,7 +62,7 @@ class curlChajian extends Chajian{
 		return $sFile;
 	}
 	
-	public function getcurl($url)
+	public function getcurl($url, $headarr=array())
 	{
 		if(!function_exists('curl_init')){
 			return $this->getfilecont($url);
@@ -76,6 +76,12 @@ class curlChajian extends Chajian{
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		if($ishttps==1){
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		}
+		//设置head
+		if($headarr){
+			$heads = array();
+			foreach($headarr as $k=>$v)$heads[] = ''.$k.':'.$v.'';
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $heads);
 		}
 		curl_setopt($ch, CURLOPT_TIMEOUT, $this->TIMEOUT); 
 		$output = curl_exec($ch);

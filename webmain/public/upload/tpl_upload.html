@@ -12,6 +12,7 @@ var callback= '<?=$params['callback']?>',
 	maxwidth  = '<?=$params['maxwidth']?>',
 	showid  	= '<?=$params['showid']?>',
 	upkey  	= '<?=$params['upkey']?>',
+	urlparams  	= <?=$params['urlparams']?>,
 	thumbtype  = '<?=$params['thumbtype']?>';//缩略图类型0可能去掉看不到的默认， 1整图缩略可以看到白
 var up={
 	filearr:[],
@@ -146,6 +147,10 @@ var up={
 	},
 	editname:function(oi,o1){
 		var arr = this.filearr[oi];
+		if(!arr){
+			$(o1).remove();
+			return;
+		}
 		var nae = arr.filename.replace('.'+arr.fileext+'','');
 		js.prompt('改名','输入新的文件名称',function(jg,txt){
 			if(jg=='yes' && txt){
@@ -218,7 +223,10 @@ var up={
 		$('#nowupspan').html(oi+1);
 		this.jdt(0);
 		var xhr = new XMLHttpRequest();
-		var url = js.getajaxurl('upfile','upload','public', {'maxsize':up.maxsize,'uptype':uptype,'thumbnail':thumbnail});
+		urlparams.maxsize=up.maxsize;
+		if(uptype && uptype!='*')urlparams.uptype=uptype;
+		if(thumbnail)urlparams.thumbnail=thumbnail;
+		var url = js.getajaxurl('upfile','upload','public', urlparams);
 		xhr.open('POST', url, true); 
 		xhr.onreadystatechange = function(){
 		};

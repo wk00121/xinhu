@@ -242,7 +242,7 @@ class loginClassModel extends Model
 				'online'=> '1'
 			);
 			$bo = $this->insert($larr);
-			if(!$bo)return '数据库无法写入,不能登录';
+			if(!$bo)return '数据库无法写入,不能登录:'.$this->db->error().'';
 			return array(
 				'uid' 	=> $uid,
 				'name' 	=> $name,
@@ -355,5 +355,33 @@ class loginClassModel extends Model
 		$uids = '';
 		foreach($rows as $k=>$rs)$uids.=','.$rs['uid'].'';
 		if($uids!='')m('admin')->update('`online`=1', "`id` in(".substr($uids,1).")");
+	}
+	
+	
+	//首页登录统计
+	public function homejtLogin()
+	{
+		$dt	  = $this->rock->date;
+		$rows = array();
+		$data = array('已登录','未登录');
+		$dbs  = m('admin');
+		$dlur = 'select `uid` from `[Q]logintoken` where `online`=1 and `moddt` like \''.$dt.'%\'';
+		$zong = $dbs->rows('`status`=1');
+		$delr = $dbs->rows('`status`=1 and `id` in('.$dlur.')');
+		$rows[] = array(
+			'name' => '未登录',
+			'value' => $zong-$delr,
+			'color' => '#FF9999'
+		);
+		$rows[] = array(
+			'name' => '已登录',
+			'value' => $delr,
+			'color' => '#99CC00'
+		);
+		return array(
+			'rows' => $rows,
+			'data' => $data,
+			'dt' => $dt,
+		);
 	}
 }

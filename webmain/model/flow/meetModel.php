@@ -126,13 +126,20 @@ class flow_meetClassModel extends flowModel
 	private function tisongtodo()
 	{
 		if($this->rs['type']!='0')return;//这个是普通会议才需要通知。
-		//$cont  = '{optname}发起会议预定从{startdt}→{enddt},在{hyname},主题:{title}';
-		//$start = date('Y年m月d日H:s',strtotime($this->rs['startdt']));
-		//$end = date('Y年m月d日H:s',strtotime($this->rs['enddt']));
-		//$end = $this->dbobj->stringdt($this->rs['enddt']);
+		
 		if($this->rs['startdt'] < $this->rock->now)return;//已过期了
-		$cont  = '{optname}发起会议“{title}”在{hyname}，时间{startdt}至{enddt}';
-		$this->push($this->rs['joinid'], '会议', $cont);
+		
+		//发给参会人
+		//$cont  = '{optname}发起会议“{title}”在{hyname}，时间{startdt}至{enddt}';
+		//$this->push($this->rs['joinid'], '会议', $cont);
+		$cont = "您好，您有一个新的会议计划。\n\n会议主题：{title}\n会议时间：{startdt}至{enddt}\n会议地点：{hyname}";
+		$zcren= arrvalue($this->rs,'zcren');
+		if(!isempt($zcren)){
+			$cont.="\n会议主持人：{zcren}";
+		}else{
+			$cont.="\n发起人：{optname}";
+		}
+		$this->pushs($this->rs['joinid'], $cont, '会议通知');
 		
 		$this->sendsms($this->rs, 'meetapply', array(
 			'optname' 	=> $this->adminname,
@@ -172,6 +179,9 @@ class flow_meetClassModel extends flowModel
 		if(isempt($receid) || $issms!='1')return;
 		$jyid	= $rs['jyid'];
 		if(!isempt($jyid))$receid.=','.$jyid.''; //发个纪要人
+		
+		$zcrenid= arrvalue($rs, 'zcrenid');
+		if(!isempt($zcrenid))$receid.=','.$zcrenid.''; //发个主持人
 		
 		$qiannum= ''; //签名编号，可以为空
 		$barr = c('xinhuapi')->sendsms($receid, $qiannum, $tplnum, $params);
@@ -220,8 +230,9 @@ class flow_meetClassModel extends flowModel
 			$ars['state'] = 0;
 			$ars['rate'] = '';
 			unset($ars['id']);
-			
-			$where = "`mid`=".$rs['id']." and `startdt` like '".$gdt."%'";
+			$this->adminmodel->setcompanyid($rs['comid']);
+			$GLOBALS['adminid'] = $ars['optid'];
+			$where  = "`mid`=".$rs['id']." and `startdt` like '".$gdt."%'";
 			$ors 	= $this->getone($where);
 			$uwerew = '';
 			$iid 	= 0;
@@ -242,5 +253,69 @@ class flow_meetClassModel extends flowModel
 		}
 		
 		return $jlarr;
+	}
+	
+	
+	public function meettodo()
+	{
+		$rows 	= $this->getall("`state` in(0,1) and `type`=0 and `startdt` like '".$this->rock->date."%' and `status`=1");
+		$time	= time();
+		foreach($rows as $k=>$rs){
+			$this->adminmodel->setcompanyid($rs['comid']); //设置对应单位id
+			$zt 	= $rs['state'];
+			$dts	= explode(' ', $rs['startdt']);
+			$sttime = strtotime($rs['startdt']);
+			$ettime = strtotime($rs['enddt']);
+			$GLOBALS['adminid'] = $rs['optid'];
+			$nzt	= -1;
+			if($ettime <= $time){
+				$nzt = 2;
+			}else{
+				if($time >= $sttime && $time< $ettime){
+					if($zt==0)$nzt = 1;
+				}else{
+					$jg = $sttime - $time;
+					if($jg <= 600 && $zt==0){ //提前10分钟就提醒
+						$ssj 	= floor($jg/60);
+						$tzuid 	= $this->adminmodel->gjoin($rs['joinid']);
+						
+						//$cont  	= '会议“'.$rs['title'].'”将在'.$ssj.'分钟后的'.$dts[1].'开始请做好准备，在会议室“'.$rs['hyname'].'”';
+						$this->loaddata($rs['id'], false);
+						$this->meettodos($rs, '您好，会议即将在'.$ssj.'分钟后的'.$dts[1].'开始，请准时参加。');//快到时间通知
+					
+						//短信通知
+						if($ssj<6)$this->sendsms($rs, 'meettodo', array(
+							'fenz' 		=> ''.$ssj.'',
+							'title' 	=> $rs['title'],
+							'time' 		=> $dts[1],
+							'hyname' 	=> $rs['hyname']
+						));
+					}
+				}
+			}
+			if($nzt != -1)$this->update("`state`='$nzt'", $rs['id']);
+		}
+	}
+	
+	private function meettodos($rs, $kss)
+	{
+		$receid = $rs['joinid'];
+		if(isempt($receid))return;
+		
+		$cont 	= "".$kss."\n\n会议主题：{title}\n会议时间：{startdt}至{enddt}\n会议地点：{hyname}";
+		$zcren= arrvalue($rs,'zcren');
+		if(!isempt($zcren)){
+			$cont.="\n会议主持人：{zcren}";
+		}else{
+			$cont.="\n发起人：{optname}";
+		}
+		
+		$jyid	= $rs['jyid'];
+		if(!isempt($jyid))$receid.=','.$jyid.''; //发个纪要人
+		
+		$zcrenid= arrvalue($rs, 'zcrenid');
+		if(!isempt($zcrenid))$receid.=','.$zcrenid.''; //发个主持人
+		
+		$this->pushs($receid, $cont, '会议提醒');
 	}
 }

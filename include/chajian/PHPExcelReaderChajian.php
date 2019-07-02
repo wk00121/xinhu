@@ -4,7 +4,9 @@
 */
 class PHPExcelReaderChajian extends Chajian{
 	
-
+	public $A;
+	public $AT;
+	
 	protected function initChajian()
 	{
 		$this->Astr	= 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,AB,AC,AD,AE,AF,AG,AH,AI,AJ,AK,AL,AM,AN,AO,AP,AQ,AR,AS,AT,AU,AV,AW,AX,AY,AZ,BA,BB,BC,BD,BE,BF,BG,BH,BI,BJ,BK,BL,BM,BN,BO,BP,BQ,BR,BS,BT,BU,BV,BW,BX,BY,BZ,CA,CB,CC,CD,CE,CF,CG,CH,CI,CJ,CK,CL,CM,CN,CO,CP,CQ,CR,CS,CT,CU,CV,CW,CX,CY,CZ';
@@ -52,5 +54,12 @@ if(file_exists(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php'))include_once(ROO
 	public function importTable($table, $rows, $fields)
 	{
 		
+	}
+	
+	public function ExcelToDate($lx, $val)
+	{
+		if($lx=='date')$lx = 'Y-m-d';
+		if($lx=='datetime')$lx = 'Y-m-d H:i:s';
+		return date($lx, PHPExcel_Shared_Date::ExcelToPHP($val)-8*3600);
 	}
 }                         

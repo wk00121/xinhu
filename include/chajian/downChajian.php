@@ -110,12 +110,13 @@ class downChajian extends Chajian{
 		return $arr;
 	}
 	
-	public function uploadback($upses, $thumbnail='')
+	public function uploadback($upses, $thumbnail='', $subo=true)
 	{
 		if($thumbnail=='')$thumbnail='150x150';
 		$msg 		= '';
 		$data 		= array();
 		if(is_array($upses)){
+			$noasyn = $this->rock->get('noasyn'); //=yes就不同步到文件平台
 			$arrs	= array(
 				'adddt'	=> $this->rock->now,
 				'valid'	=> 1,
@@ -148,10 +149,22 @@ class downChajian extends Chajian{
 			if(!$bo)$this->reutnmsg($this->db->error());
 			
 			$id	= $this->db->insert_id();
-			$arrs['id'] = $id;
+			$arrs['id']   = $id;
 			$arrs['picw'] = $upses['picw'];
 			$arrs['pich'] = $upses['pich'];
 			$data= $arrs;
+			
+			//发队列自动上传到信呼文件平台
+			if(getconfig('autoup_toxinhudoc') && $noasyn != 'yes'){
+				$notlx = getconfig('autoup_notfileext');//不上传类型
+				$booo  = true;
+				if(!isempt($notlx) && contain(','.$notlx.',', ','.$arrs['fileext'].','))$booo = false;
+				if($booo){
+					$stime = time()+rand(3,6);
+					if($subo)$stime=0;
+					c('rockqueue')->sendfile($id, $stime);
+				}
+			}
 		}else{
 			$data['msg'] = $upses;
 		}

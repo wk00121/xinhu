@@ -17,6 +17,7 @@ var c = {
 	grouparr:[],
 	userarr:[],
 	deptarr:[],
+	firstpid:0,
 	init:function(){
 		this.changevalue = js.request('changevalue');//默认值
 		this.changerange = js.request('changerange');
@@ -33,7 +34,8 @@ var c = {
 		if(!us || this.changerange!=''){
 			this.loaddata(true);
 		}else{
-			this.showlist(0);
+			this.firstpid = this.deptarr[0].pid;
+			this.showlist(this.firstpid,0);
 			this.initxuan();
 		}
 		this.resets();
@@ -67,15 +69,19 @@ var c = {
 			c.userarr = js.decode(ret.userjson);
 			c.deptarr = js.decode(ret.deptjson);
 			c.grouparr = js.decode(ret.groupjson);
-			c.showlist(0);
+			c.firstpid = 0;
+			if(c.deptarr[0])c.firstpid=c.deptarr[0].pid;
+			c.showlist(c.firstpid,0);
 			if(iscs)c.initxuan();
 		});
 	},
 	showlist:function(pid,oi){
 		var a=this.deptarr,len=a.length,i,s='',ssu='',wjj,s2='',hw=24;
 		var s1='<div style="width:'+(hw*oi)+'px"></div>';
+		this.fid = 1;
 		for(i=0;i<len;i++){
 			if(a[i].pid==pid){
+				if(this.fid==1)this.fid = a[i].id;
 				wjj= 'images/files.png';
 				if(a[i].ntotal=='0')wjj= 'images/file.png';
 				s+='<div id="showssd'+a[i].id+'" class="listss">';
@@ -84,9 +90,10 @@ var c = {
 				s+='<span show="false" id="showdiv_'+a[i].id+'"></span>';
 			}
 		}
-		$('#showdiv_'+pid+'').html(s).attr('show','true');
-		if(pid==0){
-			this.showlist(1, 1);
+		var xud = (oi==0)?'0' : pid;
+		$('#showdiv_'+xud+'').html(s).attr('show','true');
+		if(oi==0){
+			this.showlist(this.fid, 1);
 			this.showgroup();
 		}
 		
@@ -193,8 +200,8 @@ var c = {
 			if(id==1)s1='<span class="label">全员</span>';
 			s='<div id="d_'+d.id+'" onclick="$(this).remove()" class="listsss">'+s1+'<font>'+d.name+'</font></div>';
 			if(companymode && id==1 && uidid>1){
-				//s='';
-				//js.msg('msg','多单位模式下不运行选择最顶级部门');
+				s='';
+				js.msg('msg','多单位模式下不能选择最高的顶级部门');
 			}
 		}
 		if(lx=='g'){

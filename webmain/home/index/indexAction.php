@@ -65,6 +65,8 @@ class indexClassAction extends Action{
 		$arr['notodo']	= $this->option->getval('gerennotodo_'.$uid.'');
 		
 		$arr['editpass']= m('admin')->iseditpass($uid);
+		$arr['miaoshu'] = (int)$this->option->getval('syshometime', '200');
+		$arr['tanwidth']= $this->option->getval('tanwidth', '900x800');
 		
 		return $arr;
 	}

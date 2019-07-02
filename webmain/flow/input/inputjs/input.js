@@ -428,6 +428,7 @@ var c={
 						if(tsye=='img'){
 							get('imgview_'+sna+'').src = d.filepath;
 							form(sna).value=d.filepath;
+							c.upimages(sna,d.id,false);
 						}else if(tsye=='file'){
 							$('#meng_'+c.uprnd+'').remove();
 							$('#up_'+c.uprnd+'').attr('upid_'+sna+'',d.id);
@@ -457,13 +458,17 @@ var c={
 							}
 							s+='<div id="meng_'+c.uprnd+'" class="upload_items_meng" style="font-size:16px">0%</div></div>';
 							$('#'+sna+'_divadd').before(s);
+						}else if(tsye=='img'){
+							js.loading('上传中...');
 						}
 					}
 				});
 			}
 			var val = form(sna).value;
 			if(tsye=='img'){
-				if(val)get('imgview_'+sna+'').src=val;
+				var val1 = data[''+sna+'_view'];
+				if(!val1)val1=val;
+				if(val1)get('imgview_'+sna+'').src=val1;
 			}
 			//显示上传文件信息
 			if(tsye=='file' && farr && val){
@@ -489,7 +494,18 @@ var c={
 			$('div[tmp="mobilezbiao"]').css('width',''+($(window).width()-12)+'px');
 		}
 	},
-	
+	upimages:function(fid,fileid,bs){
+		if(!bs){
+			js.loading('等待上传完成...');
+			setTimeout("c.upimages('"+fid+"','"+fileid+"', true)",3000);
+		}else{
+			js.ajax(geturlact('upimagepath'),{fileid:fileid,fid:fid},function(ret){
+				js.unloading();
+				var da = ret.data;
+				if(da.path)form(da.fid).value=da.path;
+			},'get,json');
+		}
+	},
 	//多文件点击上传
 	uploadfilei:function(sna){
 		if(isedit==0)return;
@@ -520,15 +536,10 @@ var c={
 		var f = this.filearr['f'+fid+''];if(!f)return;
 		if(isedit==0 || xs){
 			js.alertclose();
-			if(js.isimg(f.fileext)){
-				var src = f.imgviewurl;
-				if(!src)src=f.thumbpath.replace('_s','');
-				this.showviews(src);
-			}else{
-				this.downshow(fid, f.fileext);
-			}
+			this.loadicons();
+			js.fileopt(fid,0);
 		}else{
-			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>',function(jg){
+			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+',\'abc\')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>',function(jg){
 				if(jg=='yes'){
 					o.remove();
 					c.showupid(sna);

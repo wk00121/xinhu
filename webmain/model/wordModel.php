@@ -139,13 +139,13 @@ class wordClassModel extends Model
 				foreach($afflow as $k2=>$rs2)$alltyids.=','.$rs2['id'].'';
 			}
 			$where  = 'a.`type`=0 and ((1 '.$where1.') or (a.`typeid` in('.$alltyids.')))';
-			$where .= m('admin')->getcompanywhere(1);
+			$where .= m('admin')->getcompanywhere(1,'a.');
 		}
 		
 		//我共享的
 		if($lx==2){
 			$where  = 'a.`type`=0 and a.`shateid` is not null and a.`optid`='.$uid.'';
-			$where .= m('admin')->getcompanywhere(1);
+			$where .= m('admin')->getcompanywhere(1,'a.');
 		}
 		
 		//关键词的搜索
@@ -156,7 +156,7 @@ class wordClassModel extends Model
 		$sarr	= array(
 			'where' => $where,
 			'table' => '`[Q]word` a left join `[Q]file` b on a.`fileid`=b.`id`',
-			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.filesize,b.fileext,b.filepath,b.thumbpath,b.downci',
+			'fields'=> 'a.*,b.filename,a.sort,b.filesizecn,b.filenum,b.thumbplat,b.filesize,b.fileext,b.filepath,b.thumbpath,b.downci',
 			'order' => 'a.`type` desc,a.`sort`,a.id desc'
 		);
 		
@@ -164,6 +164,7 @@ class wordClassModel extends Model
 		
 		$barr['totalCount'] = $barr['count'];
 		$rows 	= $barr['rows'];
+		$fobj	= m('file');
 		
 		//显示路径
 		foreach($rows as $k=>&$rs){
@@ -177,7 +178,7 @@ class wordClassModel extends Model
 				
 			}else{
 				if(isempt($rs['name']))$rs['name'] = $rs['filename'];
-				if(!isempt($rs['thumbpath']) && !file_exists($rs['thumbpath']))$rs['thumbpath']='';
+				$rs['thumbpath'] = $fobj->getthumbpath($rs); //缩略图的路径
 				
 				$fpath = $rs['filepath'];
 			
@@ -185,7 +186,7 @@ class wordClassModel extends Model
 				if(substr($fpath,0,4)=='http'){
 					$wjstatus = 2;
 				}else{
-					if(!file_exists($fpath)){
+					if(isempt($rs['filenum']) && !file_exists($fpath)){
 						$wjstatus=0;
 						$rs['ishui']=1;
 					}
@@ -220,6 +221,7 @@ class wordClassModel extends Model
 		$arr['comid'] 	= m('admin')->getcompanyid();
 		$arr['typeid'] 	= $typeid;
 		$file 			= m('file');
+		$id				= 0;
 		foreach($sadid as $fid){
 			$arr['fileid'] = $fid;
 			$id = $this->insert($arr);
@@ -244,7 +246,8 @@ class wordClassModel extends Model
 			$cont = "{$this->adminname}在“{$cprs['name']}”上传了{$zongs}个文件“{$names}”";
 			$flow = m('flow')->initflow('word');
 			$flow->push($receid,'文档', $cont, ''.$this->adminname.'上传了文件',0, array(
-				'wxurl' => $flow->getwxurl()
+				'wxurl' => $flow->getwxurl(),
+				'id' => $id
 			));
 		}
 	}

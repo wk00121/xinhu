@@ -105,6 +105,8 @@ input.checkbox,input.radio{ border:none;padding:0;margin-right:5px; width:16px; 
 .lists:hover,.lists.active{background-color:#e3eef9}
 .lists:hover .close{display:block}
 .lists:hover .bqs{display:none}
+
+.lists .name{height:24px;line-height:24px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:125px;}
 .huicont{color:#888888;font-size:12px;height:20px;line-height:20px; overflow:hidden;word-wrap:break-word;word-break:break-all;white-space:normal;}
 
 

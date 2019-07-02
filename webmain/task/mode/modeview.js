@@ -366,9 +366,13 @@ var c={
 	},
 	
 	//预览文件
-	downshow:function(id, ext,pts){
+	downshow:function(id, ext,pts, fnun){
 		this.loadicons();
-		js.yulanfile(id, ext,pts);
+		if(!isempt(fnun)){
+			js.fileopt(id,0);
+		}else{
+			js.yulanfile(id, ext,pts);
+		}
 		return false;
 	},
 	changecheck_status:function(o1){

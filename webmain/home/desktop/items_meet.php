@@ -14,7 +14,7 @@ homeobject.show_meet_list=function(a){
 	$('#homemeetlist a[temp]').remove();
 	for(i=0;i<a.length;i++){
 		a1=a[i];
-		s+='<a temp="list" onclick="openxiangs(\'会议\',\'meet\',\''+a1.id+'\');" class="list-group-item">◇'+a1.title+'</a>';
+		s+='<a temp="list" style="TEXT-DECORATION:none;" onclick="openxiangs(\'会议\',\'meet\',\''+a1.id+'\');" class="list-group-item">◇'+a1.title+'</a>';
 	}
 	$('#homemeetlist').append(s);
 }

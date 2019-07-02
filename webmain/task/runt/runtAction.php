@@ -57,6 +57,9 @@ class runtAction extends ActionNot
 	*/
 	public function getparams($key, $dev='')
 	{
+		if(PHP_SAPI != 'cli'){
+			return $this->get($key, $dev);
+		}
 		$arr = arrvalue($GLOBALS, 'argv');
 		$sss = '';
 		if($arr)for($i=2;$i<count($arr);$i++){

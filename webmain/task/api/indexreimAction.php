@@ -8,6 +8,7 @@ class indexreimClassAction extends apiAction
 	{
 		$viewobj 	= m('view');
 		$dbs 		= m('reim');
+		$dba 		= m('admin');
 		$gtype		= $this->rock->get('gtype');
 		$udarr 		= m('dept')->getdeptuserdata();
 		$userarr 	= $udarr['uarr'];
@@ -35,7 +36,8 @@ class indexreimClassAction extends apiAction
 		$arr['config'] 		= $dbs->getreims();
 		$arr['loaddt'] 		= $this->now;
 		$arr['ip'] 			= $this->ip;
-		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
+		$arr['editpass']	= $dba->iseditpass($this->adminid);
+		$arr['companyinfo']	= $dba->getcompanyinfo($this->adminid, 1);
 		m('login')->uplastdt();
 		
 		$this->showreturn($arr);
@@ -47,7 +49,7 @@ class indexreimClassAction extends apiAction
 	public function reiminitAction()
 	{
 		$dbs 		= m('reim');
-		
+		$dba 		= m('admin');
 		$udarr 		= m('dept')->getdeptuserdata();
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
@@ -64,7 +66,8 @@ class indexreimClassAction extends apiAction
 		$arr['config'] 		= $dbs->getreims();
 		$arr['loaddt'] 		= $this->now;
 		$arr['ip'] 			= $this->ip;
-		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
+		$arr['editpass']	= $dba->iseditpass($this->adminid);
+		$arr['companyinfo']	= $dba->getcompanyinfo($this->adminid, 1);
 		m('login')->uplastdt();
 		
 		$this->showreturn($arr);
@@ -76,13 +79,15 @@ class indexreimClassAction extends apiAction
 	public function mwebinitAction()
 	{
 		$dbs 		= m('reim');
+		$dba 		= m('admin');
 		$agentarr	= $dbs->getappagent($this->adminid);
 		$historyarr	= $dbs->gethistory($this->adminid);
 		
 		$arr['agentjson']	= json_encode($agentarr['rows']);
 		$arr['historyjson'] = json_encode($historyarr);
 		$arr['loaddt'] 		= $this->now;
-		$arr['editpass']	= m('admin')->iseditpass($this->adminid);
+		$arr['editpass']	= $dba->iseditpass($this->adminid);
+		$arr['companyinfo']	= $dba->getcompanyinfo($this->adminid, 1);
 		m('login')->uplastdt();
 		$this->showreturn($arr);
 	}
@@ -126,10 +131,13 @@ class indexreimClassAction extends apiAction
 	
 	public function showmyinfoAction()
 	{
-		$arr = m('admin')->getone($this->adminid,'`id`,`deptallname`,`ranking`,`face`,`name`,`user`,`mobile`');
+		$dbs = m('admin');
+		$arr = $dbs->getone($this->adminid,'`id`,`deptallname`,`ranking`,`face`,`name`,`user`,`mobile`');
 		if(!$arr)$this->showreturn('','not user', 201);
 		if(isempt($arr['face']))$arr['face']='images/noface.png';
 		$arr['admintoken']  = $this->admintoken;
+		$arr['companyinfo']  = $dbs->getcompanyinfo($this->adminid, 1);
+	
 		//$arr['isgzh'] 		= m('wxgzh:index')->isusegzh(1); //判断是否有设置公众号
 		
 		$this->showreturn($arr);

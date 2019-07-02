@@ -18,6 +18,8 @@ if($stype==''){
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js?<?=$da['logintime']?>"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
+<script type="text/javascript" src="mode/plugin/jquery-rockmodels.js"></script>
+
 <script>
 var mid = '<?=$da['arr']['mid']?>',modenum='<?=$da['arr']['modenum']?>',ismobile=0,receiptrs=<?=json_encode($da['arr']['receiptrs'])?>,isinput=0;
 </script>
@@ -69,7 +71,7 @@ if($stype!=''){
 </head>
 <body style="background:white">
 <div align="center">
-<div style="width:700px;position:relative" align="left">
+<div style="width:<?=$da['xiangwidth']?>px;position:relative" align="left">
 	<?php if($stype==''){?>
 	<div class="menulls"><input id="showmenu" style="background-color:#888888;font-size:12px;border-radius:5px" class="webbtn" value="操作V" type="button"></div>
 	<div class="menullss"><ul><li lx="0">打印全部...</li><li lx="6">只打印内容...</li>

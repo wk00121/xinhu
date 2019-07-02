@@ -10,7 +10,7 @@
 	maxupgloble = 0;
 	function rockupload(opts){
 		var me 		= this;
-		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},updir:'',onsuccess:function(){},quality:0.7,xu:0,fileallarr:[],autoup:true,
+		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},urlparams:{},updir:'',onsuccess:function(){},quality:0.7,xu:0,fileallarr:[],autoup:true,
 		onerror:function(){},fileidinput:'fileid',
 		onabort:function(){},
 		allsuccess:function(){}
@@ -264,8 +264,9 @@
 			this.upbool = true;
 			if(this.initpdbool && fs && !bos){this._initfile(fs);return;}
 			try{var xhr = new XMLHttpRequest();}catch(e){js.msg('msg','当前浏览器不支持2');return;}
-			var url = js.apiurl('upload','upfile', {'maxsize':this.maxsize});
-			if(this.updir)url+='&updir='+this.updir+'';
+			this.urlparams.maxsize = this.maxsize;
+			if(this.updir)this.urlparams.updir=this.updir;
+			var url = js.apiurl('upload','upfile', this.urlparams);
 			xhr.open('POST', url, true); 
 			xhr.onreadystatechange = function(){me._statechange(this);};
 			xhr.upload.addEventListener("progress", function(evt){me._onprogress(evt, this);}, false);  

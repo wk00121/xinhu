@@ -38,6 +38,7 @@ class apiAction extends ActionNot
 		$this->adminname 		= $this->userrs['name'];
 		$this->rock->adminid	= $this->adminid;
 		$this->rock->adminname 	= $this->adminname;
+		$this->admintoken 		= $this->token;
 	}
 	
 	public function getvals($nae, $dev='')

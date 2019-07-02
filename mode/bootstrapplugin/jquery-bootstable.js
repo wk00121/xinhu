@@ -739,7 +739,7 @@
 		
 		this._caozuochengs=function(a,oj){
 			a.renderer=function(v,d,oi){
-				var s='<a oi="'+oi+'" oj="'+oj+'" temp="caozuomenu_'+rand+'">操作<i class="icon-angle-down"></i></a>';
+				var s='<a oi="'+oi+'" oj="'+oj+'" style="TEXT-DECORATION:none" temp="caozuomenu_'+rand+'">操作<i class="icon-angle-down"></i></a>';
 				if(!d.id)s='&nbsp;';
 				return s;
 			};

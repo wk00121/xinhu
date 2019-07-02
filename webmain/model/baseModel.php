@@ -15,7 +15,10 @@ class baseClassModel extends Model
 		if($lx==3)$runurl = '';
 		$key 	 	= getconfig('asynkey');
 		if($key!='')$key = md5(md5($key));
-		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$this->adminid.'&asynkey='.$key.'';
+		$uid 		 = $this->adminid;
+		if($uid==0)$uid = (int)arrvalue($GLOBALS,'adminid','0');
+		if($uid==0)$uid = 1;//必须要有个值
+		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$uid.'&asynkey='.$key.'';
 		if(is_array($can))foreach($can as $k=>$v)$runurl.='&'.$k.'='.$v.'';
 		return $runurl;
 	}

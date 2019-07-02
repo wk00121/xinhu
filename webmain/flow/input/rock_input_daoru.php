@@ -13,7 +13,7 @@ $(document).ready(function(){
 			for(i=0;i<a.length;i++){
 				if(a[i]){
 					oi++;
-					a1 = a[i].replace(/[ ]/g,'').split('	');
+					a1 = a[i].split('	');
 					s+='<tr>';
 					s+='<td>'+oi+'</td>';
 					for(j=0;j<a1.length;j++)s+='<td>'+a1[j]+'</td>';
@@ -78,13 +78,13 @@ $(document).ready(function(){
 			js.open(url);
 		},
 		addfile:function(){
-			js.upload('_daorufile{rand}',{maxup:'1','title':'选择Excel文件',uptype:'xls,xlsx'});
+			js.upload('_daorufile{rand}',{maxup:'1','title':'选择Excel文件',uptype:'xls,xlsx','urlparams':'noasyn:yes'});
 		},
 		backup:function(fid){
 			var o1 = get('upbtn{rand}');
 			o1.disabled=true;
 			o1.value='文件读取中...';
-			js.ajax(js.getajaxurl('readxls','{mode}','{dir}'),{fileid:fid},function(ret){
+			js.ajax(js.getajaxurl('readxls','{mode}','{dir}'),{fileid:fid,'modenum':modenum},function(ret){
 				if(ret.success){
 					o1.value='读取成功';
 					mobjs.val(ret.data);

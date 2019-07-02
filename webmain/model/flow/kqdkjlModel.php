@@ -116,7 +116,7 @@ class flow_kqdkjlClassModel extends flowModel
 			$uids.=','.$rs['id'].'';
 			$uarrs[$rs['id']] = '未打卡';
 		}
-		$rows = $this->db->getall("SELECT * FROM `xinhu_kqanay` where `uid` in($uids) and `dt`='$dt' and sort=0");
+		$rows = $this->db->getall("SELECT * FROM `[Q]kqanay` where `uid` in($uids) and `dt`='$dt' and sort=0");
 		foreach($rows as $k=>$rs){
 			$state = $rs['state'];
 			if(!isempt($rs['states']))$state = $rs['states'];

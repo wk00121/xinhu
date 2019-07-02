@@ -77,10 +77,10 @@ class homeitemsClassModel extends Model
 		return m('flowbill')->homelistshow();
 	}
 	
-	//通知公告读取
+	//通知公告读取，5是读取的条数
 	public function get_gong_arr()
 	{
-		return m('flow')->initflow('gong')->getflowrows($this->adminid,'my');
+		return m('flow')->initflow('gong')->getflowrows($this->adminid,'my', 5);
 	}
 	
 	//会议
@@ -110,10 +110,10 @@ class homeitemsClassModel extends Model
 		);
 	}
 	
-	//读取我查阅公文
+	//读取我查阅公文,5是读取条数
 	public function get_officic_arr()
 	{
-		return m('flow')->initflow('officic')->getflowrows($this->adminid,'my');
+		return m('flow')->initflow('officic')->getflowrows($this->adminid,'my',5);
 	}
 	
 	//读取新闻的
@@ -128,8 +128,15 @@ class homeitemsClassModel extends Model
 		);
 	}
 	
+	//考勤情况统计
 	public function get_kqtotal_arr()
 	{
 		return m('flow')->initflow('kqdkjl')->homekqtotal();
+	}
+	
+	//登录统计
+	public function get_tjlogin_arr()
+	{
+		return m('login')->homejtLogin();
 	}
 }

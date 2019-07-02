@@ -19,6 +19,20 @@ class uploadClassAction extends Action{
 		$params['uptype'] 		= $this->get('uptype','*');
 		$params['thumbtype'] 	= $this->get('thumbtype','0');
 		$params['maxsize'] 		= (int)$this->get('maxsize', c('upfile')->getmaxzhao());
+		
+		$urlparams				= '{}';
+		$urlcan	 = $this->get('urlparams');//格式:a=b,c=d
+		if(!isempt($urlcan)){
+			$cans1 = explode(',', $urlcan);
+			$urlparams = array();
+			foreach($cans1 as $cans2){
+				$cans3 = explode(':', $cans2);
+				$urlparams[$cans3[0]]=$cans3[1];
+			}
+			$urlparams = json_encode($urlparams);
+		}
+		$params['urlparams'] 	= $urlparams;
+		
 		$this->title 			= $this->get('title','文件上传');
 		$this->assign('params', $params);
 		$this->assign('callback', $params['callback']);
@@ -33,7 +47,7 @@ class uploadClassAction extends Action{
 		$thumbnail	= $this->get('thumbnail');
 		$upimg->initupfile($uptype, ''.UPDIR.'|'.date('Y-m').'', $maxsize);
 		$upses	= $upimg->up('file');
-		$arr 	= c('down')->uploadback($upses, $thumbnail);
+		$arr 	= c('down')->uploadback($upses, $thumbnail, false);
 		$this->returnjson($arr);
 	}
 	

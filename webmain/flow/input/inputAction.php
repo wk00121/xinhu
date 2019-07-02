@@ -575,6 +575,7 @@ class inputAction extends Action
 		
 		
 		$this->smartydata['course']		= $course;
+		$this->smartydata['inputwidth']	= $this->option->getval('inputwidth', 750);
 	}
 	
 	//多行子表内替换
@@ -709,7 +710,25 @@ class inputAction extends Action
 			$barr['isdaochu'] 	= $vobj->isdaochu($this->modeid, $this->adminid); //判断是否可导入
 		}
 		$barr['souarr']		= $this->flow->flowsearchfields();
-		$rows 	= $this->flow->viewjinfields($rows);//禁看字段处理
+		$rows 				= $this->flow->viewjinfields($rows);//禁看字段处理
+		$farrl	= array();
+		foreach($this->flow->fieldsarra as $k2=>$rs2){
+			if($rs2['fieldstype']=='uploadimg')$farrl[$rs2['fields']]=$rs2['fieldstype'];
+		}
+		//目前不用，去掉吧
+		if(1==2 && $rows)foreach($rows as $k1=>$rs1){
+			foreach($farrl as $fid=>$flx){
+				if(isset($rs1[$fid])){
+					$val = $rs1[$fid];
+					if($flx=='uploadimg'){
+						$val = $this->rock->gethttppath($val);
+						if($this->flow->modeid>92)$val='<img src="'.$val.'" height="60">';
+					}
+					$rows[$k1][$fid] = $val;
+				}
+			}
+		}
+		$barr['rows'] 		= $rows;
 		$scarr 				= $this->storeafter($table, $rows);
 		if(is_array($scarr))foreach($scarr as $k=>$v)$barr[$k]=$v;
 		return $barr;
@@ -739,7 +758,7 @@ class inputAction extends Action
 	{
 		$modenum 	= $this->get('modenum');
 		$flow 		= m('flow')->initflow($modenum);
-		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1','name,isbt,fields','`sort`,`id`');
+		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1 and `iszb`=0','name,isbt,fields','`sort`,`id`');
 		return $rows;
 	}
 	//确定导入数据
@@ -747,7 +766,7 @@ class inputAction extends Action
 	{
 		$modenum 	= $this->post('modenum');
 		$flow 		= m('flow')->initflow($modenum);
-		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1','name,isbt,fields,isonly','`sort`,`id`');
+		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1 and `iszb`=0','name,isbt,fields,isonly','`sort`,`id`');
 		$fields 	= $fieldss = '';
 		if(!$rows)return returnerror('没有导入的字段');
 		$onlyfield	= array();
@@ -859,15 +878,30 @@ class inputAction extends Action
 		$fileid = (int)$this->get('fileid','0');
 		$fpath  = m('file')->getmou('filepath', $fileid);
 		if(isempt($fpath))return returnerror('文件不存在了');
-		$rows   = c('PHPExcelReader')->reader($fpath);
+		$phpexcel 	= c('PHPExcelReader');
+		$rows   	= $phpexcel->reader($fpath);
 		if(is_string($rows))return returnerror('无法读取Excel文件('.$rows.')');
-		
+		$modenum= $this->get('modenum');
+		$flow	= m('flow')->initflow($modenum);
+		$dtarr	= array();//日期读取需要判断
+		$xuha	= -1;
+		foreach($flow->fieldsarra as $k2=>$rs2){
+			if($rs2['isdr']=='1' && $rs2['iszb']=='0'){
+				$xuha++;
+				if(in_array($rs2['fieldstype'], array('date','datetime'))){
+					$dtarr[$phpexcel->A[$xuha]] = $rs2['fieldstype'];
+				}
+			}
+		}
 		$str = '';
 		foreach($rows as $k=>$rs){
 			$str1 = '';
 			$xi   = 0;
 			foreach($rs as $k1=>$v1){
 				if($xi>0)$str1.='	';
+				if(isset($dtarr[$k1]) && is_numeric($v1)){
+					$v1 = $phpexcel->ExcelToDate($dtarr[$k1], $v1);
+				}
 				$v1 	= str_replace("\n", '[XINHUBR]', $v1); //有\n转
 				$str1.=''.$v1.'';
 				$xi++;
@@ -885,7 +919,7 @@ class inputAction extends Action
 		$this->display = false;
 		$modenum 	= $this->get('modenum');
 		$flow 		= m('flow')->initflow($modenum);
-		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1','name,isbt,fields','`sort`,`id`');
+		$rows 		= m('flow_element')->getall('mid='.$flow->modeid.' and `isdr`=1 and `iszb`=0','name,isbt,fields','`sort`,`id`');
 		if(!$rows)return '对应模块没有设置导入字段';
 		
 		$testdata	= array();
@@ -935,6 +969,21 @@ class inputAction extends Action
 		$unrs= m('userinfo')->getone($uid, 'syenddt,positivedt');
 		if($unrs)foreach($unrs as $k=>$v)$rs[$k] =$v;
 		return $rs;
+	}
+	
+	public function upimagepathAjax()
+	{
+		$fileid = (int)$this->get('fileid');
+		$fid  	= $this->get('fid');
+		$frs  	= m('file')->getone($fileid);
+		$path   = '';
+		if(!isempt($frs['thumbplat'])){
+			$path = str_replace('_s.','.',$frs['thumbplat']);
+		}
+		return returnsuccess(array(
+			'path' => $path,
+			'fid'  => $fid,
+		));
 	}
 }
 

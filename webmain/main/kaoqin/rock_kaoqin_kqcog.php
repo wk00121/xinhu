@@ -11,8 +11,6 @@ $(document).ready(function(){
 		},{
 			text:'职位',dataIndex:'ranking'
 		},{
-			text:'是否启用',dataIndex:'status',type:'checkbox'
-		},{
 			text:'在线打卡IP',dataIndex:'dkip',editor:true
 		},{
 			text:'在线打卡MAC地址',dataIndex:'dkmac',editor:true

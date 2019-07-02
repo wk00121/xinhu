@@ -7,6 +7,7 @@ var queue = {
 	addqueuearr:[],
 	yunoi:0,
 	yunbool:false,
+	callback:false,
 
 	//添加返回对应序号
 	add:function(cans){
@@ -26,7 +27,6 @@ var queue = {
 		$.ajax({
 			type:'get',url:da.url,
 			success:function(str){
-				if(da.type=='json')str = js.decode(str);
 				if(da.success)da.success(str, da, i);
 				queue.nextqueue();
 			},
@@ -37,6 +37,12 @@ var queue = {
 			}
 		});
 	},
+	clearqueue:function(){
+		this.addqueuearr=[];
+		this.yunoi=0;
+		this.yunbool=false;
+		this.callback=false;
+	},
 	nextqueue:function(){
 		this.addqueuearr[this.yunoi]=false;
 		var len = this.addqueuearr.length;
@@ -46,12 +52,14 @@ var queue = {
 			this.runqueue(oi);
 		}else{
 			this.yunbool=false;
+			this.callback=false;
 		}
 	},
 	//发送一组地址:
 	addlist:function(darr,funb, lxs){
 		var oi=0,zong=darr.length,i,bers;
 		if(!lxs)lxs='处理';
+		this.callback=false;
 		if(!funb)funb=function(){};
 		if(zong>0)js.msg('wait',''+lxs+'中(<span id="chulsss">0%</span>)...',0);
 		for(i=0;i<zong;i++){
@@ -62,6 +70,9 @@ var queue = {
 				if(bili==100){
 					js.msg('success',''+lxs+'完成');
 					funb();
+				}
+				if(queue.callback){
+					queue.callback(str, bili);
 				}
 			};
 			queue.add({url:darr[i],success:bers,error:bers});

@@ -5,6 +5,7 @@ class asynrunClassAction extends apiAction
 	{
 		$this->display	= false;
 		$uid   			= (int)$this->get('adminid');
+		if($uid==0)$uid	= 1;
 		$key   			= $this->get('asynkey');
 		$mykey			= getconfig('asynkey');
 		if($mykey != ''){

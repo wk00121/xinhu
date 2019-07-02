@@ -72,6 +72,12 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('yibutest', '{mode}', '{dir}'),false,function(str){
 				$('#yibutestabc').html(str);			
 			});
+		},
+		testqueue:function(){
+			js.wait('<span id="yibutestabc">测试队列是否可用中...</span>');
+			js.ajax(js.getajaxurl('testqueue', '{mode}', '{dir}'),false,function(str){
+				$('#yibutestabc').html(str);			
+			});
 		}
 	};
 	
@@ -131,6 +137,7 @@ $(document).ready(function(){
 			<button click="testsss" class="btn btn-primary" type="button">测试通信地址</button>&nbsp; 
 			<button click="testss" class="btn btn-primary" type="button">测试推送地址</button>&nbsp; 
 			<button click="testays" class="btn btn-default" type="button">测试异步</button>&nbsp; 
+			<button click="testqueue" class="btn btn-default" type="button">测试队列</button>&nbsp; 
 			<span id="msgview_{rand}"><font color=red>测试地址前，请先保存！</font></span>
 		</td>
 		</tr>

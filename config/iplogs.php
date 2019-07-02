@@ -73,7 +73,12 @@ $logstr = '[datetime]:'.$rock->now.'
 	}
 	
 	
-	if($bool==2)exit('您IP['.$ip.']禁止访问我们站点，可联系我们admin@rockoa.com');
+	if($bool==2){
+		$logs = ''.UPDIR.'/logs_access/'.date('YmdHis').'_'.rand(100,999).'.log';
+		$logstr = '[datetime]:'.$rock->now.''.chr(10).'[URL]:'.$rock->nowurl().''.chr(10).'[IP]:'.$ip.'';		
+		$rock->createtxt($logs, $logstr);
+		exit('您IP['.$ip.']禁止访问我们站点，有问题请联系我们');
+	}
 }
 
 function ipwhiteshows($ips, $rock){

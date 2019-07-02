@@ -141,6 +141,7 @@ var im={
 			im.showhistory(js.decode(hisjson));
 		}
 		this.initsearch();
+		$('#nowcompany_div').html(js.getoption('nowcompany'));
 	},
 	qihuendrap:function(yd){
 		if(yd>100 && this.index>0)this.changetab(this.index-1);
@@ -150,6 +151,7 @@ var im={
 		js.ajax('indexreim','mwebinit',false,function(ret){
 			js.setoption('agentjson', ret.agentjson);
 			js.setoption('historyjson', ret.historyjson);
+			im.showcompanyinfo(ret.companyinfo);
 			im.showagent(js.decode(ret.agentjson));
 			im.showhistory(js.decode(ret.historyjson));
 			im.reloadok();
@@ -161,6 +163,14 @@ var im={
 		}, lx, false, function(){
 			im.showerror();
 		});
+	},
+	showcompanyinfo:function(info){
+		if(info){
+			this.companyinfo = info;
+			var neme= info.name;
+			js.setoption('nowcompany', neme);
+			$('#nowcompany_div').html(neme);
+		}
 	},
 	showerror:function(){
 		if(this.touchobj)this.touchobj.ondownerror();
@@ -232,6 +242,7 @@ var im={
 		this.changestotl('agentstotal_',1);
 		js.location(url);
 	},
+	showhistorydata:{},
 	showhistory:function(a){
 		var i,len=a.length;
 		$('#historylist').html('');
@@ -245,6 +256,7 @@ var im={
 	showhistorys:function(d,pad){
 		var s,ty,o=$('#historylist'),d1,st,attr;
 		var num = ''+d.type+'_'+d.receid+'';
+		this.showhistorydata[num]=d;
 		st	= d.stotal;if(st=='0')st='';
 		var ops = d.optdt.substr(11,5);
 		if(d.optdt.indexOf(date)!=0)ops=d.optdt.substr(5,5);
@@ -263,10 +275,13 @@ var im={
 		s+='</a>';
 		o.append(s);
 	},
-	clickitems:function(ty,id, o){
-		var o1=$(o);
+	clickitems:function(ty,id,o){
+		var o1=$(o),num=''+ty+'_'+id+'',d=this.showhistorydata[num];
+		var da = [{name:'打开',lx:0}];
+		if(d && d.stotal>0)da.push({name:'标识已读',lx:2});
+		da.push({name:'删除此记录',lx:1});
 		js.showmenu({
-			data:[{name:'打开',lx:0},{name:'删除此记录',lx:1}],
+			data:da,
 			onclick:function(a){
 				var lx=a.lx;
 				if(lx==0){
@@ -277,18 +292,43 @@ var im={
 					var tst=$('#historylist').text();if(tst=='')$('#historylist_tems').show();
 					js.ajax('reim','delhistory',{type:ty,gid:id},false,'none');
 				}
+				if(lx==2){
+					im.biaoyidu(ty,id, true);
+				}
 			}
 		});
 	},
 	openuinfo:function(id){
 		js.location('?a=userinfo&d=we&uid='+id+'');
 	},
+	biaoyidu:function(ty,id,lbo){
+		if(lbo){
+			var num = ''+ty+'_'+id+'';
+			$('#histotal_'+num+'').html('');
+			this.changestotl(false,0);
+			var d = this.showhistorydata[num];
+			if(d)d.stotal = '0';
+		}
+		js.ajax('reim','yiduall',{type:ty,gid:id},false,'none');
+	},
 	openguser:function(ty,id){
 		var num = ''+ty+'_'+id+'';
 		$('#histotal_'+num+'').html('');
 		this.changestotl(false,0);
 		if(ty=='agent'){
-			this.openagent(id);
+			var d = this.showhistorydata[num];
+			var url='';
+			if(d && d.stotal>0 && !isempt(d.xgurl)){
+				d.stotal = '0';
+				var xga = d.xgurl.split('|');
+				if(xga[1])url='task.php?a=x&num='+xga[0]+'&mid='+xga[1]+'';
+			}
+			if(!url){
+				this.openagent(id);
+			}else{
+				this.biaoyidu(ty,id,false);
+				js.location(url);
+			}
 		}else{
 			js.location('?m=chat&d=we&type='+ty+'&uid='+id+'');
 		}
@@ -525,6 +565,7 @@ var im={
 			$('#myshow_mobile').html(ret.mobile);
 			$('#myshow_ranking').html(ret.ranking);
 			im.isgzh	= ret.isgzh;
+			im.showcompanyinfo(ret.companyinfo);
 		},'none');
 	},
 	changewxtx:function(o1){
@@ -552,6 +593,9 @@ var im={
 		if(this.isgzh==0){js.wx.alert('当前无法绑定');return;}
 		js.wx.load('处理中...');
 		js.location('?m=login&d=we&a=oauthto&state=bang');
+	},
+	changecomp:function(){
+		js.location('?m=index&d=we&a=company');
 	}
 };
 </script>
@@ -630,7 +674,7 @@ var im={
 					</div>
 					<div class="weui_media_bd">
 						<h4 class="weui_media_title" id="myshow_name"></h4>
-						<p class="weui_media_desc">部门：<label id="myshow_deptname"></label></p>
+						<p style="font-size:14px;color:#888888"><label id="myshow_deptname"></label></p>
 					</div>
 				</a>
 			</div>
@@ -668,13 +712,24 @@ var im={
 				</div>
 				<span class="weui_cell_ft">未绑定,点击绑定</span>
 			</div>-->
-			
+			<?php if(ISMORECOM){?>
+			<div onclick="im.changecomp()" class="weui_cell">
+				<div class="weui_cell_bd weui_cell_primary">
+					切换单位
+				</div>
+				<p style="color:#888888;font-size:14px" id="nowcompany_div"></p>
+				<span class="weui_cell_ft"></span>
+				
+				
+			</div>
+			<?php }?>
 			<div onclick="im.tongbuface()" class="weui_cell">
 				<div class="weui_cell_bd weui_cell_primary">
 					同步微信头像
 				</div>
 				<span class="weui_cell_ft"></span>
 			</div>
+			
 		</div>
 		
 		<div class="weui_cells weui_cells_checkbox">

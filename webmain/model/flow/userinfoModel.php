@@ -80,7 +80,12 @@ class flow_userinfoClassModel extends flowModel
 			$rs['companyid'] = $this->getdwname($rs);
 		}
 		
-		if(getconfig('systype')=='demo' && isset($rs['mobile']))$rs['mobile']='';
+		if(isset($rs['mobile'])){
+			if($lx==2)
+			$rs['mobile']	= substr($rs['mobile'],0,3).'****'.substr($rs['mobile'],-4);
+		}
+		
+		if(getconfig('systype')=='demo')$rs['mobile']='';
 		
 		//导出处理
 		if($this->daochubo){
@@ -89,6 +94,13 @@ class flow_userinfoClassModel extends flowModel
 			//if(isset($rs['banknum']))$rs['banknum'] = '&nbsp;'.$rs['banknum'];
 		}
 	
+		return $rs;
+	}
+	
+	//编辑时候替换
+	protected function flowrsreplaceedit($rs)
+	{
+		if(getconfig('systype')=='demo')$rs['mobile']	 = '';
 		return $rs;
 	}
 	

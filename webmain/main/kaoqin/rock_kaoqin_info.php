@@ -73,6 +73,10 @@ $(document).ready(function(){
 				js.msg('success', s);
 				a.reload();
 			});
+		},
+		daoru:function(){
+			managelistleavehr = a;
+			addtabs({num:'daoruleavehr',url:'flow,input,daoru,modenum=leavehr',icons:'plus',name:'考勤信息'});
 		}
 	};
 	
@@ -110,9 +114,10 @@ $(document).ready(function(){
 	</td>
 	
 	<td width="80%">
-	&nbsp;&nbsp;<a href="<?=URLY?>view_jiaqi.html"target="_blank">帮助</a>
+	
 	</td>
 	<td align="right" nowrap>
+		<button class="btn btn-default" click="daoru" type="button">导入</button>&nbsp;
 		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>

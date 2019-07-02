@@ -141,8 +141,9 @@ class reimClassModel extends Model
 	/**
 	*	应用信息推送
 	*	$slx 0,1发送给pc，0,2发送给移动端,3不发送
+	*	$xgurl 相关地址，一般是单据详情：模块编号|id
 	*/
-	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0)
+	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0, $xgurl='')
 	{
 		if($slx==3 || isempt($receid))return false;
 		$gid	= $this->getgroupid($gname);
@@ -168,7 +169,7 @@ class reimClassModel extends Model
 			$receids = $admdb->gjoins($receid);
 			if($receids!='all' &&
 				!isempt($receids)
-			)$this->addhistory($sarr['type'], $gid, $receids, $sarr['optdt'], $sarr['cont'], $this->adminid, $title);
+			)$this->addhistory($sarr['type'], $gid, $receids, $sarr['optdt'], $sarr['cont'], $this->adminid, $title, $xgurl);
 		}
 		
 		$resid  = $receid;
@@ -553,7 +554,7 @@ class reimClassModel extends Model
 	/**
 	*	添加到历史记录,用户不显示历史记录让从新显示
 	*/
-	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='')
+	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='', $xgurl='')
 	{
 		$uidsas = explode(',', $uids);
 		$db 	= $this->hisobj;
@@ -565,6 +566,7 @@ class reimClassModel extends Model
 			$arr['cont'] 	= substr($cont, 0, 190);
 			$arr['sendid'] 	= $sendid;
 			$arr['title'] 	= $title;
+			$arr['xgurl'] 	= $xgurl;
 			if(!$one){
 				$arr['type'] 	= $type;
 				$arr['receid'] 	= $receid;
@@ -636,9 +638,10 @@ class reimClassModel extends Model
 			if($rs['fileid'])$fileids.=','.$rs['fileid'].'';
 		}
 		$imgext = ',gif,png,jpg,jpeg,bmp,';
+		$fobj	= m('file');
 		if($fileids!='0'){
 			$farr  = array();
-			$frows = m('file')->getrows("id in ($fileids)", 'id,fileext,filepath,filename,thumbpath,filetype,filesizecn,optid,optname,adddt,filesize');
+			$frows = $fobj->getrows("id in ($fileids)", 'id,fileext,filenum,filepath,filename,thumbpath,filetype,filesizecn,optid,optname,adddt,filesize,thumbplat');
 			foreach($frows as $k=>$rs)$farr[$rs['id']]=$rs;
 			if($farr)foreach($rows as $k=>$rs){
 				$frs  = array();
@@ -647,10 +650,16 @@ class reimClassModel extends Model
 				if($frs){
 					$type = $frs['fileext'];
 					$path = $frs['filepath'];
-					if(!$this->isempt($path)&&file_exists($path)){
+					$boc  = false;
+					if(substr($path,0,4)=='http' || !isempt($frs['filenum'])){
+						$boc = true;
+					}else{
+						if(file_exists($path))$boc = true;
+					}
+					if($boc){
 						if($this->contain($imgext, ','.$type.',')){
-							$cont = '<img fid="'.$fid.'" src="{url}'.$frs['thumbpath'].'">';
-							if(isempt($frs['thumbpath']))list($frs['width'], $frs['height']) = getimagesize($path);
+							$frs['thumbpath'] = $fobj->getthumbpath($frs);
+							$cont = '<img fid="'.$fid.'" src="'.$frs['thumbpath'].'">';
 							$rows[$k]['cont'] = $this->rock->jm->base64encode($cont);
 						}else{
 							
@@ -1526,6 +1535,8 @@ class reimClassModel extends Model
 			$sendarr[$contkey][] = $wxarr;
 		}
 		
+		$devagent  = $this->optiondb->getval('weixinqy_devagent');
+		if(isempt($devagent))$devagent = '办公助手';
 		
 		foreach($sendarr as $key=>$rowss){
 			$uids = '';
@@ -1541,7 +1552,7 @@ class reimClassModel extends Model
 					m('weixin:index')->sendnews($uids, 'REIM,0', $wxarr);
 				}
 				if($bowxqy){
-					$barr = m('weixinqy:index')->sendxiao($uids, 'REIM,办公助手', $wxarr);
+					$barr = m('weixinqy:index')->sendxiao($uids, 'REIM,REIM助手,'.$devagent.'', $wxarr);
 					m('log')->todolog('企业微信提醒', $barr);
 				}
 			}

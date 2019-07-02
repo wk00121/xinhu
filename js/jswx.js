@@ -135,6 +135,12 @@ js.wx.load=function(txt){
 js.wx.unload=function(){
 	$('#loadingToastsss').remove();
 }
+js.loading=function(txt){
+	this.wx.load(txt);
+}
+js.unloading=function(){
+	this.wx.unload();
+}
 js.wx.msgok=function(txt,fun,ms){
 	$('#toastssss').remove();
 	clearTimeout(this.msgtime);

@@ -165,7 +165,7 @@ class flow_remindClassModel extends flowModel
 			$mrs	= arrvalue($modearr, $rs['modenum']);
 			if(!$mrs)continue;
 			$cont 	= $rs['explain'];
-			
+			$GLOBALS['adminid'] = $rs['uid'];
 			$receid 	= $rs['uid'];
 			$recename 	= $rs['optname'];
 			if(!isempt($rs['receid'])){
@@ -201,6 +201,7 @@ class flow_remindClassModel extends flowModel
 				
 				$reim	= m('reim');
 				foreach($subscribid as $subo){
+					$GLOBALS['adminid'] = $subo['uid'];
 					$reim->asynurl('asynrun','subscribe', array(
 						'recename' 	=> $this->rock->jm->base64encode($subo['recename']),
 						'receid' 	=> $subo['receid'],
@@ -212,6 +213,7 @@ class flow_remindClassModel extends flowModel
 				//没有异步直接调用
 				$subflow = m('flow')->initflow('subscribeinfo');
 				foreach($subscribid as $subo){
+					$GLOBALS['adminid'] = $subo['uid'];
 					$subflow->subscribe($subo['id'],$subo['uid'],$subo['receid'],$subo['recename']);
 				}
 			}

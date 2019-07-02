@@ -36,6 +36,7 @@ class indexClassAction extends apiAction
 		$arr['agentstotal']	= $agent['stotal'];
 		$arr['maxupsize']	= c('upfile')->getmaxzhao();//最大上传大小M
 		$arr['appversion']	= $this->get('appversion');
+		$arr['xinhuver']	= VERSION;
 		$arr['wsconfig']	= $dbs->getreims();
 		
 		$this->showreturn($arr);

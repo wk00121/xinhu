@@ -1187,7 +1187,7 @@ class kaoqinClassModel extends Model
 		$uids 	= '0';
 		foreach($rows as $k=>$rs)$uids.=','.$rs['id'].'';
 		$farrs	= $columns = array();
-		
+
 		//获取考勤状态数组{'正常':'state0'}
 		if($rows)$columns= $this->alltotalrowssst($rows, $month.'-01'); //读取表头
 		

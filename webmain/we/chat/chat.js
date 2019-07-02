@@ -207,6 +207,8 @@ var im={
 	sendfile:function(){
 		if(typeof(uploadobj)=='undefined')uploadobj = $.rockupload({
 			inputfile:'allfileinput',
+			updir:'reimchat',
+			urlparams:{noasyn:'yes'}, //不需要同步到文件平台上
 			initpdbool:true,
 			onchange:function(d){
 				im.sendfileshow(d);

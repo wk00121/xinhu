@@ -47,7 +47,10 @@ class deptClassModel extends Model
 		//多单位
 		if(ISMORECOM && $this->adminid>1){
 			$comid = $dbs->getcompanyid();
-			$where.=' and `companyid` in(0,'.$comid.')';
+			$where.=' and `companyid` in(0,'.$comid.') and `id`>1';
+			$this->firstpid = 1;
+		}else{
+			$this->firstpid = 0;
 		}
 		
 		$rows = $this->getall($where,'`id`,`name`,`pid`,`sort`','`pid`,`sort`');
@@ -57,7 +60,21 @@ class deptClassModel extends Model
 			$rows[$k]['ntotal']	= $this->rock->arrvalue($dtotal, $rs['id'], '0');
 		}
 		$this->groupids = $gids;
-		return $rows;
+		$this->temparaa	= array();
+		$this->getshowdeptarr($rows, $this->firstpid);
+		return $this->temparaa;
+	}
+	
+	private function getshowdeptarr($rows, $pid)
+	{
+		foreach($rows as $k=>$rs){
+			if($pid>=0){
+				if($rs['pid']==$pid){
+					$this->temparaa[] = $rs;
+					$this->getshowdeptarr($rows, $rs['id']);
+				}
+			}
+		}
 	}
 	
 	public function getdeptrows($ids)
@@ -82,7 +99,7 @@ class deptClassModel extends Model
 		$deptarr 	= $this->getdata($userarr);
 		//$grouparr	= m('group')->getall('id in('.$this->groupids.')','id,name','`sort`');
 		$where1		= '';
-		if(ISMORECOM && $this->adminid>1)$where1=' and `companyid` in(0,'.$admindb->getcompanyid().')';
+		if(ISMORECOM && $this->adminid>1)$where1=' and `companyid` in('.$admindb->getcompanyid().')';
 		$grouparr	= m('group')->getall('id >0'.$where1.'','id,name','`sort`');
 		
 		foreach($grouparr as $k=>$rs){

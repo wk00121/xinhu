@@ -44,6 +44,7 @@ class adminClassModel extends Model
 		if($where!=''){
 			$swhe = '`status`=1';
 			if($blx=='all')$swhe = '1=1';
+			$swhe.= $this->getcompanywhere();
 			$rows = $this->getall("$swhe and ($where)", '`id`');
 			foreach($rows as $k=>$rs)$guid.=','.$rs['id'].'';
 			if($guid !='')$guid = substr($guid, 1);
@@ -459,7 +460,13 @@ class adminClassModel extends Model
 				$where2 = 'and not('.$where2.')';
 			}
 			if($lx==0)$where.=' and `isvcard`=1'; //通讯录显示
-			
+			//--start--
+			if(ISMORECOM && $uid>1){
+				$comid = $this->getcompanyid($uid);
+				$str11 = $this->rock->dbinstr('`dwid`', $comid);
+				$where2.=' and (`companyid`='.$comid.' or '.$str11.')';
+			}
+			//--end--
 			//读取我可查看权限
 			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
@@ -663,7 +670,8 @@ class adminClassModel extends Model
 		}else{
 			$where = 'id='.$receid.'';
 		}
-		$rows = $this->getall("`status`=1 and ($where)", '`id`,`'.$fid.'`');
+		$wherew1 = $this->getcompanywhere();
+		$rows = $this->getall("`status`=1 $wherew1 and ($where)", '`id`,`'.$fid.'`');
 		$strs = '';
 		foreach($rows as $k=>$rs){
 			if(!isempt($rs[$fid]))$strs.=','.$rs[$fid].'';
@@ -687,19 +695,54 @@ class adminClassModel extends Model
 	}
 	
 	/**
+	*	读取用户信息
+	*/
+	private $getuserrsarr = array();
+	public function geturs($id)
+	{
+		if(isempt($id))return false;
+		if(isset($this->getuserrsarr[$id]))return $this->getuserrsarr[$id];
+		
+		$where = "`user`='$id'";
+		$check = c('check');
+		if($check->iscnmobile($id)){
+			$where = "`mobile`='$id'";
+		}elseif($check->isemail($id)){
+			$where = "`email`='$id'";
+		}elseif($check->isincn($id)){
+			$where = "`name`='$id'";
+		}elseif($check->isnumber($id)){
+			$where = "`id`='$id'";
+		}
+		if(contain($id, ':')){
+			$ida = explode(':', id);
+			$where = "`".$ida[0]."`='".$ida[1]."'";
+		}
+		$urs = $this->db->getall("select * from `[Q]admin` where $where");
+		if($urs)$urs = $urs[0];
+		$this->getuserrsarr[$id] = $urs;
+		return $urs;
+	}
+	
+	/**
 	*	获取单位的信息
 	*/
 	public function getcompanyinfo($uid=0, $glx=0)
 	{
 		if($uid==0)$uid = $this->adminid;
+		if($uid==0)$uid = (int)arrvalue($GLOBALS,'adminid','0');
+		if($uid==0)$uid = 1;//必须要有个值
 		$urs 	  	 = $this->getone('`id`='.$uid.'');
 		$companyid	 = $urs['companyid'];
 		$comid	 	 = (int)arrvalue($urs, 'comid', '0');
-		if(isempt($companyid))$companyid = '1';
+		if(isempt($companyid) || $companyid=='0'){
+			$this->update('`companyid`=1', $uid);
+			$companyid = '1';
+		}
 		$alldwid	 = $companyid;
 		$dwid= arrvalue($urs, 'dwid');
 		if(!isempt($dwid))$alldwid.=','.$dwid.'';
-		$companyinfo 	= array();
+		$companyinfo 	= array('id'=>0);
 		$companyinfd 	= false;
 		$companyinfoall = m('company')->getall('`id` in('.$alldwid.')','*','`pid`,`sort`');
 		$nid			= $companyid;
@@ -720,7 +763,7 @@ class adminClassModel extends Model
 			$allid[] = $rs['id'];
 		}
 		if($companyinfd)$companyinfo = $companyinfd;
-		$this->rock->setsession('companyid', $companyinfo['id']);
+		$this->setcompanyid($companyinfo['id']);
 		if($glx==1)return $companyinfo;
 		if($glx==2)return $companyinfo['id'];
 		return array(
@@ -738,10 +781,29 @@ class adminClassModel extends Model
 		return $comid;
 	}
 	
+	public function setcompanyid($comid)
+	{
+		$this->rock->setsession('companyid', $comid);
+		return $comid;
+	}
+	
 	public function getcompanywhere($lx=0, $qz='')
 	{
 		$where = '';
-		
+		//--start--
+		if(ISMORECOM){
+			$comid = ''.$this->getcompanyid().'';
+			$comi2 = $comid;
+			$str11 = $this->rock->dbinstr(''.$qz.'dwid', $comid);
+			if($this->adminid==1)$comid.=',0';
+			$where= " and (".$qz."`companyid` in (".$comid.") or $str11)";
+			if($lx==1)$where= " and ".$qz."`comid` in (".$comid.")";
+			if($lx==2)$where= " and ".$qz."`companyid` in (".$comid.")";
+			if($lx==3)$where= " and ".$qz."`comid`=".$comi2."";
+			if($lx==5)$where= " and ".$qz."`companyid`=".$comi2.""; //用在关联userinfo表只看本单位
+			if($lx==4)$where= " and ".$qz."`uid` in(select `id` from `[Q]admin` where `companyid`=".$comi2.")";
+		}
+		//--end--
 		return $where;
 	}
 	

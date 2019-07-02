@@ -36,6 +36,20 @@ class xinhuClassAction extends Action
 		echo '异步地址【'.$runurl.'】'.$msg.'';
 	}
 	
+	//测试队列
+	public function testqueueAjax()
+	{
+		$rand 	= 'queue'.time();
+		c('rockqueue')->push('cli,test', array(
+			'rand' => $rand
+		));
+		sleep(3);
+		$mkey 	= $this->option->getval('asyntest');
+		$msg 	= '<font color="green">队列测试成功，可以使用</font>';
+		if($mkey!=$rand)$msg 	= '<font color="red">测试失败不能使用，说明你没有安装信呼的队列服务，去<a href="'.URLY.'view_rockservice.html" target="_blank">看看帮助</a>。</font>';
+		echo $msg;
+	}
+	
 	public function testsendAjax()
 	{
 		$barr  = m('reim')->sendpush($this->adminid, $this->adminid,array(

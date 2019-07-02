@@ -39,7 +39,8 @@ if(file_exists($actfile)){
 	if($ajaxbool == 'true')$actname	= ''.$a.'Ajax';
 	if(method_exists($xhrock, $actname)){
 		$xhrock->beforeAction();
-		$actbstr  = $xhrock->$actname();
+		$actbstr = $xhrock->$actname();
+		$xhrock->bodyMessage = $actbstr;
 		if(is_string($actbstr)){echo $actbstr;$xhrock->display=false;}
 		if(is_array($actbstr)){echo json_encode($actbstr);$xhrock->display=false;}
 	}else{

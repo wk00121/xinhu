@@ -56,17 +56,16 @@ class gerenClassAction extends Action
 	}
 	public function fileafter($table, $rows)
 	{
+		$fobj = m('file');
 		foreach($rows as $k=>&$rs){
-			if(!isempt($rs['thumbpath'])){
-				if(!file_exists($rs['thumbpath']))$rs['thumbpath']='';
-			}
+			$rs['thumbpath'] = $fobj->getthumbpath($rs);
 			$fpath = $rs['filepath'];
 			
 			$status= 1;
 			if(substr($fpath,0,4)=='http'){
 				$status = 2;
 			}else{
-				if(!file_exists($fpath))$status=0;
+				if(isempt($rs['filenum']) && !file_exists($fpath))$status=0;
 			}
 			$rs['status'] = $status;
 		}

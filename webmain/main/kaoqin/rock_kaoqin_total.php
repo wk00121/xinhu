@@ -46,6 +46,7 @@ $(document).ready(function(){
 			get('xqkaoqb_{rand}').disabled=false;
 		},
 		loadbefore:function(d){
+			get('xqkaoqb_{rand}').disabled=true;
 			var cs = [],cs4=[],i;
 			for(i in d.columns)cs.push({text:i,dataIndex:d.columns[i]});
 			for(i=0;i<d.colalls.length;i++){
@@ -61,7 +62,11 @@ $(document).ready(function(){
 		search:function(){
 			var s=get('key_{rand}').value;
 			var is1 = (get('iskq_{rand}').checked)?'1':'0';
-			a.setparams({key:s,month:get('dt1_{rand}').value,iskq:is1},true);
+			a.setparams({
+				key:s,month:get('dt1_{rand}').value,
+				iskq:is1,
+				'receid':get('receid_{rand}').value
+			},true);
 		},
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
@@ -106,7 +111,7 @@ $(document).ready(function(){
 				explain:'订阅上月考勤统计表',
 				cont:'{month-1}月份人员'+nowtabs.name+'',
 				objtable:a,
-				params:{'month':'{month-1}','key':get('key_{rand}').value}
+				params:{'month':'{month-1}','key':get('key_{rand}').value,'receid':get('receid_{rand}').value}
 			});
 		},
 		xiashu:function(o1){
@@ -120,12 +125,30 @@ $(document).ready(function(){
 				nowtabssettext('我的考勤统计');
 			}
 			a.setparams({atype:atype}, true);
+		},
+		chagneuser:function(){
+			js.getuser({
+				type:'deptusercheck',
+				title:'选择人员',
+				changevalue:get('receid_{rand}').value,
+				callback:function(sna,sid){
+					get('key_{rand}').value=sna;
+					get('receid_{rand}').value=sid;
+				}
+			});
+		},
+		chagnecelar:function(){
+			get('key_{rand}').value='';
+			get('receid_{rand}').value='';
 		}
 	};
 	
 	$('#dt1_{rand}').val(js.now('Y-m'));
 	js.initbtn(c);
-	if(atype=='my')$('#down_{rand}').show();
+	if(atype=='my'){
+		$('#down_{rand}').show();
+		$('#xuanbbtn{rand}').remove();
+	}
 });
 </script>
 <div>
@@ -139,7 +162,15 @@ $(document).ready(function(){
 		</div>
 	</td>
 	<td  style="padding-left:10px">
-		<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="姓名/部门">
+		<div style="width:250px"  class="input-group">
+			<input class="form-control"  placeholder="姓名/部门" id="key_{rand}" >
+			<input class="form-control" type="hidden"  id="receid_{rand}" >
+			<span class="input-group-btn">
+				<button class="btn btn-default" click="chagnecelar,1" type="button"><i class="icon-remove"></i></button>
+				<button class="btn btn-default" id="xuanbbtn{rand}" click="chagneuser,1" type="button"><i class="icon-search"></i></button>
+			</span>
+		</div>
+		
 	</td>
 	<td nowrap style="padding-left:10px">
 		<label><input id="iskq_{rand}" checked type="checkbox">只看需考勤</label>

@@ -43,6 +43,8 @@ abstract class mainAction{
 	public $tpldom		= 'html';
 	public $displayfile	= '';
 	
+	public $bodyMessage	= '';		//返回的内容
+	
 	public function __construct()
 	{
 		$this->rock		= $GLOBALS['rock'];
