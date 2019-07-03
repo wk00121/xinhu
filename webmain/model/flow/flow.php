@@ -258,10 +258,18 @@ class flowModel extends Model
 				$this->savebill();
 			}
 			if($this->billrs['status']!=$this->rs['status'])$this->billmodel->update('`status`='.$this->rs['status'].'', $this->billrs['id']);//状态不一样更新一下
+			if($this->billrs['isturn']!=$this->rs['isturn'])$this->billmodel->update('`isturn`='.$this->rs['isturn'].'', $this->billrs['id']);
 			if(isempt($this->rs['base_name']))$this->rs['base_name'] = $this->billrs['uname'];
 			if(isempt($this->rs['base_deptname']))$this->rs['base_deptname'] = $this->billrs['udeptname'];
 		}else{
 			if($this->isflow>0)$this->savebill();
+		}
+		if($this->isflow>0){
+			if($this->rs['status']==1 && $this->rs['isturn']=='0'){
+				$this->update(array('isturn' => 1), $this->id);
+				$this->rs['isturn'] = 1;
+				if($this->billrs)$this->billmodel->update('`isturn`=1', $this->billrs['id']);
+			}
 		}
 		$this->getlogrows	= array();
 		if($ispd)$this->isreadqx();
