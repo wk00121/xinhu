@@ -71,4 +71,16 @@ class weixinClassAction extends apiAction{
 		}
 		$this->showreturn(array('now'=>$now));
 	}
+	
+	/**
+	*	获取媒体文件
+	*/
+	public function getmediaAction()
+	{
+		$media_id = $this->post('media_id');
+		$type 	  = $this->post('type');
+		$barr 	  = m('weixinqy:media')->downmedia($media_id, $type);
+		if($barr['errcode']!=0)return returnerror($barr['msg']);
+		return returnsuccess($barr);
+	}
 }

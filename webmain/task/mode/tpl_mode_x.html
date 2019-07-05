@@ -11,6 +11,10 @@
 <link rel="stylesheet" type="text/css" href="webmain/css/rui.css">
 <script type="text/javascript" src="web/res/js/jquery.1.9.1.min.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
+<script type="text/javascript" src="js/base64-min.js"></script>
+<?php 
+if($jswxsdk=='1')echo '<script type="text/javascript" src="js/jswxsdk.js"></script>'.chr(10).'';
+?>
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js?<?=$da['logintime']?>"></script>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>
 <script type="text/javascript" src="mode/plugin/jquery-rockmodels.js"></script>
@@ -234,7 +238,7 @@ if($da['arr']['optmenu']){
 			<td class="tdys1" style="padding:5px"><div align="left">
 				<input name="fileid" type="hidden">
 				<div id="filedivview" style="height:60px;overflow:auto;width:96%" class="inputb"></div>
-				<div><input style="width:150px" onchange="f.change(this)" type="file"></div>
+				<div id="filedivviewfile"><input style="width:150px" onchange="f.change(this)" type="file"></div>
 			</div></td>
 		</tr>
 		<?php

@@ -360,4 +360,14 @@ class xinhuapiChajian extends Chajian{
 		}
 		return $barr;
 	}
+	
+	
+	/**
+	*	获取节假日
+	*/
+	public function getjiari()
+	{
+		$barr =  $this->getdata('base','getjiari');
+		return $barr;
+	}
 }

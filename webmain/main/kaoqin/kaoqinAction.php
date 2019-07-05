@@ -171,7 +171,10 @@ class kaoqinClassAction extends Action
 		if($type==0)m('kqsjgz')->delete("`id`='$id' or pid='$id'");
 		if($type==1)m('kqdist')->delete("`id`='$id'"); //分配的
 		if($type==2)m('kqxxsj')->delete("`id`='$id' or pid='$id'");
-		if($type==3)m('kqxxsj')->delete("`id`='$id'");
+		if($type==3){
+			$ida = c('check')->onlynumber($this->post('id'));
+			m('kqxxsj')->delete("`id` in($ida)");
+		}
 		showreturn();
 	}
 	
@@ -263,6 +266,43 @@ class kaoqinClassAction extends Action
 				if($db->rows($where)==0)$db->insert("pid='$pid',`dt`='$dt'");
 			}
 		}
+	}
+	
+	//一键添加节假日
+	public function setjiedateAjax()
+	{
+		$month 	= $this->post('month');
+		$pid 	= (int)$this->post('pid','0');
+		if(isempt($month) || $pid==0)return;
+		$dtobj 	= c('date');
+		$year 	= substr($month,0,4);
+		$dt		= ''.$year.'-01-01';
+		$db 	= m('kqxxsj');
+		//从官网读取节假日日期
+		$barr 	= c('xinhuapi')->getjiari();
+		if(!$barr['success'])return $barr;
+		$jierixiuxi 	= $barr['data']['jierixiuxi']; //休息日
+		$jierishangban 	= $barr['data']['jierishangban']; //上班日
+		
+		for($i=0;$i<366;$i++){
+			if($i>0)$dt = $dtobj->adddate($dt,'d', 1);
+			$we = $dtobj->cnweek($dt);
+			$isxiu = 0;
+			if($we=='六' || $we=='日'){
+				$isxiu = 1;
+			}
+			if(contain($jierixiuxi, $dt))$isxiu = 1;
+			if(contain($jierishangban, $dt))$isxiu = 0;//上班
+			
+			$where = "pid='$pid' and `dt`='$dt'";
+			if($isxiu==1){
+				if($db->rows($where)==0)$db->insert("pid='$pid',`dt`='$dt'");
+			}else{
+				$db->delete($where);
+			}
+			if($dt==''.$year.'-12-31')break;
+		}
+		return returnsuccess();
 	}
 	
 	

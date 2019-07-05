@@ -638,7 +638,7 @@ var reim={
 			if(d && d.stotal>0 && !isempt(d.xgurl)){
 				d.stotal='0';
 				var xga = d.xgurl.split('|');
-				if(xga[1])url='task.php?a=p&num='+xga[0]+'&mid='+xga[1]+'';
+				if(xga[1]>0)url='task.php?a=p&num='+xga[0]+'&mid='+xga[1]+'';
 			}
 			if(url==''){
 				this.openagenh(reid);

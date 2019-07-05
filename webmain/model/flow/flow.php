@@ -607,9 +607,9 @@ class flowModel extends Model
 					if(!isempt($vs)){
 						//子表
 						if(substr($f,0,7)=='subdata'){
-							$contvimr .= '<tr><td colspan="2"><div style="padding:5px" align="left"><div><b>'.$n.'</b></div>'.$vs.'</div></td></tr>';
+							$contvimr .= '<tr><td colspan="3"><div style="padding:5px" align="left"><div><b>'.$n.'</b></div>'.$vs.'</div></td></tr>';
 						}else{
-							$contvimr .= '<tr><td nowrap><div align="right" style="color:#888888;padding:5px 0px">'.$n.'：</div></td><td width="95%"><div style="padding:5px" align="left">'.$vs.'</div></td></tr>';
+							$contvimr .= '<tr><td nowrap><div align="right" style="color:#888888;padding:3px 0px">'.str_replace(' ','<br>',$n).'</div></td><td style="color:#888888">：</td><td width="95%"><div style="padding:3px" align="left">'.$vs.'</div></td></tr>';
 						}
 					}
 				}
@@ -1768,7 +1768,7 @@ class flowModel extends Model
 		if($type=='submit' || $type=='next' || $type == 'cuiban'){
 			$cont = '你有['.$this->uname.']的['.$this->modename.',单号:'.$this->sericnum.']需要处理';
 			if($sm!='')$cont.='，说明:'.$sm.'';
-			
+			$tit  = ''.$this->uname.'的'.$this->modename.'';
 			//短信提醒
 			if($type != 'cuiban'){
 				$txnum 	= $this->option->getval('sms_txnum');

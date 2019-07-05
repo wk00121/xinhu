@@ -57,6 +57,10 @@ class modeClassAction extends ActionNot
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
 		$this->assign('inputobj', c('input'));
+		
+		$jswxsdk = '0';
+		if($this->rock->web=='wxbro' && !isempt($this->option->getval('weixinqy_corpid')))$jswxsdk='1';
+		$this->assign('jswxsdk', $jswxsdk);
 	}
 	
 	//pc端页面详情

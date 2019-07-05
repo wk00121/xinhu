@@ -30,6 +30,13 @@ function initbody(){
 		}else{
 			$('#filedivview').parent().html('<font color="#888888">当前浏览器不支持上传</font>');
 		}
+		//初始化微信jssdk
+		if(js.jssdkinit){
+			js.jssdkinit();
+			js.jssdkcall=function(bo){
+				if(bo)c.initRecord();//可以录音
+			}
+		}
 	}
 	js.tanstyle=1;
 	if(document.myform && typeof(initbodys)=='function')initbodys();
@@ -562,5 +569,15 @@ var c={
 		js.ajax(c.gurl('receiptcheck'),da,function(a){
 			js.msg('success','回执确认提交成功');
 		},'post');
+	},
+	
+	
+	initRecord:function(){
+		$('#filedivviewfile').prepend('<input onclick="js.wxRecord.startLuyin(this)" type="button" class="webbtn" style="padding:5px 8px;border-radius:5px" value="录音">&nbsp;');
+		js.wxRecord.success=function(ret){
+			f.fileobj.fileallarr.push(ret);
+			var str='<div style="padding:3px;font-size:14px;border-bottom:1px #dddddd solid">录音:'+ret.filename+'('+ret.filesizecn+')</div>';
+			$('#filedivview').append(str);
+		}
 	}
 };

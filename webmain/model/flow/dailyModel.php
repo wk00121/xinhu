@@ -53,7 +53,7 @@ class flow_dailyClassModel extends flowModel
 	{
 		if($a['name'] == '日报评分'){
 			$fenshu	 = (int)$this->rock->post('fenshu','0');
-			$this->push($this->rs['uid'], '工作日报', ''.$this->adminname.'评分你[{dt}]的{typess},分数('.$fenshu.')','工作日报评分');
+			$this->push($this->rs['uid'], '', ''.$this->adminname.'评分你[{dt}]的{typess},分数('.$fenshu.')',''.$this->modename.'评分');
 			$this->update(array(
 				'mark' => $fenshu
 			), $this->id);
@@ -283,7 +283,7 @@ class flow_dailyClassModel extends flowModel
 		$d 	 = (int)$dta[2];
 		$rows= $this->db->getall("select a.`id`,a.`name`,a.`deptname`,b.`day".$d."` from `[Q]admin` a left join `[Q]dailyfx` b on a.`id`=b.`uid` and b.`month`='$month' where a.`status`=1 and b.`day".$d."`=0");
 		$w	 = c('date')->cnweek($dt);
-		$cont= '你昨天['.$dt.',周'.$w.']的工作日报未写，请及时补充填写。';
+		$cont= '你昨天['.$dt.',周'.$w.']的'.$this->modename.'未写，请及时补充填写。';
 		$receid = '';
 		foreach($rows as $k=>$rs){
 			$receid.=','.$rs['id'].'';
@@ -291,6 +291,6 @@ class flow_dailyClassModel extends flowModel
 		$this->flowweixinarr = array(
 			'url' => $this->getwxurl()
 		);
-		if($receid!='')$this->push(substr($receid, 1),'', $cont, '工作日报未写提醒');
+		if($receid!='')$this->push(substr($receid, 1),'', $cont, ''.$this->modename.'未写提醒');
 	}
 }

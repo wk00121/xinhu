@@ -12,10 +12,10 @@ class minute5ClassAction extends runtAction
 		$this->enddt	= date('Y-m-d H:i:s', $time2);
 		$this->enddtss	= date('Y-m-d H:i:s', $time3);
 		$this->scheduletodo();
-		m('flow')->initflow('meet')->meettodo();
-		$this->todologs();
+		m('flow')->initflow('meet')->meettodo(); //会议提醒的
+		//$this->todologs();
 		m('flowbill')->autocheck(); //自动审批作废
-		m('reim')->chatpushtowx($this->enddtss);
+		m('reim')->chatpushtowx($this->enddtss); //REIM消息
 		echo 'success';
 	}
 	

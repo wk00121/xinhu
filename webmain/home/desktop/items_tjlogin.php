@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 
 homeobject.show_tjlogin_list=function(arr){
 	if(typeof(echarts)=='undefined')return;
-	if(!this.myChartkqtotal)this.myChartkqtotal = echarts.init(get('tjlogin_list{rand}'));
+	if(!this.myCharttjlogina)this.myCharttjlogina = echarts.init(get('tjlogin_list{rand}'));
 	console.log(arr);
 	var option = {
 		tooltip: {
@@ -37,7 +37,7 @@ homeobject.show_tjlogin_list=function(arr){
 			}
 		]
 	};
-	this.myChartkqtotal.setOption(option);
+	this.myCharttjlogina.setOption(option);
 }
 </script>
 <div class="panel panel-default">
