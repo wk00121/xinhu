@@ -96,7 +96,9 @@ class inputChajian extends Chajian
 			if($val=='{sericnum}' && $this->flow!=null)$val = $this->flow->createnum();
 		}
 		if($type=='num'){
-			if($this->flow != null)$val = $this->flow->createbianhao($data, $fid);
+			if($this->flow != null){
+				$val = $this->flow->createinputnum($data, $fid);
+			}
 		}
 		
 		//读默认值

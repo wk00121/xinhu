@@ -1698,16 +1698,47 @@ class flowModel extends Model
 	/**
 	*	创建编号
 	*/
-	public function createbianhao($num, $fid)
+	public function createbianhao($num, $fid, $wshu=3)
 	{
 		if(isempt($num))$num=''.$this->modenum.'-';
 		@$appdt = $this->rs['applydt'];
 		if(isempt($appdt))$appdt = $this->rock->date;
 		$apdt 	= str_replace('-','', $appdt);
 		$num	= str_replace('Ymd',$apdt,$num);
-		return $this->db->sericnum($num,'[Q]'.$this->mtable.'', $fid,3);
+		return $this->db->sericnum($num,'[Q]'.$this->mtable.'', $fid, $wshu);
 	}
 	
+	/**
+	*	录入页上编号
+	*/
+	public function createinputnum($num, $fid)
+	{
+		$acta  = '';
+		if(method_exists($this, $num)){
+			$acta = $num;
+		}else{
+			if(contain($num, ',')){
+				$arra = explode(',', $num);
+				$acta = $arra[0];
+				$num  = $arra[1];
+			}
+		}
+		if($acta && method_exists($this, $acta)){
+			$barr = $this->$acta($num);
+			if(is_array($barr)){
+				$qom = arrvalue($barr, 'qom', $num);//前缀
+				$wshu= arrvalue($barr, 'wshu', 3);//位数
+				$bom = arrvalue($barr, 'bom');//后缀
+				$fields = arrvalue($barr, 'fields', $fid);
+				return $this->createbianhao($qom, $fields, $wshu).$bom;
+			}else{
+				if(isempt($barr))$barr = $num;
+				return $this->createbianhao($barr, $fid);
+			}
+		}else{
+			return $this->createbianhao($num, $fid);
+		}
+	}
 	
 	/**
 	*	创建流程单号

@@ -5,4 +5,15 @@ class flow_demoClassModel extends flowModel
 	protected function flowcoursejudge($num){
 		
 	}
+	
+	//默认返回就是前缀
+	public function ABCYmd($num)
+	{
+		return 'QOM-';
+		return array(
+			'qom' => 'AExeeCC-',
+			'wshu' => 5,
+			'bom'	=> '-LLL'
+		);
+	}
 }
