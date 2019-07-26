@@ -715,16 +715,16 @@ class inputAction extends Action
 		foreach($this->flow->fieldsarra as $k2=>$rs2){
 			if($rs2['fieldstype']=='uploadimg')$farrl[$rs2['fields']]=$rs2['fieldstype'];
 		}
-		//目前不用，去掉吧
-		if(1==2 && $rows)foreach($rows as $k1=>$rs1){
+		
+		if($rows)foreach($rows as $k1=>$rs1){
 			foreach($farrl as $fid=>$flx){
 				if(isset($rs1[$fid])){
 					$val = $rs1[$fid];
 					if($flx=='uploadimg'){
 						$val = $this->rock->gethttppath($val);
-						if($this->flow->modeid>92)$val='<img src="'.$val.'" height="60">';
+						$rows[$k1][$fid] = $val;
+						//if($this->flow->modeid>92)$val='<img src="'.$val.'" height="60">';
 					}
-					$rows[$k1][$fid] = $val;
 				}
 			}
 		}

@@ -25,6 +25,8 @@ class JPushChajian extends Chajian{
 		$newalias	= $palias['newalias']; //最新使用的
 		$oldalias	= $palias['oldalias']; //一般自己编译
 		$uids		= $palias['uids'];
+		$niosalias	= $palias['niosalias'];
+		$nandalias	= $palias['nandalias'];
 		
 		//使用官网来推送
 		if($this->xiaomi_package=='' || $this->xiaomi_secret==''){
@@ -33,12 +35,15 @@ class JPushChajian extends Chajian{
 				'xmalias' 	=> join(',', $xmalias),
 				'newalias' 	=> join(',', $newalias),
 				'oldalias' 	=> join(',', $oldalias),
+				'niosalias' => join(',', $niosalias),
+				'nandalias' => join(',', $nandalias),
 				'uids'  => $uids,
 				'title' => $this->rock->jm->base64encode($title),
 				'cont'  => $this->rock->jm->base64encode($cont),
 				'desc'  => $desc
 			);
 			$runurl = c('xinhu')->geturlstr('jpushplat', $arr);
+			//$this->rock->debugs($runurl, 'tuisong');
 			return  c('curl')->getcurl($runurl);
 		}else{
 			$barr = c('xiaomiPush')->push($this->xiaomi_secret, $this->xiaomi_package, $oldalias,  $title, $this->rock->jm->base64decode($desc), $cont);

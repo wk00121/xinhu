@@ -210,4 +210,28 @@ class goodsClassModel extends Model
 		}
 		return $rows;
 	}
+	
+	/**
+	*	获取分类名称
+	*/
+	private $typenamearr= array();
+	public function gettypename($tid)
+	{
+		if(isset($this->typenamearr[$tid])){
+			return $this->typenamearr[$tid];
+		}else{
+			$one = $this->db->getone('[Q]option',$tid);
+			$varr= '';
+			if($one){
+				$varr = $one['name'];
+				if(!isempt($one['pid']) && $one['pid']){
+					$one = $this->db->getone('[Q]option',$one['pid']);
+					if($one && !contain($one['num'],'goodstype')){
+						$varr = $one['name'].'/'.$varr.'';
+					}
+				}
+			}
+			return $varr;
+		}
+	}
 }

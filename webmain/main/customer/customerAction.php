@@ -81,8 +81,8 @@ class customerClassAction extends Action
 	//客户转移
 	public function movecustAjax()
 	{
-		$sid 	= $this->post('sid');
-		$toid 	= $this->post('toid');
+		$sid 	= c('check')->onlynumber($this->post('sid'));
+		$toid 	= (int)$this->post('toid');
 		if($sid==''||$sid=='')return;
 		m('crm')->movetouser($this->adminid, $sid, $toid);
 	}
@@ -124,6 +124,7 @@ class customerClassAction extends Action
 		$uarr['optname'] = '';
 		if($lx==1 && $snid!='' && $sname!=''){
 			$uarr['uid'] 	 = $snid;
+			$uarr['isgh'] 	 = '0';
 			m('crm')->update($uarr, "`id` in($sid)");
 		}
 		if($lx==0){

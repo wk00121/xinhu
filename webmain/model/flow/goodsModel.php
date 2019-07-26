@@ -4,7 +4,7 @@ class flow_goodsClassModel extends flowModel
 {
 	
 	protected function flowchangedata(){
-		$this->rs['typeid']	 = $this->db->getpval('[Q]option','pid','name', $this->rs['typeid'],'/','id',2);;
+		$this->rs['typeid']	 = m('goods')->gettypename($this->rs['typeid']);
 	}
 
 	//导入数据的测试显示
@@ -25,7 +25,12 @@ class flow_goodsClassModel extends flowModel
 	public function flowxiangfields(&$fields)
 	{
 		$fields['stock'] 	 = '总库存';
-		$kcrow = m('godepot')->getall('1=1','*','`sort`');
+		$where = '';
+		if(ISMORECOM){
+			$comid = arrvalue($this->rs,'comid','0');
+			$where = ' and `comid`='.$comid.'';
+		}
+		$kcrow = m('godepot')->getall('1=1'.$where.'','*','`sort`');
 		foreach($kcrow as $k1=>$rs1){
 			$fields['stock_'.$rs1['id'].''] 	 = $rs1['depotname'];
 		}

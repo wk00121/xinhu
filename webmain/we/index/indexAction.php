@@ -3,7 +3,7 @@ class indexClassAction extends ActionNot{
 	
 	public function initAction()
 	{
-		$this->mweblogin(0, true);
+		$this->mweblogin(0, false);
 	}
 	
 	public function defaultAction()

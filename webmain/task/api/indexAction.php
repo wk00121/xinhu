@@ -117,4 +117,9 @@ class indexClassAction extends apiAction
 		$db->getcompanyinfo();
 		return returnsuccess();
 	}
+	public function getcompanyAction()
+	{
+		$carr = m('admin')->getcompanyinfo($this->adminid);
+		$this->showreturn($carr);
+	}
 }

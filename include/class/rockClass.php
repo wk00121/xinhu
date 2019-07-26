@@ -67,7 +67,7 @@ final class rockClass
 		}else if(isset($_SERVER['REMOTE_ADDR'])){
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}
-		$ip= htmlspecialchars($ip);
+		$ip= str_replace(array(' ','(',')','\'','"'),'',htmlspecialchars($ip));
 		return $ip;
 	}
 	

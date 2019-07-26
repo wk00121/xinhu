@@ -13,6 +13,9 @@
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&libraries=convertor,geometry&key=<?=$da['qqmapkey']?>"></script>
 <script type="text/javascript" src="js/dingwei.js"></script>
+<?php 
+if($da['web']=='iPhone')echo '<script src="js/fastclick.min.js"></script>';
+?>
 <style>
 .weui_tabbar_icon{text-align:center;color:#888888;font-size:20px;}
 .weui_tabbar_item{padding-top:2px;margin-bottom:5px;position:relative}
@@ -33,7 +36,7 @@ function initbody(){
 	for(var i in kqors)kqallrs.push(kqors[i]);
 	
 	addkqinfor(0);
-	
+	if(typeof(FastClick)!='undefined')FastClick.attach(document.body);
 }
 
 
@@ -212,6 +215,39 @@ function paizhao(){
 function showimgs(o1){
 	$.imgview({'url':o1.src,'ismobile':true});
 }
+
+var yy={
+	iscy:'<?=$iscy?>',
+	clickadd:function(){
+		var str = '应用首页显示';
+		if(this.iscy==1)str='取消应用首页显示';
+		if(apicloud){
+			api.actionSheet({
+				title: '选择菜单',
+				cancelTitle: '取消',
+				buttons: [str,'关闭应用']
+			}, function(ret, err) {
+				var index = ret.buttonIndex;
+				if(index==1)yy.addchangying();
+				if(index==2)js.back();
+			});
+		}else{
+			js.showmenu({
+				data:[{name:str,lx:1}],
+				width:170,
+				onclick:function(d){
+					if(d.lx==1)yy.addchangying();
+				}
+			});
+		}
+	},
+	addchangying:function(){
+		js.ajax('indexreim','shecyy',{yynum:'kqdaka'},function(ret){
+			yy.iscy = ret.iscy;
+			js.wx.msgok(ret.msg, false, 1);
+		},'mode', false,false, 'get');
+	}
+}
 </script>
 <style>
 .addbtns{ background:#C5E0F7;padding:5px;margin-top:20px;width:100px;height:100px;border-radius:50%}
@@ -230,6 +266,7 @@ function showimgs(o1){
 	<div class="r-header">
 		<div class="r-header-text" onclick="location.reload()" id="header_title"><?=$da['title']?></div>
 		<span onclick="js.back()" class="r-position-left r-header-btn"><i class="icon-chevron-left"></i></span>
+		<span onclick="yy.clickadd()" class="r-position-right r-header-btn"><i class="icon-plus"></i></span>
 	</div>
 	<div class="blank50"></div>
 </div>

@@ -1,8 +1,9 @@
-var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false;
+var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false,apicloud=false;
 var windows	= null,ismobile=0;
 function initbody(){}
 function bodyunload(){}
 function globalbody(){}
+function apiready(){apicloud=true;}
 $(document).ready(function(){
 	try{if(typeof(nw)=='object'){nwjsgui = nw;}else{nwjsgui = require('nw.gui');}}catch(e){nwjsgui=false;}
 	$(window).scroll(js.scrolla);
@@ -68,9 +69,15 @@ js.getcan = function(i,dev){
 js.gethost=function(){
 	var url = location.href,sau='';
 	try{sau = url.split('//')[1].split('/')[0];}catch(e){}
-	if(sau.indexOf('demo.rockoa.com')>=0 || sau.indexOf('demo.oaqoa.com')>=0)ISDEMO=true;
+	if(sau.indexOf('demo.rockoa.com')>=0 || sau.indexOf('demo1.rockoa.com')>=0)ISDEMO=true;
 	var lse = url.lastIndexOf('/');NOWURL = url.substr(0, lse+1);
 	QOM		= NOWURL.replace(/\./g,'').replace(/\//g,'').replace(/\:/g,'')+'_';
+	var cfrom= this.request('cfrom','',url);
+	if(!cfrom)cfrom=this.getoption('CFROM');
+	if(cfrom){this.setoption('CFROM', cfrom);CFROM = cfrom;}
+	this.opentype = this.getoption('opentype');
+	var otype= this.request('opentype','',url);
+	if(otype){this.setoption('opentype', otype);this.opentype = otype;}
 	return sau;
 }
 function winHb(){
@@ -291,6 +298,7 @@ js.winiframe=function(tit, url){
 
 //下载
 js.downshow=function(id, fnun, cans){
+	if(this.fileoptWin(id))return;
 	if(appobj1('openfile', id))return;
 	if(!isempt(fnun)){this.fileopt(id, 1);return false;}
 	var url = 'api.php?m=upload&id='+id+'&a=down';
@@ -348,6 +356,7 @@ js.unloading=function(){js.msg();}
 //文件操作id文件id,lx0预览,1下载,2编辑
 js.fileopt=function(id,lx){
 	if(!lx)lx=0;
+	if(ismobile==1 && lx==1 && this.fileoptWin(id))return;
 	js.loading('加载中...');
 	var gurl = 'api.php?a=fileinfo&m=upload&id='+id+'&type='+lx+'&ismobile='+ismobile+'';
 	$.ajax({
@@ -356,13 +365,15 @@ js.fileopt=function(id,lx){
 			js.unloading();
 			if(ret.success){
 				var da = ret.data;
-				ext	   = da.fileext;
+				var ext= da.fileext;
 				var url= da.url;
 				if(ismobile==1){
 					if(da.type==0 && !da.isview && appobj1('openfile', id))return; //不能预览就用app打开
+					if(da.type==0 && !da.isview && js.fileoptWin(id))return; //不能预览就用app打开
 					if(da.type==1 && appobj1('openfile', id))return; //下载用app的
 					if(da.type==0 && !js.isimg(ext)){
 						if(appobj1('openWindow', url))return;
+						if(js.apiopenWin(url))return;
 					}
 				}
 				if(da.type==1){js.location(url);return;}//下载直接跳转
@@ -391,6 +402,18 @@ js.fileopt=function(id,lx){
 			js.msg('msg','处理出错:'+e.responseText+'');
 		}
 	});
+}
+js.fileoptWin=function(id){
+	var otype = this.opentype,ourl='widget://index.html';
+	if(otype && otype!='new')ourl=jm.base64decode(otype);
+	var bstr=jm.base64encode('{"name":"文件","fileid":"'+id+'","url":"fileopen","fileext":""}');
+	var url = ''+ourl+'?bstr='+bstr+'';
+	return this.apiopenWin(url);
+}
+js.apiopenWin=function(url){
+	if(!apicloud)return false;
+	api.openWin({name:'url'+js.getrand(),url: url,bounces:false,softInputBarEnabled:false,slidBackEnabled:true,vScrollBarEnabled:false,hScrollBarEnabled:false,allowEdit:false,progress:{type:'',title:'', text:'',   color:''}});	
+	return true;
 }
 
 //文件预览
@@ -971,8 +994,11 @@ js.changeuser=function(na, lx, tits,ocans){
 	return false;
 }
 js.back=function(){
-	history.back();
-	try{api.closeWin();}catch(e){}
+	if(apicloud){
+		api.historyBack({},function(ret){if(!ret.status)api.closeWin();});
+	}else{
+		history.back();
+	}
 }
 js.changeclear=function(na){
 	var fne  = get(na).name;

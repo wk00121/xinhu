@@ -229,14 +229,14 @@ $(document).ready(function(){
 
 var chengsuid = '';
 if(atype!='my')$('#daoruspan_{rand}').remove();
-if(pnum==''){
+if(pnum=='' || pnum=='all'){
 	bootparams.checked = true;
 
 	c.move=function(){
 		var s= a.getchecked();
 		if(s==''){js.msg('msg','没有选择记录');return;}
 		chengsuid=s;
-		js.confirm('是否客户转移给其他人，并客户下的合同和待收付款单和销售机会同时转移？', function(jg){
+		js.confirm('是否客户转移给其他人，并客户下的合同和待收付款单和销售机会和销售单同时转移？', function(jg){
 			if(jg=='yes')c.moveto();
 		});
 	}
@@ -256,41 +256,41 @@ if(pnum==''){
 		setTimeout(function(){js.getuser(cans);},10);
 	}
 	$('#tdright_{rand}').append('&nbsp; '+c.getbtnstr('客户转移','move'));
-}else{
-	if(pnum!='gys')$('#tdleft_{rand}').hide();
-	if(pnum=='dist'){
-		bootparams.checked = true;
-		c.distss=function(o1,lx){
-			var s = a.getchecked();
-			if(s==''){js.msg('msg','没有选中行');return;}
-			if(lx==0){
-				js.confirm('确定要将选中标为未分配吗？',function(jg){
-					if(jg=='yes')c.distssok(s, '','', 0);
-				});
-				return;
+}
+
+if(pnum!='gys' && pnum!='')$('#tdleft_{rand}').hide();
+if(pnum=='dist'){
+	bootparams.checked = true;
+	c.distss=function(o1,lx){
+		var s = a.getchecked();
+		if(s==''){js.msg('msg','没有选中行');return;}
+		if(lx==0){
+			js.confirm('确定要将选中标为未分配吗？',function(jg){
+				if(jg=='yes')c.distssok(s, '','', 0);
+			});
+			return;
+		}
+		var cans = {
+			type:'user',
+			title:'选中分配给...',
+			callback:function(sna,sid){
+				if(sna=='')return;
+				setTimeout(function(){
+					js.confirm('确定要将选中记录分配给：['+sna+']吗？',function(jg){
+						if(jg=='yes')c.distssok(s, sna,sid,1);
+					});
+				},10);
 			}
-			var cans = {
-				type:'user',
-				title:'选中分配给...',
-				callback:function(sna,sid){
-					if(sna=='')return;
-					setTimeout(function(){
-						js.confirm('确定要将选中记录分配给：['+sna+']吗？',function(jg){
-							if(jg=='yes')c.distssok(s, sna,sid,1);
-						});
-					},10);
-				}
-			};
-			js.getuser(cans);
-		}
-		c.distssok=function(s, sna,sid, lx){
-			js.ajax(js.getajaxurl('distcust',modenum,'main'),{sid:s,sname:sna,snid:sid,lx:lx},function(s){
-				a.reload();
-			},'post','','处理中...,处理成功');
-		}
-		$('#tdright_{rand}').prepend(c.getbtnstr('标为未分配','distss,0')+'&nbsp;');
-		$('#tdright_{rand}').prepend(c.getbtnstr('选中分配给','distss,1')+'&nbsp;&nbsp;');
+		};
+		js.getuser(cans);
 	}
+	c.distssok=function(s, sna,sid, lx){
+		js.ajax(js.getajaxurl('distcust',modenum,'main'),{sid:s,sname:sna,snid:sid,lx:lx},function(s){
+			a.reload();
+		},'post','','处理中...,处理成功');
+	}
+	$('#tdright_{rand}').prepend(c.getbtnstr('标为未分配','distss,0')+'&nbsp;');
+	$('#tdright_{rand}').prepend(c.getbtnstr('选中分配给','distss,1')+'&nbsp;&nbsp;');
 }
 
 if(pnum!='gys' && pnum!='ghai'){

@@ -367,6 +367,7 @@ class uploadClassAction extends apiAction
 		
 		$data['url']	  = $url;
 		$data['type']	  = $type;
+		$data['id']	  	  = $fileid;
 		$data['isview']	  = $fobj->isview($fileext); //是否可直接预览
 
 		return returnsuccess($data);

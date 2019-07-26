@@ -80,11 +80,6 @@ class flow_userinfoClassModel extends flowModel
 			$rs['companyid'] = $this->getdwname($rs);
 		}
 		
-		if(isset($rs['mobile'])){
-			if($lx==2)
-			$rs['mobile']	= substr($rs['mobile'],0,3).'****'.substr($rs['mobile'],-4);
-		}
-		
 		if(getconfig('systype')=='demo')$rs['mobile']='';
 		
 		//导出处理

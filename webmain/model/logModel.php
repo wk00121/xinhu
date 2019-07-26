@@ -114,7 +114,7 @@ class logClassModel extends Model
 	//获取已读未读数
 	public function getreadshu($table, $mid, $receid, $optdt='', $dbs=null)
 	{
-		$ydshu	= $wdshu = 0;
+		$ydshu	= $wdshu = $zzshu = 0;
 		$ydname = $wdname= '';
 		if($dbs==null)$dbs = m('admin');
 		$where	= $dbs->gjoin($receid,'ud','where');
@@ -144,11 +144,13 @@ class logClassModel extends Model
 				$wdname.=','.$name.'';
 				$wduarr[] = $rs;
 			}
+			$zzshu++;
 		}
 		if($ydname!='')$ydname = substr($ydname, 1);
 		if($wdname!='')$wdname = substr($wdname, 1);
 		
 		return array(
+			'zzshu'  => $zzshu,
 			'ydshu'  => $ydshu,
 			'wdshu'  => $wdshu,
 			'ydname' => $ydname,

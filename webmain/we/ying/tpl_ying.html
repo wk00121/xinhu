@@ -42,10 +42,16 @@ body,html{background-color:#f1f1f1;overflow:hidden}
 .notrecord{text-align:center;font-size:20px;padding-top:50px;color:#aaaaaa}
 .r-border:after{border-radius:5px}
 </style>
+<?php 
+if($da['web']=='iPhone')echo '<script src="js/fastclick.min.js"></script>';
+?>
 <script>
 var json = <?=json_encode($arr)?>;
 ismobile = 1;
-var agentlx=0;
+var agentlx=0,apicloud=false;
+apiready=function(){
+	apicloud= true;
+}
 function yingyonginit(){
 	yy.loadshow();
 }
@@ -54,6 +60,7 @@ function initbody(){
 	admintoken = '<?=$xhrock->admintoken?>';
 	try{yy.init();}catch(e){alert(e);}
 	yingyonginit();
+	if(typeof(FastClick)!='undefined')FastClick.attach(document.body);
 }
 function callPhone(o1){
 	if(typeof(o1)!='string')o1 = $(o1).text();
@@ -75,6 +82,7 @@ function callPhone(o1){
 		<?php if($rock->get('openfrom')!='reim'){?>
 		<span onclick="js.back()" class="r-position-left r-header-btn"><i class="icon-chevron-left"></i></span>
 		<?php }?>
+		<span onclick="yy.clickadd()" class="r-position-right r-header-btn"><i class="icon-plus"></i></span>
 	</div>
 	<div class="blank50"></div>
 </div>

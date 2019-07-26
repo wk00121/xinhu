@@ -1,5 +1,8 @@
 function initbodys(){
-	hidetou();
+	if(form('mintou')){
+		var val = form('mintou').value;
+		if(!val || val=='0')hidetou();
+	}
 	if(form('issms'))form('issms').checked=false; //每次编辑都取消
 }
 

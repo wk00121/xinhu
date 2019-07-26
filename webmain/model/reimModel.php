@@ -607,6 +607,7 @@ class reimClassModel extends Model
 		}
 		$arr['receinfor'] = $this->getreceinfor($type, $gid);
 		$arr['nowdt'] 	  = time();
+		$arr['servernow'] = $this->rock->now;
 		if($loadci==0){
 			$arr['sendinfo']  = m('admin')->getinfor($uid);
 		}
@@ -1024,9 +1025,10 @@ class reimClassModel extends Model
 			}
 		}
 		$uwhere = "$where `status`=1";
-		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','appios') and `online`=1",'`token`,`uid`,`web`','id desc');
-		$alias 	= $uida = $xmalias = $oldalias = $newalias = array();
+		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','nppandroid','nppios') and `online`=1",'`token`,`uid`,`web`,`cfrom`,`moddt`','id desc');
+		$alias 	= $uida = $xmalias = $oldalias = $newalias = $niosalias = $nandalias = array();
 		$uids	= '0';
+		$times  = date('Y-m-d H:i:s', time()-10);
 		foreach($rows as $k=>$rs){
 			$_uid 	 = $rs['uid'];
 			if(in_array($_uid, $uida))continue;
@@ -1034,6 +1036,14 @@ class reimClassModel extends Model
 			$uids	.= ','.$_uid.'';
 			if($rs['web']=='xiaomi'){
 				$xmalias[] = $rs['token'];
+			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-07-25最新新app
+				if($rs['moddt'] < $times){
+					if($rs['cfrom']=='nppios'){
+						$niosalias[] = $rs['token'];
+					}else{
+						$nandalias[] = $rs['token'];
+					}
+				}
 			}else if(substr($rs['web'],0,4)=='app_'){
 				$newalias[] = $rs['token'];	
 			}else if(substr($rs['web'],0,4)=='apk_'){
@@ -1042,7 +1052,7 @@ class reimClassModel extends Model
 				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'niosalias'=>$niosalias,'nandalias'=>$nandalias);
 	}
 	
 	/**

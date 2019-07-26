@@ -7,6 +7,19 @@
 *	Date:2016-01-01
 *	explain：返回200为正常
 */
+
+//设置允许跨域
+$origin = arrvalue(getallheaders(), 'Origin');
+if(!isempt($origin) && !contain($origin, HOST)){
+	header('Access-Control-Allow-Origin:*');
+	header('Access-Control-Allow-Headers:X-Requested-With');
+	header('Access-Control-Allow-Credentials:true');
+	if(arrvalue($_SERVER,'REQUEST_METHOD')=='OPTIONS'){
+		showreturn('ok');
+	}
+}
+		
+
 class apiAction extends ActionNot
 {
 

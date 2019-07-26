@@ -1,5 +1,10 @@
 <?php 
-class publicClassAction extends Action{
+class publicClassAction extends ActionNot{
+	
+	public function initAction()
+	{
+		$this->mweblogin(0, false);
+	}
 	
 	//文档预览的
 	public function fileviewerAction()

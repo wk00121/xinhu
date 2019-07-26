@@ -1,16 +1,15 @@
 <?php
 class goodsClassAction extends Action
 {
-	private $typenamearr= array();
+	
+	public function initAction()
+	{
+		$this->goodsobj = m('goods');
+	}
+	
 	private function gettypename($tid)
 	{
-		if(isset($this->typenamearr[$tid])){
-			return $this->typenamearr[$tid];
-		}else{
-			$varr	= $this->db->getpval('[Q]option','pid','name', $tid,'/','id',2);
-			$this->typenamearr[$tid] = $varr;
-			return $varr;
-		}
+		return $this->goodsobj->gettypename($tid);
 	}
 	
 	public function aftershow($table, $rows)
@@ -170,7 +169,7 @@ class goodsClassAction extends Action
 	*/
 	public function delxiangAjax()
 	{
-		$ids	= $this->post('id','0');
+		$ids	= c('check')->onlynumber($this->post('id','0'));
 		m('goodss')->delete("id in($ids) and `mid`=0");
 		backmsg();
 	}

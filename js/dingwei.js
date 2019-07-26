@@ -4,7 +4,7 @@
 
 //jssdk回调过来的
 js.jssdkcall  = function(bo){
-	js.dw.start();//开始定位
+	setTimeout('js.dw.start()',500);//开始定位
 }
 js.dw = {
 	
@@ -66,6 +66,29 @@ js.dw = {
 			return;
 		}
 		
+		if(api.startLocation){
+			if(api.systemType=='ios'){
+				this.wait(''+api.systemType+'APP定位中...');
+				api.startLocation({},function(ret,err){
+					js.dw.appLocationSuc(ret,err);
+				});
+				return;
+			}else{
+				/*
+				if(!this.baiduLocation)this.baiduLocation = api.require('baiduLocation');
+				this.wait('百度地图定位中...');
+				this.baiduLocation.startLocation({
+					accuracy: '500m',
+					filter: 1,
+					autoStop: true
+				}, function(ret, err) {
+					js.dw.baiduLocationSuc(ret,err);
+				});
+				return;
+				*/
+			}
+		}
+		
 		if(!navigator.geolocation){
 			msg = '不支持浏览器定位';
 			js.msg('msg',msg);
@@ -89,8 +112,8 @@ js.dw = {
 		this.wait(msg);
 		wx.getLocation({
 			type: 'gcj02',
-			success: function (res){
-				js.dw.dwsuccess(res);
+			success: function (res,err){
+				js.dw.dwsuccess(res,err);
 			},
 			error:function(){
 				js.jssdkstate = 2;
@@ -99,7 +122,30 @@ js.dw = {
 			}
 		});
 	},
+	appLocationSuc:function(ret,err){
+		if(ret.status){
+			if(!ret.accuracy)ret.accuracy = 100;
+			this.dwsuccess(ret);
+		}else{
+			this.dwshibai(err.msg);
+		}
+	},
 	
+	baiduLocationSuc:function(ret,err){
+		if(ret.status){
+			if(!ret.accuracy)ret.accuracy = 100;
+			var center 		= new qq.maps.LatLng(ret.latitude,ret.longitude);
+			this.translate(center, ret.accuracy, 3);
+		}else{
+			this.dwshibai(err.msg);
+		}
+	},
+	dwshibai:function(msg){
+		this.clearchao();
+		js.setmsg('');
+		js.msg('msg', msg);
+		this.ondwerr(msg);
+	},
 	dwsuccess:function(res){
 		this.wait('定位成功，获取位置信息...');
 		this.clearchao();
@@ -139,19 +185,23 @@ js.dw = {
 		var longitude 	= res.longitude;
 		var accuracy 	= parseFloat(res.accuracy);
 		var center 		= new qq.maps.LatLng(parseFloat(latitude), parseFloat(longitude));
-		js.dw.translate(center, accuracy);
+		js.dw.translate(center, accuracy, 1);
 	},
 	
-	//坐标转化
-	translate:function(center, accuracy){
-		qq.maps.convertor.translate(center,1,function(res){
+	//坐标转化type1原始
+	translate:function(center, accuracy, type){
+		qq.maps.convertor.translate(center,type,function(res){
 			var latitude 	= res[0].lat;
 			var longitude 	= res[0].lng;
-			js.dw.dwsuccess({
-				latitude:latitude,
-				longitude:longitude,
-				accuracy:accuracy
-			});
+			if(latitude==0 || latitude==0){
+				js.dw.dwshibai('无法获取位置信息失败');
+			}else{
+				js.dw.dwsuccess({
+					latitude:latitude,
+					longitude:longitude,
+					accuracy:accuracy
+				});
+			}
 		});	
 	},
 	

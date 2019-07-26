@@ -49,7 +49,6 @@ class flow_userClassModel extends flowModel
 		
 		if(isset($rs['mobile'])){
 			$sjhao = $rs['mobile'];
-			if($lx==2)$rs['mobile']	= substr($rs['mobile'],0,3).'****'.substr($rs['mobile'],-4);
 		}
 		if(getconfig('systype')=='demo')$rs['mobile']='';
 		

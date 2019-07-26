@@ -513,6 +513,9 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	public function viewshowbefore($table)
 	{
 		$this->modeid = (int)$this->post('modeid');
+		if($this->modeid==0){
+			return 'and 1=2';
+		}
 		$this->moders = m('flow_set')->getone($this->modeid);
 		$this->isflow = $this->moders['isflow'];
 		$table = $this->moders['table'];
@@ -530,29 +533,31 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	public function viewshowafter($table, $rows)
 	{
 		$arr 	= array();
-		$flow 	= m('flow')->initflow($this->moders['num']);
-		$mbil 	= m('flowbill');
-		foreach($rows as $k=>$rs){
-			$zt 	= '';
-			if(isset($rs['status']))$zt = $rs['status'];
-			$narr['id'] 		= $rs['id'];
-			$narr['ishui'] 		= ($zt=='5')?1:0;
-			$narr['optname'] 	= arrvalue($rs,'optname');
-			$narr['modenum'] 	= $this->moders['num'];
-			$narr['modename'] 	= $this->moders['name'];
-			$narr['table'] 		= $this->moders['table'];
-			$narr['optdt'] 		= arrvalue($rs,'optdt');
-			$nors 	= $flow->flowrsreplace($rs, 2);
-			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $nors);
-			$otehsr = '';
-			if($flow->isflow>0){
-				$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");
-				$otehsr = arrvalue($billrs, 'nowcheckname');
+		if($rows){
+			$flow 	= m('flow')->initflow($this->moders['num']);
+			$mbil 	= m('flowbill');
+			foreach($rows as $k=>$rs){
+				$zt 	= '';
+				if(isset($rs['status']))$zt = $rs['status'];
+				$narr['id'] 		= $rs['id'];
+				$narr['ishui'] 		= ($zt=='5')?1:0;
+				$narr['optname'] 	= arrvalue($rs,'optname');
+				$narr['modenum'] 	= $this->moders['num'];
+				$narr['modename'] 	= $this->moders['name'];
+				$narr['table'] 		= $this->moders['table'];
+				$narr['optdt'] 		= arrvalue($rs,'optdt');
+				$nors 	= $flow->flowrsreplace($rs, 2);
+				$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $nors);
+				$otehsr = '';
+				if($flow->isflow>0){
+					$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");
+					$otehsr = arrvalue($billrs, 'nowcheckname');
+				}
+				$narr['status']		= $flow->getstatus($rs,'',$otehsr,1);
+				$narr['chushu']		= $flow->flogmodel->rows("`table`='".$flow->mtable."' and `mid`='".$rs['id']."'");
+				
+				$arr[] = $narr;
 			}
-			$narr['status']		= $flow->getstatus($rs,'',$otehsr,1);
-			$narr['chushu']		= $flow->flogmodel->rows("`table`='".$flow->mtable."' and `mid`='".$rs['id']."'");
-			
-			$arr[] = $narr;
 		}
 		return array('rows'=>$arr);
 	}

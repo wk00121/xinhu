@@ -123,7 +123,7 @@ class crmClassModel extends Model
 	//客户转移
 	public function movetouser($uid, $sid, $toid)
 	{
-		$rows 	= $this->getrows("`id` in($sid) and `uid`='$this->adminid'",'id,name');
+		$rows 	= $this->getrows("`id` in($sid)",'id,uid,name');
 		$toname = m('admin')->getmou('name',"`id`='$toid'");
 		if(isempt($toname))return false;
 		
@@ -131,14 +131,19 @@ class crmClassModel extends Model
 			$id  = $rs['id'];
 			$uarr			= array();
 			$uarr['uid'] 	= $toid;
-			$uarr['optname']= $toname;
+			$uarr['optname'] 	= $toname;
+			$nowid = (int)$rs['uid'];
+			if($nowid==0)$nowid = $uid;
 			
 			$this->update($uarr, $id);
 			
-			m('custract')->update($uarr, "`uid`='$uid' and `custid`='$id'");
-			m('custsale')->update($uarr, "`uid`='$uid' and `custid`='$id'");
+			m('custract')->update($uarr, "`uid`='$nowid' and `custid`='$id'"); 
+			m('custsale')->update($uarr, "`uid`='$nowid' and `custid`='$id'"); //销售机会
+			m('goodm')->update($uarr, "`uid`='$nowid' and `custid`='$id' and `type`=2"); //销售的
+			
 			$uarr['ismove']=1;
-			m('custfina')->update($uarr, "`uid`='$uid' and `custid`='$id'");
+			m('custfina')->update($uarr, "`uid`='$nowid' and `custid`='$id'");
+			
 		}
 	}
 	

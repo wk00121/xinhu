@@ -26,6 +26,8 @@ class yingClassAction extends ActionNot{
 		if(!file_exists($yyurl))$yyurl='';
 		$yyurljs 	= ''.P.'/we/ying/yingyong/'.$num.'.js';
 		if(!file_exists($yyurljs))$yyurljs='';
+		
+		$rs['iscy'] = $this->iscy($num);
 		$this->assign('arr', $rs);
 		$this->assign('num', $num);
 		$this->assign('openfrom', $this->get('openfrom'));
@@ -50,6 +52,14 @@ class yingClassAction extends ActionNot{
 		
 		//以下是新版应用页面，不想用可以删掉
 		//if($rs['url']=='auto' || $yyurl=='')$this->displayfile = ''.P.'/we/agent/tpl_agent.html';
+	}
+	
+	private function iscy($num)
+	{
+		$myyyid= $this->option->getval('yinghomeshow_'.$this->adminid.'');
+		$iscy  = 0;
+		if(!isempt($myyyid) && contain(','.$myyyid.',',','.$num.','))$iscy=1;
+		return $iscy;
 	}
 	
 	public function locationAction()
@@ -88,6 +98,7 @@ class yingClassAction extends ActionNot{
 		$kqrs 	= $kq->dwdkrs($this->adminid, $this->date);
 		$isgzh	= m('wxgzh:index')->isusegzh();
 		$this->assign('isgzh', $isgzh);
+		$this->assign('iscy', $this->iscy('kqdaka'));
 		$this->assign('kqrs', $kqrs);
 		$dwids	= arrvalue($kqrs, 'dwids');
 		$kqors	= array();

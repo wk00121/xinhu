@@ -478,5 +478,34 @@ var myScroll=false,yy={
 	},
 	scrollEndevent:function(){
 		yy.regetdata(get('showblankss'),yy.nowpage+1);
+	},
+	clickadd:function(){
+		var str = '应用首页显示';
+		if(json.iscy==1)str='取消应用首页显示';
+		if(apicloud){
+			api.actionSheet({
+				title: '选择菜单',
+				cancelTitle: '取消',
+				buttons: [str,'关闭应用']
+			}, function(ret, err) {
+				var index = ret.buttonIndex;
+				if(index==1)yy.addchangying();
+				if(index==2)js.back();
+			});
+		}else{
+			js.showmenu({
+				data:[{name:str,lx:1}],
+				width:170,
+				onclick:function(d){
+					if(d.lx==1)yy.addchangying();
+				}
+			});
+		}
+	},
+	addchangying:function(){
+		js.ajax('indexreim','shecyy',{yynum:json.num},function(ret){
+			json.iscy = ret.iscy;
+			js.wx.msgok(ret.msg, false, 1);
+		},'mode', false,false, 'get');
 	}
 }

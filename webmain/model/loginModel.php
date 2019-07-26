@@ -25,8 +25,8 @@ class loginClassModel extends Model
 		$yanzm = $this->rock->request('yanzm');//验证码
 		$ltype = (int)$this->rock->request('ltype',0);//登录类型，1是手机+验证码
 		if(!isempt($yanzm) && strlen($yanzm)!=6)return '验证码必须是6位数字';
-		$cfroar= explode(',', 'pc,reim,weixin,appandroid,appios,mweb');
-		if(!in_array($cfrom, $cfroar))return 'not found cfrom';
+		$cfroar= explode(',', 'pc,reim,weixin,appandroid,mweb,webapp,nppandroid,nppios');
+		if(!in_array($cfrom, $cfroar))return 'not found cfrom['.$cfrom.']';
 		if($user=='')return '用户名不能为空';
 		if($pass==''&&strlen($token)<8 && $ltype==0)return '密码不能为空';
 		$user	= htmlspecialchars(addslashes(substr($user, 0, 100)));

@@ -95,7 +95,7 @@ class emailClassAction extends Action
 	//标已读
 	public function biaoydAjax()
 	{
-		$sid = $this->post('sid');
+		$sid = c('check')->onlynumber($this->post('sid'));
 		m('emailm')->biaoyd($this->adminid, $sid);
 		echo '成功标识';
 	}
@@ -105,7 +105,7 @@ class emailClassAction extends Action
 	*/
 	public function delyjAjax()
 	{
-		$sid 	= $this->post('sid');
+		$sid 	= c('check')->onlynumber($this->post('sid'));
 		$atype 	= $this->post('atype');
 		$uid 	= $this->adminid;
 		//收件箱删除

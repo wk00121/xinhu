@@ -1594,15 +1594,9 @@ class flowModel extends Model
 	{
 		$type	= $crs['checktype'];
 		$cuid 	= $name = '';
-		$courseid = $crs['id'];
-		if(!$this->isempt($crs['num'])){
-			$uarr	= $this->flowcheckname($crs['num']);
-			if(is_array($uarr)){
-				if(!$this->isempt($uarr[0]))return $uarr;
-			}
-		}
-		
-		$cheorws= $this->checksmodel->getall($this->mwhere.' and `courseid`='.$courseid.'','checkid,checkname');
+		$courseid= $crs['id'];
+	
+		$cheorws = $this->checksmodel->getall($this->mwhere.' and `courseid`='.$courseid.'','checkid,checkname');
 		if($cheorws){
 			foreach($cheorws as $k=>$rs){
 				$lxss = $rs['checkid'];
@@ -1614,6 +1608,14 @@ class flowModel extends Model
 				$cuid = substr($cuid, 1);
 				$name = substr($name, 1);
 				return array($cuid, $name);
+			}
+		}
+		
+		//自定义审核人读取
+		if(!$this->isempt($crs['num'])){
+			$uarr	= $this->flowcheckname($crs['num']);
+			if(is_array($uarr)){
+				if(!$this->isempt($uarr[0]))return $uarr;
 			}
 		}
 		

@@ -143,7 +143,7 @@ class flow_gongClassModel extends flowModel
 			'order' 	=> '`istop` desc,`optdt` desc',
 			'keywere' 	=> $keywere,
 			'where' 	=> $whyere,
-			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou,`status`,`istop`'
+			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou,`status`,`istop`,`appxs`'
 		);
 	}
 	

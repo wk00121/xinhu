@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'gong',modename='通知公告',isflow=0,modeid='1',atype = params.atype,pnum=params.pnum,modenames='投票选项';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"fengmian","name":"\u5c01\u9762\u56fe\u7247","fieldstype":"uploadimg","ispx":"0","isalign":"1","islb":"0"},{"fields":"typename","name":"\u7c7b\u578b\u540d\u79f0","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"content","name":"\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u53d1\u9001\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"url","name":"\u76f8\u5e94\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"zuozhe","name":"\u6765\u6e90","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"indate","name":"\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"mintou","name":"\u81f3\u5c11\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"maxtou","name":"\u6700\u591a\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"startdt","name":"\u5f00\u59cb\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"},{"fields":"issms","name":"\u53d1\u624b\u673a\u77ed\u4fe1","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"istop","name":"\u6392\u5e8f\u53f7","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"},{"fields":"zstart","name":"\u5c55\u793a\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"0"},{"fields":"zsend","name":"\u5c55\u793a\u622a\u6b62","fieldstype":"date","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"fengmian","name":"\u5c01\u9762\u56fe\u7247","fieldstype":"uploadimg","ispx":"0","isalign":"1","islb":"0"},{"fields":"typename","name":"\u7c7b\u578b\u540d\u79f0","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"content","name":"\u5185\u5bb9","fieldstype":"htmlediter","ispx":"0","isalign":"0","islb":"0"},{"fields":"recename","name":"\u53d1\u9001\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"url","name":"\u76f8\u5e94\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"zuozhe","name":"\u6765\u6e90","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"indate","name":"\u65e5\u671f","fieldstype":"date","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"mintou","name":"\u81f3\u5c11\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"maxtou","name":"\u6700\u591a\u6295\u7968","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"startdt","name":"\u5f00\u59cb\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"0"},{"fields":"issms","name":"\u53d1\u624b\u673a\u77ed\u4fe1","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"istop","name":"\u6392\u5e8f\u53f7","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"},{"fields":"appxs","name":"APP\u9996\u9875\u663e\u793a","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"},{"fields":"zstart","name":"\u5c55\u793a\u65e5\u671f","fieldstype":"date","ispx":"0","isalign":"0","islb":"0"},{"fields":"zsend","name":"\u5c55\u793a\u622a\u6b62","fieldstype":"date","ispx":"0","isalign":"0","islb":"0"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -210,7 +210,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('aW5mb3I:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"标题",dataIndex:"title",align:"left"},{text:"类型名称",dataIndex:"typename",sortable:true},{text:"发送给",dataIndex:"recename"},{text:"来源",dataIndex:"zuozhe"},{text:"日期",dataIndex:"indate",sortable:true},{text:"操作人",dataIndex:"optname",sortable:true},{text:"排序号",dataIndex:"istop",sortable:true},{
+		columns:[{text:"标题",dataIndex:"title",align:"left"},{text:"类型名称",dataIndex:"typename",sortable:true},{text:"发送给",dataIndex:"recename"},{text:"来源",dataIndex:"zuozhe"},{text:"日期",dataIndex:"indate",sortable:true},{text:"操作人",dataIndex:"optname",sortable:true},{text:"排序号",dataIndex:"istop",sortable:true},{text:"APP首页显示",dataIndex:"appxs",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -239,10 +239,14 @@ c.setcolumns('fengmian',{
 		return '<img src="'+v+'" height="60">';
 	}
 });
-
+var isedit = (admintype=='1' || pnum=='all')
 c.setcolumns('istop',{
 	type:'number',
-	'editor':admintype=='1'
+	'editor':isedit
+});
+c.setcolumns('appxs',{
+	type:'checkbox',
+	'editor':isedit
 });
 
 //[自定义区域end]
