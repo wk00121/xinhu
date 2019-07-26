@@ -403,9 +403,10 @@ js.fileopt=function(id,lx){
 		}
 	});
 }
+
 js.fileoptWin=function(id){
 	var otype = this.opentype,ourl='widget://index.html';
-	if(otype && otype!='new')ourl=jm.base64decode(otype);
+	if(otype && otype!='nei')ourl=jm.base64decode(otype);
 	var bstr=jm.base64encode('{"name":"文件","fileid":"'+id+'","url":"fileopen","fileext":""}');
 	var url = ''+ourl+'?bstr='+bstr+'';
 	return this.apiopenWin(url);
