@@ -8,8 +8,8 @@
 *	explain：返回200为正常
 */
 
-//设置允许跨域
-$origin = arrvalue(getallheaders(), 'Origin');
+//设置允许跨域，用于最新版本APP
+$origin = getheader('Origin');
 if(!isempt($origin) && !contain($origin, HOST)){
 	header('Access-Control-Allow-Origin:*');
 	header('Access-Control-Allow-Headers:X-Requested-With');
@@ -17,8 +17,7 @@ if(!isempt($origin) && !contain($origin, HOST)){
 	if(arrvalue($_SERVER,'REQUEST_METHOD')=='OPTIONS'){
 		showreturn('ok');
 	}
-}
-		
+}	
 
 class apiAction extends ActionNot
 {

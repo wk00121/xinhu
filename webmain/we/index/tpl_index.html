@@ -137,6 +137,8 @@ var im={
 			this.reload();
 		}else{
 			this.reload();
+			var str = js.getoption('silderarr');
+			if(str)this.showsilder(js.decode(str));
 			im.showagent(js.decode(agentjson));
 			im.showhistory(js.decode(hisjson));
 		}
@@ -149,20 +151,61 @@ var im={
 	},
 	reloadss:function(lx){
 		js.ajax('indexreim','mwebinit',false,function(ret){
-			js.setoption('agentjson', ret.agentjson);
-			js.setoption('historyjson', ret.historyjson);
-			im.showcompanyinfo(ret.companyinfo);
-			im.showagent(js.decode(ret.agentjson));
-			im.showhistory(js.decode(ret.historyjson));
-			im.reloadok();
-			if(ret.editpass==0){
-				js.wx.alert('请先修改密码后在使用', function(){
-					im.editpass();
-				});
-			}
+			im.reloadshow(ret);
 		}, lx, false, function(){
 			im.showerror();
 		});
+	},
+	splittime:5,
+	reloadshow:function(ret){
+		this.loadtime = ret.loadtime;
+		js.setoption('agentjson', ret.agentjson);
+		js.setoption('historyjson', ret.historyjson);
+		var yyda = js.decode(ret.agentjson);
+		im.showcompanyinfo(ret.companyinfo);
+		im.showagent(yyda);
+		im.showhistory(js.decode(ret.historyjson));
+		js.setoption('myhomenum', ret.myhomenum);
+		if(ret.silderarr){
+			var str = '';
+			if(ret.silderarr.length>0)str=JSON.stringify(ret.silderarr);
+			js.setoption('silderarr', str);
+			this.showsilder(ret.silderarr);
+		}
+		im.showhomeagent(yyda);
+		im.reloadok();
+		if(ret.editpass==0){
+			js.wx.alert('请先修改密码后在使用', function(){
+				im.editpass();
+			});
+		}else{
+			this.timeajaxs();
+		}
+	},
+	timeajaxs:function(){
+		clearTimeout(this.homeretime);
+		if(this.loadtime)this.homeretime=setTimeout(function(){im.timeajax()},this.splittime*1000);
+	},
+	timeajax:function(){
+		js.ajax('indexreim','loadhit', {time:this.loadtime}, function(ret){
+			im.loadtime = ret.loadtime;
+			if(ret.rows.length>0){
+				im.shownewhistory(ret.rows);
+			}
+			im.timeajaxs();
+		},'none',false, function(){
+			js.msg();
+			im.timeajaxs();
+		},'get');
+	},
+	shownewhistory:function(a){
+		var i,len=a.length,d=false;
+		for(i=0;i<len;i++){
+			if(!d && a[i].stotal>0)d=a[i];
+			this.showhistorys(a[i], true);
+		}
+		this.changestotl(false,0);
+		if(i>0)$('#historylist_tems').hide();
 	},
 	showcompanyinfo:function(info){
 		if(info){
@@ -171,6 +214,18 @@ var im={
 			js.setoption('nowcompany', neme);
 			$('#nowcompany_div').html(neme);
 		}
+	},
+	showsilder:function(a){
+		if(this.showsilderobj)this.showsilderobj.remove();
+		if(!a || a.length==0)return;
+		this.showsilderobj = $.rocksilder({
+			view:'home_silder',
+			titlebool:true,
+			data:a,
+			onclick:function(d){
+				js.location(d.url);
+			}
+		});
 	},
 	showerror:function(){
 		if(this.touchobj)this.touchobj.ondownerror();
@@ -184,6 +239,24 @@ var im={
 		}else{
 			this.reloadss(lx);
 		}
+	},
+	showhomeagent:function(d){
+		var stotal=0;
+		var myhomenum = js.getoption('myhomenum');
+		$('#home_yinglistdiv').hide();
+		$('#home_yinglist').html('');
+		if(!myhomenum)return;
+		myhomenum = ','+myhomenum+',';
+		var bo = false;
+		for(var i=0;i<d.length;i++){
+			stotal+=parseFloat(d[i].stotal);
+			if(myhomenum.indexOf(','+d[i].num+',')>-1){
+				this.showagents(d[i], 'home_yinglist', 'histotal_home_');
+				bo = true;
+			}
+		}
+		if(bo)$('#home_yinglistdiv').show();
+		this.changestotl(false,0);
 	},
 	showagent:function(a){
 		var i,len=a.length,d,oshow,typearr={},s,ois=0;
@@ -206,13 +279,14 @@ var im={
 		}
 		this.changestotl('agentstotal_',1);
 	},
-	showagents:function(d,shows){
+	showagents:function(d,shows,qizx){
 		var s='';
+		if(!qizx)qizx='agentstotal_';
 		var s1=d.stotal;if(s1==0)s1='';
 		s='<a href="javascript:;" onclick="im.openagent('+d.id+')" class="weui_grid">';
 		s+='<div class="weui_grid_icon">';
 			s+='	<img src="'+d.face+'">';
-		s+='	<span id="agentstotal_'+d.id+'" class="badge">'+s1+'</span>';
+		s+='	<span id="'+qizx+''+d.id+'" temp="agent'+d.id+'" class="badge">'+s1+'</span>';
 		s+='</div>';
 		s+='<p class="weui_grid_label">';
 		s+=' '+d.name+'';
@@ -238,8 +312,10 @@ var im={
 		if(!d)return;
 		var url = '?m=ying&d=we&num='+d.num+'';
 		if(d.url=='link' && !isempt(d.urlm))url=d.urlm;
-		$('#agentstotal_'+id+'').html('');
+		//$('#agentstotal_'+id+'').html('');
+		$('span[temp="agent'+id+'"]').html('');
 		this.changestotl('agentstotal_',1);
+		this.changestotl(false,0);
 		js.location(url);
 	},
 	showhistorydata:{},
@@ -256,6 +332,7 @@ var im={
 	showhistorys:function(d,pad){
 		var s,ty,o=$('#historylist'),d1,st,attr;
 		var num = ''+d.type+'_'+d.receid+'';
+		$('#index_'+num+'').remove();
 		this.showhistorydata[num]=d;
 		st	= d.stotal;if(st=='0')st='';
 		var ops = d.optdt.substr(11,5);
@@ -273,7 +350,11 @@ var im={
 		s+='		<p class="weui_media_desc">'+jm.base64decode(d.cont)+'</p>';
 		s+='	</div>';
 		s+='</a>';
-		o.append(s);
+		if(!pad){
+			o.append(s);
+		}else{
+			o.prepend(s);
+		}
 	},
 	clickitems:function(ty,id,o){
 		var o1=$(o),num=''+ty+'_'+id+'',d=this.showhistorydata[num];
@@ -615,8 +696,12 @@ var im={
 
 
 <div id="mainbody" class="r-touch" style="height:350px;position:relative;">
-
 	<div index="main" id="main_index0">
+		<div id="home_silder"></div>
+		<div id="home_yinglistdiv" style="margin-bottom:15px;display:none">
+		<div class="agentp">应用</div>
+		<div id="home_yinglist" style="background:white" class="weui_grids"></div>
+		</div>
 		<div  class="weui_panel"><div id="historylist"></div></div>
 		<div id="historylist_tems" style="padding-top:50px;text-align:center;color:#cccccc"><span style="font-size:40px"><i class="icon-comment-alt"></i></span><br>暂无消息</div>
 	</div>
@@ -785,6 +870,7 @@ var im={
 	</a>
 </div>
 <script type="text/javascript" src="mode/plugin/jquery-rockdoupull.js"></script>
+<script type="text/javascript" src="mode/plugin/jquery-rocksilder.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-changeuser.js"></script>
 </body>
 </html>

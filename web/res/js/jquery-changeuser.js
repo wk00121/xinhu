@@ -359,6 +359,7 @@
 				this.nameobj.value=sna;
 				this.nameobj.focus();
 			}
+			if(!this.oveob)history.back();
 			this.onselect(sna, sid);
 			this.hide();
 		}

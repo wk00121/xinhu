@@ -11,12 +11,12 @@ class mode_userClassAction extends inputAction{
 		$user = trimstr($cans['user']);
 		$name = trimstr($cans['name']);
 		$num  = trimstr(arrvalue($cans,'num'));
-		$email= trimstr($cans['email']);
+		$email= trimstr(arrvalue($cans,'email'));
 		$pass = $cans['pass'];
 		$check= c('check');
-		$mobile 	= $cans['mobile'];
-		$weixinid 	= $cans['weixinid'];
-		$pingyin 	= $cans['pingyin'];
+		$mobile 	= arrvalue($cans,'mobile');
+		$weixinid 	= arrvalue($cans,'weixinid');
+		$pingyin 	= arrvalue($cans,'pingyin');
 		if(!isempt($pass)){
 			if(strlen($pass)<4)return '密码至少要4位数';
 		}
@@ -38,15 +38,7 @@ class mode_userClassAction extends inputAction{
 
 		if($msg=='')if($db->rows("`user`='$user' and `id`<>'$id'")>0)$msg ='用户名['.$user.']已存在';
 		
-		/*
-			为啥这里注释了？已改成用表单元素管理下的唯一值设置来判断是否有重复。
-		if($msg=='' && $num!='')if($db->rows("`num`='$num' and `id`<>'$id'")>0)$msg ='编号['.$num.']已存在';
-		
-		if($msg=='' && !isempt($mobile))if($db->rows("`mobile`='$mobile' and `id`<>'$id'")>0)$msg ='手机号['.$mobile.']已存在';
-		if($msg=='' && !isempt($email))if($db->rows("`email`='$email' and `id`<>'$id'")>0)$msg ='邮箱['.$email.']已存在';
-		if($msg=='' && !isempt($weixinid))if($db->rows("`weixinid`='$weixinid' and `id`<>'$id'")>0)$msg ='微信号['.$weixinid.']已存在';
-		if($msg=='')if($db->rows("`name`='$name' and `id`<>'$id'")>0)$msg ='姓名['.$name.']已存在';
-		*/
+	
 		
 		$rows = array();
 		if($msg == ''){

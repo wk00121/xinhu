@@ -4,7 +4,7 @@
 
 //jssdk回调过来的
 js.jssdkcall  = function(bo){
-	setTimeout('js.dw.start()',500);//开始定位
+	setTimeout('js.dw.start()',1000);//开始定位
 }
 js.dw = {
 	

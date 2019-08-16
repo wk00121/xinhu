@@ -43,6 +43,7 @@ $(document).ready(function(){
 	});
 	function btn(bo, d){
 		get('edit_{rand}').disabled = bo;
+		get('del_{rand}').disabled = bo;
 	}
 	biaoshiyw{rand}=function(i,lx){
 		c.biaowanc(i,lx);
@@ -77,6 +78,12 @@ $(document).ready(function(){
 					js.msg('msg', s);
 				}
 			},'post',false,'标识中...,标识成功');
+		},
+		del:function(){
+			a.del({
+				url:js.getajaxurl('delmodeshuju','{mode}','{dir}'),
+				params:{modenum:a.changedata.modenum,mid:a.changeid}
+			});
 		}
 	};
 	js.initbtn(c);
@@ -93,9 +100,10 @@ $(document).ready(function(){
 	<td align="left"  width="100%" style="padding:0px 10px;">
 		<div class="tishi">如有异常的记录请点击[重新匹配流程]，如出现无法解决，查看<a target="_blank" href="<?=URLY?>view_danerror.html">帮助</a>。<div>
 	</td>
-	<td align="right">
+	<td align="right" nowrap>
 		
-		<button class="btn btn-default" id="edit_{rand}" click="view" disabled type="button">查看</button>
+		<button class="btn btn-default" id="edit_{rand}" click="view" disabled type="button">查看</button>&nbsp; 
+		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>
 	</tr>
 	</table>

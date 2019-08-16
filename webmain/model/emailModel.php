@@ -15,6 +15,9 @@ class emailClassModel extends Model
 	*/
 	public function sendmail($title, $body, $to_uid, $rows=array(), $zjsend=0, $oparm=array())
 	{
+		if(!function_exists('socket_get_status') || !function_exists('fsockopen'))return '没有开启socket扩展无法使用';
+		if(!function_exists('openssl_sign'))return '没有开启openssl扩展无法使用';
+		
 		$setrs		= m('option')->getpidarr(-1);
 		if(!$setrs)return '未设置发送邮件';
 		

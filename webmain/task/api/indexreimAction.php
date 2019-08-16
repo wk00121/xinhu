@@ -171,9 +171,9 @@ class indexreimClassAction extends apiAction
 	public function showmyinfoAction()
 	{
 		$dbs = m('admin');
-		$arr = $dbs->getone($this->adminid,'`id`,`deptallname`,`ranking`,`apptx`,`face`,`name`,`user`,`mobile`');
+		$arr = $dbs->getone($this->adminid,'`id`,`deptallname`,`ranking`,`email`,`tel`,`apptx`,`face`,`name`,`user`,`mobile`');
 		if(!$arr)$this->showreturn('','not user', 201);
-		if(isempt($arr['face']))$arr['face']='images/noface.png';
+		$arr['face']		= $dbs->getface($arr['face']);
 		$arr['admintoken']  = $this->admintoken;
 		$arr['companyinfo']  = $dbs->getcompanyinfo($this->adminid, 1);
 		$arr['companymode']	 = ISMORECOM;

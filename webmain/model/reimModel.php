@@ -1025,34 +1025,32 @@ class reimClassModel extends Model
 			}
 		}
 		$uwhere = "$where `status`=1";
-		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','nppandroid','nppios') and `online`=1",'`token`,`uid`,`web`,`cfrom`,`moddt`','id desc');
-		$alias 	= $uida = $xmalias = $oldalias = $newalias = $niosalias = $nandalias = array();
+		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','nppandroid','nppios') and `online`=1",'`token`,`uid`,`web`,`ip`,`cfrom`,`moddt`','id desc');
+		$alias 	= $uida = $xmalias = $oldalias = $newalias = $alias2019  =array();
 		$uids	= '0';
-		$times  = date('Y-m-d H:i:s', time()-10);
+		$times  = date('Y-m-d H:i:s', time()-5*60);//5分钟
 		foreach($rows as $k=>$rs){
 			$_uid 	 = $rs['uid'];
+			$_web 	 = $rs['web'];
 			if(in_array($_uid, $uida))continue;
 			$uida[]  = $_uid;
 			$uids	.= ','.$_uid.'';
-			if($rs['web']=='xiaomi'){
+			if($_web=='xiaomi'){
 				$xmalias[] = $rs['token'];
 			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-07-25最新新app
-				if($rs['moddt'] < $times){
-					if($rs['cfrom']=='nppios'){
-						$niosalias[] = $rs['token'];
-					}else{
-						$nandalias[] = $rs['token'];
-					}
+				if(!contain($rs['ip'],'.')){
+					$nestr = ''.$rs['ip'].'|'.substr($rs['web'],0,8).'';
+					$alias2019[] = $nestr;
 				}
-			}else if(substr($rs['web'],0,4)=='app_'){
+			}else if(substr($_web,0,4)=='app_'){
 				$newalias[] = $rs['token'];	
-			}else if(substr($rs['web'],0,4)=='apk_'){
+			}else if(substr($_web,0,4)=='apk_'){
 				$oldalias[] = $rs['token'];	
 			}else{
 				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'niosalias'=>$niosalias,'nandalias'=>$nandalias);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'alias2019'=>$alias2019);
 	}
 	
 	/**

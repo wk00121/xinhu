@@ -575,9 +575,15 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$this->modeid 	= (int)$this->post('modeid');
 		$mid 			= (int)$this->post('mid');
-		$this->moders 	= m('flow_set')->getone($this->modeid);
-		if(!$this->moders)backmsg('sorry!');
-		$msg	= m('flow')->deletebill($this->moders['num'], $mid, '', $this->adminid!=1);
+		$modenum 		= $this->post('modenum');
+		if($this->modeid>0){
+			$this->moders 	= m('flow_set')->getone($this->modeid);
+			if(!$this->moders)backmsg('sorry!');
+			$modenum = $this->moders['num'];
+		}
+		if(isempt($modenum))backmsg('操作有误');
+		
+		$msg	= m('flow')->deletebill($modenum, $mid, '', $this->adminid!=1);
 		if($msg=='ok')$msg='';
 		backmsg($msg);
 	}

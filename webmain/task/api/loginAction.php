@@ -53,6 +53,7 @@ class loginClassAction extends apiAction
 		$arrs = array(
 			'loginyzm'  => (int)getconfig('loginyzm','0'),
 			'title'		=> getconfig('apptitle'),
+			'regtype'	=> getconfig('regtype','0'), //是否可注册1,可注册
 		);
 		
 		$this->showreturn($arrs);

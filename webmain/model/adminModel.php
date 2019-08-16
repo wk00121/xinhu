@@ -429,6 +429,7 @@ class adminClassModel extends Model
 		if($uid==0){
 			$uid  	= $this->adminid;
 			$where	= m('view')->viewwhere('user', $uid, 'id');
+			$where	= str_replace('{asqom}','', $where);
 			$range 	= $this->rock->get('changerange'); //指定了人
 			$rangeno= $this->rock->get('changerangeno'); //no指定了人
 			$where1 = '';$where2 = '';
@@ -715,7 +716,7 @@ class adminClassModel extends Model
 			$where = "`id`='$id'";
 		}
 		if(contain($id, ':')){
-			$ida = explode(':', id);
+			$ida = explode(':', $id);
 			$where = "`".$ida[0]."`='".$ida[1]."'";
 		}
 		$urs = $this->db->getall("select * from `[Q]admin` where $where");

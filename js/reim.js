@@ -326,6 +326,7 @@ var reim = {
 			reim.initbackd(ret);
 		});
 	},
+	firstpid:0,
 	initbackd:function(ret){
 		if(!ret.userjson)return;
 		this.lastloaddt		= ret.loaddt;
@@ -334,6 +335,7 @@ var reim = {
 		this.maindata.garr  = js.decode(ret.groupjson);
 		this.maindata.aarr  = js.decode(ret.agentjson);
 		this.maindata.harr 	= js.decode(ret.historyjson);
+		this.firstpid		= this.maindata.darr[0].pid;
 		this.myip 			= ret.ip;
 		this.showuser(this.maindata.uarr);
 		this.adminmyrs 		= this.userarr[adminid];
@@ -510,7 +512,7 @@ var reim = {
 		o1.className = 'active';
 		$('#reim_headercenter').find("div[tabdiv]").hide();
 		$('#reim_headercenter').find("div[tabdiv='"+oi+"']").show();
-		if(oi=='1')this.showdept(0,0);
+		if(oi=='1')this.showdept(this.firstpid,0);
 	},
 	//加载群会话列表
 	loadgroup:function(){
@@ -537,9 +539,10 @@ var reim = {
 	//显示组织结构
 	showdept:function(pid, xu){
 		var i=0,len,s='',a,wfj,cls;
-		var o = $('#showdept_'+pid+'');
+		var sv= '#showdept_'+pid+'';if(xu==0)sv='#showdept_0';
+		var o = $(sv);
 		var tx= o.text();
-		if(tx){if(pid!=0){o.toggle();}return;}
+		if(tx){if(xu!=0){o.toggle();}return;}
 		
 		len=this.maindata.uarr.length;
 		for(i=0;i<len;i++){
@@ -564,7 +567,7 @@ var reim = {
 				s+='</div>';
 				s+='<span id="showdept_'+a.id+'"></span>';
 				o.append(s);
-				if(pid==0)this.showdept(a.id, xu+1);
+				if(xu==0)this.showdept(a.id, xu+1);
 			}
 		}
 		

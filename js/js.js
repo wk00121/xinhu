@@ -1,4 +1,4 @@
-var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false,apicloud=false;
+var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false,apicloud=false,isapp=false;
 var windows	= null,ismobile=0;
 function initbody(){}
 function bodyunload(){}
@@ -30,6 +30,11 @@ $(document).ready(function(){
 	});
 	var openfrom = js.request('openfrom',js.getoption('openfrom','', true));
 	js.setoption('openfrom', openfrom, true);
+	document.addEventListener('plusready', function(){
+		plus.navigator.setStatusBarBackground('#1389D3');
+		isapp = true;
+		plus.key.addEventListener('backbutton',function(){js.back();},false);
+	});
 });
 var js={path:'index',url:'',bool:false,login:{},initdata:{},openarr:{},scroll:function(){}};
 var isIE=true;
@@ -995,7 +1000,9 @@ js.changeuser=function(na, lx, tits,ocans){
 	return false;
 }
 js.back=function(){
-	if(apicloud){
+	if(isapp){
+		plus.webview.currentWebview().close('auto');
+	}else if(apicloud){
 		api.historyBack({},function(ret){if(!ret.status)api.closeWin();});
 	}else{
 		history.back();
