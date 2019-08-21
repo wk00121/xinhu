@@ -29,7 +29,7 @@ class emailClassAction extends runtAction
 			}
 		}
 		if($estr!='')m('log')->addlogs('收邮件', $estr, 2);
-		echo 'success('.$cg.'),fail('.$sb.')';
+		
 		//发通知
 		if($tzid!=''){
 			$flow = m('flow')->initflow('emailm');
@@ -37,5 +37,7 @@ class emailClassAction extends runtAction
 				'wxurl' => $flow->getwxurl()
 			));
 		}
+		
+		return 'success('.$cg.'),fail('.$sb.')';
 	}
 }

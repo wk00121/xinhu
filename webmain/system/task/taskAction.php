@@ -1,4 +1,5 @@
 <?php
+//计划任务列表控制器
 class taskClassAction extends Action
 {
 	
@@ -16,7 +17,7 @@ class taskClassAction extends Action
 			$carr 	= $tobj->pdlocal();
 			if(!$carr['success'])return $carr;
 			$barr 	= $tobj->starttask();
-			if($barr['code']==0){
+			if($barr['success']){
 				return returnsuccess('启动成功');
 			}else{
 				return returnsuccess('无法启动可能未开启服务端:'.$barr['msg'].'');
@@ -57,7 +58,7 @@ cd '.$ljth.'
 		$this->rock->createtxt(''.UPDIR.'/cli/xinhutaskrun.bat', $str1);
 		echo '1、打开系统配置文件webmainConfig.php加上一个配置phppath设置php环境的目录地址如：F:\php\php-5.6.22\php.exe，设置好了，刷新本页面。<br>';
 		echo '<div style="background:#caeccb;padding:5px;border:1px #888888 solid;border-radius:5px;">';
-		echo "return array(<br>'title'	=>'信呼OA',<br>'phppath' => 'F:\php\php-5.6.22\php.exe' <font color=#aaaaaa>//加上这个</font><br>)";
+		echo "return array(<br>'title'	=>'信呼OA',<br>'phppath' => 'F:\php\php-5.6.22\php.exe' <font color=#aaaaaa>//加上这个，路径如果有空格请加入环境变量，这个设置为php即可</font><br>)";
 		echo '</div>';
 		echo '2、在您的win服务器上，开始菜单→运行 输入 cmd 回车(管理员身份运行)，输入以下命令(每5分钟运行一次)：<br>';
 		echo '<div style="background:#caeccb;padding:5px;border:1px #888888 solid;border-radius:5px;">';

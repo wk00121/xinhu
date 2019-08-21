@@ -20,6 +20,7 @@ class asynrunClassAction extends apiAction
 	{
 		$krand = $this->get('krand');
 		m('option')->setval('asyntest', $krand);
+		return $krand;
 	}
 	
 	//测试

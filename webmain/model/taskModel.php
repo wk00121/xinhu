@@ -25,6 +25,7 @@ class taskClassModel extends Model
 			$len = count($ate);
 			$rs['adminid'] 	= 1;
 			$rs['atype'] 	= 'runurl';
+			$rs['urllu'] 	= $rs['url'];
 			$rs['url'] 		= $this->showgeurl($rs['url'],$rs['id'], $lx);
 			for($i=0;$i<$len;$i++){
 				$rs['type'] = $ate[$i];
@@ -106,6 +107,7 @@ class taskClassModel extends Model
 		return $turl;
 	}
 	
+	//判断设置本地地址是否可以使用
 	public function pdlocal()
 	{
 		$urla= $this->gettaskurl();
@@ -198,9 +200,11 @@ class taskClassModel extends Model
 		return $stime;
 	}
 	
-	private function tasklistpath()
+	private function tasklistpath($lx=0)
 	{
-		return ''.ROOT_PATH.'/'.UPDIR.'/'.date('Y-m').'/tasklist.json';
+		$str = ''.UPDIR.'/'.date('Y-m').'/tasklist.json';
+		if($lx==1)return $str;
+		return ''.ROOT_PATH.'/'.$str.'';
 	}
 	
 	/**
@@ -211,16 +215,64 @@ class taskClassModel extends Model
 		@unlink($this->tasklistpath());
 	}
 	
+	//读取下一个5分钟时间
+	private function getnextfz()
+	{
+		$time 	= time();
+		$ni 	= date('i', $time);
+		$tar 	= array(0,5,10,15,20,25,30,35,40,45,50,55,60);
+		$gi 	= 0;
+		for($i=0;$i<count($tar)-1;$i++){
+			$i1 = $tar[$i];
+			$i2 = $tar[$i+1];
+			if($ni>=$i1 && $ni<$i2){
+				$gi = $i2;
+				break;
+			}
+		}
+		if($gi==60){
+			$date = date('Y-m-d H:00:00', $time+600);
+		}else{
+			$date = date('Y-m-d H:'.$gi.':00', $time);
+		}
+		return strtotime($date);
+	}
+	
+	//开启发送运行任务
+	public function sendstarttask()
+	{
+		$turl	= $this->gettaskurl();
+		$this->reimtype	= m('option')->getval('reimservertype');
+		//node版本
+		if($this->reimtype=='1'){
+			$url 	= ''.$turl.'task.php?m=runt&a=task';
+			$runtime= $this->getnextfz();
+			$reim   = m('reim');
+			if(!isempt(getconfig('phppath')) && contain($reim->serverpushurl, '127.0.0.1')){
+				$url= 'runt,task';
+			}
+			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, 99);
+		}else{
+			$url 	= ''.$turl.'task.php?m=runt&a=getlist';
+			$barr 	= m('reim')->pushserver('starttask', array(
+				'url' => $url
+			));
+		}
+		return $barr;
+	}
+	
 	/**
 	*	开启计划任务(自己服务端)
 	*/
 	public function starttask()
 	{
-		$turl	= $this->gettaskurl();
-		$url 	= ''.$turl.'task.php?m=runt&a=getlist';
-		$barr 	= m('reim')->pushserver('starttask', array(
-			'url' => $url
-		));
+		$barr = $this->sendstarttask();
+		if($this->reimtype=='1'){
+			$recID = m('option')->getval('reimrecidsystem','rockxinhu');
+			c('rockqueue')->pushtype('starturl',''.$this->gettaskurl().'task.php?m=runt&a=taskget', array(
+				'recid' => $recID
+			));
+		}
 		$this->cleartask();
 		return $barr;
 	}
@@ -229,7 +281,7 @@ class taskClassModel extends Model
 	public function createjson($time)
 	{
 		$barr 	= $this->getrunlist($this->rock->date, 2, $time);
-		@file_put_contents($this->tasklistpath(), json_encode($barr));
+		$this->rock->createtxt($this->tasklistpath(1), json_encode($barr));
 		return $barr;
 	}
 	
@@ -253,21 +305,14 @@ class taskClassModel extends Model
 		}else{
 			$barr = json_decode($fstr, true);
 		}
-		$oi 	= $cg = $sb = 0;
 		$ntime 	= strtotime(date('Y-m-d H:i:00', $time));
-		$curl 	= c('curl');
+		$yunarr = array();
 		foreach($barr as $k=>$rs){
 			if($rs['runtime']==$ntime){
-				$oi++;
-				$cont = $curl->getcurl($rs['url']);
-				if($cont=='success'){
-					$cg++;
-				}else{
-					$sb++;
-				}
+				$yunarr[] = $rs;
 			}
 		}
-		return 'runtask('.$oi.'),success('.$cg.'),fail('.$sb.')';
+		return $yunarr;
 	}
 	
 	//获取运行列表

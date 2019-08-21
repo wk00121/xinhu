@@ -15,13 +15,14 @@ class reimClassModel extends Model
 	{
 		$this->settable('im_mess');
 		$this->hisobj = m('im_history');
+		$this->option = m('option');
 		$this->inithost();
 	}
 	
 	private function inithost()
 	{
 		if($this->serverpushurl!='')return;
-		$dbs = m('option');
+		$dbs = $this->option;
 		$this->optiondb 		= $dbs;
 		$this->serverrecid		= $dbs->getval('reimrecidsystem','rockxinhu');
 		$this->serverpushurl	= $dbs->getval('reimpushurlsystem');
@@ -844,6 +845,8 @@ class reimClassModel extends Model
 				$this->sendpush($arr['sendid'], $receids , $pusharr);
 			}
 		}
+		//告诉app端也有推送，因为app也用到websocket连接服务端
+		
 		
 		$this->addhistory('user', $receid, $sendid, $optdt, $cont, $sendid);
 		if($sendid!=$receid)$this->addhistory('user', $sendid, $receid, $optdt, $cont, $sendid);
@@ -1026,7 +1029,7 @@ class reimClassModel extends Model
 		}
 		$uwhere = "$where `status`=1";
 		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','nppandroid','nppios') and `online`=1",'`token`,`uid`,`web`,`ip`,`cfrom`,`moddt`','id desc');
-		$alias 	= $uida = $xmalias = $oldalias = $newalias = $alias2019  =array();
+		$alias 	= $uida = $xmalias = $oldalias = $newalias = $alias2019 = $uid2019  =array();
 		$uids	= '0';
 		$times  = date('Y-m-d H:i:s', time()-5*60);//5分钟
 		foreach($rows as $k=>$rs){
@@ -1038,10 +1041,9 @@ class reimClassModel extends Model
 			if($_web=='xiaomi'){
 				$xmalias[] = $rs['token'];
 			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-07-25最新新app
-				if(!contain($rs['ip'],'.')){
-					$nestr = ''.$rs['ip'].'|'.substr($rs['web'],0,8).'';
-					$alias2019[] = $nestr;
-				}
+				$nestr = ''.$rs['token'].'|'.substr($rs['web'],0,8).'|'.$_uid.'|';
+				$alias2019[] = $nestr;
+				$uid2019[]   = $_uid;
 			}else if(substr($_web,0,4)=='app_'){
 				$newalias[] = $rs['token'];	
 			}else if(substr($_web,0,4)=='apk_'){
@@ -1050,7 +1052,7 @@ class reimClassModel extends Model
 				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'alias2019'=>$alias2019);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'alias2019'=>$alias2019,'uid2019'=>$uid2019);
 	}
 	
 	/**
@@ -1068,6 +1070,32 @@ class reimClassModel extends Model
 		foreach($conta as $k=>$v)$contjson.=',"'.$k.'":"'.$v.'"';
 		$contjson 	= '{'.substr($contjson,1).'}';
 		
+		//最新webapp也用服务端推送
+		$uid2019	= $alias['uid2019'];
+		$alias2019	= $alias['alias2019'];
+		if($uid2019){
+			$reimtype = $this->option->getval('reimservertype');
+			$reimappwx= $this->option->getval('reimappwxsystem');
+			if($reimtype=='1' && $reimappwx=='1'){
+				$gbarr = $this->pushserver('sendapp', array(
+					'receid' => join(',', $uid2019)
+				));
+				//服务端返回{"zshu":2,"yfuid":"1,8","wfuid":""}
+				if($gbarr && $gbarr['success'] && $bstr = arrvalue($gbarr, 'data')){
+					$data = json_decode($bstr, true);
+					$yfuid= explode(',', arrvalue($data, 'yfuid'));
+					if($yfuid){
+						$nealas = array();
+						foreach($alias2019 as $alis){
+							$bo = false;
+							foreach($yfuid as $yfid){if(contain($alis,'|'.$yfid.'|'))$bo=true;break;};
+							if(!$bo)$nealas[] = $alis;
+						}
+						$alias['alias2019'] = $nealas;
+					}
+				}
+			}
+		}
 		return c('JPush')->push($title, arrvalue($conta,'cont'), $contjson, $alias);
 	}
 	
@@ -1120,7 +1148,7 @@ class reimClassModel extends Model
 			'runtime' => $runtime
 		));
 		
-		return $barr['code']===0;
+		return $barr['success'];
 	}
 	
 	/**
@@ -1148,7 +1176,12 @@ class reimClassModel extends Model
 		$carr['from'] 	= $this->serverrecid;
 		$carr['adminid']= $this->adminid;
 		$carr['atype'] 	= $atype;
+		$carr['qtype'] 	= 'reim';
 		foreach($cans as $k=>$v)$carr[$k]=$v;
+		
+		$reimtype = $this->option->getval('reimservertype');
+		if($reimtype=='1')return c('rockqueue')->pushdata($carr);
+		
 		$str 			= json_encode($carr);
 		//echo 'abc ';return array('code'=>0);
 		$posts			= $this->getpushhostport($this->serverpushurl);

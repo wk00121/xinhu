@@ -2245,6 +2245,8 @@ class flowModel extends Model
 		$this->flowchangetodo($uids, $gname);
 		
 		if(isempt($title))$title = $modename;
+		$title	= $this->rock->reparr($title, $this->rs);
+		
 		//邮件提醒发送不发送全体人员的，太多了
 		if($emtx == 1 && $receid != 'all'){
 			$emcont = '您好：<br>'.$cont.'(邮件由系统自动发送)';
@@ -3089,7 +3091,7 @@ class flowModel extends Model
 		}
 		$garr = array();
 		if($barr)foreach($barr as $k=>$rs){
-			if($this->rock->arrvalue($rs,$act)=='1')$garr[] = $rs;
+			if(arrvalue($rs,$act)=='1')$garr[] = $rs;
 		}
 		return $garr;
 	}
@@ -3102,7 +3104,7 @@ class flowModel extends Model
 		$barr = $this->gettodolist($act);
 		if(!$barr)return;
 		$changearr	= array('boturn'=>'提交','boedit'=>'编辑','bozhuan'=>'转办','bochang'=>'修改字段','bodel'=>'删除','bozuofei'=>'作废','botong'=>'处理同意','bobutong'=>'处理不同意','bofinish'=>'全部处理完成','bozhui'=>'追加说明','boping'=>'评论','bohuiz'=>'回执确认');
-		if($actname=='' && is_string($act))$actname = $this->rock->arrvalue($changearr, $act);
+		if($actname=='' && is_string($act))$actname = arrvalue($changearr, $act);
 		if(isempt($actname))return;
 		$cheo	= c('check');
 		foreach($barr as $k=>$rs){
@@ -3114,6 +3116,11 @@ class flowModel extends Model
 			}
 			
 			if($rs['toturn']==1)$receid.=','.$this->uid.''; //通知给提交人
+			if(arrvalue($rs,'tosuper')=='1'){
+				$supar = $this->adminmodel->getsuperman($this->uid);
+				$shnej = arrvalue($supar, 0);
+				if(!isempt($shnej))$receid.=','.$shnej.''; //通知给直属上级，没有就读取部门负责人
+			}
 			if($rs['tocourse']==1 && $this->billrs){
 				$allcheckid = $this->billrs['allcheckid'];
 				if(!isempt($allcheckid))$receid.=','.$allcheckid.''; //通知流程所有参与人
@@ -3123,7 +3130,7 @@ class flowModel extends Model
 			if(!isempt($todofields)){
 				$toad = explode(',', $todofields);
 				foreach($toad as $toads){
-					$ttv = $this->rock->arrvalue($this->rs, $toads);
+					$ttv = arrvalue($this->rs, $toads);
 					if(!isempt($ttv) && $cheo->isinnumber($ttv))$receid.=','.$ttv.'';
 				}
 			}
@@ -3135,7 +3142,7 @@ class flowModel extends Model
 				$cont = ''.$this->adminname.''.$actname.'['.$this->modename.',单号:'.$this->sericnum.']';
 				if($sm!='')$cont.=',说明:'.$sm.'';
 			}
-			$this->push($receid, '', $cont, '');
+			$this->push($receid, '', $cont, $this->rock->repempt($rs['name']));
 		}
 	}
 	

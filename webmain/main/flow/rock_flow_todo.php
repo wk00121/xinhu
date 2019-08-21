@@ -17,7 +17,7 @@ $(document).ready(function(){
 		columns:[{
 			text:'模块',dataIndex:'modename'
 		},{
-			text:'名称',dataIndex:'name',editor:true
+			text:'通知标题',dataIndex:'name',editor:true
 		},{
 			text:'触发条件',dataIndex:'whereidstr'
 		},{
@@ -48,6 +48,7 @@ $(document).ready(function(){
 				var s='&nbsp;';
 				if(d.toturn=='1')s+='提交人;';
 				if(d.tocourse=='1')s+='流程所有参与人;';
+				if(d.tosuper=='1')s+='直属上级;';
 				if(!isempt(v))s+=''+v+';';
 				return s;
 			}

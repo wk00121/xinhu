@@ -7,10 +7,9 @@ class rockqueueChajian extends Chajian
 {
 	//队列服务器主机
 	private $rockqueue_host = '127.0.0.1';
-	//private $rockqueue_host = '192.168.130.132';
 	
-	//队列服务端口，数字类型
-	private $rockqueue_port = 7898;	
+	//队列服务端口，数字类型，为0从服务器设置上读取
+	private $rockqueue_port = 0;	
 	
 	
 	//初始化配置读取
@@ -18,6 +17,12 @@ class rockqueueChajian extends Chajian
 	{
 		$this->rockqueue_host = getconfig('rockqueue_host', $this->rockqueue_host);
 		$this->rockqueue_port = getconfig('rockqueue_port', $this->rockqueue_port);
+		if($this->rockqueue_port==0){
+			$reim 	 = m('reim');
+			$reimhot = $reim->getpushhostport($reim->serverpushurl);
+			$this->rockqueue_host = $reimhot['host'];
+			$this->rockqueue_port = $reimhot['port'];
+		}
 	}
 	
 	/**
@@ -26,30 +31,68 @@ class rockqueueChajian extends Chajian
 	*	$param 参数
 	*	使用 c('rockqueue')->push('cli,run');
 	*/
-	public function push($cont, $param=array(), $runtime=0)
+	public function push($cont, $param=array(), $runtime=0, $id=0)
 	{
 		$type 	= 'cmd';
 		$url	= $cont;
 		if(substr($cont,0,4)=='http'){
 			$type='url';
+		}else{
+			if(!contain($url, ','))$url='cli,'.$url.'';
+			if(!contain($this->rockqueue_host, '127.0.0.1')){
+				$urla= explode(',', $url);
+				$url = URL.'task.php?m='.$urla[0].'|runt&a='.$urla[1].'';
+				$type= 'url';
+			}else{
+				$st1 = '';
+				foreach($param as $k=>$v)$st1.=' -'.$k.'='.$v.'';
+				$phppath = getconfig('phppath','php');
+				if(contain($phppath,' '))return returnerror('配置文件phppath不能有空格，请加入环境变量设置并为php');
+				$url = ''.$phppath.' '.ROOT_PATH.'/task.php '.$url.''.$st1.'';
+			}
+		}
+		if($type=='url'){
 			$jg  = contain($url,'?')?'&':'?';
 			$st1 = '';
 			foreach($param as $k=>$v)$st1.='&'.$k.'='.$v.'';
 			if($st1!='')$url.=''.$jg.''.substr($st1,1).'';
-		}else{
-			$st1 = '';
-			if(!contain($url, ','))$url='cli,'.$url.'';
-			foreach($param as $k=>$v)$st1.=' -'.$k.'='.$v.'';
-			$url = 'php '.ROOT_PATH.'/task.php '.$url.''.$st1.'';
 		}
+		
+		if($id==0)$id = rand(1,99999);
 		$rarr[] = array(
-			'type'		=> $type,
+			'qtype'		=> $type,
 			'runtime'	=> $runtime,
 			'url'		=> $url,
-			'id'		=> rand(1,99999)
+			'id'		=> $id
 		);
-		c('socket')->udppush(json_encode($rarr), $this->rockqueue_host, $this->rockqueue_port);
-		return returnsuccess();
+		return $this->pushdata($rarr);
+	}
+	
+	/**
+	*	推送数据过去
+	*/
+	public function pushdata($rarr)
+	{
+		if(is_array($rarr))$rarr = json_encode($rarr);
+		$url = 'http://'.$this->rockqueue_host.':'.$this->rockqueue_port.'/?atype=send&data='.urlencode($rarr).'';
+		$reqult = c('curl')->setTimeout(1)->getcurl($url);
+		if($reqult){
+			return returnsuccess($reqult);
+		}else{
+			return returnerror('error');
+		}
+		//return c('socket')->udppush($rarr, $this->rockqueue_host, $this->rockqueue_port);
+	}
+	
+	/**
+	*	推送类型
+	*/
+	public function pushtype($type, $url, $can=array())
+	{
+		$can['qtype'] = $type;
+		$can['url']   = $url;
+		$rarr[] = $can;
+		return $this->pushdata($rarr);
 	}
 	
 	/**

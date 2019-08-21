@@ -74,6 +74,21 @@ class indexreimClassAction extends apiAction
 	}
 	
 	/**
+	*	最新app读取通信地址
+	*/
+	public function reimconfigAction()
+	{
+		$arr['config'] 		= m('reim')->getreims();
+		$type  = $this->option->getval('reimservertype','0');
+		$appwx = $this->option->getval('reimappwxsystem','0');
+		if($type=='0' || $appwx=='0'){//非nodejs版本就不要
+			$arr['config']['wsurl'] = '';
+			$arr['config']['recid'] = '';
+		}
+		$this->showreturn($arr);
+	}
+	
+	/**
 	*	手机网页版读取，最新webapp的
 	*/
 	public function mwebinitAction()

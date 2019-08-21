@@ -9,7 +9,7 @@ class crmClassAction extends runtAction
 		
 		//自动放入公海
 		m('flow')->initflow('customer')->addgonghai();
-		echo 'success';
+		return 'success';
 	}
 	
 }

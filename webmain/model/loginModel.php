@@ -228,6 +228,7 @@ class loginClassModel extends Model
 			$lastd	= date('Y-m-d H:i:s', time()-24*3600*7);
 			$this->delete("`uid`='$uid' and `cfrom`='$cfrom' and `moddt`<'$moddt'");
 			$this->delete("`moddt`<'$lastd'"); //删除7天前未登录的记录
+			$this->delete("`cfrom`='$cfrom' and `device`='$device'"); 
 			$token 	= $this->db->ranknum('[Q]logintoken','token', 8);
 			$larr	= array(
 				'token'	=> $token,

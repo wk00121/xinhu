@@ -41,7 +41,6 @@ class JPushChajian extends Chajian{
 				'desc'  => $desc
 			);
 			$runurl = c('xinhu')->geturlstr('jpushplat', $arr);
-			//$this->rock->debugs($runurl, 'tuisong');
 			return  c('curl')->getcurl($runurl);
 		}else{
 			$barr = c('xiaomiPush')->push($this->xiaomi_secret, $this->xiaomi_package, $oldalias,  $title, $this->rock->jm->base64decode($desc), $cont);

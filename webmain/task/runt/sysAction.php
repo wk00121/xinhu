@@ -9,7 +9,7 @@ class sysClassAction extends runtAction
 			'title' 	=> '数据库备份',
 			'cont' 		=> '数据库在['.$this->now.']备份了。',
 		);
-		echo 'success';
+		return 'success';
 	}
 	public function upgtxAction()
 	{
@@ -37,7 +37,7 @@ class sysClassAction extends runtAction
 				'cont' 		=> $str.'请到[系统→系统工具→系统升级]下处理',
 			);
 		}
-		echo 'success';
+		return 'success';
 	}
 	
 	
@@ -50,7 +50,7 @@ class sysClassAction extends runtAction
 		$reim 	= m('reim');
 		if($reim->installwx(0))m('weixin:user')->getuserlist();
 		if($reim->installwx(1))m('weixinqy:user')->getuserlist();
-		echo 'success';
+		return 'success';
 	}
 	
 	/**
@@ -84,6 +84,6 @@ class sysClassAction extends runtAction
 		
 		//更多清理自己添加
 		
-		echo 'success';
+		return 'success';
 	}
 }

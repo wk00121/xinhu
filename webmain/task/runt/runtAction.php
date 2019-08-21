@@ -100,8 +100,53 @@ class runtClassAction extends runtAction
 	*/
 	public function taskAction()
 	{
-		$runtime = $this->get('runtime',time());
-		echo m('task')->runjsonlist($runtime);
+		$runtime = $this->getparams('runtime',time());
+		$rtype	 = $this->getparams('rtype'); //运行类型
+		$dbs 	 = m('task');
+		$yunarr	 = $dbs->runjsonlist($runtime);
+		$oi 	 = $cg = $sb = 0;
+		foreach($yunarr as $k=>$rs){
+			$urllu 	= $rs['urllu'];
+			$state	= 2;
+			$cont  	= '';
+			$oi++;
+			if(substr($urllu,0,4)=='http'){
+				$cont = c('curl')->getcurl($urllu);
+			}else{
+				$urla = explode(',', $urllu);
+				$path = ''.ROOT_PATH.'/'.P.'/task/runt/'.$urla[0].'Action.php';
+				if(file_exists($path)){
+					$act  = arrvalue($urla, 1,'run').'Action';
+					include_once($path);
+					$class= ''.$urla[0].'ClassAction';
+					$obj  = new $class();
+					$cont = $obj->$act();
+				}else{
+					$cont = ''.$urla[0].'Action.php not found';
+				}
+			}
+			if(contain($cont,'success')){
+				$state = 1;
+				$cg++;
+			}else{
+				$sb++;
+			}
+			$dbs->update(array(
+				'lastdt'	=> $this->rock->now,
+				'lastcont' 	=> $cont,
+				'state' 	=> $state
+			), $rs['id']);
+			
+		}
+		if($rtype=='queue')$dbs->sendstarttask();
+		return 'runtask('.$oi.'),success('.$cg.'),fail('.$sb.')';
+	}
+	
+	//新服务端加载计划任务
+	public function taskgetAction()
+	{
+		m('task')->sendstarttask();
+		return 'taskget.'.time().'';
 	}
 	
 	/**

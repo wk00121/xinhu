@@ -9,6 +9,8 @@ class xinhuClassAction extends Action
 		$this->option->setval('reimrecidsystem', $this->post('receid'));
 		$this->option->setval('reimpushurlsystem', $this->post('push'));
 		$this->option->setval('reimchehuisystem', $this->post('chehui'));
+		$this->option->setval('reimservertype', $this->post('servertype'));
+		$this->option->setval('reimappwxsystem', $this->post('reimappwx'));
 		$this->backmsg();
 	}
 	
@@ -19,6 +21,8 @@ class xinhuClassAction extends Action
 		$arr['reimrecid']= $this->option->getval('reimrecidsystem');
 		$arr['reimpushurl']= $this->option->getval('reimpushurlsystem');
 		$arr['reimchehui']= $this->option->getval('reimchehuisystem');
+		$arr['servertype']= $this->rock->repempt($this->option->getval('reimservertype'),'0');
+		$arr['reimappwx']= $this->rock->repempt($this->option->getval('reimappwxsystem'),'0');
 		echo json_encode($arr);
 	}
 	
@@ -40,9 +44,10 @@ class xinhuClassAction extends Action
 	public function testqueueAjax()
 	{
 		$rand 	= 'queue'.time();
-		c('rockqueue')->push('cli,test', array(
+		$barr 	= c('rockqueue')->push('cli,test', array(
 			'rand' => $rand
 		));
+		if(!$barr['success'])return '队列测试失败：<font color="red">'.$barr['msg'].'</font>';
 		sleep(3);
 		$mkey 	= $this->option->getval('asyntest');
 		$msg 	= '<font color="green">队列测试成功，可以使用</font>';
@@ -59,7 +64,7 @@ class xinhuClassAction extends Action
 			'messid' => 0
 		));
 		$msg 	= '';
-		if($barr['code']==0){
+		if($barr['success']){
 			$msg='服务端推送地址可以使用';
 		}else{
 			$msg='<font color=red>服务端推送地址不能使用：'.$barr['msg'].'</font>';

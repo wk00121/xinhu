@@ -28,7 +28,14 @@ class agent_daibanClassModel extends agentModel
 	
 	protected function agentdata($uid, $lx)
 	{
-		$arr 	= m('flowbill')->getrecord($uid, $this->agentnum.'_'.$lx, $this->page, $this->limit, 0);
+		$atype  = $this->agentnum.'_'.$lx;
+		$arr 	= m('flowbill')->getrecord($uid, $atype, $this->page, $this->limit, 0);
+		if($atype=='daiban_daib'){
+			$rows = $arr['rows'];
+			if($rows){
+				$arr['rows'] = $rows;
+			}
+		}
 		return $arr;
 	}
 }

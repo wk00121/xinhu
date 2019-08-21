@@ -76,12 +76,8 @@ js.dw = {
 			}else{
 				/*
 				if(!this.baiduLocation)this.baiduLocation = api.require('baiduLocation');
-				this.wait('百度地图定位中...');
-				this.baiduLocation.startLocation({
-					accuracy: '500m',
-					filter: 1,
-					autoStop: true
-				}, function(ret, err) {
+				this.wait(''+api.systemType+'百度地图定位中...');
+				this.baiduLocation.getLocation(function(ret, err) {
 					js.dw.baiduLocationSuc(ret,err);
 				});
 				return;
@@ -124,7 +120,7 @@ js.dw = {
 	},
 	appLocationSuc:function(ret,err){
 		if(ret.status){
-			if(!ret.accuracy)ret.accuracy = 100;
+			if(!ret.accuracy)ret.accuracy = 200;
 			this.dwsuccess(ret);
 		}else{
 			this.dwshibai(err.msg);
@@ -133,7 +129,7 @@ js.dw = {
 	
 	baiduLocationSuc:function(ret,err){
 		if(ret.status){
-			if(!ret.accuracy)ret.accuracy = 100;
+			if(!ret.accuracy)ret.accuracy = 200;
 			var center 		= new qq.maps.LatLng(ret.latitude,ret.longitude);
 			this.translate(center, ret.accuracy, 3);
 		}else{

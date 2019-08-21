@@ -8,13 +8,14 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_todo',
 		url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'setid='+mid+''},
-		submitfields:'explain,status,num,name,whereid,changefields,changecourse,boturn,boedit,bochang,bodel,bozuofei,botong,bobutong,bozhui,receid,recename,setid,toturn,tocourse,bofinish,bozhuan,todofields,summary,botask,boping',
+		submitfields:'explain,status,num,name,whereid,changefields,changecourse,boturn,boedit,bochang,bodel,bozuofei,botong,bobutong,bozhui,receid,recename,setid,toturn,tocourse,tosuper,bofinish,bozhuan,todofields,summary,botask,boping',
 		success:function(){
 			closenowtabs();
 			try{guanflowtodolist.reload();}catch(e){}
 		},
 		submitcheck:function(d){
 			if(d.botask=='1' && d.whereid=='0')return '计划任务的类型必须选择触发条件';
+			if(d.botask=='1' && !d.summary)return '计划任务的类型通知内容摘要必须写';
 			return {
 				changefields:c.getsleval('changefields'),
 				changecourse:c.getsleval('changecourse')
@@ -89,11 +90,17 @@ $(document).ready(function(){
 		<table cellspacing="0" border="0" width="100%" align="center" cellpadding="0">
 		
 		<tr>
-			<td  align="right"  width="15%">名称：</td>
-			<td class="tdinput"  width="35%"><input name="name" maxlength="30" onblur="this.value=strreplace(this.value)" class="form-control"></td>
 			<td  align="right"  width="15%">编号：</td>
 			<td class="tdinput"  width="35%"><input name="num" maxlength="20" onblur="this.value=strreplace(this.value)" class="form-control"></td>
 			
+			
+			
+		</tr>
+		
+		
+		<tr>
+			<td  align="right"  width="15%">通知标题：</td>
+			<td class="tdinput"  colspan="3"><input name="name" maxlength="30" onblur="this.value=strreplace(this.value)" placeholder="主表变量{字段}格式" class="form-control"></td>
 			
 			
 		</tr>
@@ -147,6 +154,7 @@ $(document).ready(function(){
 			<td class="tdinput" colspan="3">
 			<label><input name="toturn" type="checkbox" value="1">提交人</label>&nbsp; 
 			<label><input name="tocourse" type="checkbox" value="1">流程所有参与人</label>&nbsp; 
+			<label><input name="tosuper" type="checkbox" value="1">直属上级</label>&nbsp; 
 			</td>
 		</tr>
 		<tr>

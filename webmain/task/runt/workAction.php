@@ -4,6 +4,6 @@ class workClassAction extends runtAction
 	public function todoAction()
 	{
 		
-		echo 'success';
+		return 'success';
 	}
 }

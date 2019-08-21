@@ -56,6 +56,7 @@ class socketChajian extends Chajian
 			}
 		}
 		$barr['code'] = 0;
+		$barr['success'] = true;
 		$barr['msg']  = 'ok';
 		$barr['data'] = $bstr;
 		if($msg!=''){
