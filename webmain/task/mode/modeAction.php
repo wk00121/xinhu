@@ -74,7 +74,6 @@ class modeClassAction extends ActionNot
 		$stype 			= $this->get('stype');
 		
 		$arr 	 		= m('flow')->getdatalog($num, $mid, 0);
-		
 		$pagetitle 		= $arr['title'];
 		$this->title 	= $arr['title'];
 		if($pagetitle=='')$pagetitle = $arr['modename'];

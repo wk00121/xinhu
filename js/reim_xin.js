@@ -722,13 +722,15 @@ var reim={
 		}});
 	},
 	receivechat:function(d){
-		var gid = d.gid,lx = d.type,stotal=0,num,msg,name=d.gname,face=d.face;
+		var gid = d.gid,lx = d.type,stotal=0,num,msg,name=d.gname,face=d.face,s1='';
 		if(lx=='user'){
 			gid = d.adminid;
 			name= d.sendname;
 		}
 		if(lx=='group'){
-			face = 'images/group.png';
+			face = d.gface;
+			s1   = jm.base64encode(''+d.sendname+':');
+			if(isempt(face))face = 'images/group.png';
 		}
 		num = d.type+'_'+gid;
 		var showtx = true;
@@ -746,7 +748,7 @@ var reim={
 			stotal = parseInt(so)+1;
 		}
 		this.showhistorys({
-			'cont' : d.cont,
+			'cont' : s1+d.cont,
 			'name' : name,
 			'face' : face,
 			'optdt' : d.optdt,
@@ -1370,9 +1372,11 @@ function chatcreate(cans){
 		},'post',function(){
 			me.senderror(nuid);
 		});
+		var s1='';
+		if(this.type=='group')s1=jm.base64encode(''+adminname+':');
 		//显示到会话里
 		reim.showhistorys({
-			'cont' : d.cont,
+			'cont' : s1+d.cont,
 			'name' : this.receinfo.name,
 			'face' : this.receinfo.face,
 			'optdt' : d.optdt,
@@ -1396,6 +1400,7 @@ function chatcreate(cans){
 		var bo = false;
 		d.messid=d.id;
 		d.face  = this.sendinfo.face;
+		if(this.type=='group')d.gface=this.receinfo.face;
 		reim.serversend(d);
 	};
 	this.addinput=function(s){

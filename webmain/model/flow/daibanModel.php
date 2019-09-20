@@ -8,7 +8,7 @@ class flow_daibanClassModel extends flowModel
 	public function tododay()
 	{
 		$arr  = array();
-		$rows = $this->getrows('`status` not in(1,2) and `isdel`=0 and `nowcheckid` is not null','`nowcheckid`,`modename`');
+		$rows = $this->getrows('`status` not in(1,2) and `isturn`=1 and `isdel`=0 and `nowcheckid` is not null','`nowcheckid`,`modename`');
 		foreach($rows as $k=>$rs){
 			$dista = explode(',', $rs['nowcheckid']);
 			foreach($dista as $distid){

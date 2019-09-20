@@ -9,7 +9,7 @@ class agentModel extends Model
 	public $modeid		= 3;
 	public $page		= 1;
 	public $loadci		= 1;
-	public $limit		= 10;
+	public $limit		= 10; //默认加载的条数
 	public $user_id		= 0;
 	public $event		= '';
 	public $agentrs;

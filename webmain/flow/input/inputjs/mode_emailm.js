@@ -21,6 +21,7 @@ function initbodys(){
 				if(ismobile==1)form('content').value=a.content.replace(/<br>/g,"\n");
 				if(ismobile==0)c.editorobj['content'].html(a.content);
 				js.downupshow(a.filers,'fileidview');
+				if(ismobile==1 && form('fileid'))f.fileobj.oldids=form('fileid').value;
 			}
 			//回复
 			if(a.zflx==1){

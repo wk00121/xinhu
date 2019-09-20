@@ -108,9 +108,9 @@ class taskClassModel extends Model
 	}
 	
 	//判断设置本地地址是否可以使用
-	public function pdlocal()
+	public function pdlocal($urla='')
 	{
-		$urla= $this->gettaskurl();
+		if($urla=='')$urla= $this->gettaskurl();
 		$url = $urla.'task.php?m=day|runt&a=getitle';
 		if($urla != URL){
 			if(c('curl')->getcurl($url) != TITLE)return returnerror('设置的本地地址“'.$urla.'”不能使用，请到[系统→系统工具→系统设置]下重新设置');
@@ -202,7 +202,7 @@ class taskClassModel extends Model
 	
 	private function tasklistpath($lx=0)
 	{
-		$str = ''.UPDIR.'/'.date('Y-m').'/tasklist.json';
+		$str = ''.UPDIR.'/logs/tasklist.json';
 		if($lx==1)return $str;
 		return ''.ROOT_PATH.'/'.$str.'';
 	}
@@ -251,7 +251,8 @@ class taskClassModel extends Model
 			if(!isempt(getconfig('phppath')) && contain($reim->serverpushurl, '127.0.0.1')){
 				$url= 'runt,task';
 			}
-			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, 99);
+			$len 	= strlen($url);
+			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, 9+$len);
 		}else{
 			$url 	= ''.$turl.'task.php?m=runt&a=getlist';
 			$barr 	= m('reim')->pushserver('starttask', array(

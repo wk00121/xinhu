@@ -3,7 +3,8 @@ var windows	= null,ismobile=0;
 function initbody(){}
 function bodyunload(){}
 function globalbody(){}
-function apiready(){apicloud=true;}
+function initApp(){}
+function apiready(){apicloud=true;initApp();}
 $(document).ready(function(){
 	try{if(typeof(nw)=='object'){nwjsgui = nw;}else{nwjsgui = require('nw.gui');}}catch(e){nwjsgui=false;}
 	$(window).scroll(js.scrolla);
@@ -34,6 +35,7 @@ $(document).ready(function(){
 		plus.navigator.setStatusBarBackground('#1389D3');
 		isapp = true;
 		plus.key.addEventListener('backbutton',function(){js.back();},false);
+		initApp();
 	});
 });
 var js={path:'index',url:'',bool:false,login:{},initdata:{},openarr:{},scroll:function(){}};
@@ -808,6 +810,7 @@ js.msg = function(lx, txt,sj){
 		sj	= 60;
 	}
 	if(lx=='msg')txt='<font color=red>'+txt+'</font>';var t=10;
+	if(get('header_title'))t+=50;
 	var s = '<div onclick="$(this).remove()" id="msgshowdivla" style="position:fixed;top:'+t+'px;z-index:200;" align="center"><div style="padding:8px 20px;background:rgba(0,0,0,0.7);color:white;font-size:16px;border-radius:5px">'+txt+'</div></div>';
 	$('body').append(s);
 	var w=$('#msgshowdivla').width(),l=(winWb()-w)*0.5;

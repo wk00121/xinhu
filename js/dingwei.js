@@ -1,15 +1,21 @@
 /**
 *	定位文件
+*	创建人：雨中磐石(rainrock)
 */
 
 //jssdk回调过来的
 js.jssdkcall  = function(bo){
-	setTimeout('js.dw.start()',1000);//开始定位
+	js.dw.start();//开始定位
+}
+var openfrom = '';
+function initApp(){
+	js.dw.start();
 }
 js.dw = {
 	
 	//开始定位
 	init:function(isgzh){
+		if(openfrom=='nppandroid' || openfrom=='nppios')return;
 		if(isgzh==1){
 			js.jssdkwxgzh();
 		}else{
@@ -17,7 +23,6 @@ js.dw = {
 		}
 	},
 
-	
 	dwbool:false,
 	dwtimeer:false,
 	ondwcall:function(){},
@@ -31,7 +36,7 @@ js.dw = {
 		this.chaoshi();
 		this.ondwstart(js.jssdkstate);
 		if(js.jssdkstate != 1){
-			this.htmldingw();
+			this.htmldingw(0);
 		}else{
 			this.wxdingw();
 		}
@@ -59,7 +64,7 @@ js.dw = {
 	},
 	
 	//html5定位
-	htmldingw:function(){
+	htmldingw:function(lx){
 		var msg;
 		if(appobj1('startLocation','appbacklocation')){
 			this.wait('原生app定位中...');
@@ -73,15 +78,18 @@ js.dw = {
 					js.dw.appLocationSuc(ret,err);
 				});
 				return;
-			}else{
-				/*
+			}else if(lx==0){
 				if(!this.baiduLocation)this.baiduLocation = api.require('baiduLocation');
 				this.wait(''+api.systemType+'百度地图定位中...');
-				this.baiduLocation.getLocation(function(ret, err) {
+				this.baiduLocation.startLocation({
+					autoStop: false
+				}, function(ret, err) {
 					js.dw.baiduLocationSuc(ret,err);
 				});
+				//this.baiduLocation.getLocation(function(ret, err) {
+				//	js.dw.baiduLocationSuc(ret,err);
+				//});
 				return;
-				*/
 			}
 		}
 		
@@ -128,12 +136,13 @@ js.dw = {
 	},
 	
 	baiduLocationSuc:function(ret,err){
-		if(ret.status){
+		if(ret.status && ret.latitude){
+			this.wait('定位成功，获取位置信息...');
 			if(!ret.accuracy)ret.accuracy = 200;
 			var center 		= new qq.maps.LatLng(ret.latitude,ret.longitude);
 			this.translate(center, ret.accuracy, 3);
 		}else{
-			this.dwshibai(err.msg);
+			this.dwshibai('定位失败，检查是否给APP开定位权限');
 		}
 	},
 	dwshibai:function(msg){
@@ -169,8 +178,8 @@ js.dw = {
 			msg="未知错误。"
 			break;
 		}
-		var url = 'http://www.rockoa.com/view_wxgzh.html';
-		js.wx.alert('无法定位？请看<a href="'+url+'">[帮助设置]</a>');
+		//var url = 'http://www.rockoa.com/view_wxgzh.html';
+		//js.wx.alert('无法定位？请看<a href="'+url+'">[帮助设置]</a>');
 		js.msg('msg', msg);
 		js.dw.ondwerr(msg);
 	},

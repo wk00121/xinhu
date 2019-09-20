@@ -39,15 +39,19 @@ class rockqueueChajian extends Chajian
 			$type='url';
 		}else{
 			if(!contain($url, ','))$url='cli,'.$url.'';
-			if(!contain($this->rockqueue_host, '127.0.0.1')){
+			$phppath = getconfig('phppath');
+			if(!contain($this->rockqueue_host, '127.0.0.1') || isempt($phppath)){
 				$urla= explode(',', $url);
 				$url = URL.'task.php?m='.$urla[0].'|runt&a='.$urla[1].'';
 				$type= 'url';
 			}else{
 				$st1 = '';
+				$check = c('check');
 				foreach($param as $k=>$v)$st1.=' -'.$k.'='.$v.'';
-				$phppath = getconfig('phppath','php');
-				if(contain($phppath,' '))return returnerror('配置文件phppath不能有空格，请加入环境变量设置并为php');
+				if(contain($phppath,' ') || $check->isincn($phppath))
+					return returnerror('配置文件phppath不能有空格，请加入环境变量设置并为php');
+				if(contain(ROOT_PATH,' ') || $check->isincn(ROOT_PATH))
+					return returnerror('OA系统目录“'.ROOT_PATH.'”有空格，无法使用');
 				$url = ''.$phppath.' '.ROOT_PATH.'/task.php '.$url.''.$st1.'';
 			}
 		}

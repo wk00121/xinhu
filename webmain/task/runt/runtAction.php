@@ -1,24 +1,51 @@
 <?php
+/**
+*	计划任务用的程序
+*/
 class runtAction extends ActionNot
 {
 	public $runid = 0;
-	public $runrs;
+	public $runrs = array();
 	public $splitlast = 0; //距离上次提醒秒数0上次没有运行
 	
 	public $todoarr		= array();
 	
 	public function initAction()
 	{
-		ob_start(); //打开缓冲区
-		$this->runid	= (int)$this->get('runid','0');
-		if($this->runid==0)$this->runid = $this->getparams('runid','0');
-		
-		$this->runrs	= m('task')->getone($this->runid);
 		$this->display 	= false;
+		ob_start(); //打开缓冲区
+		$this->runid	= (int)$this->getparams('runid','0');
+		$this->initTask($this->runid);
+	}
+	
+	public function initTask($runid)
+	{
+		if($runid==0)return;
+		$this->runid 	= $runid;
+		$this->runrs	= m('task')->getone($this->runid);
 		if($this->runrs && !isempt($this->runrs['lastdt'])){
 			$this->splitlast = time() - strtotime($this->runrs['lastdt']);
 		}
 	}
+	
+	public function taskAfter()
+	{
+		//提醒的
+		$todoid = arrvalue($this->runrs,'todoid');
+		if(!isempt($todoid) && $this->todoarr){
+			$modenum	= arrvalue($this->todoarr, 'modenum');
+			$agentname	= arrvalue($this->todoarr, 'agentname');
+			$title		= arrvalue($this->todoarr, 'title');
+			$cont		= arrvalue($this->todoarr, 'cont');
+			if(!isempt($modenum)){
+				$flow 	= m('flow')->initflow($modenum);
+				$flow->push($todoid, $agentname, $cont, $title);
+			}else{
+				m('todo')->add($todoid, $title, $cont);
+			}
+		}
+	}
+	
 	
 	/**
 	*	运行完成后判断运行状态
@@ -34,21 +61,7 @@ class runtAction extends ActionNot
 				'lastcont' 	=> $cont,
 				'state' 	=> $state
 			), $this->runid);
-			
-			//提醒的
-			$todoid = arrvalue($this->runrs,'todoid');
-			if(!isempt($todoid) && $this->todoarr){
-				$modenum	= arrvalue($this->todoarr, 'modenum');
-				$agentname	= arrvalue($this->todoarr, 'agentname');
-				$title		= arrvalue($this->todoarr, 'title');
-				$cont		= arrvalue($this->todoarr, 'cont');
-				if(!isempt($modenum)){
-					$flow 	= m('flow')->initflow($modenum);
-					$flow->push($todoid, $agentname, $cont, $title);
-				}else{
-					m('todo')->add($todoid, $title, $cont);
-				}
-			}
+			$this->taskAfter();
 		}
 	}
 	
@@ -103,10 +116,12 @@ class runtClassAction extends runtAction
 		$runtime = $this->getparams('runtime',time());
 		$rtype	 = $this->getparams('rtype'); //运行类型
 		$dbs 	 = m('task');
+		if($rtype=='queue')$dbs->sendstarttask();
 		$yunarr	 = $dbs->runjsonlist($runtime);
 		$oi 	 = $cg = $sb = 0;
 		foreach($yunarr as $k=>$rs){
 			$urllu 	= $rs['urllu'];
+			$taskid = (int)$rs['id'];
 			$state	= 2;
 			$cont  	= '';
 			$oi++;
@@ -120,7 +135,9 @@ class runtClassAction extends runtAction
 					include_once($path);
 					$class= ''.$urla[0].'ClassAction';
 					$obj  = new $class();
+					$obj->initTask($taskid);
 					$cont = $obj->$act();
+					$obj->taskAfter();
 				}else{
 					$cont = ''.$urla[0].'Action.php not found';
 				}
@@ -135,10 +152,9 @@ class runtClassAction extends runtAction
 				'lastdt'	=> $this->rock->now,
 				'lastcont' 	=> $cont,
 				'state' 	=> $state
-			), $rs['id']);
+			),  $taskid);
 			
 		}
-		if($rtype=='queue')$dbs->sendstarttask();
 		return 'runtask('.$oi.'),success('.$cg.'),fail('.$sb.')';
 	}
 	

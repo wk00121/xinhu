@@ -15,6 +15,7 @@ $(document).ready(function(){
 			});
 		},
 		save:function(o){
+			if(ISDEMO){js.msg('msg','演示不要操作');return;}
 			var d={push:get('push_{rand}').value};
 			d.host = get('host_{rand}').value;
 			d.receid = get('receid_{rand}').value;
@@ -82,6 +83,9 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('testqueue', '{mode}', '{dir}'),false,function(str){
 				$('#yibutestabc').html(str);			
 			});
+		},
+		dengji:function(){
+			addtabs({url:'main,xinhu,dengji',name:'登记系统地址','num':'dengji'});
 		}
 	};
 	
@@ -102,7 +106,8 @@ $(document).ready(function(){
 			<td  align="right"></td>
 			<td class="tdinput">
 			<button click="kuanshu1" class="btn btn-info" type="button">快速设置(推荐)</button>&nbsp;&nbsp;
-			<button click="kuanshu2" class="btn btn-default" type="button">自定义设置</button>
+			<button click="kuanshu2" class="btn btn-default" type="button">自定义设置</button>&nbsp;&nbsp;
+			<button click="dengji" class="btn btn-default" type="button">登记系统地址</button>
 			</td>
 		</tr>
 	

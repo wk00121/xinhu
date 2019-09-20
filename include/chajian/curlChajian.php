@@ -124,6 +124,9 @@ class curlChajian extends Chajian{
 		return $output;
 	}
 	
+	/**
+	*	postjson的类型
+	*/
 	public function postjson($url, $data=array())
 	{
 		return $this->postcurl($url, $data, 0, array(

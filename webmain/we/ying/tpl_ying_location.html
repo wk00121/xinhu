@@ -20,7 +20,7 @@
 <script>
 //考勤信息
 var kqrs = <?=json_encode($kqrs);?>,kqors = <?=json_encode($kqors);?>,kqallrs=[],isgzh = <?=$isgzh?>;
-js.servernow = '<?=$rock->now?>';
+js.servernow = '<?=$rock->now?>',openfrom='<?=$openfrom?>';
 var infoWin,marker,circle;
 var label='',accuracy=0,latitude='',longitude='',kqjuli=-1,addbo = true;
 

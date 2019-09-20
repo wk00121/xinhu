@@ -151,4 +151,34 @@ class flowoptClassAction extends Action
 			'modenames'	=> $flow->moders['names'],
 		);
 	}
+	
+	/**
+	*	提交评论
+	*/
+	public function pinglunAjax()
+	{
+		$sm 	= $this->post('sm');
+		$mid 	= (int)$this->post('mid');
+		$modenum= $this->post('modenum');
+		$flow 	= m('flow')->initflow($modenum, $mid);
+		$flow->optmenu(-15,0, $sm);
+		$this->showreturn('ok');
+	}
+	
+	public function savetopdfAjax()
+	{
+		$imgbase64 = $this->post('imgbase64');
+		if(isempt($imgbase64))return returnerror('无数据');
+		$path = ''.UPDIR.'/logs/'.date('Y-m').'/abc.png';
+		$bo = $this->rock->createtxt($path, base64_decode($imgbase64));
+		if(!$bo)return returnerror('无系统写入目录权限');
+		$fpdf = c('fpdf');
+		if(!method_exists($fpdf,'initFpdf'))return returnerror('没有安装生成pdf插件');
+		$fpdf = $fpdf->initFpdf();
+		$fpdf->AddPage();
+		$fpdf->Image($path,0,0);
+		
+		$fpdf->Output('F',''.UPDIR.'/logs/'.date('Y-m').'/to.pdf');
+		$this->showreturn('ok:'.$fpdf->GetPageHeight().'');
+	}
 }

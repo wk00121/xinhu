@@ -302,7 +302,7 @@ class dateChajian extends Chajian
 		
 		//每周
 		if($lx=='w'){
-			$w 		= (int)date('w');if($w==0)$w=7;//星期7
+			$w 		= (int)date('w', strtotime($nowdt));if($w==0)$w=7;//星期7
 			if($w==$jg){
 				return $nowdt;
 			}

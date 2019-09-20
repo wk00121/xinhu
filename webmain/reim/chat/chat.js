@@ -363,6 +363,7 @@ var im={
 		var bo = false;
 		d.messid=d.id;
 		d.face  = adminface;
+		if(this.type=='group')d.gface=receinfor.face;
 		var bo  = serversend(d);
 		//if(!bo)js.msg('msg','信息不能及时推送，但已保存到服务器');
 	},

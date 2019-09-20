@@ -210,7 +210,7 @@ class fileClassModel extends Model
 		$arr 	= array();
 		foreach($rows as $k=>$rs){
 			$inuar  = $rs;
-			if(isempt($rs['filepath']) || !file_exists($rs['filepath']))continue;
+			if(isempt($rs['filepath']) || (substr($rs['filepath'],0,4)!='http' && !file_exists($rs['filepath'])))continue;
 			unset($inuar['id']);
 			$oid	= $rs['id'];
 			$inuar['adddt'] 	= $this->rock->now;

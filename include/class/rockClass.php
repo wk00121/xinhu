@@ -49,11 +49,9 @@ final class rockClass
 	*/
 	public function xssrepstr($str)
 	{
-		$xpd  = explode(',','(,), ,<,>,\\,.,*,&,%,$,^,!,@,#,-,+,:,;\'');
-		$xpds = array();
-		foreach($xpd as $xpd1)$xpds[]='';
-		$str = str_replace(',', '',$str);
-		return str_ireplace($xpd, $xpds, $str);
+		$xpd  = explode(',','(,), ,<,>,\\,*,&,%,$,^,[,],{,},!,@,#,",+,?,;\'');
+		$xpd[]= "\n";
+		return str_ireplace($xpd, '', $str);
 	}
 	
 	//获取IP
@@ -67,7 +65,7 @@ final class rockClass
 		}else if(isset($_SERVER['REMOTE_ADDR'])){
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}
-		$ip= str_replace(array(' ','(',')','\'','"'),'',htmlspecialchars($ip));
+		$ip= htmlspecialchars($this->xssrepstr($ip));
 		return $ip;
 	}
 	
@@ -148,6 +146,8 @@ final class rockClass
 			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
 			$s = str_ireplace($v1,'', $str);
 		}
+		$cslv = array('m','a','d','ip','web','host','ajaxbool','token','adminid');
+		if(in_array($na, $cslv))$s = $this->xssrepstr($s);
 		return $this->reteistrs($s);
 	}
 	//参数里面禁用/*,*/

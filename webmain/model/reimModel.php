@@ -317,7 +317,7 @@ class reimClassModel extends Model
 	public function getgroupxinxi($gid)
 	{
 		$rs 	= m('im_group')->getone($gid,'`id`,`type`,`name`,`face`,`deptid`');
-		$facarr = array('images/group.png','images/group.png','images/system.png');
+		$facarr = array('images/group.png','images/group.png','images/todo.png');
 		if(!$rs){
 			$rs = array(
 				'face'  => '',
@@ -1373,6 +1373,7 @@ class reimClassModel extends Model
 		$this->adduserchat($gid, $uids, false);
 		return $gid;
 	}
+	//邀请
 	public function adduserchat($gid, $uids, $isadd=false)
 	{
 		if(isempt($uids))return '';
@@ -1385,8 +1386,15 @@ class reimClassModel extends Model
 				$ids .= ','.$aid.'';
 			}
 		}
-		if($ids!='')$ids = substr($ids,1);
-		if($isadd && $this->isanwx())m('weixin:chat')->chatupdate($gid);
+		if($ids!=''){
+			$ids = substr($ids,1);
+			$unaem = '';
+			$urows = m('admin')->getall('`id` in('.$ids.')');
+			foreach($urows as $k=>$rs)$unaem.=','.$rs['name'].'';
+			if($unaem!=''){
+				$this->addxitong($gid, ''.$this->adminname.'邀请“'.substr($unaem,1).'”加入本会话');
+			}
+		}
 		return $ids;
 	}
 	public function deluserchat($gid, $uids)
@@ -1403,16 +1411,39 @@ class reimClassModel extends Model
 	}
 	public function exitchat($gid, $aid)
 	{
+		$this->addxitong($gid, ''.$this->adminname.'退出本会话');
 		$dbs = m('im_groupuser');
 		$dbs->delete("`gid`='$gid' and `uid`='$aid'");
 		m('im_messzt')->delete("`gid`='$gid' and `uid`='$aid'");
-		if($this->isanwx())m('weixin:chat')->chatquit($gid, $aid);
 		if($dbs->rows('gid='.$gid.'')==0)m('im_group')->delete($gid);
 		$this->delhistory('group',$gid, $aid);
 	}
+	public function addxitong($gid, $cont, $fid=0)
+	{
+		$this->sendinfor('group', $this->adminid, $gid, array(
+			'optdt' => $this->rock->now,
+			'cont'  => $this->rock->jm->base64encode($cont),
+			'fileid'=> $fid
+		));
+	}
 	
+	//修改会话名称
+	public function editname($gid, $name)
+	{
+		m('im_group')->update("`name`='$name'",$gid);
+		$this->addxitong($gid, ''.$this->adminname.'将会话名称修改为“'.$name.'”');
+	}
 	
-	
+	//修改头像
+	public function editface($gid, $fileid)
+	{
+		$face= '';
+		if($fileid>0){
+			$frs = m('file')->getone($fileid);
+			if($frs)$face= $frs['thumbpath'];
+		}
+		m('im_group')->update("`face`='$face'",$gid);
+	}
 	
 	
 	

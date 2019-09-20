@@ -79,11 +79,11 @@ class meetClassModel extends Model
 			$sdt = $rs['startdt'];
 			$edt = $rs['enddt'];
 			if(
-			($sdt<$startdt && $edt>$startdt)
-			|| ($sdt<$enddt && $edt>$enddt)
+			($sdt<=$startdt && $edt>$startdt)
+			|| ($sdt<$enddt && $edt>=$enddt)
 			|| ($sdt>$startdt && $edt<$enddt)
 			|| ($sdt==$startdt && $edt==$enddt) 
-			)$msg = '该会议室的时间段已经申请过了';
+			)$msg = '该会议室的时间段已被申请过了，主题“'.$rs['title'].'”';
 		}
 		return $msg;
 	}

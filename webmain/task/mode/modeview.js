@@ -252,6 +252,7 @@ var c={
 		if(lx=='0')c.clickprint(false);
 		if(lx=='6')c.clickprint(true);
 		if(lx=='5')c.daochuword();
+		if(lx=='7')c.savetopdf();
 		if(lx=='1'){
 			var url='index.php?a=lu&m=input&d=flow&num='+modenum+'&mid='+mid+'';
 			js.location(url);
@@ -263,9 +264,29 @@ var c={
 			$('#recordss').remove();
 			$('#checktablediv').remove();
 			$('#recordsss').remove();
-			//$('.statustext').remove();
 		}
 		window.print();
+	},
+	savetopdf:function(){
+		this.hideoth();
+		js.loading();
+		js.importjs('js/html2canvas.js', function(){
+			html2canvas($('#maindiv'),{
+				onrendered: function(canvas){
+					var imgbase64 = canvas.toDataURL().split(',')[1];
+					c.showviews({src:canvas.toDataURL()});
+					js.unloading();
+					/*
+					js.ajax(c.gurl('savetopdf'),{imgbase64:imgbase64},function(ret){
+						if(!ret.success){
+							js.msgerror(ret.msg);
+						}else{
+							js.msgok('导出成功');
+						}
+					},'post,json');*/
+				}
+			});
+		});
 	},
 	daochuword:function(){
 		var url='task.php?a=p&num='+modenum+'&mid='+mid+'&stype=word';
@@ -274,6 +295,7 @@ var c={
 	hideoth:function(){
 		$('.menulls').hide();
 		$('.menullss').hide();
+		$('#pinglunview').hide();
 		$('a[temp]').remove();
 	},
 	delss:function(){
@@ -552,7 +574,23 @@ var c={
 			}
 		});
 	},
-	
+	//评论
+	pinglun:function(o1){
+		js.setmsg('','','pinglun_spage');
+		var sm = get('pinglun_explain').value;
+		if(!sm){js.setmsg('请输入评论内容','','pinglun_spage');return;}
+		js.setmsg('提交中...','','pinglun_spage');
+		js.ajax(c.gurl('pinglun'),{'sm':sm,'name':'评论','mid':mid,'modenum':modenum},function(s){
+			var msg = '提交评论成功';
+			js.setmsg(msg,'green','pinglun_spage');
+			js.msgok(msg);
+			get('pinglun_explain').disabled=true;
+			$(o1).remove();
+		},'post',function(s){
+			js.setmsg(s,'','pinglun_spage');
+		});
+		return false;
+	},
 	
 	//回执确认
 	receiptque:function(){

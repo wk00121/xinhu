@@ -10,7 +10,7 @@
 	maxupgloble = 0;
 	function rockupload(opts){
 		var me 		= this;
-		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},urlparams:{},updir:'',onsuccess:function(){},quality:0.7,xu:0,fileallarr:[],autoup:true,
+		var opts	= js.apply({inputfile:'',initpdbool:false,initremove:true,uptype:'*',maxsize:5,onchange:function(){},onprogress:function(){},urlparams:{},updir:'',onsuccess:function(){},quality:0.7,xu:0,fileallarr:[],autoup:true,oldids:'',
 		onerror:function(){},fileidinput:'fileid',
 		onabort:function(){},
 		allsuccess:function(){}
@@ -206,10 +206,10 @@
 		};
 		this.startss=function(oi){
 			if(oi>=this.xu){
-				var ids='';
+				var ids=''+this.oldids+'';
 				var a = this.fileallarr;
 				for(var i=0;i<a.length;i++)if(a[i].id)ids+=','+a[i].id+'';
-				if(ids!='')ids=ids.substr(1);
+				if(ids!='' && ids.substr(0,1)==',')ids=ids.substr(1);
 				try{if(form(this.fileidinput))form(this.fileidinput).value=ids;}catch(e){};
 				this.allsuccess(this.fileallarr, ids); //必须全部才触发
 				return false;

@@ -313,7 +313,7 @@ class flowModel extends Model
 		}
 		//通知表上的权限
 		if(!$bo){
-			$tos 	= $this->todosmodel->rows($this->mwhere);
+			$tos 	= $this->todosmodel->rows("".$this->mwhere." and `uid`='$this->adminid'");
 			if($tos>0)$bo=true;
 		}
 		//抄送表上的
@@ -474,6 +474,7 @@ class flowModel extends Model
 		$arr['mid']  	 = $this->id;
 		$arr['status']   = arrvalue($this->rs,'status');
 		$arr['logarr']	 = $this->getlog();
+		$arr['isplview'] = arrvalue($this->moders,'ispl','0');
 		$contview 	 	 = '';
 		$path 			 = ''.P.'/flow/page/view_'.$this->modenum.'_'.$lx.'.html';
 		$fstr			 = $fobj->getstr($this->mtable, $this->id, 3);//3说明是详情也读
@@ -656,7 +657,12 @@ class flowModel extends Model
 		$arr['readunarr']	= array(); //未读人员
 		$arr['receiptrs']	= $receiptrs; //回执确认
 		
-		if($this->isflow>0)$arr['flowinfor']= $this->getflowinfor();
+		if($this->isflow>0){
+			$arr['flowinfor']= $this->getflowinfor();
+			if($arr['flowinfor']['ischeck']==1){
+				$arr['isplview']='0';//需要审核就不要评论框了
+			}
+		}
 		if(isset($data['title']))$arr['title'] = $data['title'];
 		$_oarr 			 = $this->flowdatalog($arr);
 		if(is_array($_oarr))foreach($_oarr as $k=>$v)$arr[$k]=$v;
@@ -3050,7 +3056,7 @@ class flowModel extends Model
 				$whes	= '';
 				if($cis>1)$whes=' and `sslx`='.$zbx.'';
 				$data 	= m($tables)->getall('mid='.$mid.''.$whes.'','*','`sort`');
-				$data 	= $this->flowsubdata($data, $lx);
+				$data 	= $this->flowsubdata($data, $lx, $zbx);
 				if($lx == 0){
 					$subdata['subdata'.$zbx.''] 	 = $data;
 				}else{

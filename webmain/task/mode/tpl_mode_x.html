@@ -93,8 +93,26 @@ if($da['arr']['optmenu']){
 	$opsts.= '</div>';
 	echo $opsts;
 }
-?>
 
+//是否开评论了
+if($da['arr']['isplview']=='1'){
+?>
+<div class="r-subtitle">&nbsp;&nbsp;评论</div>
+<div class="r-border-t" style="background:white" >
+<div align="left" class="padding10">
+	<div align="left"><textarea class="inputs" id="pinglun_explain" style="width:98%;height:60px" placeholder="请输入评论内容"></textarea></div>
+	<div style="padding-top:5px">
+	<button class="webbtn" style="border-radius:5px" onclick="c.pinglun(this)" id="check_btn" type="button">
+	提交评论</button>
+	&nbsp;<span id="pinglun_spage"></span>
+	</div>	
+</div>	
+</div>
+<div class="r-border-t"></div>
+
+<?php
+}
+?>
 <div>
 	<?php 
 	if($da['arr']['isflow']>0 && $da['arr']['status'] != '1'){

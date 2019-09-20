@@ -135,6 +135,30 @@ class reimClassAction extends apiAction
 		$this->showreturn($msg);
 	}
 	
+	//修改会话名称
+	public function editnameAction()
+	{
+		$gid	= (int)$this->post('gid');
+		$val	= $this->post('val');
+		if(isempt($val))return returnerror('不能为空');
+		m('reim')->editname($gid, $val);
+		$this->showreturn('');
+	}
+	
+	//邀请人员
+	public function yaoqingnameAction()
+	{
+		$gid	= (int)$this->post('gid');
+		$val	= $this->post('val');
+		if(isempt($val))return returnerror('不能为空');
+		$urs 	= m('admin')->geturs($val);
+		if(!$urs)return returnerror('“'.$val.'”不存在');
+		$uids	= ''.$urs['id'].'';
+		$ids 	= m('reim')->adduserchat($gid, $uids, true);
+		$msg	= 'success'.$ids.'';
+		$this->showreturn('ok');
+	}
+	
 	//退出讨论组
 	public function exitgroupAction()
 	{
@@ -177,6 +201,16 @@ class reimClassAction extends apiAction
 	{
 		$id 	= (int)$this->post('id');
 		m('file')->download($id);
+	}
+	
+	//修改会话头像
+	public function editfaceAction()
+	{
+		$gid 	= (int)$this->get('gid');
+		$fileid = (int)$this->get('fileid');
+		if($gid<=0)return returnerror('error');
+		m('reim')->editface($gid, $fileid);
+		$this->showreturn('');
 	}
 	
 	/**

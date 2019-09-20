@@ -1,7 +1,10 @@
 <?php
 class xinhuClassAction extends Action
 {
-
+	public function initAction()
+	{
+		$this->xinhuobj = c('xinhuapi');
+	}
 	
 	public function setsaveAjax()
 	{
@@ -85,5 +88,44 @@ class xinhuClassAction extends Action
 		}
 		if($msg=='')$msg = '通信地址可以用';
 		echo $msg;
+	}
+	
+	
+	/**
+	*	获取列表
+	*/
+	public function getoainfoAjax()
+	{
+		$barr = $this->xinhuobj->getdata('dengji','getdata');
+		$rows = array();
+		if($barr['success']){
+			$rows = $barr['data'];
+		}
+		return array(
+			'rows' => $rows
+		);
+	}
+	public function deldengjiAjax()
+	{
+		$id   = (int)$this->post('id');
+		$barr = $this->xinhuobj->getdata('dengji','deldengji', array('id'=>$id));
+		return $barr;
+	}
+	public function savedengjiAjax()
+	{
+		$id   	= (int)$this->post('id');
+		$name   = str_replace(' ','',$this->post('name'));
+		$url    = str_replace(' ','',$this->post('url'));
+		if(substr($url,0,4)!='http')return returnerror('地址必须http开头');
+		if(contain($url,'127.0.0.1') || contain($url,'localhost'))return returnerror('本地地址是不能登记到官网的');
+		if(substr($url,-1)!='/')$url.='/';
+		$carr 	= m('task')->pdlocal($url);
+		if(!$carr['success'])return returnerror('系统地址无法打开');
+		$barr 	= $this->xinhuobj->postdata('dengji','savedata', array(
+			'id'	=> $id,
+			'name'	=> $name,
+			'url'	=> urlencode($url),
+		));
+		return $barr;
 	}
 }

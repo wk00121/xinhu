@@ -9,9 +9,20 @@
 
 class yingClassAction extends ActionNot{
 	
+	public $openfrom = '';
+	
 	public function initAction()
 	{
 		$this->mweblogin(0, true);
+		$openfrom = $this->get('openfrom');
+		if(isempt($openfrom))$openfrom = $this->get('cfrom');
+		if(!isempt($openfrom)){
+			$this->rock->setsession('openfrom', $openfrom);
+		}else{
+			$openfrom = $this->rock->session('openfrom');
+		}
+		$this->openfrom = $openfrom;
+		$this->assign('openfrom', $this->openfrom);
 	}
 	
 	public function defaultAction()
@@ -30,7 +41,7 @@ class yingClassAction extends ActionNot{
 		$rs['iscy'] = $this->iscy($num);
 		$this->assign('arr', $rs);
 		$this->assign('num', $num);
-		$this->assign('openfrom', $this->get('openfrom'));
+		
 		$this->assign('yyurl', $yyurl);
 		$this->assign('yyurljs', $yyurljs);
 		$this->assign('searchmsg', '输入关键词搜索');
