@@ -196,12 +196,14 @@ $(document).ready(function(){
 	}
 	
 	//打开REIM窗口界面
-	openreim=function(){
+	openreim=function(o1){
 		$('#reim_stotal').html('');
+		var str = 'REIM';
+		if(o1)str=strreplace($(o1).text());
 		var ops = js.openrun('reim','winfocus');
 		if(!ops){
 			js.cliendsend('focus',{},false,function(){
-				js.confirm('可能没有使用REIM的PC客户端，是否打开网页版的？',function(jg){
+				js.confirm('可能没有使用'+str+'的PC客户端，是否打开网页版的？',function(jg){
 					if(jg=='yes'){
 						js.open('?d=reim',260,530,'reim');
 					}
