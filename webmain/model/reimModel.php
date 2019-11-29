@@ -555,7 +555,7 @@ class reimClassModel extends Model
 	/**
 	*	添加到历史记录,用户不显示历史记录让从新显示
 	*/
-	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='', $xgurl='')
+	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='', $xgurl='',$messid=0)
 	{
 		$uidsas = explode(',', $uids);
 		$db 	= $this->hisobj;
@@ -568,6 +568,7 @@ class reimClassModel extends Model
 			$arr['sendid'] 	= $sendid;
 			$arr['title'] 	= $title;
 			$arr['xgurl'] 	= $xgurl;
+			$arr['messid'] 	= $messid;
 			if(!$one){
 				$arr['type'] 	= $type;
 				$arr['receid'] 	= $receid;
@@ -848,8 +849,8 @@ class reimClassModel extends Model
 		//告诉app端也有推送，因为app也用到websocket连接服务端
 		
 		
-		$this->addhistory('user', $receid, $sendid, $optdt, $cont, $sendid);
-		if($sendid!=$receid)$this->addhistory('user', $sendid, $receid, $optdt, $cont, $sendid);
+		$this->addhistory('user', $receid, $sendid, $optdt, $cont, $sendid,'','', $arr['id']);
+		if($sendid!=$receid)$this->addhistory('user', $sendid, $receid, $optdt, $cont, $sendid,'','', $arr['id']);
 		
 		//推送的原生App上(使用异步推送哦)
 		$tuicont['sendid'] 		= $arr['sendid'];
@@ -952,7 +953,7 @@ class reimClassModel extends Model
 			}
 		}
 		$cont1 = $this->rock->jm->base64encode(''.$this->adminname.':'.$this->rock->jm->base64decode($cont).'');
-		$this->addhistory('group', $gid, $arr['receuid'], $optdt, $cont1,$sendid);
+		$this->addhistory('group', $gid, $arr['receuid'], $optdt, $cont1,$sendid,'','', $arr['id']);
 		
 		//推送的原生App上(使用异步推送哦)
 		if($asid != ''){
@@ -1040,8 +1041,9 @@ class reimClassModel extends Model
 			$uids	.= ','.$_uid.'';
 			if($_web=='xiaomi'){
 				$xmalias[] = $rs['token'];
-			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-07-25最新新app
+			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-11-25最新新app
 				$nestr = ''.$rs['token'].'|'.substr($rs['web'],0,8).'|'.$_uid.'|';
+				if(contain($rs['web'],'huawei') && !contain($rs['ip'],'.'))$nestr.=''.$rs['ip'].'';
 				$alias2019[] = $nestr;
 				$uid2019[]   = $_uid;
 			}else if(substr($_web,0,4)=='app_'){
@@ -1322,6 +1324,7 @@ class reimClassModel extends Model
 					$this->update("`receuid`='$ssid'", $sid);
 				}
 			}
+			$this->hisobj->update("`cont`=''", "`type`='$type' and `uid`='$uid' and `messid`='$sid'");
 		}
 		if($xids!='0')$this->delete("`id` in($xids)");
 		if($ids=='' && $day==0)$this->delhistory($type,$gid, $uid);
@@ -1629,5 +1632,36 @@ class reimClassModel extends Model
 				}
 			}
 		}
+	}
+	
+	/**
+	*	撤回消息功能
+	*/
+	public function chehuimess($type, $gid, $id)
+	{
+		$chehui = (int)$this->optiondb->getval('reimchehuisystem',0);
+		if($chehui<=0)return '没有开启此功能';
+		$rs = $this->getone('`id`='.$id.'');
+		if(!$rs)return '记录不存在了';
+		$t3 = time()-strtotime($rs['optdt']);
+		if($t3>$chehui*60)return '已经超过'.$chehui.'分钟无法撤回';
+		
+		$msg1= '已撤回';
+		$msg = $this->rock->jm->base64encode($msg1);
+		$this->update("`cont`='$msg',`fileid`=0", $id);
+		$this->hisobj->update("`cont`='$msg'", "`messid`='$id'");
+		
+		$pusharr 	= array(
+			'cont' 	=> $msg,
+			'type' 	=> 'chehui',
+			'messid' => $id,
+		);
+		$this->sendpush($this->adminid, $rs['receuid'], $pusharr);
+		return array(
+			'receid' => $rs['receuid'],
+			'id'	=> $id,
+			'msg'	=> $msg,
+			'msg1'	=> $msg1,
+		);
 	}
 }

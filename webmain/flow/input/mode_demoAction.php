@@ -46,14 +46,11 @@ class mode_demoClassAction extends inputAction{
 	//弹出下拉选择单选
 	public function tanxuan()
 	{
-		$rows[] = array(
-			'name' => '第一个数据',
-			'value'=> '0'
-		);
-		$rows[] = array(
-			'name' => '第二个数据',
-			'value'=> '1'
-		);
+		for($i=1;$i<=100000;$i++)
+			$rows[] = array(
+				'name' => '第'.$i.'个数据',
+				'value'=> ''.$i.''
+			);
 		return $rows;
 	}
 	

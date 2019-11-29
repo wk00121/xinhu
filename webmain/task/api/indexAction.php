@@ -122,4 +122,16 @@ class indexClassAction extends apiAction
 		$carr = m('admin')->getcompanyinfo($this->adminid);
 		$this->showreturn($carr);
 	}
+	
+	/**
+	*	华为设置客户端token
+	*/
+	public function updateTokenIpAction()
+	{
+		$hwtoken = $this->get('hwtoken');
+		if(!isempt($hwtoken)){
+			m('login')->update("`ip`='$hwtoken'", "`token`='$this->admintoken'");
+		}
+		return returnsuccess();
+	}
 }

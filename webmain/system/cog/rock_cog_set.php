@@ -32,6 +32,12 @@ $(document).ready(function(){
 				js.msg('msg','系统标题不能为空');
 				return;
 			}
+			var keys = d.xinhukey;
+			if(keys && keys.indexOf('*')==-1 && keys.length!=32){
+				js.msg('msg','官网key格式有误，请看帮助从官网用户中心获取');
+				get('xinhukey_{rand}').focus();
+				return;
+			}
 			js.ajax(js.getajaxurl('savecong','{mode}','{dir}'), d, function(s){
 				if(s!='ok')js.msg('msg', s);
 			},'post',false,'保存中...,保存成功');

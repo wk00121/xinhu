@@ -181,7 +181,7 @@ class xinhuapiChajian extends Chajian{
 	{
 		if(isempt($tomobile))return returnerror('接收手机号不能为空');
 		if($tplnum=='')$tplnum = m('option')->getval('sms_yanzm');
-		if(isempt($tplnum))return returnerror('验证码模版编号不能为空');
+		if(isempt($tplnum))$tplnum = 'defyzm';
 		$otme	= 0;
 		
 		$lorsr	= m('log')->getone("`type`='获取验证码' and (`optname`='$tomobile' or `device`='$device')",'`optdt`','id desc');

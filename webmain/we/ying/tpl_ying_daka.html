@@ -174,6 +174,7 @@ function adddk(ts, lx){
 		$(o1).html(''+ts+'成功');
 		addbo = false;
 		addkqinfor(1);
+		if(lx==1)get('notify_sound_audio').play();
 	},'none');	
 }
 
@@ -297,7 +298,7 @@ var yy={
 <div class="r-padding10" align="center" style="font-size:14px;"><a id="beshuomdiv" onclick="addbeizhu(this)" href="javascript:;">加备注...</a><!--&nbsp;&nbsp;<a href="javascript:;" onclick="paizhao()"><i class="icon-camera"></i>拍照</a>--></div>
 <div class="r-padding10 r-wrap" align="center" style="font-size:14px;color:#888888;">今日打卡：<span id="todyadak">无</span></div>
 
-
+<audio id="notify_sound_audio" hidden="true" style="display:none" src="web/res/sound/dkcg.mp3"></audio>
 <div style="height:55px; overflow:hidden"></div>	
 <div style="height:55px;overflow:hidden;z-index:2;position:fixed" class="weui_tabbar">
 	<a href="javascript:;" class="weui_tabbar_item weui_bar_item_on">

@@ -134,7 +134,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right">服务端版本：</td>
-			<td class="tdinput"><select id="servertype_{rand}" style="width:300px" class="form-control"><option value="0">PHP版</option><option value="1">nodejs版(推荐)</option></select></td>
+			<td class="tdinput"><select id="servertype_{rand}" style="width:300px" class="form-control"><option value="1">nodejs版(推荐)</option><option value="0">PHP版(最新版弃用)</option></select></td>
 		</tr>
 		
 		<tr>

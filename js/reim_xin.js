@@ -454,6 +454,10 @@ var reim={
 		if(lx=='agent'){
 			this.receiveagenh(d);
 		}
+		if(lx=='chehui'){
+			$('#qipaocont_mess_'+d.messid+'').html(js.getmsg(jm.base64decode(d.cont),'green'));
+			this.historyreload();
+		}
 	},
 	showuserlists:function(pid,xu, svie){
 		var o = $('#'+svie+'');
@@ -510,6 +514,13 @@ var reim={
 			s+='</div>';
 		}
 		$('#showgroup').html(s)
+	},
+	historyreload:function(){
+		this.ajax(this.getapiurl('indexreim','gethistory'),{id:0},function(
+		ret){
+			var data = ret.data;
+			reim.showhistory(data);
+		});
 	},
 	showhistory:function(a){
 		var i,len=a.length;
@@ -1069,6 +1080,7 @@ function chatcreate(cans){
 		this.showobj  = $('#viewcontent_'+this.num+'');
 		this.inputobj = $('#input_content_'+this.num+'');
 		this.sendbtn  = $('#chatsendbtn_'+this.num+'');
+		this.listdata = {};
 		this.loadci   = 0;
 		this.objstr	  = 'reim.chatobj[\''+this.num+'\']';
 		this.sendbtn.click(function(){
@@ -1183,6 +1195,7 @@ function chatcreate(cans){
 			}else{
 				this.showobj.prepend(cont);
 			}
+			this.listdata[rnd]=d;
 			$('#qipaocont_'+rnd+'').contextmenu(function(e){
 				me.contright(this,e);
 				return false;
@@ -1323,7 +1336,7 @@ function chatcreate(cans){
 			return;
 		}
 		var nuid= js.now('time'),optdt = js.serverdt();
-		var cont= strformat.showqp('right','我',optdt, nr, nuid, this.sendinfo.face);
+		var cont= strformat.showqp('right','我',optdt, nr, nuid, this.sendinfo.face, nuid);
 		this.addcont(cont);
 		o.val('').focus();
 		this.sendconts(conss, nuid, optdt, 0);
@@ -1401,6 +1414,12 @@ function chatcreate(cans){
 		d.messid=d.id;
 		d.face  = this.sendinfo.face;
 		if(this.type=='group')d.gface=this.receinfo.face;
+		this.listdata[nuid]=d;
+		//添加右键事件
+		$('#qipaocont_'+nuid+'').contextmenu(function(e){
+			me.contright(this,e);
+			return false;
+		});
 		reim.serversend(d);
 	};
 	this.addinput=function(s){
@@ -1471,6 +1490,7 @@ function chatcreate(cans){
 		strformat.upsuccess(a);
 		if(js.isimg(f.fileext)){
 			conss = '[图片 '+f.filesizecn+']';
+			this._addclickf();
 		}else{
 			conss = '['+f.filename+' '+f.filesizecn+']'
 		}
@@ -1543,14 +1563,21 @@ function chatcreate(cans){
 			}
 		});
 		this.randmess = rnd;
+		this.rightdata= this.listdata[rnd];
 		var d=[{name:'复制',lx:0},{name:'删除',lx:1}];
 		if(this.type=='group')d.push({name:'@TA',lx:3});
+		var chehui = reim.showconfigarr.chehui;
+		if(o1.className.indexOf('right')>0 && chehui>0){
+			var t1 = js.now('time', this.rightdata.optdt),t2 = js.now('time');
+			var t3 = (t2-t1)*0.001;
+			if(t3<chehui)d.push({name:'撤回',lx:2});
+		}
 		this.rightqipaoobj.setData(d);
 		this.rightqipaoobj.showAt(e.clientX,e.clientY);
 	};
 	this.rightqipaoclick=function(d){
 		var lx=d.lx;
-		var ids=this.randmess.replace('mess_','');
+		var ids = this.rightdata.id;
 		if(lx==0){
 			var cont = $('#qipaocont_'+this.randmess+'').text();
 			if(cont)this.addinput(cont);
@@ -1564,6 +1591,15 @@ function chatcreate(cans){
 		if(lx==3){
 			var cont = $('#ltname_'+this.randmess+'').text();
 			if(cont)this.addinput('@'+cont+' ');
+		}
+		if(lx==2 && !isNaN(ids)){
+			var o1dd = $('#qipaocont_'+this.randmess+'')
+			o1dd.html(js.getmsg('撤回中...'));
+			reim.ajax(reim.getapiurl('reim','chehuimess'),{type:this.type,gid:this.gid,ids:ids}, function(ret){
+				o1dd.html(js.getmsg(ret.data.msg1,'green'));
+			},'get', function(){
+				o1dd.html(js.getmsg('撤回失败','red'));
+			});
 		}
 	};
 	this._init();

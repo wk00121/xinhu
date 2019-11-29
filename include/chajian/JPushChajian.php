@@ -37,23 +37,28 @@ class JPushChajian extends Chajian{
 			$xmarr = array();//小米的人员
 			$othar = array();//其他人用
 			$iosar = array(); //IOS
+			$hwarr = array(); //华为
 			foreach($alias2019 as $ali1){
 				$ali1aa = explode('|', $ali1);
 				$regid  = $ali1aa[0];
 				$sjlxx  = $ali1aa[1];
 				if(contain($sjlxx,'xiaomi')){
 					$xmarr[] = $regid;
-				}else if(contain($sjlxx,'iphone')){
+				}else if(contain($sjlxx,'huawei')){
+					if(isset($ali1aa[3]) && $ali1aa[3])$hwarr[] = $ali1aa[3];
+				}else if(contain($sjlxx,'iphone')){	
 					$iosar[] = $regid;
 				}else{
 					$othar[] = $regid;
 				}
 			}
-			$msg = $msg1 = '';
+			$msg = $msg1 = $msg2 = '';
 			if($oldalias)$msg = $xmpush->androidsend($oldalias, $title, $desc, $cont);
 			if($xmarr)$msg = $xmpush->androidsend($xmarr, $title, $desc);
 			if($iosar)$msg1= $xmpush->iossend($iosar, $title, $desc);
-			return $msg.$msg1;
+			if($hwarr)$msg2= c('hwpush')->androidsend($hwarr, $title, $desc);
+			$msg5 = $msg.$msg1.$msg2;
+			return $msg5;
 		}	
 	}
 	

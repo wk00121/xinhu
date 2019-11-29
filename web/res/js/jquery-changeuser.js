@@ -160,7 +160,7 @@
 				(sel=='3' && (','+a[i].groupname+',').indexOf(','+pid+',')>-1)//显示组下人员
 				){
 					ssu+='<div class="listsss">';
-					ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'" xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
+					ssu+='<table width="100%"><tr><td>'+s1+'</td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+a[i].face+'">&nbsp;'+a[i].name+'<span style="font-size:12px;color:#888888">('+a[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'" xxu="'+i+'" xls="u" xname="'+a[i].name+'" value="'+a[i].id+'" style="width:18px;height:18px;" type="'+type+'"></td></tr></table>';
 					ssu+='</div>';
 					zoi++;
 					if(zoi>=200)break;//最多显示200人，其他用搜索
@@ -260,11 +260,11 @@
 			var key = $('#changekey_'+this.rand+'').val(),s='',a=[],d=[],len,i;
 			a=this.userarr;
 			len=a.length;
-			if(key!='')for(i=0;i<len;i++)if(a[i].name.indexOf(key)>-1 || a[i].pingyin.indexOf(key)==0 || a[i].deptname.indexOf(key)>-1 || a[i].ranking.indexOf(key)>-1)d.push(a[i]);
+			if(key!='')for(i=0;i<len;i++)if(a[i].name.indexOf(key)>-1 || a[i].pingyin.indexOf(key)==0 || a[i].deptname.indexOf(key)>-1 || a[i].ranking.indexOf(key)>-1){a[i].xu=i;d.push(a[i])};
 			len = d.length;
 			for(i=0;i<len;i++){
 				s+='<div class="listsss">';
-				s+='<table width="100%"><tr><td></td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+d[i].face+'">&nbsp;'+d[i].name+'<span style="font-size:12px;color:#888888">('+d[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'_soukey"  xls="u" xname="'+d[i].name+'" value="'+d[i].id+'" style="width:18px;height:18px;" type="'+this.inputtype+'"></td></tr></table>';
+				s+='<table width="100%"><tr><td></td><td width="100%"><img align="absmiddle" height="24" height="24" src="'+d[i].face+'">&nbsp;'+d[i].name+'<span style="font-size:12px;color:#888888">('+d[i].ranking+')</span></td><td><input name="changeuserinput_'+rand+'_soukey" xxu="'+d[i].xu+'" xls="u" xname="'+d[i].name+'" value="'+d[i].id+'" style="width:18px;height:18px;" type="'+this.inputtype+'"></td></tr></table>';
 				s+='</div>';
 			}
 			if(bo && s=='' && key!='')js.msg('msg','无相关['+key+']的记录', 2);
@@ -337,17 +337,19 @@
 			var ns= 'changeuserinput_'+rand+'';
 			if($('#showdiv'+rand+'_search').html()!='')ns+='_soukey';
 			var o = $("input[name='"+ns+"']");
-			var i,len=o.length,o1,xls,xna,xal,sid='',sna='',ob1=this.changetype.indexOf('dept')==-1,ob2=this.changetype.indexOf('user')==-1;
+			var i,len=o.length,o1,xls,xna,xal,xxu,sid='',sna='',ob1=this.changetype.indexOf('dept')==-1,ob2=this.changetype.indexOf('user')==-1,xzarr=[];
 			var ob3=ob1 || ob2;
 			for(i=0;i<len;i++){
 				o1 = $(o[i]);
 				if(o[i].checked){
 					xls= o1.attr('xls');
 					xna= o1.attr('xname');
+					xxu= o1.attr('xxu');
 					xal= o1.val();
 					if(ob3)xls='';
 					sid+=','+xls+''+xal+'';
 					sna+=','+xna+'';
+					if(!isempt(xxu))xzarr.push(this.userarr[parseFloat(xxu)]);
 				}
 			}
 			if(sid!=''){
@@ -360,7 +362,7 @@
 				this.nameobj.focus();
 			}
 			if(!this.oveob)history.back();
-			this.onselect(sna, sid);
+			this.onselect(sna, sid, xzarr);
 			this.hide();
 		}
 	}

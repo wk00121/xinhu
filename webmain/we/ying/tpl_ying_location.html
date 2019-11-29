@@ -141,6 +141,7 @@ function adddkjl(lx,ss,sm, uobo){
 		js.msg('success',''+ss+'成功:'+ret.now+'');
 		$('#dwdiv').after('<div>刚'+ss+'.'+ret.now.substr(10)+'('+label+')</div>');
 		addbo = false;
+		if(lx==1)get('notify_sound_audio').play();
 	},'none');
 }
 function adddkjlok(ids){
@@ -262,7 +263,7 @@ function showimgs(o1){
 	
 	<div style="display:none">
 	<form name="form_cameraInput">
-	<input type="file" capture="camera" onchange="changfile(this)" accept="image/jpg,image/png,image/jpeg" id="cameraInput" /></form>
+	<input type="file" capture="camera" onchange="changfile(this)" accept="image/*" id="cameraInput" /></form>
 	</div>
 	<div style="padding:10px">
 	<table width="100%"><tr>
@@ -288,6 +289,7 @@ function showimgs(o1){
 		}
 		?>
 	</div>
+	<audio id="notify_sound_audio" hidden="true" style="display:none" src="web/res/sound/dkcg.mp3"></audio>
 	<div class="blank10"></div>
 </div>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>

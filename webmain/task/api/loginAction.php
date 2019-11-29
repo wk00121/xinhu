@@ -204,4 +204,23 @@ class loginClassAction extends apiAction
 		$img = c('qrcode')->show($url);
 		echo $img;
 	}
+	
+	/**
+	*	安卓检查是否有app更新
+	*/
+	public function appupdateAction()
+	{
+		$nowver = getconfig('app_version');//app的版本
+		$ver 	= $this->get('ver');
+		$barr['success'] = false;
+		$path	= getconfig('app_verpath','images/app.apk');//app文件版本
+		if(!isempt($nowver) && file_exists($path) && $ver<$nowver){
+			$barr['success'] = true;
+			$barr['version'] = $nowver;
+			$barr['size'] 	 = '3.2M';
+			$barr['updateurl'] = ''.URL.''.$path.'';
+			$barr['explain']  = getconfig('app_verremark','完善推送功能');
+		}
+		echo json_encode($barr);
+	}
 }

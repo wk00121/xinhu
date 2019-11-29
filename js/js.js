@@ -100,6 +100,7 @@ js.scrolla	= function(){
 	js.scroll(top);
 }
 js.request=function(name,dev,url){
+	this.requestarr = {};
 	if(!dev)dev='';
 	if(!name)return dev;
 	if(!url)url=location.href;
@@ -110,6 +111,7 @@ js.request=function(name,dev,url){
 	var value=dev,i,val;
 	for(i=0;i<neurl.length;i++){
 		val=neurl[i].split('=');
+		this.requestarr[val[0]] = val[1];
 		if(val[0].toLowerCase()==name.toLowerCase()){
 			value=val[1];
 			break;

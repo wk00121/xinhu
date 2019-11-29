@@ -1423,8 +1423,9 @@ class flowModel extends Model
 					$suparr 		= $this->adminmodel->getsuperarr($this->uid);
 					if($suparr){
 						$logdsar		= $this->getlog();
-						foreach($logdsar as $k1=>$rs1)
-							if($rs1['courseid']>0)$allcheckid .= ','.$rs1['checkid'].'';	
+						foreach($logdsar as $k1=>$rs1){
+							if($rs1['courseid']>0 && $rs1['status']=='1' && $rs1['valid']=='1')$allcheckid .= ','.$rs1['checkid'].'';
+						}
 						foreach($suparr as $k1=>$surs){
 							if(!contain(','.$allcheckid.',', ','.$surs['id'].',')){
 								$rs['oldid']	 = $ids1;
@@ -1497,7 +1498,7 @@ class flowModel extends Model
 						if(!in_array($chkid, $allcheckids))$allcheckids[] = $chkid;
 						if(!isset($chesarr[$_su1])){
 							$_chid.=','.$chkid.'';
-							$_chna.=','.$checkidna[$k1].'';
+							$_chna.=','.arrvalue($checkidna, $k1).'';
 						}
 					}
 					if($_chid!='')$_chid = substr($_chid, 1);
@@ -2166,7 +2167,8 @@ class flowModel extends Model
 		
 		//通知给相应人员
 		if($this->db->backsql()){
-			if($nexttodoarr)$this->nexttodo($nexttodoarr[0],$nexttodoarr[1],$nexttodoarr[2],$nexttodoarr[3]); 
+			$bos = ($courseid == arrvalue($this->nowcourse, 'id') && $istongyi);
+			if($nexttodoarr && !$bos)$this->nexttodo($nexttodoarr[0],$nexttodoarr[1],$nexttodoarr[2],$nexttodoarr[3]); 
 			if($nexttodoarc)$this->nexttodo($nexttodoarc[0],$nexttodoarc[1],$nexttodoarc[2],$nexttodoarc[3]); 
 		}
 		

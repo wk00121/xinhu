@@ -18,7 +18,8 @@ var myScroll=false,yy={
 		return $(window).height()-hei+ss;
 	},
 	initScroll:function(){
-		if(get('searsearch_bar') && agentlx==0){
+		//取消上拉加载
+		if(get('searsearch_bar') && agentlx==0 && 1==2){
 			this.touchobj = $('#mainbody').rockdoupull({
 				upbool:true,
 				onupbefore:function(){
@@ -254,6 +255,8 @@ var myScroll=false,yy={
 		this.loadci++;
 		if(key)key='basejm_'+jm.base64encode(key)+'';
 		var kcan = {'page':p,'event':st,'num':this.num,'key':key,'loadci':this.loadci};
+		js.request('testabce');
+		for(i in js.requestarr)if(i.indexOf('params_')==0)kcan[i.substr(7)]=js.requestarr[i];
 		for(i in this.searchparams)kcan[i]=this.searchparams[i];
 		for(i in cas)kcan[i]=cas[i];
 		js.ajax('index','getyydata',kcan,function(ret){

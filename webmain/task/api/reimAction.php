@@ -180,7 +180,7 @@ class reimClassAction extends apiAction
 	{
 		$gid 	= (int)$this->post('gid');
 		$type 	= $this->post('type');
-		$ids 	= $this->post('ids');
+		$ids 	= c('check')->onlynumber($this->post('ids'));
 		$day 	= (int)$this->post('day');
 		$arr 	= m('reim')->clearrecord($type,$gid,$this->adminid, $ids, $day);
 		$this->showreturn('');
@@ -225,8 +225,17 @@ class reimClassAction extends apiAction
 		$this->showreturn('');
 	}
 	
-	/**
-	*	信息转发
-	*/
 	
+	/**
+	*	消息撤回
+	*/
+	public function chehuimessAction()
+	{
+		$gid 	= (int)$this->post('gid');
+		$type 	= $this->post('type');
+		$ids 	= (int)$this->post('ids');
+		$barr 	= m('reim')->chehuimess($type, $gid, $ids);
+		if(is_array($barr))$this->showreturn($barr);
+		$this->showreturn('', $barr, 201);
+	}
 }

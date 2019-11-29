@@ -74,6 +74,15 @@ class indexreimClassAction extends apiAction
 	}
 	
 	/**
+	*	会话列表记录
+	*/
+	public function gethistoryAction()
+	{
+		$arr = m('reim')->gethistory($this->adminid);
+		$this->showreturn($arr);
+	}
+	
+	/**
 	*	最新app读取通信地址
 	*/
 	public function reimconfigAction()

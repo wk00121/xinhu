@@ -286,6 +286,7 @@ class fileClassModel extends Model
 		if($id==0)exit('Sorry!');
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
+		if(!$this->isdownfile($rs))exit('404 No permission download');
 		$this->update("`downci`=`downci`+1", $id);
 		$this->addlogs($id, 1);
 		$filepath	= $rs['filepath'];
@@ -323,6 +324,7 @@ class fileClassModel extends Model
 		if($id==0)exit('Sorry!');
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
+		if(!$this->isdownfile($rs))exit('No permission download');
 		$filepath	= $rs['filepath'];
 		$ielx  = substr($filepath,0,strlen(UPDIR));
 		$ielx1 = substr($filepath,0,6);
@@ -348,5 +350,46 @@ class fileClassModel extends Model
 		}else{
 			
 		}
+	}
+	
+	//判断是否有下载文件的权限
+	private function isdownfile($rs)
+	{
+		$uid = $this->adminid;
+		if(arrvalue($rs,'optid')==$uid)return true;
+		$table 	= arrvalue($rs,'mtype');
+		$mid 	= (int)arrvalue($rs,'mid','0');
+		if(!isempt($table) && $mid>0){
+			$to = m('reads')->rows("`table`='$table' and `mid`='$mid' and `optid`='$uid'");
+			if($to>0)return true;
+		}
+		$mknum = arrvalue($rs,'mknum');
+		if(!isempt($mknum)){
+			$mknuma = explode('|', $mknum);
+			$num 	= $mknuma[0];
+			$mid 	= arrvalue($mknuma, 1);
+			if(!isempt($mid)){
+				$flow = m('flow')->initflow($num, $mid, false);
+				if($flow->isreadqx(1))return true;
+			}
+		}
+		if($table=='im_mess'){
+			$ors = m($table)->getone($mid);
+			if($ors){
+				$receuid = $ors['receuid'];
+				if(contain(','.$receuid.',',','.$uid.','))return true;
+			}
+		}
+		if($table=='word'){
+			$ors = m('word')->getone("`fileid`='".$rs['id']."'");
+			if($ors){
+				$cid = $ors['cid'];
+				$flow = m('flow')->initflow('worc', $cid, false);
+				if($flow->isreadqx(1))return true;
+				$flow = m('flow')->initflow('word', $ors['id'], false);
+				if($flow->isreadqx(1))return true;
+			}
+		}
+		return false;
 	}
 }

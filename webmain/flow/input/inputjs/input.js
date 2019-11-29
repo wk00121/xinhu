@@ -366,11 +366,11 @@ var c={
 			$('#AltSspan').hide();
 			form('id').value=a.data;
 			isedit=0;
+			savesuccess();
 			this.callback(a.data, sumsg);
 			try{
 			js.sendevent('reload', 'yingyong_mode_'+moders.num+'');
 			js.backla();}catch(e){}
-			savesuccess();
 		}else{
 			if(typeof(msg)=='undefined')msg=str;
 			get('AltS').disabled=false;
