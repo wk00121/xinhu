@@ -13,12 +13,15 @@ class openapiAction extends ActionNot
 	private $openkey = '';
 	public 	$postdata= '';
 	
+	//是否验证openkey
+	protected 	$keycheck= true;
+	
 	public function initAction()
 	{
 		$this->display= false;
 		$openkey 		= $this->post('openkey');
 		$this->openkey 	= getconfig('openkey');
-		if(HOST != '127.0.0.1' && !contain(HOST,'192.168') && $this->openkey != ''){
+		if($this->keycheck && HOST != '127.0.0.1' && !contain(HOST,'192.168') && $this->openkey != ''){
 			if($openkey != md5($this->openkey))$this->showreturn('', 'openkey not access', 201);
 		}
 		$this->getpostdata();

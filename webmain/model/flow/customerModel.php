@@ -187,7 +187,7 @@ class flow_customerClassModel extends flowModel
 		if($tshu<=0)return;
 		$sneuar	= array();
 		
-		$rows 	= $this->getall('`uid`>0 and `htshu`=0 and `isgys`=0 and `id` not in(select `custid` from `[Q]custsale` where `state` in(1))','lastdt,optdt,id,name,uid,unitname');
+		$rows 	= $this->getall('`uid`>0 and `htshu`=0 and `isgys`=0 and `id` not in(select `custid` from `[Q]custsale` where `state` in(1)) and `id` not in(select `custid` from `[Q]goodm` where `type`=2 and `status` in(0,1))','lastdt,optdt,id,name,uid,unitname');
 		$dtobj 	= c('date');
 		$addghs = array();
 		foreach($rows as $k=>$rs){

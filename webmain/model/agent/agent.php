@@ -136,6 +136,7 @@ class agentModel extends Model
 		$rows 	= $arr['rows'];
 		$row 	= array();
 		$suarr  = $this->zhaiyaoar($this->flow->moders['summarx']);
+		$rows 	= $this->flow->viewjinfields($rows);//禁看字段处理
 		foreach($rows as $k=>$rs){
 			$jarr 	= array();
 			$rs 	= $this->flow->flowrsreplace($rs, 2);

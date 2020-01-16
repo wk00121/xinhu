@@ -14,6 +14,13 @@ class modeClassModel extends Model
 		return $arr;
 	}
 	
+	//判断模块是否开启存在
+	public function iscun($num)
+	{
+		$to = $this->rows("`num`='$num' and `status`=1");
+		return $to==1;
+	}
+	
 	public function getmoderows($uid, $sww='')
 	{
 		$where	= m('admin')->getjoinstr('receid', $uid);

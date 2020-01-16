@@ -1,17 +1,17 @@
 <?php
 /**
-*	模块：schedule.日程
+*	模块：custplan.跟进计划
 *	说明：自定义区域内可写你想要的代码
-*	来源：流程模块→表单元素管理→[模块.日程]→生成列表页
+*	来源：流程模块→表单元素管理→[模块.跟进计划]→生成列表页
 */
 defined('HOST') or die ('not access');
 ?>
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'schedule',modename='日程',isflow=0,modeid='12',atype = params.atype,pnum=params.pnum,modenames='';
+	var modenum = 'custplan',modename='跟进计划',isflow=0,modeid='98',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"title","name":"\u6807\u9898","fieldstype":"text","ispx":"0","isalign":"1","islb":"1"},{"fields":"startdt","name":"\u63d0\u9192\u65f6\u95f4","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"},{"fields":"rate","name":"\u91cd\u590d","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"rateval","name":"\u91cd\u590d\u503c","fieldstype":"checkboxall","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"optname","name":"\u8bb0\u4e8b\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"enddt","name":"\u622a\u6b62\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"txsj","name":"\u63d0\u9192","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"recename","name":"\u63d0\u9192\u7ed9","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"isdai","name":"\u521b\u5efa\u5f85\u529e","fieldstype":"checkbox","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"custname","name":"\u8ddf\u8fdb\u5ba2\u6237","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"1"},{"fields":"custid","name":"\u5ba2\u6237Id","fieldstype":"hidden","ispx":"0","isalign":"0","islb":"0"},{"fields":"gentype","name":"\u8ddf\u8fdb\u65b9\u5f0f","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"1"},{"fields":"plandt","name":"\u8ba1\u5212\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"findt","name":"\u5b8c\u6210\u65f6\u95f4","fieldstype":"datetime","ispx":"0","isalign":"0","islb":"1"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"},{"fields":"optname","name":"\u8ddf\u8fdb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -78,7 +78,7 @@ $(document).ready(function(){
 			});
 		},
 		getacturl:function(act){
-			return js.getajaxurl(act,'mode_schedule|input','flow',{'modeid':modeid});
+			return js.getajaxurl(act,'mode_custplan|input','flow',{'modeid':modeid});
 		},
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
@@ -137,8 +137,8 @@ $(document).ready(function(){
 			}
 		},
 		daoru:function(){
-			window.managelistschedule = a;
-			addtabs({num:'daoruschedule',url:'flow,input,daoru,modenum=schedule',icons:'plus',name:'导入日程'});
+			window.managelistcustplan = a;
+			addtabs({num:'daorucustplan',url:'flow,input,daoru,modenum=custplan',icons:'plus',name:'导入跟进计划'});
 		},
 		initcolumns:function(bots){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
@@ -207,10 +207,10 @@ $(document).ready(function(){
 	};
 	
 	var bootparams = {
-		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('c2NoZWR1bGU:'),
+		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y3VzdHBsYW4:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"标题",dataIndex:"title",align:"left"},{text:"提醒时间",dataIndex:"startdt",sortable:true},{text:"重复",dataIndex:"rate"},{text:"说明",dataIndex:"explain"},{text:"记事人",dataIndex:"optname",sortable:true},{text:"截止时间",dataIndex:"enddt"},{text:"提醒",dataIndex:"txsj",sortable:true},{text:"提醒给",dataIndex:"recename"},{text:"状态",dataIndex:"status",sortable:true},{text:"创建待办",dataIndex:"isdai",sortable:true},{
+		columns:[{text:"跟进客户",dataIndex:"custname"},{text:"跟进方式",dataIndex:"gentype"},{text:"状态",dataIndex:"status"},{text:"计划时间",dataIndex:"plandt"},{text:"完成时间",dataIndex:"findt"},{text:"说明",dataIndex:"explain"},{text:"跟进人",dataIndex:"optname"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -227,31 +227,12 @@ $(document).ready(function(){
 	
 //[自定义区域start]
 
-c.initpage=function(){
-	$('#key_{rand}').parent().before('<td style="padding-right:10px;"><input onclick="js.datechange(this,\'date\')" style="width:110px" placeholder="日期" readonly class="form-control datesss" id="dt_{rand}" ></td>');
-}
-c.searchbtn=function(){
-	var dt = get('dt_{rand}').value;
-	this.search({dt:dt});
-}
-//让状态列可以编辑
-bootparams.celleditor = true;
-c.setcolumns('status',{
-	editor:true,
-	type:'checkbox',
-	editorafter:function(){
-		c.reload();
-	}
-});
-c.setcolumns('isdai',{
-	editor:true,
-	type:'checkbox'
-});
+
 
 //[自定义区域end]
 
 	js.initbtn(c);
-	var a = $('#viewschedule_{rand}').bootstable(bootparams);
+	var a = $('#viewcustplan_{rand}').bootstable(bootparams);
 	c.init();
 	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
@@ -276,7 +257,7 @@ c.setcolumns('isdai',{
 		<td>
 			<input class="form-control" style="width:160px" id="key_{rand}" placeholder="关键字">
 		</td>
-		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:green" value="1">启用</option><option style="color:#888888" value="0">停用</option></select></td>
+		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">计划</option><option style="color:green" value="1">已完成</option><option style="color:#888888" value="5">已作废</option></select></td>
 		<td style="padding-left:10px">
 			<div style="white-space:nowrap">
 			<button style="border-right:0;border-top-right-radius:0;border-bottom-right-radius:0" class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px;border-top-left-radius:0;border-bottom-left-radius:0"><i class="icon-angle-down"></i></button> 
@@ -291,5 +272,5 @@ c.setcolumns('isdai',{
 	</table>
 </div>
 <div class="blank10"></div>
-<div id="viewschedule_{rand}"></div>
+<div id="viewcustplan_{rand}"></div>
 <!--HTMLend-->

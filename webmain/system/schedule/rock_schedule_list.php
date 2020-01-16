@@ -35,6 +35,9 @@ $(document).ready(function(){
 		},
 		calendarshow:function(){
 			addtabs({num:'guanlieschedulemonth',url:'{dir},{mode},calendar',name:'日程月视图'});
+		},
+		ricdaibn:function(){
+			addtabs({num:'scheduld',url:'flow,page,scheduld,atype=my',name:'日程待办'});
 		}
 	};
 	js.initbtn(c);
@@ -49,6 +52,8 @@ $(document).ready(function(){
 	<td nowrap style="padding-right:10px">
 		<button class="btn btn-primary" click="clickwin,0" type="button"><i class="icon-plus"></i> 新增</button>&nbsp; 
 		<button type="button" click="guanli" class="btn btn-default"><i class="icon-cog"></i> 管理</button>
+		&nbsp; 
+		<button type="button" click="ricdaibn" class="btn btn-default">日程待办</button>
 	</td>
 	<td nowrap>日期&nbsp;</td>
 	<td nowrap>

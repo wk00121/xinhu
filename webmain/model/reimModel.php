@@ -147,6 +147,7 @@ class reimClassModel extends Model
 	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0, $xgurl='')
 	{
 		if($slx==3 || isempt($receid))return false;
+		$cont	= str_replace(array("\n",'\n','<br>'),' ', $cont);
 		$gid	= $this->getgroupid($gname);
 		$grs 	= $this->getgroupxinxi($gid);
 		$gname	= $this->groupname;

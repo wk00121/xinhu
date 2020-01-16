@@ -89,4 +89,40 @@ class tableClassAction extends Action
 		if(!$bo)$msg='错误《'.$sql.'》';
 		backmsg($msg);
 	}
+	
+	
+	
+	public function tablerecord_before()
+	{
+		$stable = $this->post('stable','', 1);
+		$key = (int)$this->post('key','0');
+		$this->nowtablename = $stable;
+		$where = '';
+		if($key>0)$where=" and `id`={$key}";
+		return array(
+			'table' => $stable,
+			'order' => 'id desc',
+			'where'	=> $where
+		);
+	}
+	public function tablerecord_after($table, $rows)
+	{
+		$fieldsar	= array();
+		if($this->loadci==1){
+			$fieldsarr 	= $this->db->gettablefields($this->nowtablename);
+			foreach($fieldsarr as $k1=>$rs1){
+				$sortable = in_array($rs1['type'], array('int','date','datetime','tinyint','smallint','decimal'));
+				$text = $rs1['name'];
+				if(!isempt($rs1['explain']))$text.='('.$rs1['explain'].')';
+				$fieldsar[] = array(
+					'text' 		=> $text,
+					'dataIndex' => $rs1['name'],
+					'sortable' 	=> $sortable
+				);
+			}
+		}
+		return array(
+			'fieldsarr' => $fieldsar
+		);
+	}
 }

@@ -95,7 +95,7 @@ class finaClassModel extends Model
 	{
 		$where= '';
 		if(!isempt($accid))$where=' and `accountid`='.$accid.'';
-		$rows = $this->db->getall('SELECT accountid,SUM(money)money FROM `[Q]finjibook` where `status`=1 '.$where.' order by accountid');
+		$rows = $this->db->getall('SELECT accountid,SUM(money)money FROM `[Q]finjibook` where `status`=1 '.$where.' group by accountid');
 		$db = m('finount');
 		$ids= '0';
 		foreach($rows as $k=>$rs){

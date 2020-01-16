@@ -1458,9 +1458,13 @@ class flowModel extends Model
 				//顺序前缀审批，申请人提交人不参与审批
 				if($this->isflow==2 && !isempt($checkid) && isempt($rs['checkfields'])){
 					if(($checkid==$this->uid || $checkid==$this->optid) )continue; //申请人
-					
+					$k2 	= $k+1;
+					$ntype 	= 'yes';
+					if(isset($nrows[$k2])){
+						if($nrows[$k2]['checktype']=='change')$ntype='no';//下步上步指定
+					}
 					//已经处理就不处理
-					if(contain(','.$yisheh.',',','.$checkid.','))continue;	
+					if($ntype=='yes' && contain(','.$yisheh.',',','.$checkid.','))continue;	
 				}
 				
 				if(!isempt($checkid))$yisheh .= ','.$checkid.'';
@@ -1837,6 +1841,7 @@ class flowModel extends Model
 		}
 		if($type == 'finish'){
 			$cont = '你提交的['.$this->modename.',单号:'.$this->sericnum.']已全部处理完成';
+			$gname= '流程申请';
 		}
 		if($type == 'zhui'){
 			$cont = ''.$this->adminname.'追加单据说明['.$this->modename.',单号:'.$this->sericnum.']，说明:['.$sm.']';
@@ -2249,11 +2254,13 @@ class flowModel extends Model
 			'modename'	=> $modename,
 			'modenum'	=> $modenum,
 		));
+		
+		$title	= $this->rock->reparr($title, $this->rs);
 		$reim->pushagent($uids, $gname, $cont, $title, $url, $wxurl, $slx, ''.$modenum.'|'.$id.'');
 		$this->flowchangetodo($uids, $gname);
 		
 		if(isempt($title))$title = $modename;
-		$title	= $this->rock->reparr($title, $this->rs);
+		
 		
 		//邮件提醒发送不发送全体人员的，太多了
 		if($emtx == 1 && $receid != 'all'){

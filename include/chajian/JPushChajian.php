@@ -32,7 +32,7 @@ class JPushChajian extends Chajian{
 			);
 			$runurl = c('xinhu')->geturlstr('jpushplat', $arr);
 			return  c('curl')->getcurl($runurl);
-		}else if($alias2019){
+		}else{
 			$desc = $this->rock->jm->base64decode($desc);
 			$xmarr = array();//小米的人员
 			$othar = array();//其他人用

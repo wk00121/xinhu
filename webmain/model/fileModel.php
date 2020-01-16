@@ -367,8 +367,8 @@ class fileClassModel extends Model
 		if(!isempt($mknum)){
 			$mknuma = explode('|', $mknum);
 			$num 	= $mknuma[0];
-			$mid 	= arrvalue($mknuma, 1);
-			if(!isempt($mid)){
+			$mid 	= (int)arrvalue($mknuma, 1, $mid);
+			if($mid>0){
 				$flow = m('flow')->initflow($num, $mid, false);
 				if($flow->isreadqx(1))return true;
 			}

@@ -18,7 +18,8 @@ class crmClassModel extends Model
 	//读取所有客户
 	public function custdata()
 	{
-		$rows 	= $this->getrows("`status`=1",'id as value,name,id,unitname as subname','`optdt` desc');
+		$where  = m('admin')->getcompanywhere(3);
+		$rows 	= $this->getrows("`status`=1 ".$where."",'id as value,name,id,unitname as subname','`optdt` desc');
 		return $rows;
 	}
 	

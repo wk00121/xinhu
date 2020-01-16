@@ -1014,8 +1014,8 @@ class kaoqinClassModel extends Model
 		if($dt=='')$dt = $this->rock->date;
 		$dt 	= substr($dt, 0, 10);
 		$to 	= (int)m('option')->getval('kqsbtime', 0);
-		if($to==0)$to 	= $this->getsbtime($uid, $dt.' 00:00:00', $dt.' 23:59:59', 1);
-		if($to<0)$to = 8;//默认1天上班时间8小时
+		if($to==0)$to = $this->getsbtime($uid, $dt.' 00:00:00', $dt.' 23:59:59', 1);
+		if($to<=0)$to = 8;//默认1天上班时间8小时
 		return $to;
 	}
 	

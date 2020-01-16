@@ -36,6 +36,9 @@ class mode_customerClassAction extends inputAction{
 		if($ind==5){
 			$bh='custxiao';
 		}
+		if($ind==6){
+			$bh='custplan';
+		}
 			
 		//读取数据
 		$flow  = m('flow')->initflow($bh);//初始化模块

@@ -358,7 +358,7 @@ $(document).ready(function(){
 		<tr>
 			<td  align="right" ></td>
 			<td class="tdinput" colspan="3">
-				超过<input class="input" type="number" id="shijian_{rand}" onfocus="js.focusval=this.value" value="0" onblur="js.number(this)" min="0"  style="width:70px" name="zshtime">分钟自动审核<select name="zshstate"><option value="1">通过</option><option value="2">不通过</option><option value="3">作废单据</option><option value="4">删除单据</option></select>,0不限制。<select onchange="$('#shijian_{rand}').val(this.value)" name="lbztxs"><option value="0">不限制</option><option value="30">30分钟</option><option value="120">2小时</option><option value="360">6小时</option><option value="1440">1天</option><option value="2880">2天</option><option value="10080">7天</option><option value="21600">15天</option><option value="43200">30天</option></select>
+				超过<input class="input" type="number" id="shijian_{rand}" onfocus="js.focusval=this.value" value="0" onblur="js.number(this)" min="0"  style="width:70px" name="zshtime">分钟自动审核<select name="zshstate"><option value="1">通过</option><option value="2">不通过</option><option value="3">作废单据</option><option value="4">删除单据</option><option value="5">催办提醒</option></select>,0不限制。<select onchange="$('#shijian_{rand}').val(this.value)" name="lbztxs"><option value="0">不限制</option><option value="30">30分钟</option><option value="120">2小时</option><option value="360">6小时</option><option value="1440">1天</option><option value="2880">2天</option><option value="10080">7天</option><option value="21600">15天</option><option value="43200">30天</option></select>
 			</td>
 		</tr>
 		

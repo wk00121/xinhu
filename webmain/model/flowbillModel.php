@@ -457,6 +457,8 @@ class flowbillClassModel extends Model
 					$flow = m('flow')->initflow($modrs['num'], $rs['mid'], false);
 					if($zt==3)$flow->zuofeibill($sm.'作废');
 					if($zt==4)$flow->deletebill($sm.'删除', false);
+					if($zt==5)$flow->chuiban($sm.'催办');
+					$this->update("`updt`='{$this->rock->now}'", $rs['id']);
 				}
 			}
 		}

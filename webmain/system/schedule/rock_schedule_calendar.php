@@ -27,6 +27,9 @@ $(document).ready(function(){
 		},
 		guanli:function(){
 			addtabs({num:'guanlieschedule',url:'{dir},{mode},guan',name:'日程管理'});
+		},
+		ricdaibn:function(){
+			addtabs({num:'scheduld',url:'flow,page,scheduld,atype=my',name:'日程待办'});
 		}
 	};
 	wfhoew{rand}=function(){
@@ -58,6 +61,7 @@ $(document).ready(function(){
 			<button type="button" click="change,-1" class="btn btn-default"><i class="icon-caret-left"></i> 上个月</button>&nbsp; 
 			<button type="button" click="nowchange" class="btn btn-default"><i class="icon-calendar"></i> 当月</button>&nbsp; 
 			<button type="button" click="guanli" class="btn btn-default"><i class="icon-cog"></i> 管理</button>&nbsp; 
+			<button type="button" click="ricdaibn" class="btn btn-default">日程待办</button>
 		</td>
 		<td align="center" width="40%">
 			<div id="nowmonth_{rand}" style="font-size:16px">2015年06月</div>
