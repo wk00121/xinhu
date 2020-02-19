@@ -21,6 +21,17 @@ class flow_officicClassModel extends flowModel
 		}*/
 	}
 	
+	protected function flowbillwhere($uid, $lx)
+	{
+
+		//全部的
+		if($lx=='all'){
+			$whyere = '';
+			$this->rock->setsession('officicatype','all');
+		}
+		return '';
+	}
+	
 	public function flowrsreplace($rs, $lx=0)
 	{
 		if($lx==2){
@@ -35,6 +46,14 @@ class flow_officicClassModel extends flowModel
 	{
 		
 		$arr['title'] 		= $this->moders['name'];
+		
+		//是否关闭查阅记录
+		$arr['isgbcy'] 	= $this->moders['isgbcy'];
+		if($this->rock->session('officicatype')=='all')$arr['isgbcy'] ='0'; //有权限看全部
+		if($arr['isgbcy'] =='0'){
+			$barr	= $this->logobj->getreadshu($this->mtable, $this->id,$this->rs['receid'] , $this->rs['optdt'], $this->adminmodel);
+			$arr['readunarr'] 			= $barr['wduarr'];//读取未查阅
+		}
 
 		return $arr;
 	}

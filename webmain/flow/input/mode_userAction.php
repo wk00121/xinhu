@@ -96,8 +96,11 @@ class mode_userClassAction extends inputAction{
 		$barr['rows'] = $rows;
 		if($this->loadci==1 && $this->post('atype')=='txlmy'){
 			$this->depta = array();
-			$drows = m('dept')->getdata($rows);
-			$barr['deptdata'] = $this->depttreeshu($drows,'0');
+			$drows 	= m('dept')->getdata($rows);
+			$fids	= '0';
+			if($drows)$fids	 = $drows[0]['pid'];
+			$barr['deptdata'] = $this->depttreeshu($drows, $fids, $fids);
+			$barr['drows'] = $drows;
 		}
 		return $barr;
 	}
@@ -109,13 +112,13 @@ class mode_userClassAction extends inputAction{
 	}
 	
 	//组织结构活动得到树形数据
-	private function depttreeshu($rows, $pid)
+	private function depttreeshu($rows, $pid, $fids)
 	{
 		$barr = array();
 		foreach($rows as $k=>$rs){
 			if($rs['pid']==$pid){
-				$rs['children'] = $this->depttreeshu($rows, $rs['id']);
-				$rs['expanded'] = $pid=='0';
+				$rs['children'] = $this->depttreeshu($rows, $rs['id'], $fids);
+				$rs['expanded'] = $pid==$fids;
 				$barr[] = $rs;
 			}
 		}

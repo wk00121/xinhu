@@ -59,7 +59,7 @@ class tableClassAction extends Action
 			$sql.=' MODIFY';
 		}
 		$sql.=" `$name`";
-		$cew = '[varchar][int][smallint][tinyint][decimal]';
+		$cew = '[varchar][mediumint][int][bigint][smallint][tinyint][decimal]';
 		if(contain($cew,'['.$type.']')){
 			if($lens=='0')$lens='10';
 			$sql.=" $type($lens)";

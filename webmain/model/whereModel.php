@@ -28,6 +28,10 @@ class whereClassModel extends Model
 		
 		$companyid	= arrvalue($urs, 'companyid','0'); //对应单位ID
 		$deptid		= arrvalue($urs, 'deptid','0'); //部门ID
+		if(ISMORECOM){
+			$comid	= arrvalue($urs, 'comid','0');
+			if($comid>'0')$companyid = $comid;
+		}
 		
 		$sw1		= $this->rock->dbinstr('superid',$uid);
 		$super		= "select `id` from `[Q]admin` where $sw1";//我的直属下属

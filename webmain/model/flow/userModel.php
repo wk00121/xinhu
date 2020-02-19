@@ -3,6 +3,7 @@ class flow_userClassModel extends flowModel
 {
 	
 	protected $flowviewufieds	= 'id';
+	protected $flowcompanyidfieds	= 'companyid';
 	
 	public function getstatusarr()
 	{

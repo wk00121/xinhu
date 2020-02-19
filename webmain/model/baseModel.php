@@ -41,14 +41,22 @@ class baseClassModel extends Model
 		if(isset($this->usrr[$ckey])){
 			$urs	= $this->usrr[$ckey];
 		}else{
-			$urs 	= $this->db->getone('`[Q]admin` a left join `[Q]company` b on a.`companyid`=b.`id`','a.`id`='.$uid.'','a.*,b.`name` as companyname');
-			$this->usrr[$ckey] = $urs;
+			$urs 	= $this->db->getone('`[Q]admin`','`id`='.$uid.'');
+			$companyid = arrvalue($urs,'companyid');
+			if(ISMORECOM){
+				$comid	= arrvalue($urs, 'comid','0');
+				if($comid>'0')$companyid = $comid;
+			}
+			$comrs 	= $this->db->getone('`[Q]company`','`id`='.$companyid.'');
+			$urs['companyid']  	= $companyid;
+			$urs['companyname']	= arrvalue($comrs,'name');
+			$urs['companynum']	= arrvalue($comrs,'num');
+			$this->usrr[$ckey] 	= $urs;
 		}
 		if(!$urs)$urs= array();
 		$urs['uid']  		= $uid;
 		$urs['date'] 		= $date;
 		$urs['month']		= $month;
-		$urs['companyname']	= arrvalue($urs,'companyname');;
 		$urs['time']		= date('H:i:s');
 		$urs['now']  		= $this->rock->now;
 		$urs['admin']		= arrvalue($urs,'name', $this->adminname);

@@ -40,6 +40,7 @@ class kaoqinClassModel extends Model
 			'optdt'	=> $now,
 			'ip'	=> $ip,
 			'mac'	=> $mac,
+			'comid'	=> $this->admindb->getcompanyid($uid),
 			'type'	=> $type
 		));
 		$dt = substr($dkdt, 0, 10);
