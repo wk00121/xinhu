@@ -10,6 +10,7 @@ function initbodys(){
 	});
 }
 function changetypes(){
+	if(!form('enddt') || !form('dt'))return;
 	var lx= form('type').value;
 	if(lx==''||lx=='0'){
 		form('enddt').value='';
@@ -24,5 +25,6 @@ function changetypes(){
 }
 
 function changesubmit(d){
+	if(!form('enddt') || !form('dt'))return '';
 	if(d.type!='0' && d.enddt=='')return '截止日期不能为空';
 }

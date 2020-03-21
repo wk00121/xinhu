@@ -24,11 +24,11 @@ class publicClassAction extends ActionNot{
 		if(contain($docx, $types)){
 			$filepath 	= $frs['pdfpath'];
 			if(isempt($filepath)){
-				$this->topdfshow($frs);
+				$this->topdfshow($frs, 1);
 				return;
 			}
 			if(!file_exists($filepath)){
-				$this->topdfshow($frs);
+				$this->topdfshow($frs, 1);
 				return;
 			}else{
 				$exta = substr($filepath, -4);
@@ -48,7 +48,7 @@ class publicClassAction extends ActionNot{
 		}else if($type=='pdf'){
 		
 		}else{
-			$this->topdfshow($frs);
+			$this->topdfshow($frs,0);
 			return;
 			//exit('文件类型为['.$type.']，不支持在线预览');
 		}
@@ -60,8 +60,20 @@ class publicClassAction extends ActionNot{
 		$fobj->addlogs($id,0);//记录预览记录
 	}
 	
-	private function topdfshow($frs)
+	private function topdfshow($frs, $lx=0)
 	{
+		if($lx==1){
+			$officeyl	= getconfig('officeyl','0');
+			if($officeyl=='2'){//用微软文档服务
+				$filepath = $frs['filepath'];
+				if(substr($filepath, 0,4)!='http'){
+					$filepath = ''.getconfig('outurl',URL).''.$filepath.'';
+				}
+				$url = 'https://view.officeapps.live.com/op/view.aspx?src='.urlencode($filepath).'';
+				$this->rock->location($url);
+				return;
+			}
+		}
 		$this->displayfile = ''.P.'/public/filetopdf.html';
 		$this->smartydata['frs'] = $frs;
 		$this->smartydata['ismobile'] = $this->rock->ismobile()?'1':'0';

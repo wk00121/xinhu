@@ -38,7 +38,7 @@ final class rockClass
 		$this->unarr	= explode(',','1,2');
 		$this->now		= $this->now();
 		$this->date		= date('Y-m-d');
-		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,/*,*/,union,<script,</script,sleep ,outfile,eval(,phpinfo(),select*from,select*,union%20,sleep%20,select%20,delete%20,drop%20,and%20');
+		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,/*,*/,union,<script,</script,sleep ,outfile,eval(,user(,phpinfo(),select*,union%20,sleep%20,select%20,delete%20,drop%20,and%20');
 		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,/*,*/,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
 		$this->lvlarab	= array();
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
@@ -144,7 +144,7 @@ final class rockClass
 		$str = strtolower($s);
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){
 			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
-			$s = str_ireplace($v1,'', $str);
+			$s = $this->lvlarrep($str, $v1);
 		}
 		$cslv = array('m','a','d','ip','web','host','ajaxbool','token','adminid');
 		if(in_array($na, $cslv))$s = $this->xssrepstr($s);
@@ -159,6 +159,11 @@ final class rockClass
 			$bo = true;
 		}
 		if($bo)$s = $this->reteistrs($s);
+		return $s;
+	}
+	private function lvlarrep($str, $v1){
+		$s = str_ireplace($v1,'', $str);
+		if(contain($s, $v1))$s = $this->lvlarrep($s, $v1);
 		return $s;
 	}
 	public function debug($txt, $lx, $dabo=false)

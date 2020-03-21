@@ -34,6 +34,7 @@ class smsClassAction extends Action
 		$this->option->setval('sms_qmnum', $this->post('sms_qmnum')); //签名
 		$this->option->setval('sms_dirtype', $sms_dirtype);
 		$this->option->setval('sms_yanzm', $this->post('sms_yanzm'));//验证码的短信编号
+		$this->option->delete("`num` like 'alisms\_%'");
 	}
 	
 	//测试
@@ -46,7 +47,7 @@ class smsClassAction extends Action
 		
 		$parasm		= array(
 			'modename' 	=> '模块测试',
-			'sericnum' 	=> 'AB-'.date('Ymd').'',
+			'sericnum' 	=> 'AB-'.date('Ymd').'-001',
 			'applyname' => $this->adminname,
 		);
 		if($dirtype=='alisms'){

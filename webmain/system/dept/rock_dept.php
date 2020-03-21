@@ -28,6 +28,7 @@ $(document).ready(function(){
 		},
 		load:function(d1){
 			companyinfoall=d1.carr.companyinfoall;
+			if(d1.errmsg)js.alert(d1.errmsg);
 		},
 		beforeload:function(){
 			btn(true, {});

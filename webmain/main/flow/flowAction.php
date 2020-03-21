@@ -297,6 +297,16 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		);
 	}
 	
+	//多模版设置
+	public function flowmodetpl_after($table, $rows)
+	{
+		
+		return array(
+			'flowarr'	=> $this->getmodearr(),
+			'rows'		=> $rows
+		);
+	}
+	
 	
 	private function getmodearr()
 	{
@@ -463,6 +473,10 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$num 	 = $this->post('num');
 		$atype 	 = $this->post('atype','0');
 		$path 	 = ''.P.'/flow/page/view_'.$num.'_'.$atype.'.html';
+		if(isempt($content)){
+			@unlink($path);
+			return 'success';
+		}
 		$bo 	 = $this->rock->createtxt($path, $content);
 		if(!$bo){
 			echo '无法写入文件:'.$path.'';

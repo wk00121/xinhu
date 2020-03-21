@@ -77,9 +77,9 @@ class openzktimeClassAction extends openapiAction
 	public function getcAction()
 	{
 		$this->getsnid();
-		$id = $this->get('id');
-		if(isempt($id))return;
-		$status = $this->get('status');
+		$id = (int)$this->get('id','0');
+		if($id==0)return;
+		$status = (int)$this->get('status');
 		$cmds 	= m('kqjcmd');
 		$cmds->update(array(
 			'status'=>$status,

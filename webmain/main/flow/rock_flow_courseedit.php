@@ -420,6 +420,18 @@ $(document).ready(function(){
 				</select>
 			</td>
 		</tr>
+		<!--
+		<tr>
+			<td align="right">抄送类型：</td>
+			<td class="tdinput">
+				<select class="form-control" name="iszf">
+				<option value="0">不用抄送</option>
+				<option value="1">可选抄送</option>
+				<option value="2">同意时必须选抄送</option>
+				</select>
+			</td>
+		</tr>
+		-->
 		
 			
 		<tr>

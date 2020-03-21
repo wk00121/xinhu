@@ -236,7 +236,7 @@ class jmChajian extends Chajian{
 	}
 	
 	/**
-	*	字符串加密
+	*	字符串加密处理
 	*/
 	public function strlook($data)
 	{
@@ -250,11 +250,11 @@ class jmChajian extends Chajian{
 			if ($x == $l) {
 				$x = 0;
 			}
-			$char .= $key{$x};
+			$char .= $key[$x];
 			$x++;
 		}
 		for ($i = 0; $i < $len; $i++){
-			$str .= chr(ord($data{$i}) + (ord($char{$i})) % 256);
+			$str .= chr(ord($data[$i]) + (ord($char[$i])) % 256);
 		}
 		return $this->base64encode($str);
 	}

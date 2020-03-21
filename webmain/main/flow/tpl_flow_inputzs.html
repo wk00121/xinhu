@@ -79,6 +79,10 @@ var c={
 			editor.html(s);
 		});
 		
+	},
+	clearkong:function(){
+		editor.html('');
+		js.msg('success','已清空，保存后自动删除对应模版文件');
 	}
 };
 </script>
@@ -113,7 +117,8 @@ select{font-size:12px}
 				?>
 			</div>
 			<div class="yangss" align="left">&nbsp; &nbsp;<a href="javascript:" onclick="return c.save()" class="webbtn">保存</a>&nbsp; 
-			<a href="javascript:" onclick="return c.addmobo()" style="background-color:#888888" class="webbtn">使用录入页面</a>
+			<a href="javascript:" onclick="return c.addmobo()" style="background-color:#888888" class="webbtn">使用录入页面</a>&nbsp; 
+			<a href="javascript:" onclick="return c.clearkong()" style="background-color:#888888" class="webbtn">清空</a>
 			</div>
 		</div>
 	</td>

@@ -72,8 +72,15 @@ class loginClassAction extends ActionNot{
 	}
 	public function oauthbackAction()
 	{
-		$this->display= false;
-		m('wxgzh:oauth')->oauthback();
+		$state	= $this->get('state','bang');
+		$ubarr 	= m('wxgzh:oauth')->oauthback();
+		if(!is_array($ubarr)){
+			$this->assign('backstate', '0');
+			$this->assign('backerror', $ubarr);
+		}else{
+			$this->assign('backstate', '1');
+			$this->assign('backarr', $ubarr);
+		}
 	}
 	
 	

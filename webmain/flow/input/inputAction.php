@@ -224,7 +224,7 @@ class inputAction extends Action
 		
 		
 		$bo = $db->record($uaarr, $where);;
-		if(!$bo)$this->backmsg($this->db->error());
+		if(!$bo)$this->backmsg($this->db->lasterror());
 		
 		if($id==0)$id = $this->db->insert_id();
 		m('file')->addfile($this->post('fileid'), $table, $id, $modenum);
@@ -332,7 +332,15 @@ class inputAction extends Action
 			$uaarr['mid'] 	= $mid;
 			if($sid==0)$where = '';
 			foreach($oarray as $k1=>$v1)$uaarr[$k1]=$v1;
-			
+			if($k==0){
+				foreach($uaarr as $k2=>$v2){
+					if(!in_array($k2, $allfields)){
+						$this->backmsg('第'.($xu+1).'个子表['.$tables.']上字段['.$k2.']不存在');
+						break;
+					}
+				}
+			}
+			unset($uaarr['id']);
 			$dbs->record($uaarr, $where);
 			if($sid==0)$sid = $this->db->insert_id();
 			$idss.=','.$sid.'';
@@ -464,7 +472,8 @@ class inputAction extends Action
 			$content = $modelu;
 			if($tableas && $slx==0){
 				foreach($tableas as $k1=>$tableass){
-					$zbstr 	 = m('input')->getsubtable($modeid,$k1+1,1,1);
+					$zbstr 	 = m('input')->getsubtable($modeid,$k1+1,1,1, $zbshu);
+					if($zbshu>2 && $this->flow->minwidth<300)$this->flow->minwidth = $zbshu*180;
 					if($zbstr!=''){
 						$content.='<tr><td style="padding:5px;" colspan="2"><div><b>'.arrvalue($nameaas, $k1).'</b></div>';
 						if($this->flow->minwidth>300){

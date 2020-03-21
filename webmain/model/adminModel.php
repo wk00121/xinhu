@@ -473,15 +473,10 @@ class adminClassModel extends Model
 		}else{
 			$rows = $this->getall("`id`='$uid'",$fields,'`sort`,`name`');
 		}
-		$py   = c('pingyin');
+
 		
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] = $rs['face'] = $this->getface($rs['face']);
-			//if($lx==1){
-			//	if(isempt($rs['pingyin'])){
-			//		$rows[$k]['pingyin'] = $rs['pingyin'] = $py->get($rs['name'],1);
-			//	}
-			//}
 			$deptidss = ','.$rs['deptid'].',';
 			if(!isempt($rs['deptids']))$deptidss.=''.$rs['deptids'].',';
 			$rows[$k]['deptidss'] = $deptidss;
@@ -745,7 +740,9 @@ class adminClassModel extends Model
 		if(!isempt($dwid))$alldwid.=','.$dwid.'';
 		$companyinfo 	= array('id'=>0);
 		$companyinfd 	= false;
-		$companyinfoall = m('company')->getall('`id` in('.$alldwid.')','*','`pid`,`sort`');
+		$cwhere 		= '`id` in('.$alldwid.')';
+		if($glx==5 && $uid==1)$cwhere = '`id`>0';
+		$companyinfoall = m('company')->getall($cwhere,'*','`pid`,`sort`');
 		$nid			= $companyid;
 		$allid			= array(0);
 		foreach($companyinfoall as $k=>$rs){

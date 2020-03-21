@@ -123,11 +123,11 @@ class upfileChajian extends Chajian{
 		}
 		$file_sizecn	= $this->formatsize($file_size);
 		$file_ext		= $this->getext($file_name);//文件扩展名
-		
-		
+
 		$file_img		= $this->isimg($file_ext);
 		$file_kup		= $this->issavefile($file_ext);
 		
+		if(!$file_img && getconfig('systype')=='demo')return '演示站点禁止文件上传';
 		
 		if($file_error>0){
 			$rrs = $this->geterrmsg($file_error);

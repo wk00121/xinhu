@@ -7,7 +7,7 @@ class inputClassModel extends Model
 	}
 	
 	
-	public function getsubtable($modeid,$iszb=1, $hang=1, $ism=0)
+	public function getsubtable($modeid,$iszb=1, $hang=1, $ism=0, &$zbshu=1)
 	{
 		if($iszb<=0)$iszb=1;
 		if($hang<=0)$hang=1;
@@ -31,6 +31,7 @@ class inputClassModel extends Model
 			}
 			$str.='<td nowrap>'.$xh.''.$rs['name'].'</td>';
 		}
+		$zbshu = $zlen;
 		$str.='<td width="5%" nowrap>操作</td>';
 		$str.='</tr>';
 		for($j=0;$j<$hang;$j++){

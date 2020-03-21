@@ -116,7 +116,7 @@ abstract class mysql{
 		if($this->conn == null)$this->connect();
 		if($this->conn == null)exit('数据库的帐号/密码有错误!'.$this->errormsg.'');
 		$sql	= trim($sql);
-		$sql	= str_replace(array('[Q]','[q]'), array($this->perfix, $this->perfix), $sql);
+		$sql	= str_replace(array('[Q]','[q]','{asqom}'), array($this->perfix, $this->perfix,''), $sql);
 		$this->countsql++;
 		$this->sqlarr[]	= $sql;
 		$this->nowsql	= $sql;
@@ -153,7 +153,9 @@ abstract class mysql{
 	*/
 	public function lasterror()
 	{
-		return $this->errorlast;
+		$err = $this->errorlast;
+		if($err=='')$err = $this->error();
+		return $err;
 	}
 	
 	public function execsql($sql)
@@ -432,11 +434,12 @@ abstract class mysql{
 		$res=$this->query($sql);
 		if($res){
 			$row = $this->fetch_array($res, 1);
-			$this->count = 1;
-			return $row[0];
-		}else{
-			return false;
+			if($row){
+				$this->count = 1;
+				return $row[0];
+			}
 		}
+		return false;
 	}
 	
 	/**

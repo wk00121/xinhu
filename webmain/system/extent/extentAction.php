@@ -64,6 +64,11 @@ class extentClassAction extends Action
 		$this->db->delete($this->T('sjoin'), "( (`type` in ('um','uu','ut') and `mid`='$uid') or (`type`='mu' and `sid`='$uid') )");
 	}
 	
+	public function qingkongAjax()
+	{
+		$this->db->delete($this->T('sjoin'), "`type` not in ('ug','gu')");
+	}
+	
 	/**
 		获取权限信息
 	*/

@@ -14,7 +14,12 @@
 </style>
 <script>
 ismobile = 1;
-
+function xuantype(o1){
+	var val = o1.value;
+	if(val){
+		js.backto('typelx'+val+'');
+	}
+}
 </script>
 </head>
 <body>
@@ -27,11 +32,24 @@ ismobile = 1;
 	<div class="blank50"></div>
 </div>
 <?php }?>
+ 
+<div style="background:white"><div style="margin:0px 10px"><select style="width:100%;border:none;background:none;height:40px;font-size:16px" onchange="xuantype(this)">
+<option value="">-快速选择分类-</option>
 <?php
 $count=0;
 foreach($modearr as $type=>$rows){
+	$count++;
+	echo '<option value="'.$count.'">'.$type.'('.count($rows).')</option>';
+}
 ?>
-<div class="weui_cells_title"><?=$type?>(<?=count($rows)?>)</div>
+</select></div></div>
+
+<?php
+$count=0;$count1=0;
+foreach($modearr as $type=>$rows){
+$count1++;
+?>
+<div class="weui_cells_title" id="typelx<?=$count1?>"><?=$type?>(<?=count($rows)?>)</div>
 <div class="weui_cells weui_cells_access">
 	<?php
 	foreach($rows as $k=>$rs){

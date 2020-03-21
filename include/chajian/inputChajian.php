@@ -114,7 +114,7 @@ class inputChajian extends Chajian
 		}
 		
 		$onblue = ' onblur="c.inputblur(this, '.$iszb.')"';
-	
+		$iszhang= false;
 		$str 	= '<input class="inputs" type="text" value="'.$val.'" '.$attr.''.$onblue.''.$styles.' name="'.$fname.'">';
 		
 		
@@ -123,6 +123,7 @@ class inputChajian extends Chajian
 			$isasm=0;
 		}
 		if($type=='textarea'){
+			$iszhang= false;
 			$str = '<textarea class="textarea" style="height:80px;'.$style.'" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
 		}
 		if($type=='rockcombo' || $type=='select' || $type=='checkboxall' || $type=='radio'){
@@ -190,6 +191,7 @@ class inputChajian extends Chajian
 			$str   .= '<td nowrap><a href="javascript:;" onclick="c.selectdata(\''.$data.'\','.substr($type,10).',\''.$fname.'\',\''.$fieldname.'\','.$iszb.')" class="webbtn">选择</a></td></tr></table>';
 		}
 		if($type=='htmlediter'){
+			$iszhang= false;
 			$str = '<textarea class="textarea" style="height:130px;'.$style.'" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
 		}
 		if($type=='checkbox'){
@@ -221,7 +223,11 @@ class inputChajian extends Chajian
 			$lx  = 'span';if($ism==1)$lx='div';
 			$str = '<'.$lx.' id="div_'.$fname.'" class="divinput">'.$str.'</'.$lx.'>';
 			if($ism==1 && $iszb==0){
-				$str = '<tr><td class="lurim" nowrap>'.str_replace(' ','<br>', $fnams).'</td><td width="90%">'.$str.'</td></tr>';
+				if($iszhang){
+					$str = '<tr style="border-bottom:1px #EBEBEB solid;border-top:1px #EBEBEB solid"><td colspan="2"><div style="padding-left:10px;padding-top:10px">'.$fnams.'</div>'.$str.'</td></tr>';
+				}else{
+					$str = '<tr style="border-bottom:0px #EBEBEB solid"><td class="lurim" nowrap>'.str_replace(' ','<br>', $fnams).'</td><td width="90%">'.$str.'</td></tr>';
+				}
 			}
 		}
 		return $str;

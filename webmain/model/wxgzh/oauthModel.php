@@ -18,7 +18,7 @@ class wxgzh_oauthClassModel extends wxgzhModel
 			return false;
 		}
 		$state			= $this->rock->get('state','bang');
-		$redurl			= ''.URL.'?d='.$dlx.'&a=oauthback&m=login';
+		$redurl			= ''.getconfig('outurl',URL).'?d='.$dlx.'&a=oauthback&m=login&state='.$state.'';
 		$redirect_uri	= urlencode($redurl);
 		$url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.$this->appid.'&redirect_uri='.$redirect_uri.'&response_type=code&scope=snsapi_userinfo&state='.$state.'#wechat_redirect';
 		$this->rock->location($url);
@@ -62,7 +62,8 @@ class wxgzh_oauthClassModel extends wxgzhModel
 			if($nuarr){
 				$uoid = (int)$nuarr['id'];
 				$this->update(array(
-					'optdt' => $this->rock->now
+					'optdt' => $this->rock->now,
+					'uid'	=> $this->adminid
 				), $uoid); //更新最后时间
 				return $nuarr;
 			}
@@ -83,6 +84,7 @@ class wxgzh_oauthClassModel extends wxgzhModel
 					$uarr['headimgurl'] = $arr['headimgurl'];
 					$uarr['optdt'] 		= $this->rock->now;
 					$uarr['ip'] 		= $this->rock->ip;
+					$uarr['uid'] 		= $this->adminid;
 					if($uoid==0){
 						$uarr['adddt'] 	= $this->rock->now;
 						$where			= '';

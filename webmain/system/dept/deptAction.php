@@ -8,16 +8,26 @@ class deptClassAction extends Action
 	
 	public function dataAjax()
 	{
-		$carr		= m('admin')->getcompanyinfo();
+		$carr		= m('admin')->getcompanyinfo(0,5);
 		$this->allid= $carr['companyallid'];
 		
 		$this->rows	= array();
 		$this->getdept(0, 1);
-		
+		$errmsg = '';
+		if(ISMORECOM){
+			foreach($this->rows as $k1=>$rs1){
+				if($rs1['companyname']=='' && $rs1['level']==2){
+					$this->rows[$k1]['trbgcolor']='red';
+					$errmsg = '1';
+				}
+			}
+			if($errmsg=='1')$errmsg='红色行必须选择所属单位，请编辑';
+		}
 		echo json_encode(array(
 			'totalCount'=> 0,
 			'rows'		=> $this->rows,
-			'carr'		=> $carr
+			'carr'		=> $carr,
+			'errmsg'	=> $errmsg
 		));
 	}
 	

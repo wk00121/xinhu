@@ -84,7 +84,7 @@ class flow_gongClassModel extends flowModel
 			$receid = $this->rs['receid'];//接收人ID，可以为部门合聚，如d2,u1(必须)
 			if(isempt($receid))$receid = 'all'; //为空就是全部人
 			$qiannum= ''; //【系统→短信管理→短信签名】下获取,如没有自己的签名默认【信呼OA】
-			$tplnum	= 'gongsms';//到【系统→短信管理→短信模版】下获取(必须)
+			$tplnum	= m('option')->getval('gongsmstpl', 'gongsms');//到【数据选项→行政选项】下设置通知短信模版编号
 			$params = array(
 				'title' 	=> $this->rs['title'],
 				'typename' 	=> $this->rs['typename'],

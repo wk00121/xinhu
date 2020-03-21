@@ -55,7 +55,8 @@ class deptClassModel extends Model
 		
 		$rows = $this->getall($where,'`id`,`name`,`pid`,`sort`','`pid`,`sort`');
 		if(is_array($uarr))foreach($rows as $k=>$rs){
-			$stotal = $dbs->rows("`status`=1 and instr(`deptpath`,'[".$rs['id']."]')>0");
+			//$stotal = $dbs->rows("`status`=1 and instr(`deptpath`,'[".$rs['id']."]')>0");
+			$stotal = 0;
 			$rows[$k]['stotal'] = $stotal; //对应部门下有多少人
 			$rows[$k]['ntotal']	= $this->rock->arrvalue($dtotal, $rs['id'], '0');
 		}

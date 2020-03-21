@@ -4,10 +4,12 @@ class mode_dailyClassAction extends inputAction{
 	
 	protected function savebefore($table, $arr, $id, $addbo){
 		
-		$type 	= $arr['type'];
-		$uid 	= $arr['uid'];
-		$dt 	= $arr['dt'];
-		$enddt 	= $arr['enddt'];
+		$type 	= arrvalue($arr, 'type');
+		$uid 	= arrvalue($arr, 'uid');
+		
+		$dt 	= arrvalue($arr, 'dt');
+		if(isempt($dt))return '';
+		$enddt 	= arrvalue($arr, 'enddt');
 		$where  = "id<>$id and `uid`=$uid and `type`='$type' and `dt`='$dt'";
 		if(!isempt($enddt))$where.=' and `enddt`='.$enddt.'';
 		if($type==0 && $dt>$this->date)return '日期['.$dt.']还是个未来呢';

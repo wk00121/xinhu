@@ -169,7 +169,7 @@ $(document).ready(function(){
 			<td  align="right">文档在线预览编辑：</td>
 			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转PDF服务</option>
 			<option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option>
-			<!--<option value="2">自己部署信呼文件管理平台</option>-->
+			<option value="2">使用微软在线预览office服务(需要部署公网上)</option>
 			</select></td>
 			
 			<td  align="right">记录用户操作：</td>

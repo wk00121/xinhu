@@ -16,7 +16,7 @@ class groupClassAction extends Action
 	
 	public function groupafter($table, $rows)
 	{
-		$carr	= m('admin')->getcompanyinfo();
+		$carr	= m('admin')->getcompanyinfo(0,5);
 		$dbs 	= m('company');
 		foreach($rows as $k=>$rs){
 			$gid = $rs['id'];

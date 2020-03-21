@@ -23,12 +23,21 @@ class alismsChajian extends Chajian{
 		if(isempt($qianm))return returnerror('请设置短信签名');
 		if(isempt($tplid) || substr($tplid,0,4) != 'SMS_')return returnerror('短信模版CODE格式有误');
 		
+		$mbarr = $this->getTplcont($tplid);
+		if(!$mbarr['success'])return $mbarr;
+		$tplcont = $mbarr['data']['TemplateContent'];
+		
+		//把没用参数删掉
+		$csarr	= $this->rock->matcharr($tplcont);
+		foreach($csarr as $cs1)if(!isset($cans[$cs1]))return returnerror('模版里有{'.$cs1.'}参数，发送必须传');
+		foreach($cans as $k1=>$v1)if(!in_array($k1, $csarr))unset($cans[$k1]);
+		
+		
 		$params = array();
 		$shoujha= explode(',', $mobiles);
 		$params["PhoneNumberJson"] 	= $shoujha;
-	
 		$params["TemplateCode"] 	=  $tplid;
-		unset($cans['url']);
+		
 		foreach($shoujha as $smid){
 			$params["SignNameJson"][] 		= $qianm;
 			if($cans)$params["TemplateParamJson"][] 	= $cans;
@@ -53,6 +62,35 @@ class alismsChajian extends Chajian{
 		$barr	= json_decode($result, true);
 		if($barr['Code']=='OK')return returnsuccess($barr);
 		return returnerror('发送失败:'.$result.'');
+	}
+	
+	public function getTplcont($tplid)
+	{
+		$num = 'alisms_'.$tplid.'';
+		$val = m('option')->getval($num);
+		if(!isempt($val)){
+			return returnsuccess(array('TemplateContent'=>$val));
+		}
+		if(isempt($this->accesskeyid) || isempt($this->accesskeysecret))return returnerror('没有设置短信keyid或keysecret');
+		$helper 	= new SignatureHelper();
+		$params['TemplateCode'] = $tplid;
+		$result 	= $helper->request(
+			$this->accesskeyid,
+			$this->accesskeysecret,
+			'dysmsapi.aliyuncs.com',
+			array_merge($params, array(
+				"RegionId" => "cn-hangzhou",
+				"Action" => "QuerySmsTemplate",
+				"Version" => "2017-05-25",
+			))
+		);
+		if(!$result)return returnerror('获取模版失败'.$tplid.'');
+		$barr	= json_decode($result, true);
+		if($barr['Code']=='OK'){
+			m('option')->setval($num, $barr['TemplateContent']);
+			return returnsuccess($barr);
+		}
+		return returnerror('获取失败:'.$result.'');
 	}
 }
 

@@ -67,7 +67,7 @@ $(document).ready(function(){
 	
 	
 	if(type=='view'){
-		$('#viessban_{rand}').html('人员菜单权限有如下得来：1、根据[人员→菜单,菜单→人员]；2、如所在的组有权限，组下人员也有权限；3、在[菜单管理]没有开启验证的菜单任何人是都有权限。');
+		$('#viessban_{rand}').html('<button class="btn btn-primary"  click="qingkong" type="button">清空全部菜单权限</button>&nbsp;人员菜单权限有如下得来：1、根据[人员→菜单,菜单→人员]；2、如所在的组有权限，组下人员也有权限；3、在[菜单管理]没有开启验证的菜单任何人是都有权限。');
 	}
 	
 	var bool = false,changeid=0;
@@ -130,6 +130,15 @@ $(document).ready(function(){
 		},
 		search:function(){
 			a.setparams({key:$('#key_{rand}').val()}, true);
+		},
+		qingkong:function(){
+			var url	= js.getajaxurl('qingkong','extent','system');
+			$.get(url, function(){
+				js.confirm('菜单权限已全部清空，刷新系统重新进入',function(jg){
+					location.reload();
+				});
+			});
+
 		}
 	}
 	js.initbtn(c);
