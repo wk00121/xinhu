@@ -48,6 +48,9 @@ $(document).ready(function(){
 			var la  = val.substr(val.length-1);
 			if(la!='/')val+='/';
 			o.value=val;
+		},
+		auther:function(){
+			addtabs({name:'系统签授',num:'auther',url:'system,cog,auther',icons:'key'});
 		}
 	};
 	js.initbtn(c);
@@ -75,7 +78,7 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td  colspan="4" class="tdinput" ><div align="center" style="line-height:30px">系统版本：<b  id="benquan_{rand}" style="font-size:20px"><font color=red>开源版</font></b><input id="isshou_{rand}" type="hidden" class="form-control"></div></td>
+			<td  colspan="4" class="tdinput" ><div align="center" style="line-height:30px">系统版本：<b  id="benquan_{rand}" style="font-size:20px"><font color=red>开源版</font></b><input id="isshou_{rand}" type="hidden" class="form-control">&nbsp;&nbsp;<button click="auther" class="btn btn-success btn-xs">系统签授</button></div></td>
 		</tr>
 	
 		<tr>

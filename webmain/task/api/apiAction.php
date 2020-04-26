@@ -22,7 +22,7 @@ if(!isempt($origin) && !contain($origin, HOST)){
 class apiAction extends ActionNot
 {
 
-	public $userrs;
+	public $userrs		= array();
 	public $cfrom		= '';
 	public $token		= '';
 	
@@ -47,7 +47,7 @@ class apiAction extends ActionNot
 			$this->showreturn('', '用户已经不存在了，请重新登录', 199);
 		}
 		
-		$this->adminname 		= $this->userrs['name'];
+		$this->adminname 		= arrvalue($this->userrs, 'name');
 		$this->rock->adminid	= $this->adminid;
 		$this->rock->adminname 	= $this->adminname;
 		$this->admintoken 		= $this->token;

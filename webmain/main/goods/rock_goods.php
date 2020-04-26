@@ -22,7 +22,7 @@ $(document).ready(function(){
 		},{
 			text:'总库存',dataIndex:'stock',sortable:true
 		},{
-			text:'单位',dataIndex:'unit'
+			text:'单位',dataIndex:'unit',sortable:true
 		},{
 			text:'',dataIndex:'caozuo'
 		}],

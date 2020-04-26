@@ -13,10 +13,8 @@
 <script type="text/javascript" src="js/jswx.js"></script>
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="webmain/we/ying/ying.js"></script>
-<script type="text/javascript" src="mode/plugin/jquery-rockdoupull.js"></script>
 <style>
 body,html{background-color:#f1f1f1;overflow:hidden}
-
 .weui_tab{position:fixed;bottom:0px;width:100%;height:50px}
 .weui_navbar_item{font-size:16px;}
 .weui_navbar_item span{position:absolute;left:3px;top:3px}
@@ -48,14 +46,14 @@ if($da['web']=='iPhone')echo '<script src="js/fastclick.min.js"></script>';
 <script>
 var json = <?=json_encode($arr)?>;
 ismobile = 1,openfrom='<?=$openfrom?>';
-var agentlx=0;
+var agentlx=0,xhkey='<?=$xhauthkey?>';
 function yingyonginit(){
 	yy.loadshow();
 }
 function initbody(){
 	adminid = '<?=$da['adminid']?>';
 	admintoken = '<?=$xhrock->admintoken?>';
-	try{yy.init();}catch(e){alert(e);}
+	yy.init();
 	yingyonginit();
 	if(typeof(FastClick)!='undefined')FastClick.attach(document.body);
 }
@@ -82,7 +80,7 @@ function callPhone(o1){
 		<?php if($rock->get('openfrom')!='reim'){?>
 		<span onclick="js.back()" class="r-position-left r-header-btn"><i class="icon-chevron-left"></i></span>
 		<?php }?>
-		<span onclick="yy.clickadd()" class="r-position-right r-header-btn"><i class="icon-plus"></i></span>
+		<span onclick="yy.clad()" class="r-position-right r-header-btn"><i class="icon-plus"></i></span>
 	</div>
 	<div class="blank50"></div>
 </div>
@@ -91,18 +89,18 @@ function callPhone(o1){
 
 <?php if($yyurl=='' || isset($searchtool)){?>
 <div style="z-index:2" id="searsearch_bar" class="weui_search_bar">
-	<form onclick="yy.searchuser()" class="weui_search_outer" onsubmit="yy.sousousou();return false;">
+	<form onclick="yy.seuser()" class="weui_search_outer" onsubmit="yy.sous();return false;">
 		<div class="weui_search_inner">
 			<i class="weui_icon_search"></i>
-			<input type="search" class="weui_search_input" id="search_input" placeholder="<?=$searchmsg?>" >
-			<a onclick="yy.souclear()" class="weui_icon_clear"></a>
+			<input type="search" class="weui_search_input" id="s_inp" placeholder="<?=$searchmsg?>" >
+			<a onclick="yy.scle()" class="weui_icon_clear"></a>
 		</div>
-		<label for="search_input" class="weui_search_text" id="search_text">
+		<label for="s_inp" class="weui_search_text" id="search_text">
 			<i class="weui_icon_search"></i>
 			<span><?=$searchmsg?></span>
 		</label>
 	</form>
-	<a onclick="yy.searchcancel()" style="color:#1389D3" class="weui_search_cancel">取消</a>
+	<a onclick="yy.sqxs()" style="color:#1389D3" class="weui_search_cancel">取消</a>
 </div>
 <?php }?>
 
@@ -115,7 +113,7 @@ function callPhone(o1){
 	<div class="weui_navbar weui_tabbar"> 
 		<?php
 		foreach($arr['menu'] as $k=>$rs){
-			$s='<div temp="tabying" tempxu="'.$k.'" onclick="yy.clickmenu('.$k.',this)" class="weui_navbar_item">';
+			$s='<div temp="taby" tempxu="'.$k.'" onclick="yy.clickmenu('.$k.',this)" class="weui_navbar_item">';
 			if(!isempt($rs['num']))$s.='<span  class="badge" id="'.$rs['num'].'_stotal"></span>';
 			$s.='<font>'.$rs['name'].'</font>';
 			if($rs['submenu'])$s.=' <i class="icon-angle-down"></i>';

@@ -201,30 +201,29 @@ class indexreimClassAction extends apiAction
 		$arr['admintoken']  = $this->admintoken;
 		$arr['companyinfo']  = $dbs->getcompanyinfo($this->adminid, 1);
 		$arr['companymode']	 = ISMORECOM;
-	
-		//$arr['isgzh'] 		= m('wxgzh:index')->isusegzh(1); //判断是否有设置公众号
+		$bdwx	= m('wouser')->getone('`uid`='.$this->adminid.'','nickname,headimgurl');
+		$arr['bdwx'] 		= $bdwx;
 		
 		$this->showreturn($arr);
+	}
+	
+	public function wxbdjcAction()
+	{
+		m('wouser')->update('`uid`=0','`uid`='.$this->adminid.'');
+		$this->showreturn('');
 	}
 	
 	//同步微信上头像
 	public function tongbufaceAction()
 	{
 		$reim = m('reim');
-		if($reim->isanwx()){
-			$barr 	= m('weixin:user')->anayface($this->userrs['user'], true);
+		if($reim->installwx(1)){
+			$barr 	= m('weixinqy:user')->anayface($this->userrs['user'], true);
 			if($barr['errcode'] != 0)$this->showreturn('',$barr['msg'],202);
 			$this->showreturn($barr);
 		}else{
-			if($reim->installwx(1)){
-				$barr 	= m('weixinqy:user')->anayface($this->userrs['user'], true);
-				if($barr['errcode'] != 0)$this->showreturn('',$barr['msg'],202);
-				$this->showreturn($barr);
-			}else{
-				$this->showreturn('','没安装微信企业号',201);
-			}
+			$this->showreturn('','没部署企业微信',201);
 		}
-		
 	}
 	
 	public function loadinfoAction()

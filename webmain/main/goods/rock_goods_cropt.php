@@ -37,9 +37,9 @@ $(document).ready(function(){
 	};
 	
 	rukuope{rand}=function(id,kind){
-		var lex = ['领用出库','采购入库','销售出库','调拨入库'];
-		var typa= [1,0,1,0];
-		var kina= [0,0,1,3]; //从数据选项中的来的
+		var lex = ['领用出库','采购入库','销售出库','调拨入库','归还入库'];
+		var typa= [1,0,1,0,0];
+		var kina= [0,0,1,3,1]; //从数据选项中的来的
 		var type = typa[kind]; //0入库,1出库
 		addtabs({url:'main,goods,churuku,type='+type+',mid='+id+',kind='+kina[kind]+',kindname='+lex[kind]+'','num':'rukuopt'+id+'',name:''+id+'.'+lex[kind]+''});
 	}

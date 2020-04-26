@@ -75,7 +75,7 @@ var c = {
 	//切换分区
 	changfenqu:function(fq){
 		yy.sousoukey='';
-		yy.searchcancel();
+		yy.sqxs();
 		$('#workheader span:gt(0)').remove();
 		this.uptype = $(fq.options[fq.selectedIndex]).attr('uptype');
 		this.getfile(0, fq.value);

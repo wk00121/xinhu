@@ -28,10 +28,11 @@ class flow_hrsalaryClassModel extends flowModel
 		}
 	//echo $where;
 		
-		if($key!='')$where.=" and (c.deptallname like '%$key%' or a.uname like '%$key%' or a.ranking like '%$key%' )";
+		//if($key!='')$where.=" and (c.deptallname like '%$key%' or a.uname like '%$key%' or a.ranking like '%$key%' )";
 		if($dt!='')$where.=" and a.`month`='$dt'";
 		return array(
 			'where' => $where,
+			'orlikefields' => 'c.`deptallname`,a.`uname`,a.`ranking`',
 			'tableleft' => '`[Q]userinfo` c on a.`xuid`=c.`id`',
 			'fieldsleft'=> 'c.`num`,c.deptallname,c.`bankname`,c.`banknum`',
 			'order' 	=> 'a.`month` desc,a.`id` asc',

@@ -5,7 +5,6 @@
 */
 class openzktimeClassAction extends openapiAction
 {
-	protected 	$keycheck= false;
 	
 	private $snid = 0;
 	private $snrs;

@@ -145,6 +145,7 @@ final class rockClass
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){
 			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
 			$s = $this->lvlarrep($str, $v1);
+			$str = $s;
 		}
 		$cslv = array('m','a','d','ip','web','host','ajaxbool','token','adminid');
 		if(in_array($na, $cslv))$s = $this->xssrepstr($s);

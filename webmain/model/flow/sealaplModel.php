@@ -47,7 +47,7 @@ class flow_sealaplClassModel extends flowModel
 				$numa = explode(',', $mknum);
 				$num  = $numa[0];
 				$mid  = (int)arrvalue($numa,1);
-				$url  = $this->getxiangurl($num, $mid, 'a');
+				$url  = $this->getxiangurl($num, $mid, 'auto');
 				if($mid>0)$rs['mknum'] = '<a href="'.$url.'">查看对应单据详情</a>';
 			}
 		}

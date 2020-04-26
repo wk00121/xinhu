@@ -7,7 +7,11 @@ class mode_userClassAction extends inputAction{
 	
 	protected function savebefore($table, $cans, $id, $addbo){
 		if(getconfig('systype')=='demo' && $id>0)return '演示请勿编辑';
-		//$user = strtolower(trimstr($cans['user']));
+		if($id>0){
+			$uto  = m($table)->rows('1=1');
+			$bstr = $this->option->authercheck();
+			if(is_string($bstr) && $uto>=100)return $bstr.$this->jm->base64decode('77yM5pyA5aSa5Y!v5re75YqgMTAw5Liq55So5oi3');
+		}
 		$user = trimstr($cans['user']);
 		$name = trimstr($cans['name']);
 		$num  = trimstr(arrvalue($cans,'num'));
@@ -37,8 +41,6 @@ class mode_userClassAction extends inputAction{
 		$db  = m($table);
 
 		if($msg=='')if($db->rows("`user`='$user' and `id`<>'$id'")>0)$msg ='用户名['.$user.']已存在';
-		
-	
 		
 		$rows = array();
 		if($msg == ''){
@@ -77,9 +79,8 @@ class mode_userClassAction extends inputAction{
 	protected function saveafter($table, $cans, $id, $addbo){
 		
 		m($table)->record(array('superman'=>$cans['name']), "`superid`='$id'");
-		
-		$mygroup = $cans['groupname'];
-		m('sjoin')->addgroupuid($id, $mygroup);
+	
+		if(isset($cans['groupname']))m('sjoin')->addgroupuid($id, $cans['groupname']);
 		
 		return m('admin')->updateinfo('and a.id='.$id.'');
 	}

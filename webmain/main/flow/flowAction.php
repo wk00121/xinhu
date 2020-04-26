@@ -59,6 +59,7 @@ class flowClassAction extends Action
 	public function flowsetsavebefore($table, $cans)
 	{
 		$tab = $cans['table'];
+		$tabs= trim($cans['tables']);
 		$name= $this->rock->xssrepstr($cans['name']);
 		$num = strtolower($cans['num']);
 		$cobj= c('check');
@@ -69,7 +70,15 @@ class flowClassAction extends Action
 		
 		if($cans['isflow']>0 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
 		$rows['num']= $this->rock->xssrepstr($num); 
-		$rows['name']= $name; 
+		$rows['name']= $name;
+		if(!isempt($tabs)){
+			if($cobj->isincn($tabs))return '多行子表名不能包含中文';
+			$tabsa 		= explode(',', $tabs);
+			foreach($tabsa as $tabsas){
+				if(isempt($tabsas))return '多行子表名('.$tabs.')不规范';
+			}
+		}
+		$rows['tables']= $tabs;
 		return array(
 			'rows' => $rows
 		);
@@ -180,27 +189,26 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 	public function elementafter($table, $rows)
 	{
 		$moders = m('flow_set')->getone($this->mid);
-		
-		$tass 	= $moders['table'];
-		$tasss 	= $moders['tables'];
-		
-		$farr	= $this->db->gettablefields('[Q]'.$tass.'');
-		
-		$farrs[]= array('id'=>'','name'=>'————↓以下主表('.$tass.')的字段————');
-		foreach($farr as $k=>$rs){
-			$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
-		}
-		if(!isempt($tasss)){
-			$tasssa = explode(',', $tasss);
-			foreach($tasssa as $k=>$tasss){
-				$farr	= $this->db->gettablefields('[Q]'.$tasss.'');
-				$farrs[]= array('id'=>'','name'=>'————↓以下第'.($k+1).'个多行子表('.$tasss.')的字段————');
-				foreach($farr as $k=>$rs){
-					$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+		$farrs 	= array();
+		if($this->mid>0){
+			$tass 	= $moders['table'];
+			$tasss 	= $moders['tables'];
+			$farr	= $this->db->gettablefields('[Q]'.$tass.'');
+			$farrs[]= array('id'=>'','name'=>'————↓以下主表('.$tass.')的字段————');
+			foreach($farr as $k=>$rs){
+				$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+			}
+			if(!isempt($tasss)){
+				$tasssa = explode(',', $tasss);
+				foreach($tasssa as $k=>$tasss){
+					$farr	= $this->db->gettablefields('[Q]'.$tasss.'');
+					$farrs[]= array('id'=>'','name'=>'————↓以下第'.($k+1).'个多行子表('.$tasss.')的字段————');
+					foreach($farr as $k=>$rs){
+						$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+					}
 				}
 			}
 		}
-		
 		return array(
 			'flowarr'=>$this->getmodearr(),
 			'moders'=>$moders,

@@ -103,4 +103,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和规则限制?</a></div>
+<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和规则限制?</a>，如果您超3个月未使用短信，我们将会删除自定义的签名。</div>

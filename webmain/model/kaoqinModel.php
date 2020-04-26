@@ -486,6 +486,7 @@ class kaoqinClassModel extends Model
 		if($zshu==4)$this->tempsbstatus = $this->getstatessqj($sjarr[0], $dt, $uid); //[特殊判断]上午请假状态
 		
 		foreach($sjarr as $k=>$rs){
+			if($rs['iskq']=='0')continue;//不用考勤就不分析了
 			$ztname = $rs['name'];
 			$arrs 	= $this->kqanaysss($uid, $dt, $rs, $this->_dkarr, $k, $zshu);
 			$state	= $arrs['state'];

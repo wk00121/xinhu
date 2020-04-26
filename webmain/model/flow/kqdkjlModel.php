@@ -22,7 +22,7 @@ class flow_kqdkjlClassModel extends flowModel
 		$dt2	= $this->rock->post('dt2');
 		$key	= $this->rock->post('key');
 		$s 		= '';
-		$s		= ' and b.id='.$this->adminid.'';
+		$s		= ' and a.`uid`='.$this->adminid.'';
 		
 		//全部下属打卡
 		if($lx=='down' || $lx=='dwdown'){

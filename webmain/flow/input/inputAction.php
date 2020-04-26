@@ -222,7 +222,6 @@ class inputAction extends Action
 			}
 		}
 		
-		
 		$bo = $db->record($uaarr, $where);;
 		if(!$bo)$this->backmsg($this->db->lasterror());
 		
@@ -237,8 +236,8 @@ class inputAction extends Action
 		$tabless	 = $this->moders['tables'];
 		if(!isempt($tabless)){
 			$tablessa = explode(',', $tabless);
-			foreach($tablessa as $zbx=>$tablessas){
-				$this->savesubtable($tablessas, $id, $zbx, $addbo);
+			foreach($tablessa as $zbx=>$zbtab){
+				if($zbtab)$this->savesubtable($zbtab, $id, $zbx, $addbo);
 			}
 		}
 		
@@ -361,6 +360,8 @@ class inputAction extends Action
 	
 	public function lumAction()
 	{
+		$ybarr	 = $this->option->authercheck();
+		if(is_string($ybarr))return $ybarr;
 		$this->ismobile = 1;
 		$this->luactions();
 	}
@@ -420,7 +421,7 @@ class inputAction extends Action
 		$modeid 	= $moders['id'];
 		if($mid==0 && $lutype==0){
 			$isadd = m('view')->isadd($modeid, $uid);
-			if(!$isadd)exit('无权添加['.$modename.']的数据;');
+			if(!$isadd)exit('无权添加['.$modename.']的数据，请到[流程模块→流程模块权限]下添加权限');
 		}
 		
 		$content 	= '';
@@ -476,7 +477,7 @@ class inputAction extends Action
 					if($zbshu>2 && $this->flow->minwidth<300)$this->flow->minwidth = $zbshu*180;
 					if($zbstr!=''){
 						$content.='<tr><td style="padding:5px;" colspan="2"><div><b>'.arrvalue($nameaas, $k1).'</b></div>';
-						if($this->flow->minwidth>300){
+						if($this->flow->minwidth>300 && $this->rock->ismobile()){
 							$content.='<div tmp="mobilezbiao" style="width:280px;overflow:auto;"><div 
 						style="min-width:'.$this->flow->minwidth.'px">'.$zbstr.'</div></div>';
 						}else{

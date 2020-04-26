@@ -25,11 +25,19 @@ class yingClassAction extends ActionNot{
 		$this->assign('openfrom', $this->openfrom);
 	}
 	
+	private function bd6($str)
+	{
+		return $this->jm->base64decode($str);
+	}
+	
 	public function defaultAction()
 	{
-		$num = $this->get('num');
-		$reim= m('reim');
-		$arr = $reim->getagent(0, "and `num`='$num'");
+		$ybarr	 = $this->option->authercheck();
+		if(is_string($ybarr))return $ybarr;
+		$authkey = $ybarr['authkey'];
+		$num 	 = $this->get('num');
+		$reim	 = m('reim');
+		$arr 	 = $reim->getagent(0, "and `num`='$num'");
 		if(!$arr)exit('应用['.$num.']不存在');
 		$rs  = $arr[0];
 		$this->title = $rs['name'];
@@ -47,8 +55,7 @@ class yingClassAction extends ActionNot{
 		$this->assign('searchmsg', '输入关键词搜索');
 		$gid 	= $rs['id'];
 		$reim->setallyd('agent', $this->adminid, $gid);
-		
-		
+
 		$clasne 	= 'ying_'.$num.'Class';
 		$classpath  = ''.P.'/we/ying/yingyong/'.$clasne.'.php';
 		if(file_exists($classpath)){
@@ -56,13 +63,8 @@ class yingClassAction extends ActionNot{
 			$yingobj = new $clasne();
 			$yingobj->initYing($this);
 		}
-		
-		//记录打开应用日志
+		$this->assign('xhauthkey', getconfig('authkey', $authkey));
 		if(getconfig('useropt')=='1')m('log')->addlog('打开应用', '应用['.$num.'.'.$this->title.']');
-		
-		
-		//以下是新版应用页面，不想用可以删掉
-		//if($rs['url']=='auto' || $yyurl=='')$this->displayfile = ''.P.'/we/agent/tpl_agent.html';
 	}
 	
 	private function iscy($num)

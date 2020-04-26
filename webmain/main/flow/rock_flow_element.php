@@ -25,7 +25,9 @@ $(document).ready(function(){
 		},{
 			text:'排序号',dataIndex:'sort',editor:true,sortable:true
 		},{
-			text:'录入列',dataIndex:'islu',type:'checkbox',editor:true,sortable:true
+			text:'录入列',dataIndex:'islu',type:'checkbox',editor:true,sortable:true,editorbefore:function(d){
+				if(d.islu=='0'){js.msg('msg','打开录入项需要用编辑');return false;}else{return true;}
+			}
 		},{
 			text:'必填',dataIndex:'isbt',type:'checkbox',editor:true,sortable:true
 		},{

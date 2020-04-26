@@ -8,6 +8,9 @@ class indexClassAction extends ActionNot
 	
 	public function defaultAction()
 	{
+		$ybarr	 = $this->option->authercheck();
+		if(is_string($ybarr))return $ybarr;
+		
 		if($this->adminid==0){
 			$this->rock->location('?d=reim&m=login');
 		}
@@ -20,6 +23,9 @@ class indexClassAction extends ActionNot
 	
 	public function xinAction()
 	{
+		$ybarr	 = $this->option->authercheck();
+		if(is_string($ybarr))return $ybarr;
+		
 		if($this->adminid==0){
 			$this->rock->location('?d=reim&m=login&a=xin');
 		}

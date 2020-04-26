@@ -45,6 +45,12 @@ function initbody(){
 		var s = '<div style="position:fixed;top:40%;right:5px;padding:10px;border-radius:4px;z-index:5px;background:#555555;color:white" id="receiptrsdiv"><div>此单据需要回执确认<br>请将页面拉到最后</div><div style="margin-top:5px"><input type="button"  onclick="c.receiptque()" value="回执确认" class="webbtn btn-danger"></div></div>';
 		$('body').append(s);
 	}
+	
+	//检查是否有编辑器
+	var hobj = $("span[fieldstype='htmlediter']");
+	if(hobj.length>0)js.importjs('mode/kindeditor/kindeditor-min.js', function(){
+		for(var i=0;i<hobj.length;i++)c.htmlediter($(hobj[i]).attr('fieidscheck'));
+	});
 }
 function showchayue(opt, st){
 	alert('总查阅:'+st+'次\n最后查阅：'+opt+'');
@@ -150,6 +156,7 @@ function check(lx){
 			fid	 = fiad.attr('fieidscheck');
 			isbt = fiad.attr('isbt');
 			val  = subdat[fid];
+			if(c.editorobj[fid])val=c.editorobj[fid].html();
 			da['cfields_'+fid]=val;
 			if(val=='' && isbt=='1'){js.setmsg(''+fiad.text()+'不能为空');return;}
 		}
@@ -224,6 +231,24 @@ var c={
 	gurl:function(a){
 		var url=js.getajaxurl(a,'flowopt','flow');
 		return url;
+	},
+	editorobj:{},
+	htmlediter:function(fid){
+		var cans  = {
+			resizeType : 0,
+			allowPreviewEmoticons : false,
+			allowImageUpload : true,
+			formatUploadUrl:false,
+			allowFileManager:true,
+			uploadJson:'?m=upload&a=upimg&d=public',
+			minWidth:'300px',height:'250',
+			items : [
+				'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat','|','fontname', 'fontsize','quickformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist', '|','image', 'link','unlink','|','undo','source','clearhtml','fullscreen'
+			]	
+		};
+		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
 	},
 	showtx:function(msg){
 		js.setmsg(msg);

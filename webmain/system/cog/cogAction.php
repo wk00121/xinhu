@@ -239,4 +239,37 @@ return array(
 		m('log')->delete('id in('.$id.')');
 		backmsg();
 	}
+	
+	public function saveautherAjax()
+	{
+		if(getconfig('systype')=='demo')exit('演示上不要操作');
+		$autherkey 	= $this->post('key');
+		$ym 		= $this->post('ym');
+		$barr 		= c('xinhuapi')->authercheck($autherkey, $ym);
+		if($barr['success']){
+			echo 'ok';
+		}else{
+			echo $barr['msg'];
+		}
+	}
+	public function autherAjax()
+	{
+		$aukey = $this->option->getval('auther_aukey');
+		$use   = '1';
+		$barr  = array();
+		if(isempt($aukey)){
+			$use = '0';
+		}else{
+			$barr['enddt'] = $this->option->getval('auther_enddt');
+			$barr['yuming']= $this->option->getval('auther_yuming');
+			$barr['aukey'] = substr($aukey,0,5).'****'.substr($aukey,-5);
+		}
+		$barr['use'] = $use;
+		return returnsuccess($barr);
+	}
+	public function autherdelAjax()
+	{
+		if(getconfig('systype')=='demo')return returnerror('演示上不要操作');
+		return c('xinhuapi')->autherdel();
+	}
 }

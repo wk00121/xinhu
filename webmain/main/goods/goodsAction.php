@@ -276,32 +276,7 @@ class goodsClassAction extends Action
 	
 	
 	
-	//2017-08-20 后弃用了
-	public function addplgoodsAjax()
-	{
-		$rows  	= c('html')->importdata('name,typeid,price,unit,guige,xinghao,stockcs','name,typeid');
-		$oi 	= 0;
-		$db 	= m('goods');
-		foreach($rows as $k=>$rs){
-			$rs['typeid'] 	= $this->option->gettypeid('goodstype',$rs['typeid']);
-			
-			//判断是否存在
-			$odi 			= $db->existsgoods($rs);
-			if($odi)continue;
-			
-			$rs['price']	= floatval($this->rock->repempt($rs['price'],'0')); //金额
-			$rs['stockcs']	= (int)$this->rock->repempt($rs['stockcs'],'0'); //初始库存
-			$rows[$k]		= $rs;
-			$rs['adddt']	= $this->now;
-			$rs['optdt']	= $this->now;
-			$rs['optid']	= $this->adminid;
-			$rs['optname']	= $this->adminname;
-			$db->insert($rs);
-			$oi++;
-		}
-		$this->reloadkcAjax();
-		backmsg('','成功导入'.$oi.'条数据');
-	}
+	
 	
 	//刷新库存
 	public function reloadkcAjax()
@@ -327,8 +302,8 @@ class goodsClassAction extends Action
 	public function croptaftershow($table, $rows)
 	{
 		$dgs 	= m('goods');
-		$typeb = array('0'		,'1'	  ,'2'		,'3'); 
-		$typea = array('领用单' ,'采购单' ,'销售单'	,'调拨单'); 
+		$typeb = array('0'		,'1'	  ,'2'		,'3', '4'); 
+		$typea = array('领用单' ,'采购单' ,'销售单'	,'调拨单', '归还单'); 
 		$chux  = array('0','2');
 		if($rows)foreach($rows as $k=>&$rs){
 			$rs['typev'] = $rs['type'];

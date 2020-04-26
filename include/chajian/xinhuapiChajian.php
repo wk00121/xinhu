@@ -370,4 +370,40 @@ class xinhuapiChajian extends Chajian{
 		$barr =  $this->getdata('base','getjiari');
 		return $barr;
 	}
+	
+	public function authercheck($key, $ym)
+	{
+		if(strlen($key)!=32)return returnerror('密钥格式错误');
+		if(isempt($ym))return returnerror('域名不能为空');
+		$barr =  $this->getdata('auther','check', array(
+			'autherkey' => $key,
+			'yuming' 	=> $ym,
+			'randkey'	=> getconfig('randkey')
+		));
+		if($barr['success']){
+			$da  = $barr['data'];
+			$db  = m('option');
+			$db->setval('auther_enddt@-101', $da['enddt']);
+			$db->setval('auther_yuming@-101', $da['yuming']);
+			$db->setval('auther_authkey@-101', $da['authkey']);
+			$db->setval('auther_aukey@-101', $key);
+			return returnsuccess();
+		}else{
+			return $barr;
+		}
+	}
+	
+	public function autherdel()
+	{
+		$aukey = m('option')->getval('auther_aukey');
+		m('option')->update('`value`=null','pid=-101');
+		if(!isempt($aukey)){
+			$barr =  $this->getdata('auther','delkey', array(
+				'autherkey' => $aukey,
+				'randkey'	=> getconfig('randkey')
+			));
+			return $barr;
+		}
+		return returnsuccess();
+	}
 }

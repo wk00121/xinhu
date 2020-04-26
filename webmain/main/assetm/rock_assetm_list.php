@@ -17,9 +17,9 @@ $(document).ready(function(){
 		},{
 			text:'品牌',dataIndex:'brand'
 		},{
-			text:'仓库',dataIndex:'ckid'
+			text:'所在位置',dataIndex:'address'
 		},{
-			text:'使用人',dataIndex:'usename'
+			text:'使用者',dataIndex:'usename'
 		},{
 			text:'',dataIndex:'caozuo'
 		}],

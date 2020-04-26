@@ -686,13 +686,17 @@ class flowModel extends Model
 		$iscz			= 0;
 		$iszb			= $xu+1;
 		$fields			= 'subdata'.$xu.'';
-		$subrows 		= $this->db->getrows('[Q]flow_element','`mid`='.$this->modeid.' and `iszb`='.$iszb.' and `iszs`=1','`fields`,`name`','`sort`');
+		$subrows 		= $this->db->getrows('[Q]flow_element','`mid`='.$this->modeid.' and `iszb`='.$iszb.' and `iszs`=1','`fields`,`name`,`isalign`','`sort`');
 		$cont 			= '';
 		if($this->db->count > 0){
 			$iscz		= 1;
 			$headstr	= '@xuhaos,,center'; $colorbb = getconfig('bcolorxiang', '#cccccc');
 			//if($lx==1){$headstr = '';$colorbb = 'black';}
-			foreach($subrows as $k=>$rs)$headstr.='@'.$rs['fields'].','.$rs['name'].'';
+			foreach($subrows as $k=>$rs){
+				$headstr.='@'.$rs['fields'].','.$rs['name'].'';
+				if($rs['isalign']=='1')$headstr.=',left';
+				if($rs['isalign']=='2')$headstr.=',right';
+			}
 			foreach($rows as $k=>$rs)$rows[$k]['xuhaos'] = $k+1;
 			$slex 		= ($lx==0) ? 'noborder':'';
 			if($this->subsubdatastyle!='')$slex = $this->subsubdatastyle;
@@ -2836,9 +2840,11 @@ class flowModel extends Model
 			}
 			if(!$_kearr){
 				$skeay 	= array('text','textarea','htmlediter','changeuser','changeusercheck','changedept','changedeptusercheck','selectdatafalse','selectdatatrue');
+				$xiakk	= array('rockcombo','select');
 				foreach($this->fieldsarra as $k=>$rs){
-					if($rs['issou']==1 && in_array($rs['fieldstype'], $skeay) && in_array($rs['fields'], $allfields) && substr($rs['fields'],-2) != 'dt'){
-						$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
+					if($rs['issou']==1 && in_array($rs['fields'], $allfields) && substr($rs['fields'],-2) != 'dt'){
+						if(in_array($rs['fieldstype'], $skeay))$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
+						if(in_array($rs['fieldstype'], $xiakk))$_kearr[] = "{asqom}`".$rs['fields']."` = '".$key."'";
 					}
 				}
 				
