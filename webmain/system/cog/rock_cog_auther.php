@@ -9,8 +9,26 @@ $(document).ready(function(){
 			if(!key){js.setmsg('请输入签授密钥','',mvd);return;}
 			if(key.length!=32){js.setmsg('签授密钥是32位的哦','',mvd);return;}
 			o1.disabled=true;
+			$('#savewen{rand}').hide();
 			js.setmsg('验证中...','',mvd);
 			js.ajax(js.getajaxurl('saveauther','{mode}','{dir}'),{key:key,ym:HOST}, function(s){
+				if(s!='ok'){
+					js.setmsg(s,'',mvd);
+					o1.disabled=false;
+				}else{
+					js.setmsg('验证成功','green',mvd);
+					c.load();
+				}
+			},'post',false);
+		},
+		wenyz:function(o1){
+			var key = get('autherkey_{rand}').value,mvd='msgview{rand}';
+			if(!key){js.setmsg('请输入签授密钥','',mvd);return;}
+			if(key.length!=32){js.setmsg('签授密钥是32位的哦','',mvd);return;}
+			o1.disabled=true;
+			$('#savebtn{rand}').hide();
+			js.setmsg('验证中...','',mvd);
+			js.ajax(js.getajaxurl('savelixian','{mode}','{dir}'),{key:key,ym:HOST}, function(s){
 				if(s!='ok'){
 					js.setmsg(s,'',mvd);
 					o1.disabled=false;
@@ -35,6 +53,7 @@ $(document).ready(function(){
 					if((','+str+',').indexOf(','+HOST+',')<0)str+='<font style="font-size:12px" color="red">(与当前'+HOST+'域名不符合)</font>';
 					$('#auther_yuming{rand}').html(str);
 					$('#savebtn{rand}').hide();
+					$('#savewen{rand}').hide();
 					$('#savedel{rand}').show();
 				}else{
 					$('#auther_kq{rand}').html('<font color="red">未签授</font>');
@@ -43,6 +62,7 @@ $(document).ready(function(){
 					get('autherkey_{rand}').value='';
 					get('autherkey_{rand}').readOnly=false;
 					$('#savebtn{rand}').show();
+					$('#savewen{rand}').show();
 					$('#savedel{rand}').hide();
 				}
 			},'get,json');
@@ -99,7 +119,8 @@ $(document).ready(function(){
 		<tr>
 			<td ></td>
 			<td style="padding-top:20px">
-			<button click="save" id="savebtn{rand}" style="display:none" class="btn btn-success" type="button"><i class="icon-key"></i> 提交验证</button>
+			<button click="save" id="savebtn{rand}" style="display:none" class="btn btn-success" type="button"><i class="icon-key"></i> 提交验证</button>&nbsp;&nbsp;
+			<button click="wenyz" id="savewen{rand}" style="display:none" class="btn btn-primary" type="button"><i class="icon-file"></i> 文件验证</button>
 			<button click="savedel" id="savedel{rand}" style="display:none" class="btn btn-danger" type="button"><i class="icon-key"></i> 删除签授</button>
 			&nbsp;<span id="msgview{rand}"></span></td>
 		</tr>

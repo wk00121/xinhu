@@ -461,7 +461,13 @@ class adminClassModel extends Model
 				$where2 = 'and not('.$where2.')';
 			}
 			if($lx==0)$where.=' and `isvcard`=1'; //通讯录显示
-			
+			//--start--
+			if(ISMORECOM && $uid>1){
+				$comid = $this->getcompanyid($uid);
+				$str11 = $this->rock->dbinstr('`dwid`', $comid);
+				$where2.=' and (`companyid`='.$comid.' or '.$str11.')';
+			}
+			//--end--
 			//读取我可查看权限
 			$rows = $this->getall("`status`=1 and ((1 $where) or (`id`='$uid')) $where1 $where2",$fields,'`sort`,`name`');
 		}else{
@@ -782,7 +788,20 @@ class adminClassModel extends Model
 	public function getcompanywhere($lx=0, $qz='')
 	{
 		$where = '';
-		
+		//--start--
+		if(ISMORECOM){
+			$comid = ''.$this->getcompanyid().'';
+			$comi2 = $comid;
+			$str11 = $this->rock->dbinstr(''.$qz.'dwid', $comid);
+			if($this->adminid==1)$comid.=',0';
+			$where= " and (".$qz."`companyid` in (".$comid.") or $str11)";
+			if($lx==1)$where= " and ".$qz."`comid` in (".$comid.")";
+			if($lx==2)$where= " and ".$qz."`companyid` in (".$comid.")";
+			if($lx==3)$where= " and ".$qz."`comid`=".$comi2."";
+			if($lx==5)$where= " and ".$qz."`companyid`=".$comi2.""; //用在关联userinfo表只看本单位
+			if($lx==4)$where= " and ".$qz."`uid` in(select `id` from `[Q]admin` where `companyid`=".$comi2.")";
+		}
+		//--end--
 		return $where;
 	}
 	

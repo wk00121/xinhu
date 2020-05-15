@@ -252,6 +252,22 @@ return array(
 			echo $barr['msg'];
 		}
 	}
+	public function savelixianAjax()
+	{
+		if(getconfig('systype')=='demo')exit('演示上不要操作');
+		$aukey 	= $this->post('key');
+		$ym 	= $this->post('ym');
+		$path   = 'config/rockauther.php';
+		if(!file_exists($path))exit('没有下载签授文件到系统上');
+		$da 	= require($path);
+		$barr 	= c('xinhuapi')->autherfile($da, $aukey, $ym);
+		if($barr['success']){
+			@unlink($path);
+			echo 'ok';
+		}else{
+			echo $barr['msg'];
+		}
+	}
 	public function autherAjax()
 	{
 		$aukey = $this->option->getval('auther_aukey');

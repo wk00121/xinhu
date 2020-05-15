@@ -238,10 +238,10 @@ class jmChajian extends Chajian{
 	/**
 	*	字符串加密处理
 	*/
-	public function strlook($data)
+	public function strlook($data,$key='')
 	{
 		if(isempt($data))return '';
-		$key	= md5($this->jmsstr);
+		if($key=='')$key	= md5($this->jmsstr);
 		$x		= 0;
 		$len	= strlen($data);
 		$l		= strlen($key);
@@ -262,10 +262,10 @@ class jmChajian extends Chajian{
 	/**
 	*	字符串解密
 	*/
-	public function strunlook($data)
+	public function strunlook($data,$key='')
 	{
 		if(isempt($data))return '';
-		$key	= md5($this->jmsstr);
+		if($key=='')$key	= md5($this->jmsstr);
 		$x 		= 0;
 		$data 	= $this->base64decode($data);
 		$len 	= strlen($data);
