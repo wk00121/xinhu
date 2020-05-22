@@ -330,7 +330,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		$rs 	= m('flow_set')->getone("`id`='$setid'");
 		if(!$rs)exit('sorry!');
 		$this->smartydata['rs'] = $rs;
-		$atypea = array('PC端','手机端');
+		$atypea = array('PC端','手机端','PC端打印');
 		$this->title  = $rs['name'].'_'.$atypea[$atype].'展示页面设置';
 		$fleftarr 	= m('flow_element')->getrows("`mid`='$setid' and `iszb`=0",'`fields`,`name`','`iszb`,`sort`');
 		$modenum	= $rs['num'];
@@ -479,7 +479,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$content = $this->post('content');
 		$num 	 = $this->post('num');
-		$atype 	 = $this->post('atype','0');
+		$atype 	 = (int)$this->post('atype','0');
 		$path 	 = ''.P.'/flow/page/view_'.$num.'_'.$atype.'.html';
 		if(isempt($content)){
 			@unlink($path);
@@ -1033,6 +1033,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$hurs[] = ''.P.'/flow/page/input_{bh}.html'; //PC录入模版
 		$hurs[] = ''.P.'/flow/page/view_{bh}_0.html'; //PC展示模版
 		$hurs[] = ''.P.'/flow/page/view_{bh}_1.html'; //手机展示模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_2.html'; //打印布局
 		$hurs[] = ''.P.'/flow/page/viewpage_{bh}.html'; //子模版展示
 		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_0.html';//子模版PC展示
 		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_1.html';//子模版手机展示

@@ -159,7 +159,9 @@ class kaoqinjClassAction extends Action
 		$barr['rows'] = $rows;
 		if($this->loadci==1){
 			$drows = m('dept')->getdata('sd');
-			$barr['deptdata'] = $this->depttreeshu($drows,'0');
+			$fid = '0';
+			if(ISMORECOM)$fid = $drows[0]['pid'];
+			$barr['deptdata'] = $this->depttreeshu($drows, $fid);
 			$where1  = m('admin')->getcompanywhere(1);
 			$kqsnarr = m('kqjsn')->getall('status=1 '.$where1.'','id,name,num','sort');
 			foreach($kqsnarr as $k=>$rs){

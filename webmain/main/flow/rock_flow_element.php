@@ -98,6 +98,7 @@ $(document).ready(function(){
 		get('luc_{rand}').disabled = bo;
 		get('luz_{rand}').disabled = bo;
 		get('luzz_{rand}').disabled = bo;
+		get('luzs_{rand}').disabled = bo;
 		get('changelieb_{rand}').disabled = bo;
 	}
 	var c = {
@@ -175,6 +176,7 @@ $(document).ready(function(){
 		<button class="btn btn-default" id="luc_{rand}" disabled click="inputs,0" type="button">PC端录入页布局</button>
 		<button class="btn btn-default" id="luz_{rand}" disabled click="zhanshi,0" type="button">PC端展示</button>
 		<button class="btn btn-default" id="luzz_{rand}" disabled click="zhanshi,1" type="button">手机展示</button>
+		<button class="btn btn-default" id="luzs_{rand}" disabled click="zhanshi,2" type="button">打印布局</button>
 		<button class="btn btn-default" id="lu_{rand}" disabled click="lulu,0" type="button">PC录入页</button>
 		<button class="btn btn-default" id="lum_{rand}" disabled click="lulu,1" type="button">手机录入页</button>
 		<button class="btn btn-default" id="changelieb_{rand}" disabled click="changelieb" type="button">生成列表页</button>

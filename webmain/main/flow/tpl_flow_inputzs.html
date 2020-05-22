@@ -83,6 +83,16 @@ var c={
 	clearkong:function(){
 		editor.html('');
 		js.msg('success','已清空，保存后自动删除对应模版文件');
+	},
+	biaotiqieh:function(){
+		var nr= editor.html(),th='<span class="notitle"></span>';
+		if(nr.indexOf('notitle')>-1){
+			js.msg('success','已加入默认标题显示');
+			editor.html(nr.replace(th,''));
+		}else{
+			js.msg('success','已删除标题显示');
+			editor.html(nr+''+th+'');
+		}
 	}
 };
 </script>
@@ -125,7 +135,9 @@ select{font-size:12px}
 	<td width="100%">
 		<div style="overflow:auto" id="page_conent">
 			<div style="padding:10px"><textarea style="width:650px;" id="content"><?=$da['content']?></textarea></div>
-			<div align="left" style="font-size:12px;padding:0px 10px">模版保存在：<?=$da['p']?>/flow/page/view_<?=$da['rs']['num']?>_<?=$da['atype']?>.html</div>
+			<div align="left" style="font-size:12px;padding:0px 10px">
+			<a href="javascript:" onclick="return c.biaotiqieh()" style="background-color:#888888" class="webbtn">是否标题切换</a>&nbsp;
+			模版保存在：<?=$da['p']?>/flow/page/view_<?=$da['rs']['num']?>_<?=$da['atype']?>.html</div>
 		</div>
 	</td>
 </tr>

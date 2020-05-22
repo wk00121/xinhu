@@ -103,6 +103,12 @@ class upfileChajian extends Chajian{
 		return $arr;
 	}
 	
+	public function isoffice($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|pdf|', '|'.$ext.'|');
+	}
+	
+	
 	/**
 		上传
 		@param	$name	string	对应文本框名称
@@ -127,7 +133,7 @@ class upfileChajian extends Chajian{
 		$file_img		= $this->isimg($file_ext);
 		$file_kup		= $this->issavefile($file_ext);
 		
-		if(!$file_img && getconfig('systype')=='demo')return '演示站点禁止文件上传';
+		if(!$file_img && !$this->isoffice($file_ext) && getconfig('systype')=='demo')return '演示站点禁止文件上传';
 		
 		if($file_error>0){
 			$rrs = $this->geterrmsg($file_error);

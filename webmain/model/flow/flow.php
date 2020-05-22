@@ -461,7 +461,7 @@ class flowModel extends Model
 	*	读取展示数据
 	*	$lx 0pc, 1移动
 	*/
-	public function getdatalog($lx=0)
+	public function getdatalog($lx=0, $isdy=0)
 	{
 		m('log')->addread($this->mtable, $this->id);
 		$this->todosmodel->biaoyidu($this->adminid, $this->modenum, $this->id);
@@ -476,7 +476,8 @@ class flowModel extends Model
 		$arr['logarr']	 = $this->getlog();
 		$arr['isplview'] = arrvalue($this->moders,'ispl','0');
 		$contview 	 	 = '';
-		$path 			 = ''.P.'/flow/page/view_'.$this->modenum.'_'.$lx.'.html';
+		$lsds 			 = ($isdy==2) ? $isdy: $lx;
+		$path 			 = ''.P.'/flow/page/view_'.$this->modenum.'_'.$lsds.'.html';
 		$fstr			 = $fobj->getstr($this->mtable, $this->id, 3);//3说明是详情也读
 		$issubtabs		 = 0;
 		if($fstr != ''){
@@ -2844,7 +2845,7 @@ class flowModel extends Model
 				foreach($this->fieldsarra as $k=>$rs){
 					if($rs['issou']==1 && in_array($rs['fields'], $allfields) && substr($rs['fields'],-2) != 'dt'){
 						if(in_array($rs['fieldstype'], $skeay))$_kearr[] = "{asqom}`".$rs['fields']."` like '%".$key."%'";
-						if(in_array($rs['fieldstype'], $xiakk))$_kearr[] = "{asqom}`".$rs['fields']."` = '".$key."'";
+						//if(in_array($rs['fieldstype'], $xiakk))$_kearr[] = "{asqom}`".$rs['fields']."` = '".$key."'";
 					}
 				}
 				

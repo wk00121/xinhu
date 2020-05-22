@@ -23,6 +23,13 @@ class rockqueueChajian extends Chajian
 			$this->rockqueue_host = $reimhot['host'];
 			$this->rockqueue_port = $reimhot['port'];
 		}
+		
+		
+		$this->cmdshell = array(
+			array('soffice.exe','php.exe'), //win下必须包含
+			array('libreoffice'),  //Linux下包含
+			array('pdf:writer_pdf_Export') //命令里至少要有一个
+		);
 	}
 	
 	/**
@@ -73,6 +80,36 @@ class rockqueueChajian extends Chajian
 	}
 	
 	/**
+	*	执行shell命令
+	*/
+	public function pushcmd($cmd)
+	{
+		if(contain(PHP_OS,'WIN')){
+			$cmdshell = $this->cmdshell[0];
+		}else{
+			$cmdshell = $this->cmdshell[1];
+		}
+		$qianz = explode(' ', $cmd);
+		$qianz = $qianz[0];
+		//$boa   = false;
+		//foreach($cmdshell as $sell)if(contain($qianz, $sell))$boa = true;
+		//if(!$boa)return returnerror('非法操作');
+		
+		$boa   = false;
+		foreach($this->cmdshell[2] as $sell)if(contain($cmd, $sell))$boa = true;
+		if(!$boa)return returnerror('无效参数');
+		
+		$id = rand(1,99999);
+		$rarr[] = array(
+			'qtype'		=> 'cmd',
+			'runtime'	=> '0',
+			'url'		=> escapeshellcmd($cmd),
+			'id'		=> $id
+		);
+		return $this->pushdata($rarr);
+	}
+	
+	/**
 	*	推送数据过去
 	*/
 	public function pushdata($rarr)
@@ -83,7 +120,7 @@ class rockqueueChajian extends Chajian
 		if($reqult){
 			return returnsuccess($reqult);
 		}else{
-			return returnerror('error');
+			return returnerror('服务端配置不能用');
 		}
 		//return c('socket')->udppush($rarr, $this->rockqueue_host, $this->rockqueue_port);
 	}

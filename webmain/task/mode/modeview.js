@@ -278,6 +278,8 @@ var c={
 		if(lx=='6')c.clickprint(true);
 		if(lx=='5')c.daochuword();
 		if(lx=='7')c.savetopdf();
+		if(lx=='8')js.location('?a=t&num='+modenum+'&mid='+mid+'');
+		if(lx=='9')js.location('?a=p&num='+modenum+'&mid='+mid+'');
 		if(lx=='1'){
 			var url='index.php?a=lu&m=input&d=flow&num='+modenum+'&mid='+mid+'';
 			js.location(url);
@@ -314,7 +316,7 @@ var c={
 		});
 	},
 	daochuword:function(){
-		var url='task.php?a=p&num='+modenum+'&mid='+mid+'&stype=word';
+		var url='task.php?a='+js.request('a')+'&num='+modenum+'&mid='+mid+'&stype=word';
 		js.location(url);
 	},
 	hideoth:function(){
@@ -425,7 +427,7 @@ var c={
 		if(!isempt(fnun)){
 			js.fileopt(id,0);
 		}else{
-			js.yulanfile(id, ext,pts);
+			js.yulanfile(id, ext,pts,'','','xq');
 		}
 		return false;
 	},

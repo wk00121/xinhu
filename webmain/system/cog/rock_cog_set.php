@@ -169,10 +169,12 @@ $(document).ready(function(){
 		
 			
 		<tr>
-			<td  align="right">文档在线预览编辑：</td>
-			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装转PDF服务</option>
+			<td  align="right">文档在线预览：</td>
+			<td class="tdinput"><select id="officeyl_{rand}"  class="form-control"><option value="0">自己服务器安装office转PDF服务</option>
 			<option value="1">使用官网插件(官网VIP专用)，不需要安装任何插件。</option>
 			<option value="2">使用微软在线预览office服务(需要部署公网上)</option>
+			<option value="3">使用明道在线预览office服务(需要部署公网上)</option>
+			<option value="4">自己服务器安装LibreOffice转PDF服务(Win和Linux)都可以部署</option>
 			</select></td>
 			
 			<td  align="right">记录用户操作：</td>

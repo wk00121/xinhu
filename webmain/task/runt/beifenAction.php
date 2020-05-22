@@ -11,7 +11,7 @@ class beifenClassAction extends runtAction
 	{
 		
 		$alltabls 	= $this->db->getalltable();
-		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads',''.PREFIX.'dailyfx',''.PREFIX.'todo'); //不备份的表;
+		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads',''.PREFIX.'dailyfx',''.PREFIX.'todo',''.PREFIX.'city'); //不备份的表;
 		$data 		= array();
 		$strstr 	= "/*
 	备份时间：".$this->now."		

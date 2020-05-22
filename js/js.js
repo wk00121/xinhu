@@ -427,7 +427,7 @@ js.apiopenWin=function(url){
 }
 
 //文件预览
-js.yulanfile=function(id, ext,pts, sne, fnun){
+js.yulanfile=function(id, ext,pts, sne, fnun,isxq){
 	if(!isempt(fnun)){this.fileopt(id, 0);return false;}
 	var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
 	if(pts!=''&&js.isimg(ext)){
@@ -443,7 +443,7 @@ js.yulanfile=function(id, ext,pts, sne, fnun){
 		js.location(url);
 	}else{
 		if(!sne)sne='文件预览';
-		js.winiframe(sne,url);
+		if(isxq=='xq'){js.open(url,screen.width-200,screen.height-200)}else{js.winiframe(sne,url);}
 	}
 	return false;
 }

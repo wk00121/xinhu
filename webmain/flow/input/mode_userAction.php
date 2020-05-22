@@ -62,7 +62,8 @@ class mode_userClassAction extends inputAction{
 			if(isempt($pass)){
 				$notsave	= 'pass';
 			}else{
-				$rows['pass'] 	= md5($pass);
+				$rows['pass'] 		= md5($pass);
+				$rows['editpass'] 	= '0';
 			}
 		}
 		$arr = array('msg'=>$msg, 'rows'=>$rows,'notsave'=>$notsave);

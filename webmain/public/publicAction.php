@@ -64,12 +64,13 @@ class publicClassAction extends ActionNot{
 	{
 		if($lx==1){
 			$officeyl	= getconfig('officeyl','0');
-			if($officeyl=='2'){//用微软文档服务
+			if($officeyl=='2' || $officeyl=='3'){//用微软文档服务
 				$filepath = $frs['filepath'];
 				if(substr($filepath, 0,4)!='http'){
 					$filepath = ''.getconfig('outurl',URL).''.$filepath.'';
 				}
 				$url = 'https://view.officeapps.live.com/op/view.aspx?src='.urlencode($filepath).'';
+				if($officeyl=='3')$url = 'https://docview.mingdao.com/op/view.aspx?src='.urlencode($filepath).'';
 				$this->rock->location($url);
 				return;
 			}
