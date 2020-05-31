@@ -145,14 +145,14 @@ xhauthkey = jm.base64decode('<?=$xhauthkey?>');
 			</div>
 		</div>
 		<div id="weixllq" class="weui_cells weui_cells_access">
-			<!--
+			<?php if($tplmess=='1'){?>
 			<div onclick="RO.bdwx(this)" class="weui_cell">
 				<div class="weui_cell_bd weui_cell_primary">
 					微信公众号
 				</div>
 				<span class="weui_cell_ft" id="bdwx">未绑定,点击绑定</span>
 			</div>
-			-->
+			<?php }?>
 			
 			<?php if(ISMORECOM){?>
 			<div onclick="RO.chdw()" class="weui_cell">

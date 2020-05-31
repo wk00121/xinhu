@@ -1,5 +1,5 @@
 <?php
-@set_time_limit(1800);
+@set_time_limit(3600);
 class beifenClassAction extends Action
 {
 	
@@ -8,7 +8,7 @@ class beifenClassAction extends Action
 		$myext		= $this->getsession('adminallmenuid');
 		if(getconfig('systype')=='demo')return '演示请勿操作';
 		if($myext!='-1')return '只有管理员才可以用';
-		$tables		= explode(',', 'daily,file,files,flow_log,flow_todos,flow_checks,im_history,im_mess,im_messzt,infor,infors,log,logintoken,meet,reads,sjoin,work,todo,flow_chao,flow_bill,flow_remind,goodm,goodss,goods,kqanay,kqdkjl,kqerr,kqout,kqinfo,location,official,officialfa,officialhong,schedule,scheduld,project,userinfo,userinfos,userract,hrpositive,word,hrredund,hrsalary,customer,custsale,custract,custfina,custappy,assetm,book,bookborrow,carm,carms,carmang,carmrese,email_cont,emailm,emails,sealapl,vcard,tovoid,editrecord,wouser,dailyfx,knowtraim,knowtrais,fininfom,fininfos,hrtrsalary,hrtransfer,hrdemint,reward,offyuebd,repair,knowtiku,kqdisv,knowledge,kqjcmd,kqjuser,kqjsn,hrcheck,receipt,hrcheckn,hrchecks,hrkaohem,hrkaohes,hrkaohen,demo,finpiao,wordxie,wordeil,subscribe,subscribeinfo,news,finzhang,finkemu,finount,finjibook,custplan');
+		$tables		= explode(',', 'daily,file,files,flow_log,flow_todos,flow_checks,im_history,im_mess,im_messzt,infor,infors,log,logintoken,meet,reads,sjoin,work,todo,flow_chao,flow_bill,flow_remind,goodm,goodss,goods,kqanay,kqdkjl,kqerr,kqout,kqinfo,location,official,officialfa,officialhong,schedule,scheduld,project,userinfo,userinfos,userract,hrpositive,word,hrredund,hrsalary,customer,custsale,custract,custfina,custappy,assetm,book,bookborrow,carm,carms,carmang,carmrese,email_cont,emailm,emails,sealapl,vcard,tovoid,editrecord,wouser,dailyfx,knowtraim,knowtrais,fininfom,fininfos,hrtrsalary,hrtransfer,hrdemint,reward,offyuebd,repair,knowtiku,kqdisv,knowledge,kqjcmd,kqjuser,kqjsn,hrcheck,receipt,hrcheckn,hrchecks,hrkaohem,hrkaohes,hrkaohen,demo,finpiao,wordxie,wordeil,subscribe,subscribeinfo,news,finzhang,finkemu,finount,finjibook,custplan,wenjuan,wenjuat,wenjuau');
 		$alltabls 	= $this->db->getalltable();
 		foreach($tables as $tabs){
 			$_tabs 	= ''.PREFIX.''.$tabs.'';

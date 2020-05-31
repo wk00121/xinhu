@@ -42,6 +42,31 @@ class flow_gongClassModel extends flowModel
 		if($this->rs['status']==1)$this->tisongtodo();
 	}
 	
+	//移动端列表
+	private $ydarr = false;
+	public function flowrsreplace_we($row, $rs)
+	{
+		if(!isempt($rs['fengmian']))$row['picurl'] = $rs['fengmian'];
+		if($this->ydarr===false)$this->ydarr	= explode(',', m('log')->getread('infor', $this->adminid));
+		
+		if(!in_array($rs['id'], $this->ydarr)){
+			$row['statustext'] 	= '未读';
+			$row['statuscolor'] = '#ED5A5A';
+		}else{
+			$row['ishui']		= 1;
+		}
+		
+		return $row;
+	}
+	public function flowwesearchdata($lx)
+	{
+		if($lx==1)return $this->option->getselectdata('gongtype', true);
+		return array(
+			'typename' => '所有通知',
+			'searchmsg' => '通知标题/分类',
+		);
+	}
+	
 	//审核完成后发通知
 	protected function flowcheckfinsh($zt)
 	{

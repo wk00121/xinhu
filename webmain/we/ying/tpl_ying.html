@@ -68,6 +68,21 @@ function callPhone(o1){
 		return true;
 	}
 }
+<?php if(isset($arr['leixing'])){ ?>
+try{sessionStorage.removeItem(''+json.num+'_event');}catch(e){}
+yy.clad=function(){
+	js.location('?a=lum&m=input&d=flow&num='+json.leixing+'&show=we');
+}
+yy.typechange=function(o1){
+	var val = o1.value;
+	yy.search({'typeid':val});
+}
+yy.onshowdata=function(da){
+	if(get('typeid') && da.typearr){
+		js.setselectdata(get('typeid'), da.typearr, 'id');
+	}
+}
+<?php } ?>
 </script>
 </head>
 
@@ -89,6 +104,11 @@ function callPhone(o1){
 
 <?php if($yyurl=='' || isset($searchtool)){?>
 <div style="z-index:2" id="searsearch_bar" class="weui_search_bar">
+	<?php
+	if($typename){
+		echo '<select id="typeid" onchange="yy.typechange(this)" style="width:100px;border:none;background:white;font-size:14px"><option value="">'.$typename.'</option></select>';
+	}
+	?>
 	<form onclick="yy.seuser()" class="weui_search_outer" onsubmit="yy.sous();return false;">
 		<div class="weui_search_inner">
 			<i class="weui_icon_search"></i>

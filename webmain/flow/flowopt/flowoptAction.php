@@ -171,10 +171,13 @@ class flowoptClassAction extends Action
 		if(isempt($imgbase64))return returnerror('无数据');
 		$path = ''.UPDIR.'/logs/'.date('Y-m').'/abc.png';
 		$bo = $this->rock->createtxt($path, base64_decode($imgbase64));
-		if(!$bo)return returnerror('无系统写入目录权限');
-		$fpdf = c('fpdf');
-		if(!method_exists($fpdf,'initFpdf'))return returnerror('没有安装生成pdf插件');
-		$fpdf = $fpdf->initFpdf();
+		if(!$bo)return returnerror(''.UPDIR.'目录无写入权限');
+		
+		$pa1 = ''.ROOT_PATH.'/include/fpdf/fpdf.php';
+		if(!file_exists($pa1))return returnerror('没有安装fpdf插件');
+		include_once($pa1);
+		
+		$fpdf = new FPDF();
 		$fpdf->AddPage();
 		$fpdf->Image($path,0,0);
 		

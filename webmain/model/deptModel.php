@@ -43,14 +43,16 @@ class deptClassModel extends Model
 		}else{
 			$where = '1=1';
 		}
+		$this->firstpid = 0;
 		
 		//多单位
-		if(ISMORECOM && $this->adminid>1){
-			$comid = $dbs->getcompanyid();
-			$where.=' and `companyid` in(0,'.$comid.') and `id`>1';
-			$this->firstpid = 1;
-		}else{
-			$this->firstpid = 0;
+		if(ISMORECOM){
+			$sysalluview = ','.m('option')->getval('sysalluview','0').',1,';
+			if(!contain($sysalluview,','.$this->adminid.',')){
+				$comid = $dbs->getcompanyid();
+				$where.=' and `companyid` in(0,'.$comid.') and `id`>1';
+				$this->firstpid = 1;
+			}
 		}
 		
 		$rows = $this->getall($where,'`id`,`name`,`pid`,`sort`','`pid`,`sort`');

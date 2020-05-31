@@ -79,7 +79,10 @@ if($stype!=''){
 	<?php
 	if($da['issetprint'])echo '<li lx="8">根据模版打印</li>';
 	echo '<li lx="5">另存为word...</li>';
-	if(file_exists('js/html2canvas.js'))echo '<li lx="7">另存为图片...</li>';
+	if(file_exists('js/html2canvas.js')){
+		echo '<li lx="7">另存为图片...</li>';
+		//echo '<li lx="10">另存为PDF...</li>';
+	}
 	if($da['arr']['isedit']==1)echo '<li lx="1">编辑</li>';
 	if($da['arr']['isdel']==1)echo '<li lx="2">删除...</li>';
 	?>

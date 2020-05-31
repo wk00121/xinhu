@@ -8,6 +8,7 @@ class wxgzhClassAction extends Action
 		$pid = m('dingding:index')->optionpid;
 		$this->option->setval('wxgzh_appid@'.$pid.'', $this->post('appid'));
 		$this->option->setval('wxgzh_secret@'.$pid.'', $this->post('secret'));
+		$this->option->setval('wxgzh_tplmess@'.$pid.'', $this->post('tplmess'));
 		$this->backmsg();
 	}
 	
@@ -16,6 +17,7 @@ class wxgzhClassAction extends Action
 		$arr= array();
 		$arr['appid']		= $this->option->getval('wxgzh_appid');
 		$arr['secret']		= $this->option->getval('wxgzh_secret');
+		$arr['tplmess']		= $this->option->getval('wxgzh_tplmess');
 		echo json_encode($arr);
 	}
 	

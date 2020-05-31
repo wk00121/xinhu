@@ -23,6 +23,7 @@ class indexClassAction extends ActionNot{
 		$ho1 	= ','.HOST.',';
 		if(!contain($ho, $ho1) && !contain(','.$ym.',',$ho1))return str_replace('1', HOST, $this->bd6('MeWfn!WQjeacquetvuaOiOS4jeiDveS9v!eUqA::'));
 		$this->assign('xhauthkey', getconfig('authkey', $authkey));
+		$this->assign('tplmess', $this->option->getval('wxgzh_tplmess'));
 	}
 	
 	private function bd6($str)

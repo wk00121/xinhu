@@ -8,6 +8,7 @@ $(document).ready(function(){
 				var a=js.decode(s);
 				get('wxgzhappid_{rand}').value=a.appid;
 				get('wxgzhsecret_{rand}').value=a.secret;
+				get('wxgzhtplmess_{rand}').value=a.tplmess;
 
 			});
 		},
@@ -15,6 +16,7 @@ $(document).ready(function(){
 			var d={};
 			d.appid = get('wxgzhappid_{rand}').value;
 			d.secret = get('wxgzhsecret_{rand}').value;
+			d.tplmess = get('wxgzhtplmess_{rand}').value;
 			js.msg('wait','保存中...');
 			js.ajax(js.getajaxurl('setsave','{mode}','{dir}'), d, function(s){
 				js.msg('success','保存成功');
@@ -59,6 +61,10 @@ $(document).ready(function(){
 			</td>
 		</tr>
 	
+		<tr>
+			<td  align="right">使用模版消息：</td>
+			<td class="tdinput"><select id="wxgzhtplmess_{rand}" class="form-control"><option value="">否</option><option value="1">是(需认证的服务号，OA系统安装企业微信插件)</option></select></td>
+		</tr>
 		
 		<tr>
 			<td  align="right"></td>

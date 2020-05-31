@@ -242,7 +242,8 @@ class taskClassModel extends Model
 	public function sendstarttask()
 	{
 		$turl	= $this->gettaskurl();
-		$this->reimtype	= m('option')->getval('reimservertype');
+		$option = m('option');
+		$this->reimtype	= $option->getval('reimservertype');
 		//node版本
 		if($this->reimtype=='1'){
 			$url 	= ''.$turl.'task.php?m=runt&a=task';
@@ -251,8 +252,14 @@ class taskClassModel extends Model
 			if(!isempt(getconfig('phppath')) && contain($reim->serverpushurl, '127.0.0.1')){
 				$url= 'runt,task';
 			}
-			$len 	= strlen($url);
-			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, 9+$len);
+			$recID  = $option->getval('reimrecidsystem','rockxinhu');
+			$keynum = 'service_'.$recID.'';
+			$len 	= (int)$option->getval($keynum,'0');
+			if($len<=0){
+				$len 	= strlen($url)+rand(1000,9999);
+				$option->setval($keynum, $len);
+			}
+			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, $len);
 		}else{
 			$url 	= ''.$turl.'task.php?m=runt&a=getlist';
 			$barr 	= m('reim')->pushserver('starttask', array(

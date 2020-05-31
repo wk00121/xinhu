@@ -43,19 +43,26 @@ class reimClassModel extends Model
 	}
 	
 	/**
-	*	返回判断是否有安装微信企业号/企业微信 $lx=0企业号,1企业微信,2钉钉
+	*	返回判断是否有安装微信企业号/企业微信 $lx=0企业号,1企业微信,2钉钉,3微信公众号号,4是否微信模版消息
 	*/
 	public function installwx($lx=0)
 	{
 		if($lx==0)return $this->isanwx();
+		$bo = false;
 		if($lx==1){
-			$bo = false;
 			if(!isempt($this->optiondb->getval('weixinqy_corpid')))$bo=true;
 			return $bo;
 		}
 		if($lx==2){
-			$bo = false;
 			if(!isempt($this->optiondb->getval('dingding_token0')))$bo=true;
+			return $bo;
+		}
+		if($lx==3){
+			if(!isempt($this->optiondb->getval('wxgzh_appid')))$bo=true;
+			return $bo;
+		}
+		if($lx==4){
+			if($this->optiondb->getval('wxgzh_tplmess')=='1')$bo=true;
 			return $bo;
 		}
 		return false;

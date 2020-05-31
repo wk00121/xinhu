@@ -5,7 +5,7 @@ $(document).ready(function(){
 
 	var a = $('#view_{rand}').bootstable({
 		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
-		url:publicstore('{mode}','{dir}'),modename:'物品',storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		url:publicstore('{mode}','{dir}'),params:{atype:'all'},modename:'物品',storebeforeaction:'beforeshow',storeafteraction:'aftershow',
 		checked:true,
 		columns:[{
 			text:'编号',dataIndex:'num'

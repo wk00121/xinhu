@@ -94,6 +94,11 @@ if($da['arr']['optmenu']){
 	echo $opsts;
 }
 
+//显示其他页面
+if($da['spagepath']!=''){
+	include_once($da['spagepath']);
+}
+
 //是否开评论了
 if($da['arr']['isplview']=='1'){
 ?>
@@ -282,11 +287,7 @@ if($da['arr']['isplview']=='1'){
 
 	<?php
 	}
-	
-	//显示其他页面
-	if($da['spagepath']!=''){
-		include_once($da['spagepath']);
-	}
+
 	
 	
 	$logarr = $da['arr']['logarr'];

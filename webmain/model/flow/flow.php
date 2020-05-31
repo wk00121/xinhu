@@ -27,6 +27,7 @@ class flowModel extends Model
 	public $isflow	= 0;		//当前模块是否有流程审核步骤
 	public $ismobile= 0;		//是否移动的页面请求的
 	public $minwidth= 100;		//录入页面子表最小宽度
+	public $inputwidth= 0;		//录入页面宽度
 	public $atype	= '';
 	public $daochubo= false;	//是否导出操作
 	public $companyid= 1;		//默认单位Id
@@ -104,6 +105,12 @@ class flowModel extends Model
 	
 	//初始化单据可替换其他属性，$lx,0默认,1详情展示，2列表显示
 	public function flowrsreplace($rs){return $rs;}
+	
+	//这个是移动端列表中使用
+	public function flowrsreplace_we($row, $rs){return $row;}
+	
+	//通用移动端列表搜索
+	public function flowwesearchdata($lx){return array();}
 	
 	//编辑的时候替换
 	protected function flowrsreplaceedit($rs){return $rs;}
@@ -240,7 +247,7 @@ class flowModel extends Model
 		$uisfield 		= property_exists($this, 'uidfields') ? $this->uidfields : 'optid';
 		if($this->uid==0 && isset($this->rs[$uisfield]))$this->uid = $this->rs[$uisfield];
 		$this->optid 	= isset($this->rs['optid']) ? $this->rs['optid'] : $this->uid;
-		$this->urs 		= $this->adminmodel->getone($this->uid,'id,name,user,deptid,deptname,deptallname,face,ranking,superid,superpath,superman,deptpath');
+		$this->urs 		= $this->adminmodel->getone($this->uid,'id,name,user,deptid,deptids,deptname,deptallname,face,ranking,superid,superpath,superman,deptpath');
 		if($this->isempt($this->rs['applydt'])&&isset($this->rs['optdt']))$this->rs['applydt']=substr($this->rs['optdt'],0,10);
 		if($this->urs){
 			$this->drs		= $this->db->getone('[Q]dept',"`id`='".$this->urs['deptid']."'");
@@ -1798,9 +1805,14 @@ class flowModel extends Model
 			$arr['status'] 	= $arr['nstatus'];
 			$arr['createdt']= $arr['optdt'];
 			$arr['sericnum']= $this->createnum();
+			$arr['udeptid'] = $this->rock->post('sysudeptid', $this->urs['deptid']);
 			$whes			= '';
 			$this->sericnum	= $arr['sericnum'];
+		}else{
+			$udeptid = $this->billrs['udeptid'];
+			if($udeptid==0)$arr['udeptid']=$this->urs['deptid'];
 		}
+		
 		$dbs->record($arr, $whes);
 		return $arr;
 	}
@@ -2251,7 +2263,7 @@ class flowModel extends Model
 		$this->rs['now_adminname'] 	= $this->adminname;
 		$this->rs['now_modename'] 	= $modename;
 		$cont	= $this->rock->reparr($cont, $this->rs);
-		$receid = $this->adminmodel->gjoins($receid);
+		$receid = $this->adminmodel->gjoins($receid);//已经返回对应人id了
 		$uids 	= m('todo')->addtodo($receid, $modename, $cont, $modenum, $id);
 		if($uids!='' && $moders['type'] != '系统' && $id > 0)$this->todosmodel->addtotouids($uids, array(
 			'table' 	=> $this->mtable,
@@ -2293,8 +2305,8 @@ class flowModel extends Model
 			foreach($wxarra as $k=>$v)$wxarr[$k]=$v;
 			//微信企业号
 			if($reim->installwx(0)){
-				$barr = m('weixin:index')->sendnews($receid, ''.$gname.',0', $wxarr);
-				m('log')->todolog('微信提醒', $barr);
+				//$barr = m('weixin:index')->sendnews($receid, ''.$gname.',0', $wxarr);
+				//m('log')->todolog('微信提醒', $barr);
 			}
 			//企业微信提醒
 			if($reim->installwx(1)){
@@ -2304,6 +2316,20 @@ class flowModel extends Model
 				if(isempt($devagent))$devagent = '办公助手';
 				$barr = m('weixinqy:index')->sendxiao($receid, ''.$gnames.','.$devagent.'', $wxarr);
 				m('log')->todolog('企业微信提醒', $barr);
+			}
+			
+			//微信公众号
+			if($gname=='流程待办' && $reim->installwx(4)){
+				$barr = m('wxgzh:index')->send($receid, '流程待办', array(
+					'url' => $wxurl,
+					'applyname' => $this->rs['base_name'],
+					'deptname' => $this->rs['base_deptname'],
+					'sericnum' => $this->sericnum,
+					'modename' => $this->modename,
+					'applydt' => arrvalue($this->billrs, 'applydt'),
+					'summary' => $this->getsummary(),
+				));
+				m('log')->todolog('微信模版消息', $barr);
 			}
 		}
 		//钉钉提醒发送
@@ -2514,7 +2540,7 @@ class flowModel extends Model
 				$glx = $this->flowgetoptmenu($rs['num']);
 				if(is_bool($glx))$bo = $glx;
 			}
-			$rs['optmenuid'] = $rs['id'];
+			$rs['optmenuid'] = $rs['id'];$rs['color']='';
 			if(!isempt($rs['statuscolor']))$rs['color']  = $rs['statuscolor'];
 			unset($rs['id']);unset($rs['num']);unset($rs['wherestr']);unset($rs['type']);unset($rs['statuscolor']);
 			if($rs['lx']==5){

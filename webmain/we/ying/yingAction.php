@@ -36,6 +36,12 @@ class yingClassAction extends ActionNot{
 		if(is_string($ybarr))return $ybarr;
 		$authkey = $ybarr['authkey'];
 		$num 	 = $this->get('num');
+		$mnum 	 = $this->get('mnum'); //模块编号
+		$this->assign('xhauthkey', getconfig('authkey', $authkey));
+		if(!isempt($mnum)){
+			$this->showmodenum($mnum);
+			return;
+		}
 		$reim	 = m('reim');
 		$arr 	 = $reim->getagent(0, "and `num`='$num'");
 		if(!$arr)exit('应用['.$num.']不存在');
@@ -53,6 +59,7 @@ class yingClassAction extends ActionNot{
 		$this->assign('yyurl', $yyurl);
 		$this->assign('yyurljs', $yyurljs);
 		$this->assign('searchmsg', '输入关键词搜索');
+		$this->assign('typename', '');
 		$gid 	= $rs['id'];
 		$reim->setallyd('agent', $this->adminid, $gid);
 
@@ -63,9 +70,76 @@ class yingClassAction extends ActionNot{
 			$yingobj = new $clasne();
 			$yingobj->initYing($this);
 		}
-		$this->assign('xhauthkey', getconfig('authkey', $authkey));
 		if(getconfig('useropt')=='1')m('log')->addlog('打开应用', '应用['.$num.'.'.$this->title.']');
 	}
+	
+	//默认根据模块显示
+	private function showmodenum($mnum)
+	{
+		$typename = '';
+		$flow   = m('flow')->initflow($mnum);
+		$mrs 	= $flow->moders;
+		
+		if($mrs['status']=='0')exit('模块['.$mnum.','.$mrs['name'].']已停用');
+		$souarr		 = $flow->flowwesearchdata(0);
+		$searchmsg	 = arrvalue($souarr, 'searchmsg','输入关键词搜索');
+		$typename	 = arrvalue($souarr, 'typename');
+		
+		$this->title = $mrs['name'];
+		$pnum 	= $this->get('pnum');
+		$menu	= array();
+		$atypearr = m('where')->getmywhere($mrs['id'], $this->adminid, $pnum);
+		if(!$atypearr)exit('请到【流程模块→流程模块条件】建条件，分组编号要为空');
+		if(isempt($pnum)){
+			if($mrs['iscs']>0)$atypearr[] = array('id'	=> 0,'num'	=> 'chaos','name'  => '抄送给我');
+			if($mrs['isflow']>0)$atypearr[] = array('id'	=> 0,'num'	=> 'mychuli','name'  => '经我处理');
+		}
+		$isadd = m('view')->isadd($mrs['id'], $this->adminid);
+		if($isadd)$atypearr[] = array('id'	=> 0,'num'	=> 'add','type'	=> 1,'name'  => '＋新增');
+		foreach($atypearr as $k1=>$rs1){
+			$uar 	= array('type' => 0,'name' => $rs1['name'],'url' => $rs1['num'].'|'.$mnum.'','num' => '','submenu'=> array());
+			if(arrvalue($rs1,'type')==1){$uar['type']=1;$uar['url']='add_'.$mnum.'';}
+			$menu[] = $uar;
+			if($k1>1)break;
+		}
+		if(count($atypearr)>3){
+			$submenu = array();
+			foreach($atypearr as $k1=>$rs1){
+				$uar = array('type' => 0,'name' => $rs1['name'],'url' => $rs1['num'].'|'.$mnum.'','num' => '','submenu'=> array());
+				if(arrvalue($rs1,'type')==1){$uar['type']=1;$uar['url']='add_'.$mnum.'';}
+				if($k1>1)$submenu[] = $uar;
+			}
+			$menu[2] = array(
+				'name' => '更多&gt;&gt;',
+				'num' => '',
+				'submenu' => $submenu,
+			);
+		}
+		if(!$menu)$menu[] = array(
+			'name' => $mrs['name'],
+			'url' => 'my|'.$mnum.'',
+			'num' => '',
+			'submenu' => array(),
+		);
+		
+		$arr	= array(
+			'face' => '',
+			'leixing'=>$mnum,
+			'menu' => $menu,
+			'num'	=> 'base',
+			'name'	=> $mrs['name'],
+		);
+		$yyurl = '';
+		$yyurljs = '';
+		$this->assign('searchmsg', $searchmsg);
+		$this->assign('yyurl', $yyurl);
+		$this->assign('arr', $arr);
+		$this->assign('yyurljs', $yyurljs);
+		$this->assign('typename', $typename);
+		if(getconfig('useropt')=='1')m('log')->addlog('打开模块应用', '模块['.$mnum.'.'.$this->title.']');
+	}
+	
+	
 	
 	private function iscy($num)
 	{

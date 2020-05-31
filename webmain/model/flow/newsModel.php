@@ -29,6 +29,20 @@ class flow_newsClassModel extends flowModel
 		}
 		return $rs;
 	}
+	//移动端列表
+	public function flowrsreplace_we($row, $rs)
+	{
+		if(!isempt($rs['fengmian']))$row['picurl'] = $rs['fengmian'];	
+		return $row;
+	}
+	public function flowwesearchdata($lx)
+	{
+		if($lx==1)return $this->option->getselectdata('newstype', true);
+		return array(
+			'typename' => '所有分类',
+			'searchmsg' => '新闻标题/分类',
+		);
+	}
 	
 	protected function flowsubmit($na, $sm)
 	{

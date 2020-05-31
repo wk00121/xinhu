@@ -34,7 +34,7 @@ $(document).ready(function(){
 			}
 			var keys = d.xinhukey;
 			if(keys && keys.indexOf('*')==-1 && keys.length!=32){
-				js.msg('msg','官网key格式有误，请看帮助从官网用户中心获取');
+				js.msg('msg','官网key格式有误，是32位md5格式，请看帮助获取');
 				get('xinhukey_{rand}').focus();
 				return;
 			}

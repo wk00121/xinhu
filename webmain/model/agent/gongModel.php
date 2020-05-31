@@ -33,19 +33,7 @@ class agent_gongClassModel extends agentModel
 	}
 	protected function agentrows($rows, $rowd, $uid){
 		$typearr = array();
-		if($rows){
-			$ydarr	= explode(',', m('log')->getread('infor', $uid));
-			foreach($rowd as $k=>$rs){
-				if(!in_array($rs['id'], $ydarr)){
-					$rows[$k]['statustext'] 	= '未读';
-					$rows[$k]['statuscolor'] 	= '#ED5A5A';
-				}else{
-					$rows[$k]['ishui']			= 1;
-				}
-				$rows[$k]['picurl'] = $rs['fengmian'];
-			}
-		}
-		if($this->loadci==1)$typearr = m('option')->getselectdata('gongtype', true);
+		if($this->loadci==1)$typearr = $this->flow->flowwesearchdata(1);
 		return array(
 			'rows' =>$rows,
 			'typearr' =>$typearr,

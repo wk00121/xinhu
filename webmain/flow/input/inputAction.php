@@ -87,7 +87,7 @@ class inputAction extends Action
 			if($isflow>0){
 				if($oldrs['uid']==$uid || $oldrs['optid']==$uid || $this->flow->floweditother){
 				}else{
-					$this->backmsg('不是你提交/申请的单据，不允许编辑');
+					//$this->backmsg('不是你提交/申请的单据，不允许编辑');
 				}
 				if($oldrs['status']==1)$this->backmsg('单据已审核完成，不允许编辑');
 			}
@@ -140,6 +140,7 @@ class inputAction extends Action
 		if(in_array('optdt', $allfields))$uaarr['optdt'] = $this->now;
 		if(in_array('optid', $allfields))$uaarr['optid'] = $this->adminid;
 		if(in_array('optname', $allfields))$uaarr['optname'] = $this->adminname;
+		
 		if(in_array('uid', $allfields) && $addbo){
 			$uaarr['uid'] = $this->post('uid', $this->adminid);
 		}
@@ -429,7 +430,7 @@ class inputAction extends Action
 		$this->rs 	= $oldrs;
 		$this->gongsiarr = array();
 		
-		$fieldarr 	= m('flow_element')->getrows("`mid`='$modeid' and `iszb`=0 $stwhe",'fields,fieldstype,name,dev,data,isbt,islu,attr,iszb,issou,gongsi,placeholder','`sort`');
+		$fieldarr 	= m('flow_element')->getrows("`mid`='$modeid' and `iszb`=0 $stwhe",'fields,fieldstype,name,dev,data,isbt,islu,attr,iszb,issou,gongsi,placeholder,lens','`sort`');
 		$fieldarr	= $this->flow->flowfieldarr($fieldarr, $this->ismobile);
 		
 		$modelu		= '';
@@ -585,13 +586,15 @@ class inputAction extends Action
 		
 		
 		$this->smartydata['course']		= $course;
-		$this->smartydata['inputwidth']	= $this->option->getval('inputwidth', 750);
+		$inpwhere	= $this->flow->inputwidth;
+		if($inpwhere<200)$inpwhere = $this->option->getval('inputwidth', 750);
+		$this->smartydata['inputwidth']	= $inpwhere;
 	}
 	
 	//多行子表内替换
 	private function pisubduolie($content, $modeid, $nameaas)
 	{
-		$fieldarr 	= m('flow_element')->getrows("`mid`='$modeid' and `iszb`>0",'fields,fieldstype,name,dev,data,isbt,islu,attr,iszb,gongsi','`sort`');
+		$fieldarr 	= m('flow_element')->getrows("`mid`='$modeid' and `iszb`>0",'fields,fieldstype,name,dev,data,isbt,islu,attr,iszb,gongsi,lens','`sort`');
 		if(!$fieldarr)return $content;
 		$this->fieldarr = array();
 		foreach($fieldarr as $k=>$rs){

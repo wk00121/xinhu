@@ -135,7 +135,9 @@ class agentModel extends Model
 		$arr 	= m($table)->getlimit($where, $this->page, $fields, $order, $this->limit, $tables);
 		$rows 	= $arr['rows'];
 		$row 	= array();
-		$suarr  = $this->zhaiyaoar($this->flow->moders['summarx']);
+		$summarx= $this->flow->moders['summarx'];
+		if(isempt($summarx))$summarx = 'cont:'.$this->flow->moders['summary'].'';
+		$suarr  = $this->zhaiyaoar($summarx);
 		$rows 	= $this->flow->viewjinfields($rows);//禁看字段处理
 		foreach($rows as $k=>$rs){
 			$jarr 	= array();
@@ -149,7 +151,7 @@ class agentModel extends Model
 				$jarr[$f] 	= $str;
 			}
 			$rows[$k] 	= $rs;
-			$row[]  	= $jarr;
+			$row[]  	= $this->flow->flowrsreplace_we($jarr, $rs);
 		}
 		$arr['rows'] 	= $row;
 		$arr['rowd'] 	= $rows;

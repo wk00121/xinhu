@@ -277,7 +277,8 @@ var c={
 		if(lx=='0')c.clickprint(false);
 		if(lx=='6')c.clickprint(true);
 		if(lx=='5')c.daochuword();
-		if(lx=='7')c.savetopdf();
+		if(lx=='7')c.savetoimg();
+		if(lx=='10')c.savetopdf();
 		if(lx=='8')js.location('?a=t&num='+modenum+'&mid='+mid+'');
 		if(lx=='9')js.location('?a=p&num='+modenum+'&mid='+mid+'');
 		if(lx=='1'){
@@ -294,7 +295,7 @@ var c={
 		}
 		window.print();
 	},
-	savetopdf:function(){
+	savetoimg:function(){
 		this.hideoth();
 		js.loading();
 		js.importjs('js/html2canvas.js', function(){
@@ -303,14 +304,25 @@ var c={
 					var imgbase64 = canvas.toDataURL().split(',')[1];
 					c.showviews({src:canvas.toDataURL()});
 					js.unloading();
-					/*
+				}
+			});
+		});
+	},
+	savetopdf:function(){
+		this.hideoth();
+		js.loading();
+		js.importjs('js/html2canvas.js', function(){
+			html2canvas($('#maindiv'),{
+				onrendered: function(canvas){
+					var imgbase64 = canvas.toDataURL().split(',')[1];
 					js.ajax(c.gurl('savetopdf'),{imgbase64:imgbase64},function(ret){
+						js.unloading();
 						if(!ret.success){
 							js.msgerror(ret.msg);
 						}else{
 							js.msgok('导出成功');
 						}
-					},'post,json');*/
+					},'post,json');
 				}
 			});
 		});

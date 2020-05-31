@@ -26,7 +26,7 @@ class inputChajian extends Chajian
 	
 	public function initFields($stwhe='')
 	{
-		$fieldarr 	= m('flow_element')->getrows($stwhe,'`fields`,`fieldstype`,`name`,`dev`,`data`,`isbt`,`islu`,`attr`,`savewhere`,`iszb`','`sort`');
+		$fieldarr 	= m('flow_element')->getrows($stwhe,'`fields`,`fieldstype`,`name`,`dev`,`data`,`isbt`,`islu`,`attr`,`savewhere`,`iszb`,`lens`','`sort`');
 		foreach($fieldarr as $k=>$rs){
 			$this->fieldarr[$rs['fields']] = $rs;
 		}
@@ -82,6 +82,7 @@ class inputChajian extends Chajian
 		$val 	= $a['dev'];
 		if(isset($a['value']))$val=$a['value'];
 		$attr 	= $a['attr'];
+		$lens 	= (int)arrvalue($a, 'lens','0');
 		$styles = '';
 		$style  = arrvalue(explode(',', $a['attr']),1);
 		if(!isempt($style))$styles=' style="'.$style.'"';
@@ -112,10 +113,11 @@ class inputChajian extends Chajian
 		if($type=='email' || $type=='tel' || $type=='mobile' || $type=='url'){
 			$attr.=' inputtype="'.$type.'"';
 		}
-		
+		$lenstr = '';
+		if($lens>0)$lenstr=' maxlength="'.$lens.'"';
 		$onblue = ' onblur="c.inputblur(this, '.$iszb.')"';
 		$iszhang= false;
-		$str 	= '<input class="inputs" type="text" value="'.$val.'" '.$attr.''.$onblue.''.$styles.' name="'.$fname.'">';
+		$str 	= '<input class="inputs" type="text" value="'.$val.'" '.$attr.''.$onblue.''.$styles.''.$lenstr.' name="'.$fname.'">';
 		
 		
 		if($type=='fixed'||$type=='hidden'){
@@ -124,7 +126,7 @@ class inputChajian extends Chajian
 		}
 		if($type=='textarea'){
 			$iszhang= false;
-			$str = '<textarea class="textarea" style="height:80px;'.$style.'" '.$attr.' name="'.$fname.'">'.$val.'</textarea>';
+			$str = '<textarea class="textarea" style="height:80px;'.$style.'" '.$attr.''.$lenstr.' name="'.$fname.'">'.$val.'</textarea>';
 		}
 		if($type=='rockcombo' || $type=='select' || $type=='checkboxall' || $type=='radio'){
 			$attr.=' onchange="c.inputblur(this, '.$iszb.')"';

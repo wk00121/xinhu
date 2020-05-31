@@ -208,7 +208,7 @@ class whereClassModel extends Model
 	{
 		if($uid==0)$uid = $this->adminid;
 		$where 	= m('admin')->getjoinstr('syrid', $uid, 1);
-		$where	= '`status`=1 and `setid`='.$modeid.' and `num` is not null and `islb`=1 and ('.$where.')';
+		$where	= '`status`=1 and `setid`='.$modeid.' and `num` is not null and `islb`=1 ';//and ('.$where.')
 		if(isempt($pnum)){
 			$where .=" and ifnull(`pnum`,'')=''";
 		}else{

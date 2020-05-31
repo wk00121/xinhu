@@ -615,6 +615,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$iszb 	= (int)$cans['iszb'];
 		$fields = $cans['fields'];
+		if(c('check')->isincn($fields))return '对应字段不能有汉字';
 		$mid 	= $cans['mid'];
 		$this->mmoders 	= m('flow_set')->getone($mid);
 		$tablessa = explode(',', $this->mmoders['tables']);
@@ -649,7 +650,8 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$fiesss = substr($fields,0,5);
 		if($fiesss == 'base_' || $fiesss == 'temp_')return;
 		if(!isempt($tables) && $cans['islu']==1){
-			$allfields = $this->db->getallfields('[Q]'.$tables.'');
+			$_fieldsa = $this->db->gettablefields('[Q]'.$tables.'');$allfields = array();
+			foreach($_fieldsa as $k2=>$rs2)$allfields[$rs2['name']] =  $rs2;
 			$this->createfields($allfields, $tables, $fields, $type, $lens, $dev, $name);
 			if(substr($type,0,6)=='change' && !isempt($data)){
 				if($type=='changeuser' || $type=='changedept'){
@@ -663,24 +665,44 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	//创建字段
 	private function createfields($allfields, $tables, $fields, $type, $lens, $dev, $name)
 	{
-		if(!in_array($fields, $allfields)){
+		if(isempt($lens))$lens='0';
+		$lens = (int)$lens;
+		if(!isset($allfields[$fields])){
 			$str = "ALTER TABLE `[Q]".$tables."` ADD `$fields` ";
 			if($type=='date' || $type=='datetime' || $type=='time'){
 				$str .= ' '.$type.'';
 			}else if($type=='number'){
-				$str .= ' smallint(6)';
+				if($lens>6){
+					$str .= ' int('.$lens.')';
+				}else{
+					$str .= ' smallint(6)';
+				}
 			}else if($type=='checkbox'){
 				$str .= ' tinyint(1)';	
 			}else if($type=='textarea'){
 				$str .= ' varchar(2000)';
 			}else{
-				if(isempt($lens))$lens='0';
 				if($lens=='0')$lens='50';
 				$str .= ' varchar('.$lens.')';
 			}
-			if(!isempt($dev))$str.= " DEFAULT '$dev'";
+			if(!isempt($dev) && !contain($dev,'{'))$str.= " DEFAULT '$dev'";
 			$str.= " COMMENT '$name'";
 			$this->db->query($str);
+		}else{
+			$farr = $allfields[$fields];
+			$ustr = '';
+			$len  = (int)$farr['lens'];
+			if($farr['type']=='varchar'){
+				if($lens>$len)$ustr='varchar('.$lens.')';
+			}
+			if($farr['type']=='smallint' || $farr['type']=='int'){
+				if($lens>6 && $lens>$len)$ustr='int('.$lens.')';
+			}
+			if($ustr!=''){
+				if(!isempt($dev) && !contain($dev,'{'))$ustr.= " DEFAULT '$dev'";
+				$ustr= "ALTER TABLE `[Q]".$tables."` MODIFY column `$fields` ".$ustr." COMMENT '$name'";
+				$this->db->query($ustr);
+			}
 		}
 	}
 	
