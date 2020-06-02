@@ -7,7 +7,6 @@ $(document).ready(function(){
 		save:function(o1){
 			var key = get('autherkey_{rand}').value,mvd='msgview{rand}';
 			if(!key){js.setmsg('请输入签授密钥','',mvd);return;}
-			if(key.length!=32){js.setmsg('签授密钥是32位的哦','',mvd);return;}
 			o1.disabled=true;
 			$('#savewen{rand}').hide();
 			js.setmsg('验证中...','',mvd);
