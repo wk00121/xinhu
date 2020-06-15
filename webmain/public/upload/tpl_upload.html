@@ -47,6 +47,11 @@ var up={
 		if(uptype!='*')fmsg+=',限制'+uptype+'类型';
 		if(fmsg!='')fmsg=fmsg.substr(1);
 		$('#footmsg').html(fmsg);
+		
+		window.addEventListener('drop', function(e) {
+			var files = e.dataTransfer;
+			up.change(files);
+		}, false);
 	},
 	add:function()
 	{
@@ -66,23 +71,31 @@ var up={
 		return rand;
 	},
 	change:function(o){
+		this.objfile = o.files;
 		this.change1(0);
 	},
 	change1:function(oi)
 	{
-		var obja	= get('inputfileid').files;
+		var obja	= this.objfile;
 		if(maxup!=0){
 			if(this.gsize()>=maxup){
 				this.rexushow();
 				return false;
 			}
 		}
+
 		if(oi>=obja.length){
 			setTimeout('document.myform.reset()',500);
 			this.rexushow();
 			return false;
 		}
 		var file	= obja[oi];
+		
+		if(!file || file.name=='/'){
+			up.change1(oi+1);
+			return false;
+		}
+		
 		var olen	= this.filearr.length;
 		var filesize	= file.size;
 		var filesizecn	= js.formatsize(filesize);
@@ -140,7 +153,7 @@ var up={
 		'<div class="div02">'+filesizecn+'</div>'+
 		'<div class="div03" id="updeng'+this.moi+'">初始化文件...</div>'+
 		'</div>';
-		
+		if(get('upfilemsg'))$('#upfilemsg').remove();
 		this.obj.append(s);
 		$('#updeng'+up.moi+'').html('等待上传...<a href="javascript:" temp="del" onclick="return up.del(this,'+olen+')">×</a>');
 		setTimeout('up.change1('+(oi+1)+');',5);
@@ -310,12 +323,16 @@ var up={
 window.onbeforeunload=function(){
 	if(up.bool)return '文件正在上传，确定要关闭页面吗？';
 }
+
+document.ondragover=function(e){e.preventDefault();};
+document.ondrop=function(e){e.preventDefault();};
+
 </script>
 <style type="text/css">
 .alert{ padding:1px 5px; border:1px #996 solid; background-color:#ffffff; color:#933}
 *{ font-size:14px;}
-.mdiv{ border-bottom:1px #cccccc solid; height:22px; overflow:hidden}
-.mdiv div{ float:left; height:22px; line-height:22px; overflow:hidden; padding:0px 3px}
+.mdiv{ border-bottom:1px #cccccc solid;display:inline-block;width:100%}
+.mdiv div{ float:left; line-height:22px; overflow:hidden; padding:5px 3px}
 .div01{ width:55%;text-align:left;border-right:1px #cccccc solid;}
 .div02{ width:15%; text-align:center;border-right:1px #cccccc solid;}
 .div03{ width:25%;text-align:left}
@@ -347,7 +364,7 @@ button{ cursor:pointer}
 <div class="div02">大小</div>
 <div class="div03">状态</div>
 </div>
-<div id="upfile"></div>
+<div id="upfile"><div id="upfilemsg" style="padding:10px;font-size:16px;color:#888888">可拖动文件到空白区域</div></div>
 <div id="footmsg"></div>
 
 <div class="quebntha"><button type="button" disabled style="padding:5px 15px" class="webbtn" id="quebtn" onClick="up.okla()">确定</button></div>

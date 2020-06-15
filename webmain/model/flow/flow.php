@@ -192,7 +192,7 @@ class flowModel extends Model
 	
 	private function tfieldsarra()
 	{
-		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`iszs`,`fieldstype`,`savewhere`,`data`,`isdr`,`iszb`,`issou`,`islu`,`islb`,`isonly`','`sort`');
+		$rows	= m('flow_element')->getrows("`mid`='$this->modeid' and `iszb`=0",'`name`,`fields`,`isbt`,`iszs`,`fieldstype`,`savewhere`,`data`,`isdr`,`iszb`,`issou`,`islu`,`islb`,`isonly`,`attr`','`sort`');
 		$this->fieldsarr = array();
 		if($rows)foreach($rows as $k=>$rs){
 			if($rs['islu']==1)$this->fieldsarr[] = $rs;
@@ -837,6 +837,11 @@ class flowModel extends Model
 			$sarr['zbrangelx'] = 'check';
 			if($sarr['iszhuanban']==2)$sarr['zbrangelx']='';//转办单选
 		}
+		//print_r($nowcur);
+		$sarr['ischao'] 	= (int)arrvalue($nowcur,'cslx',0);
+		$sarr['ischaofwid'] = arrvalue($nowcur,'csfwid');
+		
+		
 		if($isturn==0)$sarr['nstatustext'] = '<font color="#ff6600">待提交</font>';
 		
 		//读取当前审核表单，必填字段|选填字段
@@ -1150,27 +1155,37 @@ class flowModel extends Model
 			}
 		}
 		$this->flowsubmit($na, $sm);
+		
 		//抄送保存
-		$csname 	= $this->rock->post('syschaosong');
-		$csnameid 	= $this->rock->post('syschaosongid');
+		$this->savecsname(
+			$this->rock->post('syschaosongid'),
+			$this->rock->post('syschaosong'),
+			0,$this->uid,$isturn,$na);
+			
+		if($na=='编辑'){
+			$this->gettodosend('boedit');
+		}else{
+			$this->gettodosend('boturn');//提交
+		}
+	}
+	
+	private function savecsname($csnameid,$csname,$uid,$type,$isturn, $na)
+	{
 		if(!isempt($csnameid)){
-			$where 			= $this->mwhere.' and `type`=0';
+			$where 			= $this->mwhere.' and `type`='.$type.'';
+			if($type>0)$where.=' and `uid`='.$uid.'';
 			$csid 			= (int)$this->chaomodel->getmou('id', $where);
 			if($csid==0)$where = '';
 			$this->chaomodel->record(array(
 				'modeid' => $this->modeid,
 				'table'  => $this->mtable,
 				'mid'  => $this->id,
-				'uid'  => $this->uid,
+				'uid'  => $uid,
+				'type'  	=> $type,
 				'csname'  	=> $csname,
 				'csnameid'  => $csnameid,
 			),$where);
 			if($isturn==1)$this->nexttodo($csnameid,'chao', $na);//发送通知
-		}
-		if($na=='编辑'){
-			$this->gettodosend('boedit');
-		}else{
-			$this->gettodosend('boturn');//提交
 		}
 	}
 	
@@ -2036,10 +2051,12 @@ class flowModel extends Model
 		$nextcourse	= $this->nextcourse;
 		$zynameid	= $this->rock->post('zynameid');
 		$zyname		= $this->rock->post('zyname');
+		$csnameid	= $this->rock->post('csnameid');
+		$csname		= $this->rock->post('csname');
 		$nextname	= $this->rock->post('nextname');
 		$nextnameid	= $this->rock->post('nextnameid');
 		$qmimgstr	= $this->rock->post('qmimgstr'); //签名图片
-		$tuiid		= (int)$this->rock->post('tuiid'); //退回到哪个flowlog.id上
+		$tuiid		= (int)$this->rock->post('tuiid'); //退回到哪个flowlog.id上 
 		$iszhuanyi	= $ischangenext = 0;
 		if($zt==1 && $this->isflow!=3 && isempt($zynameid) && arrvalue($nextcourse,'checktype')=='change'){
 			$ischangenext = 1;//需要选下步处理人
@@ -2053,9 +2070,13 @@ class flowModel extends Model
 			if($zynameid==$this->adminid)return '不能转给自己';
 			$sm 	= $this->strappend($sm, '转给：'.$zyname.'');
 			$iszhuanyi 		 = 1;
-			$this->rs['zb_name'] 	= $zyname;
-			$this->rs['zb_nameid'] 	= $zynameid;
+			$this->rs['syszb_name'] 	= $zyname;
+			$this->rs['syszb_nameid'] 	= $zynameid;
 		}
+		
+		if(arrvalue($nowcourse,'cslx')=='2' && $csnameid=='' && $istongyi)return '必须选择抄送对应人';
+		$this->rs['syscs_name'] 	= $csname;
+		$this->rs['syscs_nameid'] 	= $csnameid;
 		
 		
 		
@@ -2073,7 +2094,7 @@ class flowModel extends Model
 			}
 		}
 		
-		$this->checkiszhuanyi = $iszhuanyi;//是否为转移的
+		$this->checkiszhuanyi = $iszhuanyi;//是否为转办
 		
 		$barr 		= $this->flowcheckbefore($zt, $ufied, $sm);
 		$msg 		= '';
@@ -2119,6 +2140,8 @@ class flowModel extends Model
 			$statuscolor	= '#17B2B7';
 		}
 		$this->checkistui 	= $tuiid;//是否为退回的
+		$logsm = $sm;
+		if($iszhuanyi==0 && $csname)$logsm = $this->strappend($logsm,'抄送给：'.$csname.'');
 		$this->lastlogid 	= $this->addlog(array(
 			'courseid' 	=> $nowcourse['id'],
 			'name' 		=> $nowcourse['name'],
@@ -2126,7 +2149,7 @@ class flowModel extends Model
 			'status'	=> $zt,
 			'statusname'=> $statusname,
 			'color'		=> $statuscolor,
-			'explain'	=> $sm,
+			'explain'	=> $logsm,
 			'iszb'		=> $iszhuanyi,
 			'qmimg'		=> $qmimgstr
 		));
@@ -2176,7 +2199,6 @@ class flowModel extends Model
 			$this->update($uparr, $this->id);
 		}
 		
-		
 		//审核完成了调用对应函数接口
 		if(!$this->nowcourse){
 			$this->flowcheckfinsh($zt);
@@ -2202,6 +2224,13 @@ class flowModel extends Model
 			if($zt==2)$this->gettodosend('bobutong',$statusname, $sm, $nowcourse['id']);
 			if(!$this->nowcourse && $istongyi)$this->gettodosend('bofinish', '', $sm);	//全部完成了
 		}
+	
+		//通知给抄送人，转办不需要抄送
+		if($iszhuanyi==0){
+			$sm1 = '在“'.$nowcourse['name'].'”处理'.$statusname.'';
+			$this->savecsname($csnameid,$csname,$this->adminid,$nowcourse['id'],1, $sm1);
+		}
+		
 		return 'ok';
 	}
 	
@@ -2769,7 +2798,7 @@ class flowModel extends Model
 		}
 		//抄送的
 		if($lx=='chaos'){
-			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and `type`=0 and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
+			$inwhere	= "and {asqom}`id` in(select `mid` from `[Q]flow_chao` where `table`='{$this->mtable}' and ".$this->rock->dbinstr('csnameid', $this->adminid).")";
 		}
 		//经我处理
 		if($lx=='mychuli'){

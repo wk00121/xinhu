@@ -307,11 +307,11 @@ final class rockClass
 	}
 	
 	/**
-	*	判断类型0微信,1钉钉,2安卓原生app,3企业微信
+	*	判断类型0微信,1钉钉,2安卓原生app,3企业微信,4华为welink,5苹果
 	*/
 	public function iswebbro($lx=0)
 	{
-		$lxar = array('micromessenger','dingtalk','xinhuapp','wxwork');
+		$lxar = array('micromessenger','dingtalk','xinhuapp','wxwork','huawei-anyoffice','iphone');
 		return contain(strtolower($this->HTTPweb), $lxar[$lx]);
 	}
 		
@@ -320,7 +320,7 @@ final class rockClass
 		$web 	= $this->HTTPweb;
 		$val	= 'IE';
 		$parr	= array(
-			array('MSIE 5'),array('MSIE 6'),array('XIAOMI','xiaomi'),array('HUAWEI','huawei'),array('XINHUAPP','xinhu'),array('DingTalk','ding'),array('MSIE 7'),array('MSIE 8'),array('MSIE 9'),array('MSIE 10'),array('MSIE 11'),array('rv:11','MSIE 11'),array('MSIE 12'),array('MicroMessenger','wxbro'),
+			array('MSIE 5'),array('MSIE 6'),array('XIAOMI','xiaomi'),array('HUAWEI','huawei'),array('XINHUAPP','xinhu'),array('DingTalk','ding'),array('MSIE 7'),array('MSIE 8'),array('MSIE 9'),array('MSIE 10'),array('MSIE 11'),array('rv:11','MSIE 11'),array('MSIE 12'),array('HuaWei-AnyOffice','welink'),array('MicroMessenger','wxbro'),
 			array('MSIE 13'),array('Firefox'),array('OPR/','Opera'),array('Edge'),array('Chrome'),array('Safari'),array('Android'),array('iPhone')
 		);
 		foreach($parr as $wp){

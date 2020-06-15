@@ -70,7 +70,7 @@ class mode_custxiaoClassAction extends inputAction{
 		}
 		
 		$where 	= '`uid`='.$this->adminid.' and `status`=1 and `type`=0 and (`xiaoid`=0 or `id`='.$custractid.')';
-		$rows 	= m('custract')->getrows($where, 'id,custid,custname,`num`');
+		$rows 	= m('custract')->getrows($where, 'id,custid,custname,`num`','`id` desc');
 
 		foreach($rows as $k=>$rs){
 			$arr[] = array(

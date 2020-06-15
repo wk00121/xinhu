@@ -60,7 +60,7 @@ class inputAction extends Action
 		$flownum		= $this->moders['num'];
 		$table			= $this->moders['table'];
 		$sysisturn		= (int)$this->post('istrun','1');
-		$checkobj		= c('check');
+		$this->checkobj	= c('check');
 		if($this->isempt($table))$this->backmsg('模块未设置表名');
 		
 		$fieldsarr		= array();
@@ -102,9 +102,8 @@ class inputAction extends Action
 			if($fi1=='temp_' || $fi1=='base_')continue;
 			$val = $this->post($fid);
 			if($rs['isbt']==1 && isempt($val))$this->backmsg(''.$rs['name'].'不能为空');
-			if(!isempt($val) && $rs['fieldstype']=='email'){
-				if(!$checkobj->isemail($val))$this->backmsg(''.$rs['name'].'格式不对');
-			}
+			$msy = $this->attrcheck($val, arrvalue($rs, 'attr'), $this->checkobj);
+			if($msy)$this->backmsg(''.$rs['name'].''.$msy.'');
 			//if(!in_array($rs['fieldstype'], $lvls))$val = htmlspecialchars($val);
 			$uaarr[$fid] = $val;
 			$farrs[$fid] = array('name' => $rs['name']);
@@ -223,6 +222,18 @@ class inputAction extends Action
 			}
 		}
 		
+		//判断子表的
+		$tabless	 = $this->moders['tables'];
+		$tablessa	 = array();
+		if(!isempt($tabless))$tablessa = explode(',', $tabless);
+		if($tablessa)foreach($tablessa as $zbx=>$zbtab){
+			if($zbtab){
+				$this->getsubtabledata($zbx);
+				if($this->subtabledata_msg)$this->backmsg($this->subtabledata_msg);
+			}
+		}
+		
+		
 		$bo = $db->record($uaarr, $where);;
 		if(!$bo)$this->backmsg($this->db->lasterror());
 		
@@ -234,12 +245,8 @@ class inputAction extends Action
 		if($this->companyid==0)$this->companyid = m('admin')->getcompanyid();
 		
 		//保存多行子表
-		$tabless	 = $this->moders['tables'];
-		if(!isempt($tabless)){
-			$tablessa = explode(',', $tabless);
-			foreach($tablessa as $zbx=>$zbtab){
-				if($zbtab)$this->savesubtable($zbtab, $id, $zbx, $addbo);
-			}
+		if($tablessa)foreach($tablessa as $zbx=>$zbtab){
+			if($zbtab)$this->savesubtable($zbtab, $id, $zbx, $addbo);
 		}
 		
 		//保存后处理
@@ -259,6 +266,20 @@ class inputAction extends Action
 		$this->backmsg('', $subna, $id);
 	}
 	
+	//格式的判断
+	private function attrcheck($val, $attr, $checkobj)
+	{
+		if(!isempt($val) && !isempt($attr)){
+			if(contain($attr, 'email') && !$checkobj->isemail($val))return '必须是邮箱格式';
+			if(contain($attr, 'mobile') && !$checkobj->iscnmobile($val))return '必须是11位手机号';
+			if(contain($attr, 'onlyen') && $checkobj->isincn($val))return '不能有中文';
+			if(contain($attr, 'onlycn') && !$checkobj->isincn($val))return '必须包含中文';
+			if(contain($attr, 'number') && !$checkobj->isnumber($val))return '必须是数字';
+			if(contain($attr, 'date') && !$checkobj->isdate($val))return '必须是日期格式如2020-02-02';
+		}
+		return '';
+	}
+	
 	private function getsavenarr($nsrr, $bos=false)
 	{
 		if(!is_array($bos))$bos = array();
@@ -266,14 +287,18 @@ class inputAction extends Action
 		return $bos;
 	}
 	
+	private $subtabledata = array();
+	private $subtabledata_msg = '';
 	public function getsubtabledata($xu)
 	{
+		$this->subtabledata_msg = '';
+		if(isset($this->subtabledata[$xu]))return $this->subtabledata[$xu];
 		$arr 	= array();
 		$oi 	= (int)$this->post('sub_totals'.$xu.'');
 		if($oi<=0)return $arr;
 		$modeid		= $this->moders['id'];
 		$iszb		= $xu+1;
-		$farr		= m('flow_element')->getrows("`mid`='$modeid' and `islu`=1 and `iszb`=$iszb",'`name`,`fields`,`isbt`,`fieldstype`,`savewhere`,`dev`,`data`','`sort`');
+		$farr		= m('flow_element')->getrows("`mid`='$modeid' and `islu`=1 and `iszb`=$iszb",'`name`,`fields`,`isbt`,`fieldstype`,`savewhere`,`dev`,`data`,`attr`','`sort`');
 		$sort 		= 0;
 		for($i=0; $i<$oi; $i++){
 			$sid  = (int)$this->post('sid'.$xu.'_'.$i.'');
@@ -285,9 +310,16 @@ class inputAction extends Action
 				if(substr($fid,0,5)=='temp_')continue;
 				$na = ''.$fid.''.$xu.'_'.$i.'';
 				$val= $this->post($na);
-				if($rs['isbt']==1&&$this->isempt($val))$bos=false;
-				$uaarr[$fid] = $val;
+				if($rs['isbt']==1 && isempt($val))$bos=false;
 				
+				$msy = $this->attrcheck($val,$rs['attr'], $this->checkobj);
+				if($msy){
+					$msy='第'.$iszb.'子表行'.($sort+1).'的'.$rs['name'].''.$msy.'';
+					$this->subtabledata_msg = $msy;
+					return $arr;
+				}
+				
+				$uaarr[$fid] = $val;
 				if(substr($flx,0,6)=='change' && !isempt($rs['data'])){
 					$na = ''.$rs['data'].''.$xu.'_'.$i.'';
 					$val= $this->post($na);
@@ -299,6 +331,7 @@ class inputAction extends Action
 			$sort++;
 			$arr[] = $uaarr;
 		}
+		$this->subtabledata[$xu] = $arr;
 		return $arr;
 	}
 	

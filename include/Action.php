@@ -114,6 +114,7 @@ abstract class mainAction{
 		$showheader	= 1;
 		if($this->rock->iswebbro(0)
 			|| $this->rock->iswebbro(1)
+			|| $this->rock->iswebbro(4)
 			|| $this->rock->get('hideheader')=='true'
 			|| $this->rock->iswebbro(2))$showheader = 0; //隐藏头部
 		//if($showheader == 0 && $this->get('show')=='we')$showheader	= 1;

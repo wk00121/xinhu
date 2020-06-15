@@ -308,6 +308,10 @@ class fileClassModel extends Model
 				$content	= file_get_contents($filepath);
 				echo base64_decode($content);
 			}else{
+				if($this->rock->iswebbro(0) && $this->rock->iswebbro(5)){
+					header('location:'.$filepath.'');
+					return;
+				}
 				ob_clean();flush();readfile($filepath);return;
 				if($rs['filesize'] > 5*1024*1024){
 					header('location:'.$filepath.'');

@@ -103,6 +103,7 @@ class wordClassModel extends Model
 		if($atype=='shatewfx')$lx=2;
 		
 		$ismanage = 0;
+		$isup 	= 0;
 		$key 	= $this->rock->post('key');
 		$where 	= 'a.`cid` in('.$cqids.') ';
 		
@@ -111,16 +112,19 @@ class wordClassModel extends Model
 		if($lx==0){
 			if($cqid>0){
 				$where.=' and a.`cid`='.$cqid.'';
-				
+				$dbs 	= m('admin');
 				//判断是否有管理权限
-				$dbs   = m('admin');
-				if($dbs->getmou('type', $uid)=='1'){
-					$ismanage=1;
+				$cqrs  = m('worc')->getone($cqid);
+				if(!isempt($cqrs['guanid'])){
+					if($dbs->containjoin($cqrs['guanid'], $uid))$ismanage=1;
 				}else{
-					$cqrs  = m('worc')->getone($cqid);
-					if($cqrs && !isempt($cqrs['guanid'])){
-						if($dbs->containjoin($cqrs['guanid'], $uid))$ismanage=1;
-					}
+					if($dbs->getmou('type', $uid)=='1')$ismanage=1;
+				}
+				
+				if(isempt($cqrs['upuserid'])){
+					if($cqrs['uid']==$uid)$isup = 1;
+				}else{
+					if($dbs->containjoin($cqrs['upuserid'], $uid))$isup=1;
 				}
 			}
 			$where.=' and a.`typeid`='.$typeid.'';
@@ -201,6 +205,8 @@ class wordClassModel extends Model
 		}
 		$barr['rows'] = $rows;
 		$barr['ismanage'] = $ismanage; //是否有管理权限
+		$barr['isup'] 	  = $isup; //是否可上传
+		$barr['officebj'] =  getconfig('officebj');
 		return $barr;
 	}
 	

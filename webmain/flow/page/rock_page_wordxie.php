@@ -251,7 +251,8 @@ c.setcolumns('temp_opt', {
 showvies{rand}=function(oi,lx){
 	var d=a.getData(oi);
 	if(lx==3){
-		js.sendeditoffice(d.fileid);
+		//js.sendeditoffice(d.fileid);
+		js.fileopt(d.fileid,2);
 		return;
 	}
 	if(lx==1){

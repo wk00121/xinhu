@@ -106,4 +106,13 @@ class publicClassAction extends ActionNot{
 		$id = (int)$this->get('id','0');
 		return c('xinhuapi')->officedown($id);
 	}
+	
+	/**
+	*	第三方编辑调用
+	*/
+	public function fileeditAction()
+	{
+		$id = (int)$this->get('id','0');
+		$this->smartydata['id'] = $id;
+	}
 }

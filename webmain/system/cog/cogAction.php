@@ -73,7 +73,8 @@ class cogClassAction extends Action
 		$arr['asynsend'] 	= getconfig('asynsend');
 		$arr['defstype'] 	= getconfig('defstype','1');
 		$arr['officeyl'] 	= getconfig('officeyl'); //文档预览
-		//$arr['officedk'] 	= getconfig('officedk');
+		$arr['officebj'] 	= getconfig('officebj');
+		$arr['officebj_key'] = getconfig('officebj_key');
 		$arr['useropt'] 	= getconfig('useropt');
 		$arr['sqllog'] 		= getconfig('sqllog') ? '1' : '0';
 		$arr['debug'] 		= getconfig('debug') ? '1' : '0';
@@ -88,7 +89,10 @@ class cogClassAction extends Action
 		$loginyzm			= getconfig('loginyzm');
 		if(!$loginyzm)$loginyzm	= '0';
 		$arr['loginyzm'] 	= $loginyzm;
-		if(getconfig('systype')=='demo')$arr['xinhukey']='';
+		if(getconfig('systype')=='demo'){
+			$arr['xinhukey']='';
+			$arr['officebj_key']='';
+		}
 		if(!isempt($arr['xinhukey']))$arr['xinhukey'] = substr($arr['xinhukey'],0,5).'*****'.substr($arr['xinhukey'],-5);
 		
 		$this->returnjson($arr);
@@ -148,7 +152,8 @@ class cogClassAction extends Action
 		$arr['useropt'] 	= $this->post('useropt');
 		$arr['editpass'] 	= $this->post('editpass');
 		$arr['defstype'] 	= $this->post('defstype','1');
-		//$arr['officedk'] 	= $this->post('officedk');
+		$arr['officebj'] 	= $this->post('officebj');
+		$arr['officebj_key']= $this->post('officebj_key');
 		
 		$asynsend 		 	= $this->post('asynsend');
 		$arr['asynsend'] 	= $asynsend;
@@ -196,6 +201,8 @@ class cogClassAction extends Action
 		$smarr['editpass']		= '用户登录修改密码：0不用修改，1强制用户必须修改';
 		$smarr['companymode']	= '多单位模式，true就是开启';
 		$smarr['outurl']		= '这个地址当你内网地址访问时向手机推送消息的地址';
+		$smarr['officebj']		= '文档在线编辑，1官网提供或者自己部署';
+		$smarr['officebj_key']	= '文档在线编辑agentkey';
 		
 		$str1 = '';
 		foreach($arr as $k=>$v){

@@ -8,7 +8,7 @@ defined('HOST') or die ('not access');
 $(document).ready(function(){
 	
 	
-	var cqid = 0,typeid = 0,lboss=false,fqarr={},isnotquan=true;
+	var cqid = 0,typeid = 0,lboss=false,fqarr={},isnotquan=true,isup=false;
 	var at = $('#optionview_{rand}').bootstree({
 		url:publicmodeurl('worc','getworc'),
 		columns:[{
@@ -19,7 +19,7 @@ $(document).ready(function(){
 		load:function(d){
 			if(!lboss && d.ids)a.setparams({'cqids':d.ids}, true);
 			lboss = true;
-			for(var i=0;i<d.rows.length;i++)fqarr[d.rows[i].id]=d.rows[i].ismanage;//记录是否管理权限
+			for(var i=0;i<d.rows.length;i++)fqarr[d.rows[i].id]=d.rows[i];//记录是否管理权限
 		},
 		itemdblclick:function(d){
 			c.openfenqu(d.id,d.name);
@@ -118,7 +118,7 @@ $(document).ready(function(){
 			at.reload();
 		},
 		uploadfile:function(){
-			if(isnotquan)return;
+			if(!isup)return;
 			var na = at.changedata.name,upte=at.changedata.uptype;
 			if(!na)na='文件';
 			if(!upte)upte='';
@@ -143,14 +143,17 @@ $(document).ready(function(){
 		openfolder:function(id,cid){
 			typeid = id;
 			cqid = cid;//分区ID 
-			var bo = false;//有权限
+			var bo = false,upbo=false;//有权限
 			if(cqid==0){
 				bo=true;
 			}else{
-				if(fqarr[cqid]!=1)bo=true;
+				var fqa = fqarr[cqid];
+				if(fqa.ismanage!=1)bo=true;
+				if(fqa.isup==1)upbo=true;
 			}
+			isup = upbo;
 			isnotquan = bo;//记录是否有权限
-			get('upbtn_{rand}').disabled=bo;
+			get('upbtn_{rand}').disabled= (!isup);
 			get('cretefile_{rand}').disabled=bo;
 			get('gong_{rand}').disabled=bo;
 			get('gongqx_{rand}').disabled=bo;
@@ -168,7 +171,26 @@ $(document).ready(function(){
 					s+=' / <a href="javascript:;" onclick="openfolder{rand}('+ds.id+','+ds.cid+',1)">'+ds.name+'</a>';
 				}
 			}
-			if(isnotquan)s='<span class="label label-default">只读</span> '+s;
+			var zts = '',ysz='';
+			if(isnotquan){
+				if(isup){
+					zts='仅上传';
+					ysz= 'warning';
+				}else{
+					zts='只读';
+					ysz= 'default';
+				}
+			}else{
+				if(isup){
+					zts='可管理可上传';
+					ysz= 'success';
+				}else{
+					zts='仅管理';
+					ysz= 'info';
+				}
+			}
+			
+			if(zts)s='<span class="label label-'+ysz+'">'+zts+'</span> '+s;
 			$('#megss{rand}').html(s);
 		},
 		savefile:function(tps, sid){

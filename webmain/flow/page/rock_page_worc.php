@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'worc',modename='文档分区',isflow=0,modeid='74',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u540d\u79f0","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"recename","name":"\u53ef\u67e5\u770b\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"guanname","name":"\u7ba1\u7406\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"uptype","name":"\u9650\u5236\u4e0a\u4f20\u7c7b\u578b","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u540d\u79f0","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"recename","name":"\u53ef\u67e5\u770b\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"upuser","name":"\u53ef\u4e0a\u4f20\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"guanname","name":"\u7ba1\u7406\u4eba\u5458","fieldstype":"changedeptusercheck","ispx":"0","isalign":"0","islb":"1"},{"fields":"sort","name":"\u6392\u5e8f\u53f7","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"optname","name":"\u64cd\u4f5c\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"uptype","name":"\u9650\u5236\u4e0a\u4f20\u7c7b\u578b","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
 	var c = {
 		reload:function(){
@@ -210,7 +210,7 @@ $(document).ready(function(){
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('d29yYw::'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"名称",dataIndex:"name",sortable:true},{text:"可查看人员",dataIndex:"recename"},{text:"管理人员",dataIndex:"guanname"},{text:"排序号",dataIndex:"sort",sortable:true},{text:"操作人",dataIndex:"optname",sortable:true},{text:"限制上传类型",dataIndex:"uptype"},{
+		columns:[{text:"名称",dataIndex:"name",sortable:true},{text:"可查看人员",dataIndex:"recename"},{text:"可上传人员",dataIndex:"upuser"},{text:"管理人员",dataIndex:"guanname"},{text:"排序号",dataIndex:"sort",sortable:true},{text:"操作人",dataIndex:"optname",sortable:true},{text:"限制上传类型",dataIndex:"uptype"},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){

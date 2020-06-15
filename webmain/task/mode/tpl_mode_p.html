@@ -244,6 +244,21 @@ if($stype!=''){
 				?>
 				</div></td>
 			</tr>
+			<?php
+			//是否可抄送
+			if($flowinfor['ischao']>0){
+			?>
+			<tr>
+				<td class="tdys1"><div  align="right" style="color:#555555">抄送</div></td>
+				<td class="tdys1" style="padding:5px"><div align="left">
+				<input name="bzcslx" type="hidden" value="<?=$flowinfor['ischao']?>">
+				<table width="98%" cellpadding="0" border="0"><tr><td width="100%"><input placeholder="选择了抄送对应人" class="inputs" style="width:98%" id="bzchaosongname" readonly type="text" name="bzchaosongname"><input name="bzchaosongnameid" id="bzchaosongname_id" type="hidden"></td><td nowrap><a href="javascript:;" onclick="js.changeclear('bzchaosongname')" class="webbtn">×</a><a href="javascript:;" onclick="js.changeuser('bzchaosongname','changeusercheck','',{changerange:'<?=$flowinfor['ischaofwid']?>'})" class="webbtn">选择</a></td></tr></table>
+				</div></td>
+			</tr>	
+			<?php 
+			}
+			?>
+			
 			<input type="hidden" id="isqianming" value="<?=$flowinfor['nowcourse']['isqm']?>">
 			<?php 
 			//需要签名才显示

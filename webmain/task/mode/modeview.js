@@ -94,7 +94,8 @@ function check(lx){
 	var da = {'sm':sm,'tuiid':'0','fileid':'','mid':mid,'modenum':modenum,'zt':_getaolvw('check_status'),'qmimgstr':qmimgstr};
 	if(form('fileid'))da.fileid=form('fileid').value;
 	if(form('check_tuiid'))da.tuiid=form('check_tuiid').value;
-	var smlx = form('check_smlx').value,wjlx=form('check_wjlx').value;
+	var smlx = form('check_smlx').value,wjlx=form('check_wjlx').value,cslx=0;
+	if(form('bzcslx'))cslx = form('bzcslx').value;
 	js.setmsg();
 	if(da.zt==''){
 		js.setmsg('请选择处理动作');
@@ -116,6 +117,15 @@ function check(lx){
 	if(form('zhuanbanname')){
 		da.zyname 	= form('zhuanbanname').value;
 		da.zynameid = form('zhuanbannameid').value;
+	}
+	
+	if(form('bzchaosongname')){
+		da.csname 	= form('bzchaosongname').value;
+		da.csnameid = form('bzchaosongnameid').value;
+	}
+	
+	if(cslx==2 && da.zt=='1' && !da.csnameid){
+		js.setmsg('此动作必须选择抄送');return;
 	}
 	
 	//手写签名判断

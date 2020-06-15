@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_course',
 		url:publicsave('{mode}','{dir}'),beforesaveaction:'coursesavebefore',
 		params:{otherfields:'optdt={now}'},
-		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate,zbrangeame,zbrangeid,smlx,wjlx,isxgfj',
+		submitfields:'setid,name,num,checktype,checktypeid,checktypename,checkfields,sort,where,whereid,explain,status,courseact,checkshu,recename,receid,mid,iszf,isqm,nid,coursetype,zshtime,zshstate,zbrangeame,zbrangeid,smlx,wjlx,isxgfj,cslx,csfwname,csfwid',
 		requiredfields:'name',
 		success:function(){
 			closenowtabs();
@@ -23,6 +23,7 @@ $(document).ready(function(){
 			if(a.data){
 				h.form.where.value=jm.base64decode(a.data.where);
 				if(a.data.iszf>0)$('#zbdiv_{rand}').show();
+				if(a.data.cslx>0)$('#csdiv_{rand}').show();
 			}
 		},
 		submitcheck:function(d){
@@ -142,17 +143,44 @@ $(document).ready(function(){
 				type:'deptusercheck',
 				title:'选择转办范围'
 			};
+			if(lx==2){
+				cans.nameobj = h.form.csfwname;
+				cans.idobj = h.form.csfwid;
+				cans.title = '选择抄送范围';
+			}
 			js.getuser(cans);
 		},
-		getzbraben:function(){
-			h.form.zbrangeame.value='本部门';
-			h.form.zbrangeid.value='dept';
+		getzbraben:function(o1,lx){
+			if(lx==1){
+				h.form.zbrangeame.value='本部门';
+				h.form.zbrangeid.value='dept';
+			}
+			if(lx==2){
+				h.form.csfwname.value='本部门';
+				h.form.csfwid.value='dept';
+			}
 		},
-		getzbrabens:function(){
-			h.form.zbrangeame.value='本部门(含下级部门)';
-			h.form.zbrangeid.value='deptall';
+		getzbrabens:function(o1,lx){
+			if(lx==1){
+				h.form.zbrangeame.value='本部门(含下级部门)';
+				h.form.zbrangeid.value='deptall';
+			}
+			if(lx==2){
+				h.form.csfwname.value='本部门(含下级部门)';
+				h.form.csfwid.value='deptall';
+			}
 		},
-		allqt:function(){
+		getzbraremoves:function(o1,lx){
+			if(lx==1){
+				h.form.zbrangeame.value='';
+				h.form.zbrangeid.value='';
+			}
+			if(lx==2){
+				h.form.csfwname.value='';
+				h.form.csfwid.value='';
+			}
+		},
+		allqt:function(o1,lx){
 			h.form.recename.value='全体人员';
 			h.form.receid.value='all';
 		},
@@ -160,10 +188,7 @@ $(document).ready(function(){
 			h.form.recename.value='';
 			h.form.receid.value='';
 		},
-		getzbraremoves:function(){
-			h.form.zbrangeame.value='';
-			h.form.zbrangeid.value='';
-		},
+		
 		setstatus:function(){
 			var val = h.form.courseact.value;
 			var sha = [],vala;
@@ -235,7 +260,15 @@ $(document).ready(function(){
 			$('#zbdiv_{rand}').show();
 		}else{
 			$('#zbdiv_{rand}').hide();
-			c.getzbraremoves();
+			c.getzbraremoves(false, 1);
+		}
+	});
+	$(h.form.cslx).change(function(){
+		if(this.value>0){
+			$('#csdiv_{rand}').show();
+		}else{
+			$('#csdiv_{rand}').hide();
+			c.getzbraremoves(false,2);
 		}
 	});
 	
@@ -390,9 +423,9 @@ $(document).ready(function(){
 					<input readonly class="form-control" placeholder="不选就可转办给任何人" name="zbrangeame" >
 					<input type="hidden" name="zbrangeid" >
 					<span class="input-group-btn">
-						<button class="btn btn-default" click="getzbraremoves" type="button"><i class="icon-remove"></i></button>
-						<button class="btn btn-default" click="getzbraben" type="button">本部门</button>
-						<button class="btn btn-default" click="getzbrabens" type="button">本部门(含下级)</button>
+						<button class="btn btn-default" click="getzbraremoves,1" type="button"><i class="icon-remove"></i></button>
+						<button class="btn btn-default" click="getzbraben,1" type="button">本部门</button>
+						<button class="btn btn-default" click="getzbrabens,1" type="button">本部门(含下级)</button>
 						<button class="btn btn-default" click="getzbrangeame,1" type="button"><i class="icon-search"></i></button>
 					</span>
 				</div>
@@ -420,18 +453,34 @@ $(document).ready(function(){
 				</select>
 			</td>
 		</tr>
-		<!--
+		
 		<tr>
 			<td align="right">抄送类型：</td>
 			<td class="tdinput">
-				<select class="form-control" name="iszf">
+				<select class="form-control" name="cslx">
 				<option value="0">不用抄送</option>
 				<option value="1">可选抄送</option>
 				<option value="2">同意时必须选抄送</option>
 				</select>
 			</td>
 		</tr>
-		-->
+		<tr id="csdiv_{rand}" style="display:none">
+			<td  align="right" nowrap >抄送的范围：</td>
+		
+			<td class="tdinput" colspan="3">
+				<div style="width:100%" class="input-group">
+					<input readonly class="form-control" placeholder="不选就可抄送给任何人" name="csfwname" >
+					<input type="hidden" name="csfwid" >
+					<span class="input-group-btn">
+						<button class="btn btn-default" click="getzbraremoves,2" type="button"><i class="icon-remove"></i></button>
+						<button class="btn btn-default" click="getzbraben,2" type="button">本部门</button>
+						<button class="btn btn-default" click="getzbrabens,2" type="button">本部门(含下级)</button>
+						<button class="btn btn-default" click="getzbrangeame,2" type="button"><i class="icon-search"></i></button>
+					</span>
+				</div>
+			</td>
+		</tr>
+		
 		
 			
 		<tr>

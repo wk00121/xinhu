@@ -44,6 +44,10 @@ class uploadClassAction extends apiAction
 		if(!$frs)exit('文件记录不存在了');
 		
 		$frs['oldfilepath'] = $frs['filepath'];
+		$filename 			= $frs['filename'];
+		if(!contain($filename, '.'.$fileext.'')){
+			$filename = str_replace(array('.doc','.xls','.ppt'), '.'.$fileext.'', $filename);
+		}
 		
 		$filepath = ''.UPDIR.'/'.date('Y-m').'/'.date('d_His').''.rand(10,99).'.'.$fileext.'';
 		$this->rock->createtxt($filepath, base64_decode($data));
@@ -53,6 +57,7 @@ class uploadClassAction extends apiAction
 		
 		//更新文件
 		$fileobj->update(array(
+			'filename' 		=> $filename,
 			'filepath' 		=> $filepath,
 			'filenum' 		=> '',
 			'filesize' 		=> $filesize,
@@ -60,6 +65,7 @@ class uploadClassAction extends apiAction
 			'fileext' 		=> $fileext,
 			'pdfpath' 		=> '',
 		),$fileid);
+		c('cache')->del('filetopdf'.$fileid.'');
 		
 		//发队列自动上传到信呼文件平台
 		if(getconfig('autoup_toxinhudoc')){
@@ -328,9 +334,14 @@ class uploadClassAction extends apiAction
 			
 			//编辑
 			if($type==2){
-				if($ismobile==1)return returnerror('移动端不支持在线编辑');
-				$data['fileext']='rockoffice';
-				$data['url'] = $this->rock->gethttppath($filepath);;
+				if(getconfig('officebj')=='1'){
+					$data['fileext']='rockedit';
+					$data['url'] = 'index.php?m=public&a=fileedit&id='.$fileid.'';
+				}else{
+					if($ismobile==1)return returnerror('移动端不支持在线编辑');
+					$data['fileext']='rockoffice';
+					$data['url'] = $this->rock->gethttppath($filepath);
+				}
 			}
 		}
 		
@@ -395,5 +406,14 @@ class uploadClassAction extends apiAction
 			if(substr($frs['filepath'],0,4)=='http')$frs['downurl'] = $frs['filepath'];
 		}
 		return returnsuccess($frs);
+	}
+	
+	/**
+	*	编辑时验证
+	*/
+	public function sendeditAction()
+	{
+		$id 		= (int)$this->get('id',0);
+		return c('rockedit')->sendedit($id, $this->admintoken);
 	}
 }

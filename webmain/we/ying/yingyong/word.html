@@ -17,7 +17,9 @@ var c = {
 	typeid:0,
 	cqid:0,
 	ismanage:0,
+	isup:0,
 	uptype:'',
+	officebj:'',
 	init:function(){
 		c.getfile(0,0);
 		c.upobj = $.rockupload({
@@ -83,17 +85,24 @@ var c = {
 	disabedgl:function(lx){
 		var clas = 'weui_navbar_item_disabled';
 		if(lx){
-			$('div[tempxu=0]').addClass(clas);
 			$('div[tempxu=2]').addClass(clas);
 		}else{
-			$('div[tempxu=0]').removeClass(clas);
 			$('div[tempxu=2]').removeClass(clas);
+		}
+	},
+	disableup:function(lx){
+		var clas = 'weui_navbar_item_disabled';
+		if(lx){
+			$('div[tempxu=0]').addClass(clas);
+		}else{
+			$('div[tempxu=0]').removeClass(clas);
 		}
 	},
 	getfile:function(pid,cid,alx,padg){
 		this.typeid = pid;
 		this.cqid = cid;
 		this.disabedgl(true);
+		this.disableup(true);
 		if(!alx)alx='';
 		this.atype = alx;
 		if(!padg)padg=1;
@@ -101,7 +110,10 @@ var c = {
 		get('cpselect').value = this.cqid;
 		js.ajax('word','getdata',{typeid:pid,cqid:this.cqid,cqids:cqids,atype:alx,page:padg,key:yy.sousoukey},function(a){
 			c.ismanage = a.ismanage;
+			c.isup = a.isup;
+			c.officebj = a.officebj;
 			if(a.ismanage==1)c.disabedgl(false);//有权限
+			if(a.isup==1)c.disableup(false);//有权限
 			c.data=[];
 			c.showdata(a);
 		},'mode');
@@ -162,6 +174,10 @@ var c = {
 		$(o1).css('background','#f3f3f3');
 		this._olodwet = o1;
 	},
+	isoffice:function(ext){
+		var strs = ',doc,dot,wps,wpt,docx,dotx,docm,dotm,xls,xlt,et,xlsx,xltx,csv,xlsm,xltm,ppt,pptx,pptm,ppsx,ppsm,pps,potx,potm,dpt,dps,';
+		return strs.indexOf(','+ext+',')>=0;
+	},
 	clicksse:function(oi,e,o1){
 		this.chentcolor(oi,e,o1);
 		var d = this.data[oi-1];
@@ -176,6 +192,7 @@ var c = {
 			a.push({name:'删除',lx:4});
 			a.push({name:'共享给...',lx:5});
 			a.push({name:'移动',lx:2});
+			if(this.officebj=='1' && this.isoffice(d.fileext))a.push({name:'编辑',lx:8});
 		}
 		if(d.fileext!='folder'){
 			a.push({name:'转发给...',lx:6});
@@ -192,6 +209,7 @@ var c = {
 		if(lx==5)this.fenxiang();
 		if(lx==6)this.zhuanfagei();
 		if(lx==7)this.yulans();
+		if(lx==8)js.fileopt(this.tempda.fileid,2);
 	},
 	celdblckc:function(oi){
 		var d = this.data[oi-1];

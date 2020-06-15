@@ -149,6 +149,8 @@ class scheduleClassModel extends Model
 			'applydt' 	=> $this->rock->date,
 			'explain' 	=> $dbrs['explain'],
 			'optname' 	=> $dbrs['optname'],
+			'optid' 	=> $dbrs['uid'],
+			'comid' 	=> $dbrs['comid'],
 			'receid' 	=> $dbrs['receid'],
 			'recename' 	=> $dbrs['recename'],
 			'distid' 	=> $dbrs['uid'],

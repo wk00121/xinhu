@@ -388,6 +388,12 @@ js.fileopt=function(id,lx){
 				if(da.type==1){js.location(url);return;}//下载直接跳转
 				if(js.isimg(ext)){
 					$.imgview({'url':url,'ismobile':ismobile==1,'downbool':false});
+				}else if(ext=='rockedit'){
+					if(ismobile==0){
+						js.open(url,screen.width-200,screen.height-200);
+					}else{
+						js.location(url);
+					}
 				}else if(ext=='rockoffice'){
 					js.sendeditoffices(url);
 				}else{

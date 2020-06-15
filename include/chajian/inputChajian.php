@@ -84,7 +84,12 @@ class inputChajian extends Chajian
 		$attr 	= $a['attr'];
 		$lens 	= (int)arrvalue($a, 'lens','0');
 		$styles = '';
-		$style  = arrvalue(explode(',', $a['attr']),1);
+		$style	= '';
+		if(contain($attr,',')){
+			$attra = explode(',', $a['attr']);
+			$style = $attra[1];
+			$attr  = $attra[0];
+		}
 		if(!isempt($style))$styles=' style="'.$style.'"';
 		$fnams 	= $this->rock->arrvalue($a,'name');$fieldname = $fnams;
 		if($a['isbt']==1)$fnams='*'.$fnams.'';

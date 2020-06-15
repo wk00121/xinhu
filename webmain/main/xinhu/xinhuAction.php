@@ -1,4 +1,5 @@
 <?php
+//服务端设置
 class xinhuClassAction extends Action
 {
 	public function initAction()
@@ -24,7 +25,7 @@ class xinhuClassAction extends Action
 		$arr['reimrecid']= $this->option->getval('reimrecidsystem');
 		$arr['reimpushurl']= $this->option->getval('reimpushurlsystem');
 		$arr['reimchehui']= $this->option->getval('reimchehuisystem');
-		$arr['servertype']= $this->rock->repempt($this->option->getval('reimservertype'),'0');
+		$arr['servertype']= $this->rock->repempt($this->option->getval('reimservertype'),'1');
 		$arr['reimappwx']= $this->rock->repempt($this->option->getval('reimappwxsystem'),'0');
 		echo json_encode($arr);
 	}

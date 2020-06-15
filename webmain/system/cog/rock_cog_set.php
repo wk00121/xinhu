@@ -11,6 +11,7 @@ $(document).ready(function(){
 				for(var i in a)$('#'+i+'_{rand}').val(a[i]);
 				if(a.isshou=='1')$('#benquan_{rand}').html('<font color=green>授权版</font>');
 				if(isempt(a.asyntest))get('asynsend_{rand}').length=1;
+				if(a.officebj=='1')$('#divofficebj_key').show();
 			},'get,json');
 		},
 		loadys:function(){
@@ -51,6 +52,13 @@ $(document).ready(function(){
 		},
 		auther:function(){
 			addtabs({name:'系统签授',num:'auther',url:'system,cog,auther',icons:'key'});
+		},
+		changebj:function(o1){
+			if(o1.value=='1'){
+				$('#divofficebj_key').show();
+			}else{
+				$('#divofficebj_key').hide();
+			}
 		}
 	};
 	js.initbtn(c);
@@ -61,6 +69,9 @@ $(document).ready(function(){
 	});
 	$('#localurl_{rand}').blur(function(){
 		c.blurls(this);
+	});
+	$('#officebj_{rand}').change(function(){
+		c.changebj(this);
 	});
 });
 </script>
@@ -177,8 +188,11 @@ $(document).ready(function(){
 			<option value="4">自己服务器安装LibreOffice转PDF服务(Win和Linux)都可以部署</option>
 			</select></td>
 			
-			<td  align="right">记录用户操作：</td>
-			<td class="tdinput"><select id="useropt_{rand}"  class="form-control"><option value="">不记录</option><option value="1">记录到日志里</option></select></td>
+			<td  align="right">文档在线编辑：</td>
+			<td class="tdinput">
+			<select id="officebj_{rand}"  class="form-control"><option value="">安装客户端在线编辑插件</option><option value="1">官网提供在线编辑服务(官网VIP专用)</option></select>
+			<div id="divofficebj_key" style="display:none">在线编辑agentkey，看<a target="_blank" href="<?=URLY?>view_agentkey.html">[帮助]</a>获取<input class="form-control" id="officebj_key_{rand}"></div>
+			</td>
 			
 		</tr>
 		
@@ -186,8 +200,8 @@ $(document).ready(function(){
 			<td  align="right">PC后端默认主题：</td>
 			<td class="tdinput"><select id="defstype_{rand}" style="width:80px"></select>&nbsp;必须去<a href="<?=URLY?>view_themes.html" target="_blank">下载主题包</a>，否则不能使用</td>
 			
-			<td align="right">登录修改密码：</td>
-			<td class="tdinput"><select id="editpass_{rand}"  class="form-control"><option value="0">不用修改</option><option value="1">强制用户必须修改</option></select></td>
+			<td  align="right">记录用户操作：</td>
+			<td class="tdinput"><select id="useropt_{rand}"  class="form-control"><option value="">不记录</option><option value="1">记录到日志里</option></select></td>
 			
 		</tr>
 		
@@ -196,6 +210,9 @@ $(document).ready(function(){
 			
 			<td align="right">多单位模式：</td>
 			<td class="tdinput"><select id="companymode_{rand}"  class="form-control"><option value="0">不开启</option><option value="1">开启(各单位分开数据管理)</option></select></td>
+			
+			<td align="right">登录修改密码：</td>
+			<td class="tdinput"><select id="editpass_{rand}"  class="form-control"><option value="0">不用修改</option><option value="1">强制用户必须修改</option></select></td>
 			
 		</tr>
 		
