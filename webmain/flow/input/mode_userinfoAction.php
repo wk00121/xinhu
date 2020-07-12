@@ -15,9 +15,9 @@ class mode_userinfoClassAction extends inputAction{
 		if(!c('check')->ismobile($mobile)){
 			return '手机号格式有误';
 		}
-		if(m('admin')->rows("`mobile`='$mobile' and `id`<>'$id'")>0){
-			return '手机号['.$mobile.']已存在';
-		}
+		//if(m('admin')->rows("`mobile`='$mobile' and `id`<>'$id'")>0){
+		//	return '手机号['.$mobile.']已存在';
+		//}
 		
 		$notsave = 'name,deptname,ranking,email';//不保存字段
 		if($id==1)$notsave.=',quitdt';

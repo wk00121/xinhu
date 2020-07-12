@@ -105,4 +105,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">定位打卡并不能使用做考勤打卡，目前只是用于外勤定位打卡使用。</div>
+<div class="tishi">定位记录并不能使用做考勤打卡，目前只是用于外勤定位打卡使用。</div>

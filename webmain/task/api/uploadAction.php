@@ -120,10 +120,10 @@ class uploadClassAction extends apiAction
 	*/
 	public function initfileAction()
 	{
-		$filesize	= $this->post('filesize');
+		$filesize	= c('check')->onlynumber($this->post('filesize'));
 		$fileext	= $this->post('fileext');
 		$filename	= $this->getvals('filename');
-		$where 		= "`fileext`='$fileext' and `filesize`=$filesize";
+		$where 		= "`fileext`='$fileext' and `filesize`='$filesize'";
 		if(!isempt($filename))$where.=" and `filename`='$filename'";
 		$frs 		= m('file')->getone($where,'*','`id` desc');
 		$bo 		= false;

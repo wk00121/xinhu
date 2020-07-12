@@ -46,6 +46,8 @@ function initbody(){
 		$('body').append(s);
 	}
 	
+	$('#contentshow img').click(function(){c.showviews(this)});
+	
 	//检查是否有编辑器
 	var hobj = $("span[fieldstype='htmlediter']");
 	if(hobj.length>0)js.importjs('mode/kindeditor/kindeditor-min.js', function(){
@@ -658,7 +660,6 @@ var c={
 		},'post');
 	},
 	
-	
 	initRecord:function(){
 		$('#filedivviewfile').prepend('<input onclick="js.wxRecord.startLuyin(this)" type="button" class="webbtn" style="padding:5px 8px;border-radius:5px" value="录音">&nbsp;');
 		js.wxRecord.success=function(ret){
@@ -666,5 +667,14 @@ var c={
 			var str='<div style="padding:3px;font-size:14px;border-bottom:1px #dddddd solid">录音:'+ret.filename+'('+ret.filesizecn+')</div>';
 			$('#filedivview').append(str);
 		}
+	},
+	
+	showeditcont:function(optdt,uid){
+		js.tanbody('editcont','修改记录',(ismobile==1) ? winWb()-10 : 600,300, {
+			html:'<div style="height:300px;overflow:auto"><div id="editcontview" style="padding:5px">'+js.getmsg('加载中...')+'</div></div>'
+		});
+		js.ajax(c.gurl('editcont'),{optdt:optdt,uid:uid,mid:mid,modenum:modenum},function(ret){
+			$('#editcontview').html(ret);
+		},'get');
 	}
 };

@@ -38,9 +38,9 @@ function initbody(){
 	if(temp_token.length>=8&&us!=''){
 		loginsubmit(0);
 	}
-	if(msurl.indexOf('#notuserid')>0){
-		js.wx.alert('无法使用快捷登录，可能未激活企业微信');
-	}else{
+	var errmsg = js.request('errmsg');
+	if(errmsg)js.wx.alert(jm.base64decode(errmsg));
+	if(!errmsg){
 		var ptoken = js.request('ptoken');
 		if(ptoken!='' && us!=''){
 			$('#adminpass').val(ptoken);
@@ -142,10 +142,10 @@ function loginsuccess(d){
 	var curl = (burl=='')?'?m=index&d=we':jm.base64decode(burl);
 	js.location(curl);
 }
-function yanzdengl(){
+function yanzdengl(lx){
 	js.wx.load('处理中...');
 	var burl = js.request('backurl');
-	js.location('?m=login&d=we&a=wxlogin&backurl='+burl+'');
+	js.location('?m=login&d=we&a=wxlogin&state=login&backurl='+burl+'');
 }
 
 //最新钉钉快捷登录使用
@@ -305,7 +305,7 @@ if($iskj>0){
 	if($iskj==3){
 		echo '<div onclick="dingdengl()" style="text-align:center;padding-top:10px;color:#1389D3">钉钉快捷登录</div>';
 	}else{
-		echo '<div onclick="yanzdengl()" style="text-align:center;padding-top:10px;color:#1389D3">'.(($iskj==2)?'企业':'').'微信快捷登录</div>';
+		echo '<div onclick="yanzdengl('.$iskj.')" style="text-align:center;padding-top:10px;color:#1389D3">'.(($iskj==2)?'企业':'').'微信'.(($iskj==4)? '公众号':'快捷').'登录</div>';
 	}
 }
 if($loginyzm>0 && $loginyzm!=3)echo '<div class="weui_extra_area" onclick="changlogin(this)" style="text-align:center;color:#888888;padding-bottom:10px">验证码登录</div>';

@@ -1,7 +1,7 @@
 <?php if(!defined('HOST'))die('not access');?>
 <script >
 $(document).ready(function(){
-	var  bools = false,mid=0;
+	var  bools = false,mid=0,flowarr=[];
 	function btn(bo){
 		get('edit_{rand}').disabled = bo;
 		get('del_{rand}').disabled = bo;
@@ -17,7 +17,7 @@ $(document).ready(function(){
 		},{
 			text:'名称',dataIndex:'name',editor:true
 		},{
-			text:'分组',dataIndex:'pnum',editor:true
+			text:'分组',dataIndex:'pnum',editor:true,sortable:true
 		},{
 			text:'编号',dataIndex:'num',editor:true
 		},{
@@ -69,6 +69,7 @@ $(document).ready(function(){
 					types = csd.type;
 				}
 				$('#mode_{rand}').html(s);
+				flowarr = a.flowarr;
 			}
 			bools=true;
 		}
@@ -107,6 +108,26 @@ $(document).ready(function(){
 			}else{
 				a.search("and `setid`="+mid+"");
 			}
+		},
+		searchs:function(){
+			var val = get('key_{rand}').value;
+			if(val){
+				var oi=-1,i,nud='';
+				for(i=0;i<flowarr.length;i++){
+					if(flowarr[i].name.indexOf(val)>-1){
+						oi = i;
+						nud=flowarr[i];
+						break;
+					}
+				}
+				if(oi==-1){
+					js.msg('msg','没有找到相关模块“'+val+'”');
+				}else{
+					mid = nud.id;
+					get('mode_{rand}').value = mid;
+					a.search("and `setid`="+mid+"");
+				}
+			}
 		}
 	};
 	js.initbtn(c);
@@ -129,7 +150,18 @@ $(document).ready(function(){
 <td style="padding-left:10px;">
 	<select style="width:200px" id="mode_{rand}" class="form-control" ><option value="0">-选择模块-</option></select>
 </td>
-<td width="80%"></td>
+<td width="80%" style="padding-left:8px">
+
+
+<div class="input-group" style="width:200px">
+	<input class="form-control" id="key_{rand}" placeholder="模块名称/编号">
+	<span class="input-group-btn">
+		<button class="btn btn-default" click="searchs" type="button"><i class="icon-search"></i></button>
+	</span>
+</div>
+
+
+</td>
 <td align="right" nowrap>
 	<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button> &nbsp; 
 		<button class="btn btn-danger" id="del_{rand}" disabled click="del" type="button"><i class="icon-trash"></i> 删除</button>

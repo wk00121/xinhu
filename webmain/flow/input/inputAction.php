@@ -774,6 +774,7 @@ class inputAction extends Action
 				}
 			}
 		}
+		$barr['loadci'] 	= $this->loadci;
 		$barr['rows'] 		= $rows;
 		$scarr 				= $this->storeafter($table, $rows);
 		if(is_array($scarr))foreach($scarr as $k=>$v)$barr[$k]=$v;

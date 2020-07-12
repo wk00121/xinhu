@@ -184,4 +184,23 @@ class flowoptClassAction extends Action
 		$fpdf->Output('F',''.UPDIR.'/logs/'.date('Y-m').'/to.pdf');
 		$this->showreturn('ok:'.$fpdf->GetPageHeight().'');
 	}
+	
+	
+	/**
+	*	获取修改记录
+	*/
+	public function editcontAjax()
+	{
+		$mid 	= (int)$this->get('mid');
+		$modenum= $this->get('modenum');
+		$optdt 	= (int)$this->get('optdt');
+		$uid 	= (int)$this->get('uid');
+		$db 	= m('edit');
+		$optdt1 = date('Y-m-d H:i:s', $optdt);
+		$table	= m('mode')->getmou('`table`',"`num`='$modenum'");
+		$rows 	= $db->getall("`table`='$table' and `mid`=$mid and `optid`=$uid and `optdt`='$optdt1'",'*','`id` asc');
+		if(!$rows)return '无修改记录';
+		
+		return c('html')->createrows($rows,'fieldsname,字段,left@oldval,原来值,left@newval,新值,left','#888888');
+	}
 }

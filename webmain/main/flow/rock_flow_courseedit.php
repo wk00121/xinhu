@@ -31,6 +31,7 @@ $(document).ready(function(){
 			if(d.checktype=='rank'&&d.checktypename=='')return '请输入职位';
 			if(d.checktype=='cname'&&d.checktypeid=='')return '请选择审核人员组';
 			if(d.checktype=='field'&&d.checktypeid=='')return '请选择主表元素';
+			if(d.cslx=='3'&&d.csfwid=='')return '请选择抄送人员';
 			return {
 				where:jm.base64encode(d.where)
 			};
@@ -179,6 +180,18 @@ $(document).ready(function(){
 				h.form.csfwname.value='';
 				h.form.csfwid.value='';
 			}
+		},
+		csxuanze:function(){
+			var s1 = h.form.csfwname.value,s2=h.form.csfwid.value;
+			if(s1){
+				s1+=',审批人直属上级';
+				s2+=',super';
+			}else{
+				s1='审批人直属上级';
+				s2='super';
+			}
+			h.form.csfwname.value=s1;
+			h.form.csfwid.value=s2;
 		},
 		allqt:function(o1,lx){
 			h.form.recename.value='全体人员';
@@ -461,6 +474,7 @@ $(document).ready(function(){
 				<option value="0">不用抄送</option>
 				<option value="1">可选抄送</option>
 				<option value="2">同意时必须选抄送</option>
+				<option value="3">同意时抄送给固定人</option>
 				</select>
 			</td>
 		</tr>
@@ -478,6 +492,7 @@ $(document).ready(function(){
 						<button class="btn btn-default" click="getzbrangeame,2" type="button"><i class="icon-search"></i></button>
 					</span>
 				</div>
+				<div><a href="javascript:;" click="csxuanze,2">审批人直属上级</a></div>
 			</td>
 		</tr>
 		

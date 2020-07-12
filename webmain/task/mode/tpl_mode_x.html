@@ -62,6 +62,7 @@ td.tdys1{border:1px #e5e5e5 solid;text-align:center;padding:0px 5px}
 .statustext{position: absolute;right:5px;top:5px;width:60px;height:60px;overflow:hidden; border:2px red solid;border-radius:50%;font-size:16px;text-align:center;line-height:60px;color:red;transform:rotate(-45deg);-o-transform:rotate(-45deg);-webkit-transform:rotate(-45deg);-ms-transform:rotate(-45deg);}
 
 .btn-danger{background-color:#d9534f;}
+#contentshow img{max-width:100%}
 </style>
 
 </head>
@@ -74,7 +75,7 @@ if($showheader==1)echo '<div class="header" id="header_title"><span onclick="js.
 
 if($da['arr']['isdefaultview']==1)echo '<div onclick="c.changeshow(0)" class="r-subtitle">&nbsp;&nbsp;'.$da['arr']['modename'].'</div>';
 ?>
-<div class="padding10<?php if($da['arr']['isdefaultview']==1) echo ' r-border-t';?>" style="position:relative; background:white">
+<div id="contentshow" class="padding10<?php if($da['arr']['isdefaultview']==1) echo ' r-border-t';?>" style="position:relative; background:white">
 	<?php
 	if($da['arr']['isflow']>0){
 		echo '<div class="statustext" style="color:'.$da['arr']['statuscolor'].';border-color:'.$da['arr']['statuscolor'].'">'.$da['arr']['statustext'].'</div>';
@@ -171,8 +172,8 @@ if($da['arr']['isplview']=='1'){
 		</tr>
 		
 		<?php
-			//是否可抄送
-		if($flowinfor['ischao']>0){
+		//是否可抄送
+		if($flowinfor['ischao']==1 || $flowinfor['ischao']==2){
 		?>
 		<tr height="40">
 			<td class="tdys1"><div  align="right" style="color:#555555">抄送</div></td>

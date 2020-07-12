@@ -98,7 +98,23 @@ class flow_meetClassModel extends flowModel
 			if($rs['issms']==1)$issms = '是';
 			$rs['issms'] = $issms;
 		}
+		
+		//打印时
+		if($lx==3){
+			if(substr($rs['startdt'],0,10)==$this->rock->date)$rs['startdt'] = substr($rs['startdt'],11);
+			if(substr($rs['enddt'],0,10)==$this->rock->date)$rs['enddt'] = substr($rs['enddt'],11);
+			$rs['ermurl'] = $this->rock->jm->base64encode(getconfig('outurl',URL).'task.php?a=x&num=meet&mid='.$rs['id'].'&showtype=qd');
+		}
+		
 		return $rs;
+	}
+	
+	//签到菜单判断
+	protected function flowgetoptmenu($num)
+	{
+		if($num=='qdnoup'){
+			if($this->rock->get('showtype')!='qd')return false;
+		}
 	}
 	
 	public function getstatezt($zt)

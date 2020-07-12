@@ -24,7 +24,7 @@ class cacheChajian extends Chajian{
 		if($time>0)$sarr['timedt'] = date('Y-m-d H:i:s', $time);
 		$sarr['url']  = $this->rock->nowurl();
 		$this->delexpire();
-		return $this->rock->createtxt($this->getpath($key, $time), json_encode($sarr));
+		return $this->rock->createtxt($this->getpath($key, $time, 1), json_encode($sarr));
 	}
 	
 	private function getkey($key)
@@ -32,11 +32,13 @@ class cacheChajian extends Chajian{
 		return ''.QOM.''.$key.'';
 	}
 	
-	private function getpath($key, $time=0)
+	private function getpath($key, $time=0, $lx=0)
 	{
 		$key = $this->getkey($key);
 		$ske = '';
 		if($time>0)$ske='_'.$time.'';
+		
+		if($lx==0)return ''.ROOT_PATH.'/'.UPDIR.'/cache/'.md5($key).''.$ske.'';
 		return ''.UPDIR.'/cache/'.md5($key).''.$ske.'';
 	}
 	
@@ -44,7 +46,7 @@ class cacheChajian extends Chajian{
 	private function getpaths($key)
 	{
 		$key = $this->getkey($key);
-		$file= ''.UPDIR.'/cache/'.md5($key).'';
+		$file= ''.ROOT_PATH.'/'.UPDIR.'/cache/'.md5($key).'';
 		$bar = glob(''.$file.'*');
 		foreach($bar as $k=>$fil1){
 			if($k==0){
@@ -94,7 +96,7 @@ class cacheChajian extends Chajian{
 	*/
 	public function delall()
 	{
-		$bar = glob(''.UPDIR.'/cache/*');
+		$bar = glob(''.ROOT_PATH.'/'.UPDIR.'/cache/*');
 		foreach($bar as $k=>$fil1){
 			unlink($fil1);
 		}
@@ -105,7 +107,7 @@ class cacheChajian extends Chajian{
 	*/
 	public function delexpire()
 	{
-		$bar = glob(''.UPDIR.'/cache/*');
+		$bar = glob(''.ROOT_PATH.'/'.UPDIR.'/cache/*');
 		$time= time();
 		foreach($bar as $k=>$fil1){
 			if(contain($fil1,'_')){

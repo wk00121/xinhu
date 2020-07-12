@@ -11,6 +11,7 @@ class lognClassAction extends ActionNot{
 	{
 		
 		$randkey = $this->get('randkey');
+		$dfrom   = $this->get('dfrom','reim');
 		if(isempt($randkey))exit('无效访问');
 		
 		$db  = m('admin');
@@ -21,6 +22,7 @@ class lognClassAction extends ActionNot{
 		$this->option->setval($randkey, '0');
 		
 		$this->assign('urs', $urs);
+		$this->assign('dfrom', $dfrom);
 		
 	}
 

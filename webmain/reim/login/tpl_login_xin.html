@@ -204,7 +204,7 @@ function winclose(){
 function rewinheight(hei, wid){
 	var l = (screen.width-wid)*0.5;
 	var t = (screen.height-hei)*0.5-20;
-	nwjs.win.moveTo(l,t);
+	nwjs.win.moveTo(parseInt(l),parseInt(t));
 	nwjs.win.resizeTo(wid,hei);
 }
 

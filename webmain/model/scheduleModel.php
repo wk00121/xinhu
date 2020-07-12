@@ -129,6 +129,7 @@ class scheduleClassModel extends Model
 		}
 	}
 	
+	
 	private function insertdaiban($rs)
 	{
 		if($rs['isdai']!='1')return;

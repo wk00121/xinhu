@@ -263,7 +263,7 @@ function showimgs(o1){
 	
 	<div style="display:none">
 	<form name="form_cameraInput">
-	<input type="file" capture="camera" onchange="changfile(this)" accept="image/*" id="cameraInput" /></form>
+	<input type="file" <?php if($rock->iswebbro())echo 'capture="camera"';?> onchange="changfile(this)" accept="image/*" id="cameraInput" /></form>
 	</div>
 	<div style="padding:10px">
 	<table width="100%"><tr>

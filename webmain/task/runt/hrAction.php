@@ -37,6 +37,8 @@ class hrClassAction extends runtAction
 		//自动从考核项目中添加
 		m('flow')->initflow('hrcheck')->hrkaohemrun();
 		
+		//个人资料完善提醒
+		
 		return 'success';
 	}
 	

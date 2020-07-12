@@ -33,6 +33,8 @@ class flow_projectClassModel extends flowModel
 		if($wwc>0)$wwc='<font color=red>'.$wwc.'</font>';
 		$rs['workshu'] = ''.$wwc.'/'.$wez.'';
 		
+		if($lx==1)$rs['status'] = $str;
+		
 		return $rs;
 	}
 	

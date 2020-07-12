@@ -155,11 +155,11 @@ $(document).ready(function(){
 		width:220,top:35,donghua:false,
 		data:[{
 			name:'使用我自己REIM服务端<font color=green>启动</font>',lx:'0'
-		},{
+		}/*,{
 			name:'使用官网服务<font color=green>启动</font>(VIP专用)',lx:'1'
 		},{
 			name:'<font color=red>停止</font>用官网的计划任务',lx:'2'
-		}],
+		}*/],
 		itemsclick:function(d, i){
 			c.start(d.lx);
 		}

@@ -476,15 +476,7 @@ var c={
 				for(fid in farr){
 					f = farr[fid];
 					if(!f || vals.indexOf(','+f.id+',')<0)continue;
-					s='<div onclick="c.clickupfile(this,\''+sna+'\')" title="'+f.filename+'('+f.filesizecn+')" upid_'+sna+'="'+f.id+'" class="upload_items">';
-					if(js.isimg(f.fileext)){
-						s+='<img class="imgs" src="'+f.thumbpath+'">';
-					}else{
-						s+='<div class="upload_items_items"><img src="web/images/fileicons/'+js.filelxext(f.fileext)+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
-					}
-					s+='</div>';
-					$('#'+sna+'_divadd').before(s);
-					this.filearr[fid] = f;
+					this.showfileup(sna, f);
 				}
 				this.showupid(sna);
 			}
@@ -493,6 +485,18 @@ var c={
 		if(ismobile==1){
 			$('div[tmp="mobilezbiao"]').css('width',''+($(window).width()-12)+'px');
 		}
+	},
+	showfileup:function(sna, f){
+		var s = '';
+		s='<div onclick="c.clickupfile(this,\''+sna+'\')" title="'+f.filename+'('+f.filesizecn+')" upid_'+sna+'="'+f.id+'" class="upload_items">';
+		if(js.isimg(f.fileext)){
+			s+='<img class="imgs" src="'+f.thumbpath+'">';
+		}else{
+			s+='<div class="upload_items_items"><img src="web/images/fileicons/'+js.filelxext(f.fileext)+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
+		}
+		s+='</div>';
+		$('#'+sna+'_divadd').before(s);
+		this.filearr['f'+f.id+''] = f;
 	},
 	upimages:function(fid,fileid,bs){
 		if(!bs){
@@ -507,8 +511,11 @@ var c={
 		}
 	},
 	//多文件点击上传
+	uploadfileibefore:function(){},
 	uploadfilei:function(sna){
 		if(isedit==0)return;
+		var ts = this.uploadfileibefore(sna);
+		if(ts){js.msg('msg',ts);return;}
 		if(this.upfbo){js.msg('msg','请等待上传完成在添加');return;}
 		get('filed_'+sna+'_inp').click();
 	},
@@ -539,7 +546,9 @@ var c={
 			this.loadicons();
 			js.fileopt(fid,0);
 		}else{
-			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+',\'abc\')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>',function(jg){
+			var fileext = f.fileext,oflx=',doc,docx,ppt,pptx,xls,xlsx,',s1='';
+			if(oflx.indexOf(','+fileext+',')>-1)s1='&nbsp; <a style="color:blue" href="javascript:;" onclick="js.alertclose();js.fileopt('+fid+',2)">在线编辑</a>';
+			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+',\'abc\')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>'+s1+'',function(jg){
 				if(jg=='yes'){
 					o.remove();
 					c.showupid(sna);
@@ -658,8 +667,22 @@ var c={
 		js.changeclear(na);
 	},
 	editorobj:{},
+	htmlediteritems:function(){},
 	htmlediter:function(fid){
 		if(ismobile==1)return;
+		var items = [
+			'forecolor', 'hilitecolor', 'bold', 'italic', 'underline','removeformat','|',
+			'fontname', 'fontsize','quickformat', '|', 
+			'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist','insertunorderedlist', '|',
+			'image', 'link','unlink','|',
+			'undo','source','clearhtml','fullscreen'
+		];
+		var oethed  = this.htmlediteritems(fid);
+		if(oethed){
+			var kx = 0,i;
+			if(oethed[0]=='clear'){items=[];kx=1;oethed.push('fullscreen')}
+			for(i=kx;i<oethed.length;i++)items.push(oethed[i]);
+		}
 		var cans  = {
 			resizeType : 0,
 			allowPreviewEmoticons : false,
@@ -668,11 +691,7 @@ var c={
 			allowFileManager:true,
 			uploadJson:'?m=upload&a=upimg&d=public',
 			minWidth:'300px',height:'250',
-			items : [
-				'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
-			'removeformat','|','fontname', 'fontsize','quickformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
-			'insertunorderedlist', '|','image', 'link','unlink','|','undo','source','clearhtml','fullscreen'
-			]	
+			items : items
 		};
 		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
 	},

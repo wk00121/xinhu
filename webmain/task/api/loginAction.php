@@ -160,13 +160,23 @@ class loginClassAction extends apiAction
 		echo ''.$call.'('.json_encode($barr).')';
 	}
 	
+	public function inauthAction()
+	{
+		$call = $this->get('callback');
+		$barr['host'] 		= HOST;
+		//$key  = $this->get('key', $this->jm->getRandkey());
+		//$barr['mykey'] 	= $this->jm->encrypt(getconfig('randkey'), $key);
+		echo ''.$call.'('.json_encode($barr).')';
+	}
+	
 	//获取二维码
 	public function getewmAction()
 	{
 		$randkey = $this->get('randkey');
+		$dfrom   = $this->get('dfrom');
 		$this->option->setval($randkey, '');
 		header("Content-type:image/png");
-		$url = ''.URL.'?m=logn&d=we&randkey='.$randkey.'';
+		$url = ''.getconfig('outurl', URL).'?m=logn&d=we&randkey='.$randkey.'&dfrom='.$dfrom.'';
 		$img = c('qrcode')->show($url);
 		echo $img;
 	}

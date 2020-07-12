@@ -22,8 +22,8 @@ class flow_workClassModel extends flowModel
 	protected function flowcheckbefore(){
 		$up = array();
 		if($this->checkiszhuanyi==1){
-			$up['dist'] 	= $this->rs['zb_name'];
-			$up['distid'] 	= $this->rs['zb_nameid'];
+			$up['dist'] 	= $this->rs['syszb_name'];
+			$up['distid'] 	= $this->rs['syszb_nameid'];
 			$up['status'] 	= 3; //待执行状态
 		}
 		if($up)$up['update'] = $up;
@@ -44,10 +44,10 @@ class flow_workClassModel extends flowModel
 				}
 			}
 		}
-		if(!isempt($rs['enddt']) && $zts!=1){
-			if(strtotime($rs['enddt'])<time())$str.='<font color=red>(已超期)</font>';
+		if(!isempt($rs['enddt']) && !in_array($zts,array(1,2,5))){
+			if(strtotime($rs['enddt'])<time())$rs['explain'].='<font color=red>(已超期)</font>';
 		}
-		$rs['status']= $str;
+		//$rs['status']= $str;
 		if($rs['score']==0)$rs['score']='';
 		if($rs['mark']==0)$rs['mark']='';
 		return $rs;

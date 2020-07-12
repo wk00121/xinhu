@@ -676,8 +676,9 @@ js.xpbody=function(act,type){
 		return;
 	}
 	if(get('xpbg_bodydds'))return false;
-	var H	= (document.body.clientHeight<winHb())?winHb()-this.xpbodysplit-5:document.body.clientHeight-this.xpbodysplit*2;
+	var H	= (document.body.scrollHeight<winHb())?winHb()-this.xpbodysplit-5:document.body.scrollHeight-this.xpbodysplit*2;
 	var W	= document.documentElement.scrollWidth+document.body.scrollLeft-this.xpbodysplit*2;
+	
 	var bs='<div id="xpbg_bodydds" xpbody="'+act+'" oncontextmenu="return false" style="position:absolute;display:none;width:'+W+'px;height:'+H+'px;filter:Alpha(opacity=30);opacity:0.3;left:'+this.xpbodysplit+'px;top:'+this.xpbodysplit+'px;background-color:#000000;z-index:80"></div>';
 	$('body').prepend(bs);	
 	$('#xpbg_bodydds').fadeIn(300);

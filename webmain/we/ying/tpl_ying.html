@@ -68,6 +68,13 @@ function callPhone(o1){
 		return true;
 	}
 }
+js.location22=function(url){
+	if(!apicloud){
+		location.href = url;
+	}else{
+		api.openWin({name:'url'+js.getrand(),url: url,bounces:false,softInputBarEnabled:false,slidBackEnabled:true,vScrollBarEnabled:false,delay:0,hScrollBarEnabled:false,allowEdit:true,progress:{ type:'default',title:'', text:'',   color:''}});
+	}
+}
 <?php if(isset($arr['leixing'])){ ?>
 try{sessionStorage.removeItem(''+json.num+'_event');}catch(e){}
 yy.clad=function(){

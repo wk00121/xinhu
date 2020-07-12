@@ -29,7 +29,7 @@ function initbody(){
 
 
 function resizewh(){
-	var h = ($(document).height()-500)*0.5;
+	var h = ($(document).height()-530)*0.5;
 	$('#topheih').css('height',''+h+'px');
 }
 function changeuserface(v){
@@ -170,4 +170,58 @@ function changlogin(){
 	$('#loginview0').hide();
 	$('#loginview1').show();
 	form('logintype').value='1';
+}
+
+function erwmlogin(){
+	$('#mainlogin').html('<div style="height:350px" align="center"><div style="padding-top:50px;height:200px;overflow:hidden;"><img src="images/noimg.jpg" id="logeweerew" height="200" width="200"></div><div style="color:#888888;padding-top:5px"><span id="miaoshuv">支持任何扫码登录</span>，还有<span id="miaoshu">60</span>秒，<a class="zhu" href="javascript:;" onclick="js.reload()">使用默认登录</a></div></div>');
+	
+	var stra    = parseInt(Math.random()*999999);
+	randkey = js.getoption('ewmrandkey', 'ewm'+stra+'');
+	js.setoption('ewmrandkey', randkey);
+	get('logeweerew').src='api.php?m=login&a=getewm&randkey='+randkey+'&dfrom=pc';
+	starttimest(60);
+}
+
+function starttimest(ms){
+	if(!get('miaoshu'))return;
+	if(ms<0){
+		$('#miaoshu').parent().html('<font color=#888888>二维码已过期，请重新打开</font>');
+		return;
+	}
+	$('#miaoshu').html(''+ms+'');
+	if(ms<57){
+		$.getJSON('api.php?m=login&a=checkewm&randkey='+randkey+'&dfrom=pc',function(ret){
+			setTimeout('starttimest('+(ms-1)+')',1000);
+			var dst = ret.data.val;
+			if(dst=='0'){
+				$('#miaoshuv').html('<font color=green>请在手机按确认登录</font>');
+			}
+			if(dst=='-1'){
+				$('#miaoshu').parent().html('<font color=#888888>已取消，请重新打开</font>');
+			}
+			if(dst>0){
+				$('#miaoshu').parent().html('<span id="msgview"><font color=#ff6600><img src="images/loadings.gif" align="absmiddle"> 已确认，登录中...</font></span>');
+				var da = ret.data;
+				var url= js.getajaxurl('check','login');
+				var data={};
+				data.device = device;
+				data.ltype  = 0;
+				data.adminuser = jm.base64encode(da.user);
+				data.adminpass = jm.base64encode(da.pass);
+				js.ajax(url,data,function(a){
+					if(a.success){
+						js.setoption('loginface', a.face);
+						var burl = js.request('backurl');
+						var curl = (burl=='')?NOWURL:jm.base64decode(burl);
+						js.setmsg('登录成功,<a href="'+curl+'">跳转中</a>...','green');
+						js.location(curl);
+					}else{
+						js.setmsg(a.msg,'red');
+					}
+				},'post,json');
+			}
+		});
+	}else{
+		setTimeout('starttimest('+(ms-1)+')',1000);
+	}
 }

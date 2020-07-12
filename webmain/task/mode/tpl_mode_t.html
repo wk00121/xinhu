@@ -9,11 +9,9 @@
 <link rel="shortcut icon" href="favicon.ico" />
 <?php
 if($stype==''){
-	$jqurl = 'js/jquery.js';
-	if(arrvalue($da['arr']['flowinfor'],'ischeck')==1)$jqurl='web/res/js/jquery.1.9.1.min.js';
 ?>
 <link rel="stylesheet" type="text/css" href="<?=$da['p']?>/css/css.css">
-<script type="text/javascript" src="<?=$jqurl?>"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/js.js"></script>
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="<?=$da['p']?>/task/mode/modeview.js?<?=$da['logintime']?>"></script>

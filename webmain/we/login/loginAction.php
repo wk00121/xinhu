@@ -11,8 +11,7 @@ class loginClassAction extends ActionNot{
 			if(!isempt($token))$iskj=3;
 		}
 		$this->assign('iskj', $iskj);
-		//print_r($_COOKIE);
-		//echo $_SERVER['HTTP_USER_AGENT'];
+		
 		$ptoken		= $this->get('ptoken');
 		$loginyzm	= (int)getconfig('loginyzm','0');
 		if(!isempt($ptoken))$loginyzm = 0;
@@ -28,9 +27,10 @@ class loginClassAction extends ActionNot{
 			if($this->rock->isqywx){
 				if(!isempt($qycrid))$iskj=2;
 			}else{
-				$coppid = $this->option->getval('weixin_corpid');
-				if(!isempt($coppid))$iskj=1;
+				//$coppid = $this->option->getval('weixin_corpid');
+				//if(!isempt($coppid))$iskj=1;
 				if($iskj==0 && !isempt($qycrid))$iskj=2;
+				if($iskj==0 && $this->option->getval('wxgzh_tplmess')=='1')$iskj=4;	
 			}
 		}
 		return $iskj;
@@ -45,11 +45,14 @@ class loginClassAction extends ActionNot{
 		$iskj 	= $this->weiuser();
 		if($iskj==2){
 			m('weixinqy:oauth')->login();
+		}else if($iskj==4){
+			m('wxgzh:oauth')->oauthto('we','login');	
 		}else{
 			m('weixin:oauth')->login();
 		}
 	}
 	
+	//获取后回调
 	public function wxlogincodeAction()
 	{
 		$this->display= false;
@@ -63,7 +66,7 @@ class loginClassAction extends ActionNot{
 	
 	
 	/**
-	*	微信授权
+	*	微信授权绑定
 	*/
 	public function oauthtoAction()
 	{
@@ -74,12 +77,16 @@ class loginClassAction extends ActionNot{
 	{
 		$state	= $this->get('state','bang');
 		$ubarr 	= m('wxgzh:oauth')->oauthback();
-		if(!is_array($ubarr)){
-			$this->assign('backstate', '0');
-			$this->assign('backerror', $ubarr);
+		if($state=='login'){
+			m('wxgzh:oauth')->wxloginback($ubarr);
 		}else{
-			$this->assign('backstate', '1');
-			$this->assign('backarr', $ubarr);
+			if(!is_array($ubarr)){
+				$this->assign('backstate', '0');
+				$this->assign('backerror', $ubarr);
+			}else{
+				$this->assign('backstate', '1');
+				$this->assign('backarr', $ubarr);
+			}
 		}
 	}
 	

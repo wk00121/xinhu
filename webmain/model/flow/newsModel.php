@@ -13,7 +13,7 @@ class flow_newsClassModel extends flowModel
 		$cont 	= c('html')->replace($this->rs['content']);
 		$fm 	= $this->rs['fengmian'];
 		if(!isempt($fm)){
-			$cont='<div align="center"><img style="max-width:100%" src="'.$this->rock->gethttppath($fm).'"></div>'.$cont.'';
+			$cont='<div align="center"><img src="'.$this->rock->gethttppath($fm).'"></div>'.$cont.'';
 		}
 		$url	= $this->rs['url'];
 		if(!isempt($url))$cont.='<div><a href="'.$url.'">查看原文&gt;&gt;</a></div>';

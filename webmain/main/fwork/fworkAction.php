@@ -276,7 +276,7 @@ class fworkClassAction extends Action
 		$jg 		= $dtobj->datediff('d',$startdt, $enddt);
 		if($jg>30)$jg = 30;
 		$flow 		= m('flow:meet');
-		$data 		= m('meet')->getall("`status`=1 and `type`=0 and `startdt`<='$enddt 23:59:59' and `enddt`>='$startdt' order by `startdt` asc",'hyname,title,startdt,enddt,state,joinname,optname');
+		$data 		= m('meet')->getall("`status`=1 and `type`=0 and `startdt`<='$enddt 23:59:59' and `enddt`>='$startdt' order by `startdt` asc",'hyname,title,startdt,enddt,state,joinname,optname,id');
 		$datss 		= array();
 		foreach($data as $k=>$rs){
 			$rs 	= $flow->flowrsreplace($rs);

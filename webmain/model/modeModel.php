@@ -57,7 +57,7 @@ class modeClassModel extends Model
 		
 		$table	= $mors['table'];
 		$name	= $mors['name'];
-		$modeid	= $mors['id'];
+		$modeid	= (int)$mors['id'];
 		$isflow	= (int)$mors['isflow'];
 		$lbztxs	= $mors['lbztxs'];
 		$columnsstr = '';
@@ -116,7 +116,9 @@ class modeClassModel extends Model
 		foreach($bear as $k2=>$rs2)$fselarr[$rs2['num']]=$rs2['value'];
 		$placeholder= '关键字';
 		if($isflow>0)$placeholder= '关键字/申请人/单号';
-		
+		$pdxuan		= '';
+		if($modeid>101)$pdxuan='
+			if(d.loadci==1 && !d.atypearr)js.confirm(\'列表页没设置好，数据无法显示，没有可切换选择卡，去看帮助设置\',function(){window.open(\''.URLY.'view_columns.html\')});';
 		
 $html= "".$hstart."
 <div>
@@ -242,7 +244,7 @@ $(document).ready(function(){
 			
 		},
 		loaddata:function(d){
-			this.setdownsodata(d.souarr);
+			this.setdownsodata(d.souarr);".$pdxuan."
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
 			get('daobtn_{rand}').disabled=(d.isdaochu!=true);

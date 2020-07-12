@@ -6,9 +6,10 @@ class htmlChajian extends Chajian{
 	
 	public function replace($cont)
 	{
-		if($this->rock->isempt($cont))return '';
+		if(isempt($cont))return '';
 		//$cont	= str_replace(array('<', '>'), array('&lt;', '&gt;'), $cont);
-		$cont	= str_replace(array('[B]','[/B]', '[/A]', "\n"), array('<B>','</B>', '</A>','</p><p>'), $cont);
+		//$cont	= str_replace(array('[B]','[/B]', '[/A]', "\n"), array('<B>','</B>', '</A>','</p><p>'), $cont);
+		$cont	= str_replace(array('[B]','[/B]', '[/A]'), array('<B>','</B>', '</A>'), $cont);
 		
 		preg_match_all('/\[(.*?)\]/', $cont, $list);
 		foreach($list[0] as $k=>$nrs){

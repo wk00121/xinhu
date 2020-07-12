@@ -8,7 +8,7 @@ class indexClassAction extends ActionNot{
 	
 	public function defaultAction()
 	{
-		$this->title = getconfig('apptitle','信呼');
+		$this->title = getconfig('apptitle',$this->bd6('5L!h5ZG8T0E:'));
 		$rows	 = $this->option->getall('pid=-101','`num`,`value`');
 		$authkey = $yuming = $enddt = '';
 		foreach($rows as $k1=>$rs1){

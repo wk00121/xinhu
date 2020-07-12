@@ -23,10 +23,12 @@
 <div align="center" style="position:absolute;width:100%">
 	<div id="topheih" class="blank40"></div>
 
-	<div style="font-size:20px"><b><?=$da['title']?></b></div>
+	<div style="font-size:30px"><b><?=$da['title']?></b></div>
 	<div class="blank30"></div>
 	<div class="lmaisft box">
 		<div class="blank20"></div>
+		<div id="mainlogin">
+		
 		<div  align="center"><img title="<?=URL?>" class="box" onclick="location.reload()" style="border-radius:50%;border:1px #ffffff solid; background:white" src="images/logo.png" id="imglogo" align="absmiddle" height="100" width="100"><b style="font-size:22px"></b></div>
 		<div class="blank10"></div>
 		<form style="padding:20px;padding-left:80px" name="myform">
@@ -45,7 +47,7 @@
 
 				<div class="blank10"></div>
 				<div align="left">
-					 <div class="checkbox"><label><input type="checkbox" <?php if($da['ca_rempass']=='1')echo 'checked';?> name="rempass">记住密码</label>&nbsp; &nbsp; <?php if($da['loginyzm']>0){?><a href="javascript:;" class="zhu" onclick="changlogin()">使用验证码登录</a><?php }?></div>
+					 <div class="checkbox"><label><input type="checkbox" <?php if($da['ca_rempass']=='1')echo 'checked';?> name="rempass">记住密码</label><?php if($da['loginyzm']>0){?>&nbsp; <a href="javascript:;" class="zhu" onclick="changlogin()">使用验证码登录</a><?php }?>&nbsp; <a onclick="erwmlogin()" href="javascript:;"><img src="images/ewml.png" title="二维码登录" align="absmiddle"></a></div>
 				</div>
 			</div>
 			<div id="loginview1" style="display:none">
@@ -75,7 +77,7 @@
 			<div class="blank10"></div>
 		</form>
 		
-		
+		</div>
 	</div>
 
 
