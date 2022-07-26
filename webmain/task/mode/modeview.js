@@ -5,6 +5,7 @@ function othercheck(){}
 function oninputblur(name,zb,obj){};
 
 function initbody(){
+	js.inittabs();
 	$('body').click(function(){
 		$('.menullss').hide();
 	});
@@ -29,9 +30,29 @@ function initbody(){
 		}else{
 			$('#filedivview').parent().html('<font color="#888888">当前浏览器不支持上传</font>');
 		}
+		//初始化微信jssdk
+		if(js.jssdkinit){
+			js.jssdkinit();
+			js.jssdkcall=function(bo){
+				if(bo)c.initRecord();//可以录音
+			}
+		}
 	}
 	js.tanstyle=1;
 	if(document.myform && typeof(initbodys)=='function')initbodys();
+	
+	if(receiptrs){
+		var s = '<div style="position:fixed;top:40%;right:5px;padding:10px;border-radius:4px;z-index:5px;background:#555555;color:white" id="receiptrsdiv"><div>此单据需要回执确认<br>请将页面拉到最后</div><div style="margin-top:5px"><input type="button"  onclick="c.receiptque()" value="回执确认" class="webbtn btn-danger"></div></div>';
+		$('body').append(s);
+	}
+	
+	$('#contentshow img').click(function(){c.showviews(this)});
+	
+	//检查是否有编辑器
+	var hobj = $("span[fieldstype='htmlediter']");
+	if(hobj.length>0)js.importjs('mode/kindeditor/kindeditor-min.js', function(){
+		for(var i=0;i<hobj.length;i++)c.htmlediter($(hobj[i]).attr('fieidscheck'));
+	});
 }
 function showchayue(opt, st){
 	alert('总查阅:'+st+'次\n最后查阅：'+opt+'');
@@ -47,53 +68,126 @@ var f={
 	}
 };
 
+//拨打电话
+function callPhone(o1){
+	if(appobj1('callPhone',$(o1).text())){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+//选择人员前处理
+js.changeuser_before=function(na){
+	if(na=='sys_nextcoursename'){
+		var fw = '',o = form('sys_nextcourseid');
+		if(o){
+			var o1= o.options[o.selectedIndex];
+			fw = $(o1).attr('changerange');
+			return {'changerange':fw};
+		}
+	}
+	return c.changeuser_before(na);
+}
 
 //提交处理
 function check(lx){
-	var da = {'sm':form('check_explain').value,'tuiid':'0','fileid':'','mid':mid,'modenum':modenum,'zt':_getaolvw('check_status'),'qmimgstr':qmimgstr};
+	var sm = form('check_explain')?form('check_explain').value:'';
+	var da = {'sm':sm,'tuiid':'0','fileid':'','mid':mid,'modenum':modenum,'zt':_getaolvw('check_status'),'qmimgstr':qmimgstr};
 	if(form('fileid'))da.fileid=form('fileid').value;
 	if(form('check_tuiid'))da.tuiid=form('check_tuiid').value;
-	if(da.zt==''){js.setmsg('请选择处理动作');return;}if(da.zt=='2'&&isempt(da.sm)){js.setmsg('此动作必须填写说明');return;}
+	var smlx = form('check_smlx').value,wjlx=form('check_wjlx').value,cslx=0;
+	if(form('bzcslx'))cslx = form('bzcslx').value;
+	js.setmsg();
+	if(da.zt==''){
+		js.setmsg('请选择处理动作');
+		return;
+	}
+	if(((smlx=='0' && da.zt=='2') || (smlx=='1')) && isempt(da.sm)){
+		js.setmsg('此动作必须填写说明');
+		return;
+	}
+	
+	if($('#filedivview').html()=='' && ((wjlx=='1') || (wjlx=='2' && da.zt=='1') )){
+		js.setmsg('此动作必须选择上传相关文件');
+		return;
+	}
+	
 	var isqm = form('isqianming').value;
 	var qbp  = true;
-	//手写签名判断
-	if(isqm=='1' && qmimgstr=='')qbp=false;
-	if(isqm=='2' && da.zt=='1' && qmimgstr=='')qbp=false;
-	if(isqm=='3' && da.zt=='2' && qmimgstr=='')qbp=false;
-	if(!qbp){js.setmsg('此动作必须手写签名');return;}
 	
 	if(form('zhuanbanname')){
 		da.zyname 	= form('zhuanbanname').value;
 		da.zynameid = form('zhuanbannameid').value;
 	}
-	if(form('nextnameid') && da.zt=='1'){
+	
+	if(form('bzchaosongname')){
+		da.csname 	= form('bzchaosongname').value;
+		da.csnameid = form('bzchaosongnameid').value;
+	}
+	
+	if(cslx==2 && da.zt=='1' && !da.csnameid){
+		js.setmsg('此动作必须选择抄送');return;
+	}
+	
+	//手写签名判断
+	if(isqm=='1' && qmimgstr=='')qbp=false;
+	if(isqm=='2' && da.zt=='1' && qmimgstr=='')qbp=false;
+	if(isqm=='3' && da.zt=='2' && qmimgstr=='')qbp=false;
+	if(!qbp && !da.zynameid){js.setmsg('此动作必须手写签名');return;}
+	
+	
+	if(form('nextnameid') && da.zt=='1' && !da.zynameid){
 		da.nextname 	= form('nextname').value;
 		da.nextnameid 	= form('nextnameid').value;
 		if(da.nextnameid==''){
 			js.setmsg('请选择下一步处理人');return;
 		}
 	}
+	
+	//自由流程处理的
+	if(da.zt=='1' && form('sys_nextcourseid') && !da.zynameid){
+		da.sys_nextcourseid 	= form('sys_nextcourseid').value;
+		da.sys_nextcoursename 	= form('sys_nextcoursename').value;
+		da.sys_nextcoursenameid = form('sys_nextcoursenameid').value;
+		if(da.sys_nextcourseid==''){
+			js.setmsg('请选择下步处理步骤');
+			return;
+		}
+		if(da.sys_nextcourseid>0 && da.sys_nextcoursenameid=='' && c.changenextbool){
+			js.setmsg('请选择下步处理人');
+			return;
+		}
+	}
+	
 	if(!da.zynameid && da.zt!='2'){
-		var fobj=$('span[fieidscheck]'),i,fid,fiad;
+		var fobj=$('span[fieidscheck]'),i,fid,flx,fiad,val,isbt;
+		var subdat = js.getformdata();
 		for(i=0;i<fobj.length;i++){
 			fiad = $(fobj[i]);
 			fid	 = fiad.attr('fieidscheck');
-			da['cfields_'+fid]=form(fid).value;
-			if(da['cfields_'+fid]==''){js.setmsg(''+fiad.text()+'不能为空');return;}
+			isbt = fiad.attr('isbt');
+			val  = subdat[fid];
+			if(c.editorobj[fid])val=c.editorobj[fid].html();
+			da['cfields_'+fid]=val;
+			if(val=='' && isbt=='1'){js.setmsg(''+fiad.text()+'不能为空');return;}
 		}
 	}
 	var ostr=othercheck(da);
 	if(typeof(ostr)=='string'&&ostr!=''){js.setmsg(ostr);return;}
 	if(typeof(ostr)=='object')for(var csa in ostr)da[csa]=ostr[csa];
 	js.setmsg('处理中...');
+	
 	var o1 = get('check_btn');
 	o1.disabled = true;
-	if(lx==0 && f.fileobj && f.fileobj.start())return js.setmsg('上传相关文件中...');//有上传相关文件
+	if(lx==0 && f.fileobj && f.fileobj.start()){
+		return js.setmsg('上传相关文件中...');//有上传相关文件
+	}
 	var url = c.gurl('check');
 	js.ajax(url,da,function(a){
 		if(a.success){
-			js.setmsg(a.msg,'green');
-			c.callback();
+			js.setmsg(a.data,'green');
+			c.callback(a.data);
 			if(get('autocheckbox'))if(get('autocheckbox').checked)c.close();
 		}else{
 			js.setmsg(a.msg);
@@ -136,16 +230,37 @@ function _submitother(nae,zt,ztid,ztcol,ocan,las){
 	return false;
 }
 var c={
-	callback:function(cs){
+	callback:function(cs,cbo){
+		if(ismobile==1 && js.msgok)js.msgok(cs, function(){js.back()},1);
 		var calb = js.request('callback');
 		if(!calb)return;
 		try{parent[calb](cs);}catch(e){}
 		try{opener[calb](cs);}catch(e){}
 		try{parent.js.tanclose('openinput');}catch(e){}
+		if(cbo)this.close();
 	},
+	changeuser_before:function(){},
 	gurl:function(a){
 		var url=js.getajaxurl(a,'flowopt','flow');
 		return url;
+	},
+	editorobj:{},
+	htmlediter:function(fid){
+		var cans  = {
+			resizeType : 0,
+			allowPreviewEmoticons : false,
+			allowImageUpload : true,
+			formatUploadUrl:false,
+			allowFileManager:true,
+			uploadJson:'?m=upload&a=upimg&d=public',
+			minWidth:'300px',height:'250',
+			items : [
+				'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat','|','fontname', 'fontsize','quickformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist', '|','image', 'link','unlink','|','undo','source','clearhtml','fullscreen'
+			]	
+		};
+		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
 	},
 	showtx:function(msg){
 		js.setmsg(msg);
@@ -174,6 +289,10 @@ var c={
 		if(lx=='0')c.clickprint(false);
 		if(lx=='6')c.clickprint(true);
 		if(lx=='5')c.daochuword();
+		if(lx=='7')c.savetoimg();
+		if(lx=='10')c.savetopdf();
+		if(lx=='8')js.location('?a=t&num='+modenum+'&mid='+mid+'');
+		if(lx=='9')js.location('?a=p&num='+modenum+'&mid='+mid+'');
 		if(lx=='1'){
 			var url='index.php?a=lu&m=input&d=flow&num='+modenum+'&mid='+mid+'';
 			js.location(url);
@@ -188,13 +307,46 @@ var c={
 		}
 		window.print();
 	},
+	savetoimg:function(){
+		this.hideoth();
+		js.loading();
+		js.importjs('js/html2canvas.js', function(){
+			html2canvas($('#maindiv'),{
+				onrendered: function(canvas){
+					var imgbase64 = canvas.toDataURL().split(',')[1];
+					c.showviews({src:canvas.toDataURL()});
+					js.unloading();
+				}
+			});
+		});
+	},
+	savetopdf:function(){
+		this.hideoth();
+		js.loading();
+		js.importjs('js/html2canvas.js', function(){
+			html2canvas($('#maindiv'),{
+				onrendered: function(canvas){
+					var imgbase64 = canvas.toDataURL().split(',')[1];
+					js.ajax(c.gurl('savetopdf'),{imgbase64:imgbase64},function(ret){
+						js.unloading();
+						if(!ret.success){
+							js.msgerror(ret.msg);
+						}else{
+							js.msgok('导出成功');
+						}
+					},'post,json');
+				}
+			});
+		});
+	},
 	daochuword:function(){
-		var url='task.php?a=p&num='+modenum+'&mid='+mid+'&stype=word';
+		var url='task.php?a='+js.request('a')+'&num='+modenum+'&mid='+mid+'&stype=word';
 		js.location(url);
 	},
 	hideoth:function(){
 		$('.menulls').hide();
 		$('.menullss').hide();
+		$('#pinglunview').hide();
 		$('a[temp]').remove();
 	},
 	delss:function(){
@@ -294,18 +446,12 @@ var c={
 	},
 	
 	//预览文件
-	downshow:function(id, ext,pts){
-		var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
-		if(pts!=''&&js.isimg(ext)){
-			this.loadicons();
-			$.imgview({'url':pts,'ismobile':ismobile==1});
-			return false;
-		}
-		if(ismobile==1){
-			if(appobj1('openfile', id))return;
-			js.location(url);
+	downshow:function(id, ext,pts, fnun){
+		this.loadicons();
+		if(!isempt(fnun)){
+			js.fileopt(id,0);
 		}else{
-			js.winiframe('文件预览',url);
+			js.yulanfile(id, ext,pts,'','','xq');
 		}
 		return false;
 	},
@@ -318,8 +464,36 @@ var c={
 		}
 		if(zt=='1'){
 			$('#zhuangdiv').show();
+			$('#nextxuandiv').show();
+			if(get('sys_nextcoursediv0')){
+				$('#sys_nextcoursediv0').show();
+			}
 		}else{
 			$('#zhuangdiv').hide();
+			$('#nextxuandiv').hide();
+			if(get('sys_nextcoursediv0')){
+				form('sys_nextcourseid').value='';
+				js.changeclear('changesys_nextcoursename');
+				$('#sys_nextcoursediv0').hide();
+				$('#sys_nextcoursediv1').hide();
+			}
+		}
+	},
+	changenextbool:true,
+	changenextcourse:function(o,lx){
+		var o1= o.options[o.selectedIndex];
+		var clx = $(o1).attr('checktype');
+		this.changenextbool=true;
+		js.changeclear('changesys_nextcoursename');
+		if(o.value>0){
+			if(lx==3 || (lx==4 && clx=='change')){
+				$('#sys_nextcoursediv1').show();
+			}else{
+				$('#sys_nextcoursediv1').hide();
+				this.changenextbool=false;
+			}
+		}else{
+			$('#sys_nextcoursediv1').hide();
 		}
 	},
 	//手写签名
@@ -332,6 +506,11 @@ var c={
 		$('#qianmingdiv').jqSignature().on('jq.signature.changed', function() {
 			c.qianmingbo=true;
 		});
+		
+		if(ismobile==1)get('qianmingdiv').addEventListener('touchmove',function(e){
+			e.preventDefault();
+		},false);
+	
 		$('#qianming_btn0').click(function(){
 			c.qianmingok();
 		});
@@ -350,6 +529,23 @@ var c={
 		qmimgstr = dataUrl;
 		$('#qianmingshow').append(s);
 		js.tanclose('qianming');
+	},
+	qianyin:function(){
+		js.msg('wait','引入中...');
+		js.ajax(c.gurl('qianyin'),{},function(a){
+			if(a.success){
+				js.msg('success', '引入成功');
+				$('#imgqianming').remove();
+				var dataUrl = a.data;
+				var s = '<br><img id="imgqianming" src="'+dataUrl+'"  height="90">';
+				qmimgstr = dataUrl;
+				$('#qianmingshow').append(s);
+			}else{
+				js.msg('msg', a.msg);
+			}
+		},'get,json',function(s){
+			js.msg('msg','操作失败');
+		});
 	},
 	optmenu:function(o1){
 		var o = $(o1);
@@ -419,7 +615,7 @@ var c={
 		$.selectdata({
 			data:this.selectdatadata[fid],title:tit,
 			fid:fid,
-			url:geturlact('getselectdata',{act:a1[0],sysmodenum:modenum}),
+			url:geturlact('getselectdata',{act:a1[0],sysmodenum:modenum,sysmid:mid}),
 			checked:ced, nameobj:form(fid),idobj:idobj,
 			onloaddata:function(a){
 				c.selectdatadata[fid]=a;
@@ -428,5 +624,57 @@ var c={
 				if(c.onselectdata[this.fid])c.onselectdata[this.fid](seld,sna,sid);
 			}
 		});
+	},
+	//评论
+	pinglun:function(o1){
+		js.setmsg('','','pinglun_spage');
+		var sm = get('pinglun_explain').value;
+		if(!sm){js.setmsg('请输入评论内容','','pinglun_spage');return;}
+		js.setmsg('提交中...','','pinglun_spage');
+		js.ajax(c.gurl('pinglun'),{'sm':sm,'name':'评论','mid':mid,'modenum':modenum},function(s){
+			var msg = '提交评论成功';
+			js.setmsg(msg,'green','pinglun_spage');
+			js.msgok(msg);
+			get('pinglun_explain').disabled=true;
+			$(o1).remove();
+		},'post',function(s){
+			js.setmsg(s,'','pinglun_spage');
+		});
+		return false;
+	},
+	
+	//回执确认
+	receiptque:function(){
+		$('#receiptrsdiv').remove();
+		js.prompt('回执确认','确认说明(选填)', function(jg,txt){
+			if(jg=='yes'){
+				c.receiptqueok(txt);
+			}
+		});
+	},
+	receiptqueok:function(sm){
+		js.msg('wait','回执确认确认提交中...');
+		var da = {'mid':mid,'modenum':modenum,'sm':sm,'receiptid':receiptrs.id};
+		js.ajax(c.gurl('receiptcheck'),da,function(a){
+			js.msg('success','回执确认提交成功');
+		},'post');
+	},
+	
+	initRecord:function(){
+		$('#filedivviewfile').prepend('<input onclick="js.wxRecord.startLuyin(this)" type="button" class="webbtn" style="padding:5px 8px;border-radius:5px" value="录音">&nbsp;');
+		js.wxRecord.success=function(ret){
+			f.fileobj.fileallarr.push(ret);
+			var str='<div style="padding:3px;font-size:14px;border-bottom:1px #dddddd solid">录音:'+ret.filename+'('+ret.filesizecn+')</div>';
+			$('#filedivview').append(str);
+		}
+	},
+	
+	showeditcont:function(optdt,uid){
+		js.tanbody('editcont','修改记录',(ismobile==1) ? winWb()-10 : 600,300, {
+			html:'<div style="height:300px;overflow:auto"><div id="editcontview" style="padding:5px">'+js.getmsg('加载中...')+'</div></div>'
+		});
+		js.ajax(c.gurl('editcont'),{optdt:optdt,uid:uid,mid:mid,modenum:modenum},function(ret){
+			$('#editcontview').html(ret);
+		},'get');
 	}
 };

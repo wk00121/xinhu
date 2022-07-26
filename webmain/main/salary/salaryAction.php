@@ -18,7 +18,8 @@ class salaryClassAction extends Action
 		echo $barr;
 	}
 	
-	public function xinzlfafter($table, $rows)
+	//弃用启用
+	public function xinzlfafter222($table, $rows)
 	{
 		$uids = '';
 		foreach($rows as $k=>$rs){
@@ -37,6 +38,43 @@ class salaryClassAction extends Action
 		}
 		return array(
 			'rows' => $rows
+		); 
+	}
+	
+	public function bumenafter($table, $rows)
+	{
+		foreach($rows as $k=>$rs){
+			if($rs['isturn']==0){
+				$rows[$k]['trbgcolor']='#fbe5d5';
+			}else{
+				$rows[$k]['checkdisabled']=true;
+			}
+		}
+		return array(
+			'rows' => $rows,
+			'isdaochu' => m('view')->isdaochu($this->flow->modeid, $this->adminid)
+		); 
+	}
+	
+	public function xinziafter($table, $rows)
+	{
+		return array(
+			'rows' => $rows,
+			'isdaochu' => m('view')->isdaochu($this->flow->modeid, $this->adminid)
+		); 
+	}
+	
+	public function xinziafafter($table, $rows)
+	{
+		foreach($rows as $k=>$rs){
+			if($rs['ispay']==1){
+				$rows[$k]['checkdisabled']=true;
+				$rows[$k]['ishui']=1;
+			}
+		}
+		return array(
+			'rows' => $rows,
+			'isdaochu' => m('view')->isdaochu($this->flow->modeid, $this->adminid)
 		); 
 	}
 }

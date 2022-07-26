@@ -9,7 +9,8 @@ class mode_carmsClassAction extends inputAction{
 	//可预定的车辆
 	public function getcardata()
 	{
-		$rows = m('carm')->getall("1=1",'carnum as name,id as value');
+		$where= m('admin')->getcompanywhere(1);
+		$rows = m('carm')->getall("1=1 ".$where."",'carnum as name,id as value');
 		return $rows;
 	}
 }	

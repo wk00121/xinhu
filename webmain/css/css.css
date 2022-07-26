@@ -19,6 +19,8 @@ h1{ font-size:18px}
 select,input,textarea,button,a{ font-size:14px;resize: none;outline:none}
 .touch{-webkit-overflow-scrolling:touch;overflow-scrolling:touch;}
 
+.wrap{word-wrap:break-word;word-break:break-all;white-space:normal;}
+
 a.zhu:link,a.zhu:visited{color:#1389D3;}
 
 a.hui:link,a.hui:visited{color:#888888;}
@@ -86,3 +88,16 @@ a.webbtn:link,a.webbtn:visited,.webbtn{color:#ffffff;opacity:0.8; background-col
 .webbtn:disabled{background-color:#aaaaaa; color:#eeeeee}
 .webbtn:hover{box-shadow:0px 0px 5px rgba(0,0,0,0.3);opacity:1}
 .radius5{border-radius:5px;}
+
+.upload_items{border:1px #cccccc solid;height:60px;overflow:hidden;float:left;margin-top:5px;margin-bottom:5px;margin-right:10px;cursor:pointer;position:relative}
+.upload_items:active{border:1px #1389D3 solid}
+.upload_items img.imgs{width:50px;height:50px;margin:5px}
+.upload_items_items{padding:5px;text-align:center}
+.upload_items_meng{ background:rgba(0,0,0,0.5);position:absolute;left:0px;top:0px;height:60px;overflow:hidden;line-height:60px;text-align:center;width:100%;color:white}
+
+.r-tabs{overflow:hidden;height:36px}
+.r-tabs .r-tabs-item{height:36px;overflow:hidden;line-height:36px;display: block;float:left;text-align:center;padding:0px 10px;border:1px #888888 solid;border-bottom:0px;border-right-width:0px;cursor:pointer;color:#888888}
+.r-tabs .r-tabs-item:first-child{border-top-left-radius:5px}
+.r-tabs .r-tabs-item:last-child{border-top-right-radius:5px;border-right-width:1px}
+.r-tabs .r-tabs-item:not(:first-child):not(:last-child){border-radius:0}
+.r-tabs .r-tabs-item.r-tabs-item.active{color:#336699;}

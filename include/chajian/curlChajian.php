@@ -58,11 +58,11 @@ class curlChajian extends Chajian{
 			)  
 		 );  
 		$cxContext 	= stream_context_create($opts);  
-		@$sFile 		= file_get_contents($url, false, $cxContext);  
+		@$sFile 	= file_get_contents($url, false, $cxContext);  
 		return $sFile;
 	}
 	
-	public function getcurl($url)
+	public function getcurl($url, $headarr=array())
 	{
 		if(!function_exists('curl_init')){
 			return $this->getfilecont($url);
@@ -77,6 +77,12 @@ class curlChajian extends Chajian{
 		if($ishttps==1){
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		}
+		//设置head
+		if($headarr){
+			$heads = array();
+			foreach($headarr as $k=>$v)$heads[] = ''.$k.':'.$v.'';
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $heads);
+		}
 		curl_setopt($ch, CURLOPT_TIMEOUT, $this->TIMEOUT); 
 		$output = curl_exec($ch);
 		$this->setResponseHeaders($ch);
@@ -84,7 +90,7 @@ class curlChajian extends Chajian{
 		return $output;
 	}
 	
-	public function postcurl($url, $data=array(), $lx=0, $isjson=0)
+	public function postcurl($url, $data=array(), $lx=0, $headarr=array())
 	{
 		if(!function_exists('curl_init')){
 			return $this->postfilecont($url, $data);
@@ -96,14 +102,20 @@ class curlChajian extends Chajian{
 		if(substr($url,0, 5)=='https')$ishttps=1;
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //要求结果为字符串且输出到屏幕上
+		curl_setopt($ch, CURLOPT_HEADER, 0); //不返回header
 		curl_setopt($ch, CURLOPT_POST, 1);
 		@curl_setopt($ch, CURLOPT_POSTFIELDS, $cont);
 		if($ishttps==1){
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			//curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,  false);
 		}
-		if($isjson==1)curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		//设置head
+		if($headarr){
+			$heads = array();
+			foreach($headarr as $k=>$v)$heads[] = ''.$k.':'.$v.'';
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $heads);
+		}
 		curl_setopt($ch, CURLOPT_TIMEOUT, $this->TIMEOUT); 
 		$output = curl_exec($ch);
 		$curl_errno = curl_errno($ch);
@@ -112,9 +124,14 @@ class curlChajian extends Chajian{
 		return $output;
 	}
 	
+	/**
+	*	postjson的类型
+	*/
 	public function postjson($url, $data=array())
 	{
-		return $this->postcurl($url, $data, 0, 1);
+		return $this->postcurl($url, $data, 0, array(
+			'Content-Type' => 'application/json'
+		));
 	}
 	
 	public function getResponseHeaders()

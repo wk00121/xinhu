@@ -54,7 +54,8 @@ var nwjs={
 		var kjj=js.getoption('kuaijj','Q');
 		this.addShortcut(kjj);
 		this.addfile();
-		try{this.udpserver();}catch(e){}
+		var llq = navigator.userAgent.toLowerCase();
+		try{if(llq.indexOf('windows nt 5')<0)this.udpserver();}catch(e){}
 	},
 	addShortcut:function(v){
 		var option = {
@@ -74,7 +75,8 @@ var nwjs={
 	},
 	removetray:function(){
 		if(!this.nw)return;
-		this.tray.remove();
+		if(this.tray)this.tray.remove();
+		this.win.removeAllListeners('close');
 		if(this.shortcut)nwjsgui.App.unregisterGlobalHotKey(this.shortcut);
 		this.closeserver();
 		this.tray = false;
@@ -94,6 +96,9 @@ var nwjs={
 	},
 	openurl:function(url){
 		this.runcmd(''+this.getpath()+'/images/start.bat '+url+'');
+	},
+	editoffice:function(cstr){
+		this.runcmd(''+this.getpath()+'/images/rockoffice.exe '+cstr+'');
 	},
 	winshow:function(){
 		if(!this.nw){
@@ -167,6 +172,7 @@ var nwjs={
 		if(!this.server)return;
 		if(this.socketobj)this.socketobj.destroy();
 		this.server.close();
+		this.server=false;
 	},
 	socketobj:false,
 	udpserver:function(funarr){
@@ -189,6 +195,7 @@ var nwjs={
 				for(k in bas)bst+=',"'+k+'":"'+bas[k]+'"';
 				if(bst!='')bst=bst.substr(1);
 				bstr= '{'+bst+'}';
+				if(typeof(barr)=='string')bstr = barr;
 				if(bas.callback)bstr=''+bas.callback+'({'+bst+'})';
 				}catch(e){}
 			}
@@ -233,5 +240,11 @@ var nwjs={
 			spth+=''+a1[i]+'/';
 			if(!this.fs.existsSync(spth))this.fs.mkdirSync(spth);
 		}
+	},
+	filetobase64:function(path){
+		var data = this.fs.readFileSync(path);  
+		data = new Buffer(data).toString('base64');
+		//this.fs.writeFileSync(path, data);
+		return data;
 	}
 };

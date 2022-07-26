@@ -24,8 +24,12 @@ $(document).ready(function(){
 				'enddt':get('dt2_{rand}').value
 			},true);
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'车辆预定情况',
+				'btnobj':o1
+			});
 		},
 		setcolumns:function(d){
 			var col=[],i,len=d.length;
@@ -69,7 +73,7 @@ $(document).ready(function(){
 	
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button> 
 	</td>
 </tr>
 </table>

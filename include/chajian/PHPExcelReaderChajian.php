@@ -1,13 +1,12 @@
 <?php 
 /**
-	PHPExcel 读取插件类
+*	PHPExcel 读取插件类
 */
-
-include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php');
-include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php');
 class PHPExcelReaderChajian extends Chajian{
 	
-
+	public $A;
+	public $AT;
+	
 	protected function initChajian()
 	{
 		$this->Astr	= 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,AB,AC,AD,AE,AF,AG,AH,AI,AJ,AK,AL,AM,AN,AO,AP,AQ,AR,AS,AT,AU,AV,AW,AX,AY,AZ,BA,BB,BC,BD,BE,BF,BG,BH,BI,BJ,BK,BL,BM,BN,BO,BP,BQ,BR,BS,BT,BU,BV,BW,BX,BY,BZ,CA,CB,CC,CD,CE,CF,CG,CH,CI,CJ,CK,CL,CM,CN,CO,CP,CQ,CR,CS,CT,CU,CV,CW,CX,CY,CZ';
@@ -17,18 +16,22 @@ class PHPExcelReaderChajian extends Chajian{
 	
 	public function reader($filePath=null, $index=2)
 	{
+		if(file_exists(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php'))include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel2007.php');
+if(file_exists(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php'))include_once(ROOT_PATH.'/include/PHPExcel/Reader/Excel5.php');
+		$help = c('xinhu')->helpstr('phpexcel');
+		if(!class_exists('PHPExcel_Reader_Excel2007'))return '没有安装PHPExcel插件'.$help.'';
 		if($filePath==null)$filePath = $_FILES['file']['tmp_name'];
 		$PHPReader = new PHPExcel_Reader_Excel2007();
 		if(!$PHPReader->canRead($filePath)){
 			$PHPReader = new PHPExcel_Reader_Excel5();
 			if(!$PHPReader->canRead($filePath)){
-				return 'no Excel';
+				return '不是正规的Excel文件'.$help.'';
 			}
 		}
 		
 		$PHPExcel 	= $PHPReader->load($filePath);
 		$rows		= array();
-		$sheet 		= $PHPExcel->getSheet(0);
+		$sheet 		= $PHPExcel->getSheet(0); //第一个表
 		$allColumn 	= $sheet->getHighestColumn();
 		$allRow 	= $sheet->getHighestRow();
 		$allCell	= $this->AT[$allColumn];
@@ -51,5 +54,12 @@ class PHPExcelReaderChajian extends Chajian{
 	public function importTable($table, $rows, $fields)
 	{
 		
+	}
+	
+	public function ExcelToDate($lx, $val)
+	{
+		if($lx=='date')$lx = 'Y-m-d';
+		if($lx=='datetime')$lx = 'Y-m-d H:i:s';
+		return date($lx, PHPExcel_Shared_Date::ExcelToPHP($val)-8*3600);
 	}
 }                         

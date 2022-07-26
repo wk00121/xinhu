@@ -7,7 +7,10 @@ defined('HOST') or die ('not access');
 ?>
 <div class="panel panel-default">
   <div class="panel-heading">
-	<h3  class="panel-title"><i class="icon-time"></i> 考勤打卡</h3>
+	<h3 class="panel-title">
+	<i class="icon-time"></i> <?=$itemnowname?>
+		<a style="float:right;TEXT-DECORATION:none" href="javascript:;" onclick="moredakajili()">考勤表&gt;&gt;</a>
+	</h3>
   </div>
   <div class="panel-body">
 	<table>
@@ -40,13 +43,10 @@ defined('HOST') or die ('not access');
 //初始化
 homeobject.kqdk_init=function(){
 	$('#dabtn{rand}').click(function(){
-		adddaka(this);
+		adddakas(this);
 	});
 	this.timeshowcishu = 0;
-	function adddaka(o){
-		var dacs = {};
-		o.disabled = true;o.value='打卡中...';
-		if(typeof(nwjs)=='object')dacs = nwjs.getipmac();
+	function adddaka(o,dacs){
 		js.ajax('api.php?m=kaoqin&a=adddkjl',dacs, function(d){
 			if(d.code==200){
 				js.alert('打卡成功：'+d.data+'');
@@ -59,6 +59,15 @@ homeobject.kqdk_init=function(){
 				o.value='重试打卡';
 			}
 		},'get,json');
+	}
+	function adddakas(o){
+		o.disabled = true;o.value='打卡中...';
+		js.cliendsend('getipmac',{},function(ret){
+			adddaka(o,{ip:ret.ip,mac:ret.mac});
+		},function(){
+			adddaka(o,{});
+			return true;
+		});
 	}
 }
 
@@ -73,7 +82,7 @@ homeobject.showtime=function(){
 		o.disabled=false;
 	}
 }
-homeobject.showkqdklist=function(a){
+homeobject.show_kqdk_list=function(a){
 	var sbarr = a.sbarr;
 	var s = '',i;
 	for(i=0;i<sbarr.length;i++){
@@ -89,5 +98,8 @@ homeobject.showkqdklist=function(a){
 	if(s!='')s=s.substr(1);
 	$('#dktime{rand}').html(s);
 	get('dabtn{rand}').value='第'+oi+'次打卡';
+}
+moredakajili=function(){
+	addtabs({url:'main,kaoqin,geren',name:'我的考勤表',num:'mykqbiao'});
 }
 </script>

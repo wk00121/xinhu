@@ -12,7 +12,7 @@ function initbodys(){
 	addchengesss();
 	
 	if(mid=='0'){
-		js.ajax(geturlact('getlast'),{},function(d){
+		if(form('cardid'))js.ajax(geturlact('getlast'),{},function(d){
 			if(d){
 				form('paytype').value=d.paytype;
 				form('cardid').value=d.cardid;

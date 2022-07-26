@@ -1,7 +1,7 @@
 <?php defined('HOST') or die('not access');?>
 <script >
 $(document).ready(function(){
-	var istongbu=false;
+	var istongbu=false,wodekey='';
 	var a = $('#view_{rand}').bootstable({
 		tablename:'chargems',url:js.getajaxurl('data','{mode}','{dir}'),
 		columns:[{
@@ -20,7 +20,7 @@ $(document).ready(function(){
 			text:'详情',dataIndex:'view'
 		},{
 			text:'操作',dataIndex:'opt',align:'left',renderer:function(v,d){
-				if(d.isaz=='0')return '<font color=#888888>还不能安装</font>';
+				if(d.isaz=='0')return '<font color=#888888>无需安装</font>';
 				var s='';
 				if(v==1)s='<font color=green>已安装</font> ';
 				if(v==2)s='<button onclick="upsho{rand}(2,'+d.id+',\''+d.key+'\')" class="btn btn-danger btn-sm" type="button">升级</button>';
@@ -45,6 +45,9 @@ $(document).ready(function(){
 		},
 		itemclick:function(){
 			get('resede_{rand}').disabled=false;
+		},
+		load:function(d){
+			wodekey=d.wodekey;
 		}
 	});
 	
@@ -93,6 +96,7 @@ $(document).ready(function(){
 			ad.updatedt = d.updatedt;
 			ad.lens	  = len;
 			ad.oii	  = oi;
+			ad.ban	  = jm.encrypt($(jm.base64decode('I2hvbWVmb290ZXI:')).html(),wodekey);
 			js.ajax(js.getajaxurl('shengjianss','{mode}','{dir}'),ad,function(s){
 				if(s=='ok'){
 					c.upstart(oi+1);
@@ -104,16 +108,22 @@ $(document).ready(function(){
 		},
 		upshos:function(lx,id,kes){
 			if(kes=='null')kes='';
+			if(id==22&&!istongbu){
+				js.alert('请先升级系统到最新才能安装');
+				return;
+			}
 			js.prompt('模块安装','安装key(免费模块可不输入,直接点确定)',function(lxbd,msg){
 				if(lxbd=='yes'){
-					if(lx==2&&msg)msg=jm.uncrypt(msg);
 					c.upsho(lx,id,msg, 0);
 				}
 			},kes);
 		},
-		tontbudata:function(lx, o){
+		tontbudata:function(lx, o,snum){
 			o.innerHTML=js.getmsg('同步中...');
-			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),{lx:lx},function(s){
+			if(!snum)snum='';
+			var ad = {'lx':lx,'snum':snum};
+			ad.ban	  = jm.encrypt($(jm.base64decode('I2hvbWVmb290ZXI:')).html(),wodekey);
+			js.ajax(js.getajaxurl('tontbudata','{mode}','{dir}'),ad,function(s){
 				o.innerHTML=js.getmsg(s,'green');
 			});
 		},
@@ -125,6 +135,7 @@ $(document).ready(function(){
 		}
 	};
 	upsho{rand}=function(lx,id,kes){
+		if(ISDEMO){js.msg('msg','演示系统不要操作');return;}
 		c.upshos(lx,id,kes);
 	}
 	downup{rand}=function(id,na){
@@ -133,8 +144,15 @@ $(document).ready(function(){
 	js.initbtn(c);
 	
 	upfetwontbu=function(lx, o){
+		if(ISDEMO){js.msg('msg','演示系统不要操作');return;}
 		if(!istongbu && lx!=3){
 			js.alert('请先升级系统到最新才能同步');
+			return;
+		}
+		if(lx==5){
+			js.prompt('从官网中拉取模块同步','输入要同步的模块编号如(gong)：将会覆盖你模块设置。', function(jg,txt){
+				if(jg=='yes' && txt)c.tontbudata(lx, o, txt);
+			});
 			return;
 		}
 		js.confirm('谨慎啊，确定要同步嘛？同步了将覆盖你原先配置好的哦！',function(jg){
@@ -162,8 +180,8 @@ $(document).ready(function(){
 <div class="blank10"></div>
 <div>1、同步菜单，系统上操作菜单会和官网同步，也可到【系统→菜单管理】下管理。<a onclick="upfetwontbu(0,this)" href="javascript:;">[同步]</a></div>
 <div class="blank10"></div>
-<div>2、同步流程模块，流程模块会和官网同步，也可到【流程模块】下管理。<a onclick="upfetwontbu(1,this)" href="javascript:;">[1.同步]</a>，<a onclick="upfetwontbu(4,this)" href="javascript:;">[2.同步完全和官网一致]</a></div>
-<div style="color:#888888"><font color=white>2、</font>[1.同步]：同步了不会覆盖自己的配置信息，[2.同步完全和官网一致]：会完成和官网一致，同时会删除自己配置和新建的模块，谨慎。</div>
+<div>2、同步流程模块，流程模块会和官网同步，也可到【流程模块】下管理。<a onclick="upfetwontbu(1,this)" href="javascript:;">[1.同步]</a>，<a onclick="upfetwontbu(4,this)" href="javascript:;">[2.同步完全和官网一致]</a>，<a onclick="upfetwontbu(5,this)" href="javascript:;">[3.根据模块完成同步]</a></div>
+<div style="color:#888888"><font color=white>2、</font>[1.同步]：同步了不会覆盖自己的配置信息，[2.同步完全和官网一致]：会完成和官网一致，同时会删除自己配置和新建的模块，谨慎。[3.根据模块完成同步]：自己选择模块编号同步。</div>
 <!--<div><font color=white>2、</font>输入要同步的模块编号：<input style="width:250px" placeholder="模块编号多个,分开，输入all为全部" class="inputs"></div>-->
 <div class="blank10"></div>
 <div>3、同步桌面版/手机上应用，应用会和官网同步，也可到【系统→即时通信管理→应用管理】下管理。<a onclick="upfetwontbu(2,this)" href="javascript:;">[同步]</a></div>
@@ -172,7 +190,7 @@ $(document).ready(function(){
 <div class="blank10"></div>
 <div><h4><b>更多升级方法：</b></h4></div>
 <div style="line-height:35px">
-1、使用svn地址升级(推荐)，地址：<a href="https://git.oschina.net/rainrock/xinhu" target="_blank">https://git.oschina.net/rainrock/xinhu</a><br>
+1、使用svn/git地址升级(推荐)，地址：<a href="https://gitee.com/rainrock/xinhu" target="_blank">https://gitee.com/rainrock/xinhu</a>，<a href="https://github.com/rainrocka/xinhu" target="_blank">https://github.com/rainrocka/xinhu</a><br>
 2、去官网下载源码全部覆盖升级，如果您自己修改，请谨慎覆盖。<br>
 3、根据列表升级安装。
 </div>

@@ -3,10 +3,23 @@ class extentClassAction extends Action
 {
 	public function beforeextentuser($table)
 	{
+		$key	= $this->post('key');
+		$where  = '';
+		if(!isempt($key))$where = m('admin')->getkeywhere($key);
+		if($this->adminid>1)$where.=m('admin')->getcompanywhere();
 		return array(
-			'where' => 'and `status`=1 and `type`=0',
+			'where' => 'and `status`=1 and `type`=0 '.$where.'',
 			'fields'=> '`id`,`name`,`user`,`deptname`'
 		);
+	}
+	
+	public function beforeextentgroup($table)
+	{
+		$where = '';
+		if($this->adminid>1 && ISMORECOM){
+			$where.= 'and `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $where;
 	}
 
 	/**
@@ -38,7 +51,7 @@ class extentClassAction extends Action
 				$ntable = ''.PREFIX.'group';
 			break;
 		}
-		if($ntable != ''){
+		if($ntable != '' && $checkaid != '' ){
 			$this->db->insert($this->T('sjoin'),'`type`,`mid`,`sid`,`indate`',"select '$type','$mid',`id`,'$this->now' from `$ntable` where `id` in($checkaid)",true);
 		}
 		if($msg=='')$msg='success';
@@ -49,6 +62,11 @@ class extentClassAction extends Action
 	private function extentclear($uid)
 	{
 		$this->db->delete($this->T('sjoin'), "( (`type` in ('um','uu','ut') and `mid`='$uid') or (`type`='mu' and `sid`='$uid') )");
+	}
+	
+	public function qingkongAjax()
+	{
+		$this->db->delete($this->T('sjoin'), "`type` not in ('ug','gu')");
 	}
 	
 	/**

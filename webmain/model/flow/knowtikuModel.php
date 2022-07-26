@@ -3,17 +3,19 @@ class flow_knowtikuClassModel extends flowModel
 {
 	protected function flowchangedata(){
 		$this->rs['content'] = c('html')->replace($this->rs['content']);
+		
 	}
 	
 	public function initModel()
 	{
 		$this->logobj = m('log');
+		$this->typearr= array('单选','多选','判断题');
 	}
 	
 	public function flowrsreplace($rs,$isv=0)
 	{
 		if(isset($rs['typeid']))$rs['typeid'] 	= $this->db->getmou('[Q]option','name',"`id`='".$rs['typeid']."'");
-		$rs['type'] = ($rs['type']==1)?'多选':'单选';
+		$rs['type'] = arrvalue($this->typearr, $rs['type']);
 		if($isv==1){
 			$ss = '<font color=#888888>停用</font>';
 			if($rs['status']==1)$ss = '<font color=green>启用</font>';
@@ -73,6 +75,7 @@ class flow_knowtikuClassModel extends flowModel
 			'anb' 		=> '5.3',
 			'anc' 		=> '5.4',
 			'and' 		=> '5.5',
+			'ane' 		=> '',
 			'answer' 		=> 'D',
 			'explain' 		=> '详见官网说明使用',
 		);
@@ -84,18 +87,37 @@ class flow_knowtikuClassModel extends flowModel
 			'anb' 		=> 'mysqli',
 			'anc' 		=> 'pdo',
 			'and' 		=> 'mssql',
+			'ane' 		=> 'com',
 			'answer' 	=> 'ABC',
 			'explain' 	=> 'D选项为别的数据库',
 		);
-		return array($barr,$barr1,$barr2);
+		$barr3 = array(
+			'title' 	=> '信呼官网域名是rockoa.com',
+			'typeid' 	=> '官网知识',
+			'type' 		=> '判断题',
+			'ana' 		=> '正确',
+			'anb' 		=> '错误',
+			'anc' 		=> '',
+			'and' 		=> '',
+			'answer' 	=> 'A',
+			'explain' 	=> '',
+		);
+		return array($barr,$barr1,$barr2,$barr3);
 	}
 	
 	//导入之前
 	public function flowdaorubefore($rows)
 	{
-		$inarr = array();
+		$inarr 	= array();
+		$num 	= 'knowtikutype';
+		if(ISMORECOM && $cnum=$this->adminmodel->getcompanynum())$num.='_'.$cnum.'';
 		foreach($rows as $k=>$rs){
-			$rs['typeid'] 	= $this->option->gettypeid('knowtikutype',$rs['typeid']);
+			$rs['typeid'] 	= $this->option->gettypeid($num,$rs['typeid']);
+			$types			= arrvalue($rs,'type');
+			$type1 = 0;
+			if($types=='多选')$type1 = 1;
+			if($types=='判断题')$type1 = 2;
+			$rs['type']		= $type1;
 			$inarr[] = $rs;
 		}
 		

@@ -31,7 +31,7 @@ $(document).ready(function(){
 						if(types!='')s+='</optgroup>';
 						s+='<optgroup label="'+csd.type+'">';
 					}
-					s+='<option value="'+csd.id+'">'+csd.name+'</option>';
+					s+='<option value="'+csd.num+'">'+csd.name+'</option>';
 					types = csd.type;
 				}
 				$('#mode_{rand}').html(s);

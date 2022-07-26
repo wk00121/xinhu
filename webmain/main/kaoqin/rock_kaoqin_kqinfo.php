@@ -54,10 +54,22 @@ $(document).ready(function(){
 		clickwin:function(o1, lx){
 			if(lx==0)openinput('请假条','leave');
 			if(lx==1)openinput('加班单','jiaban');
+		},
+		xiashu:function(o1){
+			if(atype=='my'){
+				o1.value='我的考勤';
+				atype = 'down';
+				nowtabssettext('下属考勤信息');
+			}else{
+				o1.value='下属考勤';
+				atype = 'my';
+				nowtabssettext('我的考勤信息');
+			}
+			a.setparams({atype:atype}, true);
 		}
 	};
 	
-
+	if(atype=='my')$('#down_{rand}').show();
 	js.initbtn(c);
 });
 </script>
@@ -80,14 +92,16 @@ $(document).ready(function(){
 	<td  style="padding-left:10px">
 		<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="姓名/部门">
 	</td>
-	<td  style="padding-left:10px">
+	<td style="padding-left:10px">
 		<input class="form-control" style="width:100px" id="keys_{rand}"   placeholder="类型">
 	</td>
-	<td  style="padding-left:10px">
+	<td style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
 	
-	<td width="80%"></td>
+	<td width="80%" style="padding-left:10px">
+		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属考勤" type="button">
+	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>

@@ -4,7 +4,7 @@ $(document).ready(function(){
 	
 	var c={
 		showdata:function(a){
-			var hhu = parseInt(viewwidth/290);
+			var hhu = parseInt(viewwidth/260);
 			var j=0,lx,d,s1,i,l=0,len;
 			var strarr = [];for(i=0;i<hhu;i++)strarr[i]='';
 			for(lx in a){
@@ -12,7 +12,7 @@ $(document).ready(function(){
 				s1 ='<div align="left" style="margin:20px;width:230px" class="list-group">';
 				s1+='<div class="list-group-item  list-group-item-success"><i class="icon-plus"></i> '+lx+'('+len+')</div>';
 				for(i=0;i<len;i++){
-					s1+='<a onclick="openinput(\''+d[i].name+'\',\''+d[i].num+'\',0)" class="list-group-item">'+d[i].name+'</a>';
+					s1+='<a style="TEXT-DECORATION:none" onclick="openinput(\''+d[i].name+'\',\''+d[i].num+'\',0)" class="list-group-item">'+d[i].name+'</a>';
 				}
 				s1+='</div>';
 				strarr[l]+=s1;

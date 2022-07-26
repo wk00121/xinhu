@@ -21,10 +21,12 @@ $(document).ready(function(){
 				return s;
 			}
 		},{
-			text:'发件人',dataIndex:'sendname'
+			text:'发件人',dataIndex:'sendname',renderer:function(v){
+				return '<div style="max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
+			}
 		},{
 			text:'收件人',dataIndex:'recename',renderer:function(v){
-				return '<div style="width:250px" class="wrap">'+v+'</div>';
+				return '<div style="max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" class="wrap">'+v+'</div>';
 			}
 		},{
 			text:'发件时间',dataIndex:'senddt',sortable:true
@@ -43,6 +45,9 @@ $(document).ready(function(){
 		load:function(d){
 			nowemail=d.email
 			c.showtotal(d.total);
+		},
+		itemdblclick:function(d){
+			openxiangs('邮件','emailm',d.id);
 		}
 	});
 	function btn(bo){
@@ -131,9 +136,14 @@ $(document).ready(function(){
 				}
 			});
 			h.isValid();
+		},
+		clickset:function(){
+			js.open('?a=helpset&m=email&d=system');
 		}
 	};
 	js.initbtn(c);
+	
+	if(adminid!='1')$('#msgss{rand}').html('');
 });
 </script>
 
@@ -150,16 +160,16 @@ $(document).ready(function(){
 	<div class="blank10"></div>
 	<div align="left" class="list-group">
 		<div class="list-group-item active">我的邮件</div>
-		<a class="list-group-item" click="change,0">收件箱 &nbsp;<font id="zztotal_{rand}">(0/0)</font></a>
-		<a class="list-group-item" click="change,1">草稿箱 &nbsp;<font id="cgtotal_{rand}">(0)</font></a>
-		<a class="list-group-item" click="change,2">已发送 &nbsp;<font color="#aaaaaa" id="yftotal_{rand}">(0)</font></a>
-		<a class="list-group-item" click="change,3">已删除 &nbsp;<font color="#aaaaaa" id="sctotal_{rand}">(0)</font></a>
-		<a click="cogemail" class="list-group-item"><i class="icon-cog"></i> 邮箱设置</a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,0">收件箱 &nbsp;<font id="zztotal_{rand}">(0/0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,1">草稿箱 &nbsp;<font id="cgtotal_{rand}">(0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,2">已发送 &nbsp;<font color="#aaaaaa" id="yftotal_{rand}">(0)</font></a>
+		<a class="list-group-item" style="TEXT-DECORATION:none" click="change,3">已删除 &nbsp;<font color="#aaaaaa" id="sctotal_{rand}">(0)</font></a>
+		<a click="cogemail" style="TEXT-DECORATION:none" class="list-group-item"><i class="icon-cog"></i> 邮箱设置</a>
 	</div>
 	
 	<div align="left" style="display:none" class="list-group">
 		<div class="list-group-item active">邮件文件夹</div>
-		<a class="list-group-item"><i class="icon-plus"></i> 新建文件夹</a>
+		<a class="list-group-item" style="TEXT-DECORATION:none"><i class="icon-plus"></i> 新建文件夹</a>
 	</div>
 </td>
 <td width="10" nowrap></td>
@@ -175,13 +185,13 @@ $(document).ready(function(){
 			</div>	
 		</td>
 		<td>
-		<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="标题/发件人">
+		<input class="form-control" style="width:200px" id="key_{rand}" placeholder="主题/收件人/发件人">
 		</td>
 		<td style="padding-left:10px">
 			<button class="btn btn-default" click="search" type="button">搜索</button> 
 		</td>
 		<td width="90%">
-			
+			<div id="msgss{rand}">&nbsp;自动接收邮件设置，<a href="javascript:;" click="clickset">[打开设置]</a></div>
 		</td>
 		<td align="right" nowrap>
 			<button class="btn btn-default" id="btn1_{rand}" click="biaoyd" type="button">标识已读</button>&nbsp; 

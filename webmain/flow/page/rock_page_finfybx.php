@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：finfybx.费用报销，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：finfybx.费用报销
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.费用报销]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -9,7 +9,7 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'finfybx',modename='费用报销',isflow=1,modeid='11',atype = params.atype,pnum=params.pnum;
+	var modenum = 'finfybx',modename='费用报销',isflow=1,modeid='11',atype = params.atype,pnum=params.pnum,modenames='报销明细';
 	if(!atype)atype='';if(!pnum)pnum='';
 	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"applydt","name":"\u7533\u8bf7\u65e5\u671f","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"bills","name":"\u5355\u636e\u6570(\u5f20)","fieldstype":"number","ispx":"0","isalign":"0","islb":"0"},{"fields":"fullname","name":"\u6536\u6b3e\u4eba\u5168\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"paytype","name":"\u4ed8\u6b3e\u65b9\u5f0f","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"1"},{"fields":"cardid","name":"\u6536\u6b3e\u5e10\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"openbank","name":"\u5f00\u6237\u884c","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"money","name":"\u62a5\u9500\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneycn","name":"\u5927\u5199\u91d1\u989d","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"1"}],fieldsselarr= [];
 	
@@ -17,7 +17,6 @@ $(document).ready(function(){
 		reload:function(){
 			a.reload();
 		},
-		//新增编辑窗口
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
@@ -33,10 +32,9 @@ $(document).ready(function(){
 		search:function(cans){
 			var s=get('key_{rand}').value,zt='';
 			if(get('selstatus_{rand}'))zt=get('selstatus_{rand}').value;
-			var canss = js.apply({key:s,keystatus:zt}, cans);
+			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -47,23 +45,47 @@ $(document).ready(function(){
 		},
 		searchhighb:function(d){
 			d.key='';
+			d.search_value='';
 			get('key_{rand}').value='';
 			a.setparams(d,true);
 		},
-		//导出
-		daochu:function(){
-			a.exceldown();
+		searchuname:function(d){
+			js.getuser({
+				type:'deptusercheck',
+				title:'搜索'+d.name,
+				changevalue:this.search_value,
+				callback:function(sna,sid){
+					c.searchunames(d,sna,sid);
+				}
+			});
 		},
-		//对应控制器返回rul
+		search_value:'',
+		searchunames:function(d,sna,sid){
+			get('key_{rand}').value=sna;
+			this.search_value = sid;
+			var cs = {key:'','search_fields':d.fields,'search_value':sid};
+			a.setparams(cs,true);
+		},
+		daochu:function(o1,lx,lx1,e){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':modename,
+				'fieldsarr':fieldsarr,
+				'modenum':modenum,
+				'modenames':modenames,
+				'isflow':isflow,
+				'btnobj':o1
+			});
+		},
 		getacturl:function(act){
 			return js.getajaxurl(act,'mode_finfybx|input','flow',{'modeid':modeid});
 		},
-		//查看切换
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -75,8 +97,11 @@ $(document).ready(function(){
 			
 		},
 		loaddata:function(d){
+			this.setdownsodata(d.souarr);
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
+			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
+			if(d.isdaochu)$('#daobtn_{rand}').show();
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -85,6 +110,17 @@ $(document).ready(function(){
 			$('#changatype{rand}').html(str);
 			$('#changatype{rand}_'+atype+'').addClass('active');
 			js.initbtn(c);
+		},
+		setdownsodata:function(darr){
+			var ddata = [{name:'高级搜索',lx:0}],dsd,i;
+			if(darr)for(i=0;i<darr.length;i++){
+				dsd = darr[i];
+				dsd.lx=3;
+				ddata.push(dsd);
+			}
+			if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
+			ddata.push({name:'打印',lx:1});
+			this.soudownobj.setData(ddata);
 		},
 		setcolumns:function(fid, cnas){
 			var d = false,i,ad=bootparams.columns,len=ad.length,oi=-1;
@@ -108,7 +144,7 @@ $(document).ready(function(){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
 			var nstr= fieldsselarr[num];if(!nstr)nstr='';
 			if(nstr)nstr=','+nstr+',';
-			if(nstr=='' && isflow==1){
+			if(nstr=='' && isflow>0){
 				d.push({text:'申请人',dataIndex:'base_name',sortable:true});
 				d.push({text:'申请人部门',dataIndex:'base_deptname',sortable:true});
 			}
@@ -128,7 +164,7 @@ $(document).ready(function(){
 					d.push(d2);
 				}
 			}
-			if(isflow==1)d.push({text:'状态',dataIndex:'statustext'});
+			if(isflow>0)d.push({text:'状态',dataIndex:'statustext'});
 			if(nstr=='' || nstr.indexOf(',caozuo,')>=0)d.push({text:'',dataIndex:'caozuo',callback:'opegs{rand}'});
 			if(!bots){
 				bootparams.columns=d;
@@ -168,9 +204,8 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('ZmluaW5mb20:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
@@ -199,18 +234,18 @@ $(document).ready(function(){
 	js.initbtn(c);
 	var a = $('#viewfinfybx_{rand}').bootstable(bootparams);
 	c.init();
-	var ddata = [{name:'高级搜索',lx:0}];
-	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
-	ddata.push({name:'打印',lx:1});
-	$('#downbtn_{rand}').rockmenu({
+	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
-		data:ddata,
+		data:[{name:'高级搜索',lx:0}],
 		itemsclick:function(d, i){
 			if(d.lx==0)c.searchhigh();
 			if(d.lx==1)c.printlist();
 			if(d.lx==2)c.setfieldslist();
+			if(d.lx==3)c.searchuname(d);
 		}
 	});
+	
+	
 });
 </script>
 <!--SCRIPTend-->
@@ -224,14 +259,14 @@ $(document).ready(function(){
 		</td>
 		<td style="padding-left:10px"><select class="form-control" style="width:120px" id="selstatus_{rand}"><option value="">-全部状态-</option><option style="color:blue" value="0">待处理</option><option style="color:green" value="1">已审核</option><option style="color:red" value="2">不同意</option><option style="color:#888888" value="5">已作废</option><option style="color:#17B2B7" value="23">退回</option></select></td>
 		<td style="padding-left:10px">
-			<div style="width:85px" class="btn-group">
-			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
+			<div style="white-space:nowrap">
+			<button style="border-right:0;border-top-right-radius:0;border-bottom-right-radius:0" class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px;border-top-left-radius:0;border-bottom-left-radius:0"><i class="icon-angle-down"></i></button> 
 			</div>
 		</td>
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<button class="btn btn-default" style="display:none" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

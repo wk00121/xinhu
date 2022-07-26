@@ -23,6 +23,10 @@ $(document).ready(function(){
 		columns:[{
 			text:'名称',dataIndex:'name',align:'left'
 		},{
+			text:'规格',dataIndex:'guige'
+		},{
+			text:'型号',dataIndex:'xinghao'
+		},{
 			text:'分类',dataIndex:'typeid',align:'left'
 		},{
 			text:'类型',dataIndex:'kind',sortable:true
@@ -32,6 +36,8 @@ $(document).ready(function(){
 			text:'操作人',dataIndex:'optname'
 		},{
 			text:'数量',dataIndex:'count',sortable:true,align:'right'
+		},{
+			text:'对应仓库',dataIndex:'depotname'
 		},{
 			text:'说明',dataIndex:'explain',align:'left'
 		},{
@@ -46,8 +52,12 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown('物品出入库详情');
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'物品出入库详情',
+				'btnobj':o1
+			});
 		},
 		loadfile:function(spd,nsd){
 			$('#megss{rand}').html(nsd);
@@ -94,7 +104,7 @@ $(document).ready(function(){
 	</td>
 
 	<td style="padding-left:10px">
-	<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="物品名/操作人">
+	<input class="form-control" style="width:200px" id="key_{rand}"   placeholder="物品名/操作人/仓库">
 	</td>
 	<td style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button> 
@@ -104,7 +114,7 @@ $(document).ready(function(){
 		&nbsp;&nbsp;<span id="megss{rand}"></span>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>&nbsp;&nbsp;
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>&nbsp;&nbsp;
 		<button class="btn btn-danger" id="del_{rand}" click="del" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>
 </tr></table>

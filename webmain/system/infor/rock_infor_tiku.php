@@ -6,8 +6,6 @@ $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
 		tablename:modenum,celleditor:true,autoLoad:false,modenum:modenum,fanye:true,params:{atype:'guan'},
 		columns:[{
-			text:'',dataIndex:'caozuo'
-		},{
 			text:'题名',dataIndex:'title',editor:false,align:'left'
 		},{
 			text:'分类',dataIndex:'typename'
@@ -22,12 +20,19 @@ $(document).ready(function(){
 		},{
 			text:'D',dataIndex:'and'
 		},{
+			text:'E',dataIndex:'ane'
+		},{
 			text:'答案',dataIndex:'answer',editor:true
 		},{
 			text:'排序',dataIndex:'sort',sortable:true,editor:true
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true
-		}]
+		},{
+			text:'',dataIndex:'caozuo'
+		}],
+		itemdblclick:function(d){
+			openxiangs(d.title,modenum, d.id);
+		}
 	});
 
 	var c = {

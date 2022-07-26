@@ -51,7 +51,7 @@ class flowClassAction extends Action
 		$id		= (int)$this->get('id');
 		$data	= m('flow_where')->getone($id);
 		$arr 	= array(
-			'data'		=> $data
+			'data'		=> $data,
 		);
 		echo json_encode($arr);
 	}
@@ -59,12 +59,26 @@ class flowClassAction extends Action
 	public function flowsetsavebefore($table, $cans)
 	{
 		$tab = $cans['table'];
+		$tabs= trim($cans['tables']);
+		$name= $this->rock->xssrepstr($cans['name']);
 		$num = strtolower($cans['num']);
 		$cobj= c('check');
 		if(!$cobj->iszgen($tab))return '表名格式不对';
 		if($cobj->isnumber($num))return '编号不能为数字';
-		if($cans['isflow']==1 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
-		$rows['num']= $num; 
+		if(strlen($num)<4)return '编号至少要4位';
+		if($cobj->isincn($num))return '编号不能包含中文';
+		
+		if($cans['isflow']>0 && isempt($cans['sericnum'])) return '有流程必须有写编号规则，请参考其他模块填写';
+		$rows['num']= $this->rock->xssrepstr($num); 
+		$rows['name']= $name;
+		if(!isempt($tabs)){
+			if($cobj->isincn($tabs))return '多行子表名不能包含中文';
+			$tabsa 		= explode(',', $tabs);
+			foreach($tabsa as $tabsas){
+				if(isempt($tabsas))return '多行子表名('.$tabs.')不规范';
+			}
+		}
+		$rows['tables']= $tabs;
 		return array(
 			'rows' => $rows
 		);
@@ -76,16 +90,18 @@ class flowClassAction extends Action
 		if(!in_array(''.PREFIX.''.$tabs.'', $alltabls)){
 			$sql = "CREATE TABLE `[Q]".$tabs."` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
-`mid` smallint(6) DEFAULT '0' COMMENT '对应主表".$tab.".id',
-`sort` smallint(6) DEFAULT '0' COMMENT '排序号',
+`mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id',
+`sort` int(11) DEFAULT '0' COMMENT '排序号',
+`comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',
 PRIMARY KEY (`id`),KEY `mid` (`mid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 			$bo = $this->db->query($sql);
 		}else{
 			$fields = $this->db->getallfields(''.PREFIX.''.$tabs.'');
 			$str 	= '';
-			if(!in_array('mid', $fields))$str.=",add `mid` smallint(6) DEFAULT '0' COMMENT '对应主表".$tab.".id'";
-			if(!in_array('sort', $fields))$str.=",add `sort` smallint(6) DEFAULT '0' COMMENT '排序号'";
+			if(!in_array('mid', $fields))$str.=",add `mid` int(11) DEFAULT '0' COMMENT '对应主表".$tab.".id'";
+			if(!in_array('sort', $fields))$str.=",add `sort` int(11) DEFAULT '0' COMMENT '排序号'";
+			if(!in_array('comid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
 			if($slxbo && !in_array('sslx', $fields)){
 				$ssma = explode(',', $ssm);
 				$ss1  = '';
@@ -122,8 +138,16 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		if(!$alltabls)$alltabls 	= $this->db->getalltable();
 		if($isflow==0){
 			if(!in_array(''.PREFIX.''.$tab.'', $alltabls)){
-				$sql = "CREATE TABLE `[Q]".$tab."` (`id` int(11) NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))ENGINE=MyISAM  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+				$sql = "CREATE TABLE `[Q]".$tab."` (`id` int(11) NOT NULL AUTO_INCREMENT,`comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',PRIMARY KEY (`id`))ENGINE=MyISAM  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 				$bo = $this->db->query($sql);
+			}else{
+				$fields = $this->db->getallfields(''.PREFIX.''.$tab.'');
+				$str 	= '';
+				if(!in_array('comid', $fields) && !in_array('companyid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
+				if($str!=''){
+					$sql = 'alter table `'.PREFIX.''.$tab.'` '.substr($str,1).'';
+					$this->db->query($sql);
+				}
 			}
 			return;
 		}
@@ -131,28 +155,30 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		if(!in_array(''.PREFIX.''.$tab.'', $alltabls)){
 			$sql = "CREATE TABLE `[Q]".$tab."` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` smallint(6) DEFAULT '0',
+  `uid` int(11) DEFAULT '0',
   `optdt` datetime DEFAULT NULL COMMENT '操作时间',
-  `optid`  smallint(6) DEFAULT '0',
+  `optid`  int(11) DEFAULT '0',
   `optname` varchar(20) DEFAULT NULL COMMENT '操作人',
   `applydt` date DEFAULT NULL COMMENT '申请日期',
   `explain` varchar(500) DEFAULT NULL COMMENT '说明',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态',
   `isturn` tinyint(1) DEFAULT '1' COMMENT '是否提交',
+  `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id',
   PRIMARY KEY (`id`)
 ) ENGINE=".getconfig('db_engine','MyISAM')." AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
 			$bo = $this->db->query($sql);
 		}else{
 			$fields = $this->db->getallfields(''.PREFIX.''.$tab.'');
 			$str 	= '';
-			if(!in_array('uid', $fields))$str.=",add `uid` smallint(6) DEFAULT '0'";
+			if(!in_array('uid', $fields))$str.=",add `uid` int(11) DEFAULT '0'";
 			if(!in_array('optdt', $fields))$str.=",add `optdt` datetime DEFAULT NULL COMMENT '操作时间'";
-			if(!in_array('optid', $fields))$str.=",add `optid` smallint(6) DEFAULT '0'";
+			if(!in_array('optid', $fields))$str.=",add `optid` int(11) DEFAULT '0'";
 			if(!in_array('optname', $fields))$str.=",add `optname` varchar(20) DEFAULT NULL COMMENT '操作人'";
 			if(!in_array('applydt', $fields))$str.=",add `applydt` date DEFAULT NULL COMMENT '申请日期'";
 			if(!in_array('explain', $fields))$str.=",add `explain` varchar(500) DEFAULT NULL COMMENT '说明'";
 			if(!in_array('status', $fields))$str.=",add `status` tinyint(1) DEFAULT '1' COMMENT '状态'";
 			if(!in_array('isturn', $fields))$str.=",add `isturn` tinyint(1) DEFAULT '1' COMMENT '是否提交'";
+			if(!in_array('comid', $fields) && !in_array('companyid', $fields))$str.=",add `comid` smallint(6) DEFAULT '0' COMMENT '对应单位id'";
 			if($str!=''){
 				$sql = 'alter table `'.PREFIX.''.$tab.'` '.substr($str,1).'';
 				$this->db->query($sql);
@@ -163,27 +189,26 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 	public function elementafter($table, $rows)
 	{
 		$moders = m('flow_set')->getone($this->mid);
-		
-		$tass 	= $moders['table'];
-		$tasss 	= $moders['tables'];
-		
-		$farr	= $this->db->gettablefields('[Q]'.$tass.'');
-		
-		$farrs[]= array('id'=>'','name'=>'————↓以下主表('.$tass.')的字段————');
-		foreach($farr as $k=>$rs){
-			$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
-		}
-		if(!isempt($tasss)){
-			$tasssa = explode(',', $tasss);
-			foreach($tasssa as $k=>$tasss){
-				$farr	= $this->db->gettablefields('[Q]'.$tasss.'');
-				$farrs[]= array('id'=>'','name'=>'————↓以下第'.($k+1).'个多行子表('.$tasss.')的字段————');
-				foreach($farr as $k=>$rs){
-					$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+		$farrs 	= array();
+		if($this->mid>0){
+			$tass 	= $moders['table'];
+			$tasss 	= $moders['tables'];
+			$farr	= $this->db->gettablefields('[Q]'.$tass.'');
+			$farrs[]= array('id'=>'','name'=>'————↓以下主表('.$tass.')的字段————');
+			foreach($farr as $k=>$rs){
+				$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+			}
+			if(!isempt($tasss)){
+				$tasssa = explode(',', $tasss);
+				foreach($tasssa as $k=>$tasss){
+					$farr	= $this->db->gettablefields('[Q]'.$tasss.'');
+					$farrs[]= array('id'=>'','name'=>'————↓以下第'.($k+1).'个多行子表('.$tasss.')的字段————');
+					foreach($farr as $k=>$rs){
+						$farrs[]= array('id'=>$rs['name'],'name'=>'['.$rs['name'].']'.$rs['explain'].'');
+					}
 				}
 			}
 		}
-		
 		return array(
 			'flowarr'=>$this->getmodearr(),
 			'moders'=>$moders,
@@ -280,6 +305,16 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		);
 	}
 	
+	//多模版设置
+	public function flowmodetpl_after($table, $rows)
+	{
+		
+		return array(
+			'flowarr'	=> $this->getmodearr(),
+			'rows'		=> $rows
+		);
+	}
+	
 	
 	private function getmodearr()
 	{
@@ -295,7 +330,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		$rs 	= m('flow_set')->getone("`id`='$setid'");
 		if(!$rs)exit('sorry!');
 		$this->smartydata['rs'] = $rs;
-		$atypea = array('PC端','手机端');
+		$atypea = array('PC端','手机端','PC端打印');
 		$this->title  = $rs['name'].'_'.$atypea[$atype].'展示页面设置';
 		$fleftarr 	= m('flow_element')->getrows("`mid`='$setid' and `iszb`=0",'`fields`,`name`','`iszb`,`sort`');
 		$modenum	= $rs['num'];
@@ -315,10 +350,11 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 				$fleft[]= array('subdata'.$k.'', $namesa[$k], 0);
 			}
 		}
-		if($rs['isflow']==1){
+		if($rs['isflow']>0){
 			$fleft[]= array('', '<font color=#ff6600>↓流程审核步骤</font>', 0);
 			$rows 	= m('flow_course')->getrows('setid='.$setid.' and `status`=1','id,name','pid,sort');
 			foreach($rows as $k=>$rs){
+				$fleft[]= array('course'.$rs['id'].'_all', ''.$rs['name'].'处理意见', 0);
 				$fleft[]= array('course'.$rs['id'].'_name', ''.$rs['name'].'处理人', 0);
 				$fleft[]= array('course'.$rs['id'].'_zt', ''.$rs['name'].'处理状态', 0);
 				$fleft[]= array('course'.$rs['id'].'_dt', ''.$rs['name'].'处理时间', 0);
@@ -347,6 +383,7 @@ PRIMARY KEY (`id`),KEY `mid` (`mid`)
 		$atype	= $this->get('atype');
 		$rs 	= m('flow_set')->getone("`id`='$setid'");
 		if(!$rs)exit('sorry!');
+		$rs['zibiaoshu'] = count(explode(',', $rs['tables']));
 		$this->smartydata['rs'] = $rs;
 		$this->title  = $rs['name'].'_录入页面设置';
 		$fleftarr 	= m('flow_element')->getrows("`mid`='$setid'",'*','`iszb`,`sort`');
@@ -420,7 +457,9 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 }	
 			';
 			$this->rock->createtxt($apaths, $stra);
+			
 		}
+		if(!file_exists($apath))echo '<div style="background:red;color:white;padding:10px">无法创建文件：'.$apaths.'，会导致录入数据无法保存，请手动创建！代码内容如下：</div><div style="background:#caeccb">&lt;?php<br>class mode_'.$modenum.'ClassAction extends inputAction<br>{<br>}</div>';
 	}
 	
 	public function pagesaveAjax()
@@ -440,8 +479,12 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$content = $this->post('content');
 		$num 	 = $this->post('num');
-		$atype 	 = $this->post('atype','0');
+		$atype 	 = (int)$this->post('atype','0');
 		$path 	 = ''.P.'/flow/page/view_'.$num.'_'.$atype.'.html';
+		if(isempt($content)){
+			@unlink($path);
+			return 'success';
+		}
 		$bo 	 = $this->rock->createtxt($path, $content);
 		if(!$bo){
 			echo '无法写入文件:'.$path.'';
@@ -492,6 +535,9 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	public function viewshowbefore($table)
 	{
 		$this->modeid = (int)$this->post('modeid');
+		if($this->modeid==0){
+			return 'and 1=2';
+		}
 		$this->moders = m('flow_set')->getone($this->modeid);
 		$this->isflow = $this->moders['isflow'];
 		$table = $this->moders['table'];
@@ -509,22 +555,31 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	public function viewshowafter($table, $rows)
 	{
 		$arr 	= array();
-		$flow 	= m('flow')->initflow($this->moders['num']);
-		foreach($rows as $k=>$rs){
-			$zt 	= '';
-			if(isset($rs['status']))$zt = $rs['status'];
-			$narr['id'] 		= $rs['id'];
-			$narr['ishui'] 		= ($zt=='5')?1:0;
-			$narr['optname'] 	= arrvalue($rs,'optname');
-			$narr['modenum'] 	= $this->moders['num'];
-			$narr['modename'] 	= $this->moders['name'];
-			$narr['table'] 		= $this->moders['table'];
-			$narr['optdt'] 		= arrvalue($rs,'optdt');
-			$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $rs);
-			$narr['status']		= $flow->getstatus($rs,'','',1);
-			$narr['chushu']		= $flow->flogmodel->rows("`table`='".$flow->mtable."' and `mid`='".$rs['id']."'");
-			
-			$arr[] = $narr;
+		if($rows){
+			$flow 	= m('flow')->initflow($this->moders['num']);
+			$mbil 	= m('flowbill');
+			foreach($rows as $k=>$rs){
+				$zt 	= '';
+				if(isset($rs['status']))$zt = $rs['status'];
+				$narr['id'] 		= $rs['id'];
+				$narr['ishui'] 		= ($zt=='5')?1:0;
+				$narr['optname'] 	= arrvalue($rs,'optname');
+				$narr['modenum'] 	= $this->moders['num'];
+				$narr['modename'] 	= $this->moders['name'];
+				$narr['table'] 		= $this->moders['table'];
+				$narr['optdt'] 		= arrvalue($rs,'optdt');
+				$nors 	= $flow->flowrsreplace($rs, 2);
+				$narr['summary'] 	= $this->rock->reparr($this->moders['summary'], $nors);
+				$otehsr = '';
+				if($flow->isflow>0){
+					$billrs = $flow->billmodel->getone("`table`='$flow->mtable' and `mid`='".$rs['id']."'");
+					$otehsr = arrvalue($billrs, 'nowcheckname');
+				}
+				$narr['status']		= $flow->getstatus($rs,'',$otehsr,1);
+				$narr['chushu']		= $flow->flogmodel->rows("`table`='".$flow->mtable."' and `mid`='".$rs['id']."'");
+				
+				$arr[] = $narr;
+			}
 		}
 		return array('rows'=>$arr);
 	}
@@ -537,13 +592,20 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		);
 	}
 	
+	//删除单据，用户=1不需要权限判断
 	public function delmodeshujuAjax()
 	{
 		$this->modeid 	= (int)$this->post('modeid');
 		$mid 			= (int)$this->post('mid');
-		$this->moders 	= m('flow_set')->getone($this->modeid);
-		if(!$this->moders)backmsg('sorry!');
-		$msg	= m('flow')->deletebill($this->moders['num'], $mid);
+		$modenum 		= $this->post('modenum');
+		if($this->modeid>0){
+			$this->moders 	= m('flow_set')->getone($this->modeid);
+			if(!$this->moders)backmsg('sorry!');
+			$modenum = $this->moders['num'];
+		}
+		if(isempt($modenum))backmsg('操作有误');
+		
+		$msg	= m('flow')->deletebill($modenum, $mid, '', $this->adminid!=1);
 		if($msg=='ok')$msg='';
 		backmsg($msg);
 	}
@@ -553,6 +615,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 	{
 		$iszb 	= (int)$cans['iszb'];
 		$fields = $cans['fields'];
+		if(c('check')->isincn($fields))return '对应字段不能有汉字';
 		$mid 	= $cans['mid'];
 		$this->mmoders 	= m('flow_set')->getone($mid);
 		$tablessa = explode(',', $this->mmoders['tables']);
@@ -565,7 +628,7 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		}
 	}
 	
-	//保存字段判断
+	//保存字段判断，自动创建字段
 	public function elemensavefields($table, $cans)
 	{
 		$fields = $cans['fields'];
@@ -573,6 +636,8 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$mid 	= $cans['mid'];
 		$type 	= $cans['fieldstype'];
 		$lens 	= $cans['lens'];
+		$dev 	= $cans['dev'];
+		$data 	= $cans['data'];
 		$iszb 	= (int)$cans['iszb'];
 		
 		$mrs 	= $this->mmoders;
@@ -582,26 +647,61 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			$tablessa = explode(',', $mrs['tables']);
 			if(isset($tablessa[$iszb-1]))$tables = $tablessa[$iszb-1];
 		}
-		if(!isempt($tables) && substr($fields,0,5)!='temp_' && $cans['islu']==1){
-			$allfields = $this->db->getallfields('[Q]'.$tables.'');
-			if(!in_array($fields, $allfields)){
-				$str = "ALTER TABLE `[Q]".$tables."` ADD `$fields` ";
-				if($type=='date' || $type=='datetime' || $type=='time'){
-					$str .= ' '.$type.'';
-				}else if($type=='number'){
-					$str .= ' smallint(6)';
-				}else if($type=='checkbox'){
-					$str .= ' tinyint(1)';	
-				}else if($type=='textarea'){
-					$str .= ' varchar(2000)';
-				}else{
-					if(isempt($lens))$lens='0';
-					if($lens=='0')$lens='50';
-					$str .= ' varchar('.$lens.')';
+		$fiesss = substr($fields,0,5);
+		if($fiesss == 'base_' || $fiesss == 'temp_')return;
+		if(!isempt($tables) && $cans['islu']==1){
+			$_fieldsa = $this->db->gettablefields('[Q]'.$tables.'');$allfields = array();
+			foreach($_fieldsa as $k2=>$rs2)$allfields[$rs2['name']] =  $rs2;
+			$this->createfields($allfields, $tables, $fields, $type, $lens, $dev, $name);
+			if(substr($type,0,6)=='change' && !isempt($data)){
+				if($type=='changeuser' || $type=='changedept'){
+					$type='number';
 				}
-				if(!isempt($cans['dev']))$str.= " DEFAULT '".$cans['dev']."'";
-				$str.= " COMMENT '$name'";
-				$this->db->query($str);
+				$this->createfields($allfields, $tables, $data, $type, $lens, '', $name.'的ID');
+			}
+		}
+	}
+	
+	//创建字段
+	private function createfields($allfields, $tables, $fields, $type, $lens, $dev, $name)
+	{
+		if(isempt($lens))$lens='0';
+		$lens = (int)$lens;
+		if(!isset($allfields[$fields])){
+			$str = "ALTER TABLE `[Q]".$tables."` ADD `$fields` ";
+			if($type=='date' || $type=='datetime' || $type=='time'){
+				$str .= ' '.$type.'';
+			}else if($type=='number'){
+				if($lens>6){
+					$str .= ' int('.$lens.')';
+				}else{
+					$str .= ' smallint(6)';
+				}
+			}else if($type=='checkbox'){
+				$str .= ' tinyint(1)';	
+			}else if($type=='textarea'){
+				$str .= ' varchar(2000)';
+			}else{
+				if($lens=='0')$lens='50';
+				$str .= ' varchar('.$lens.')';
+			}
+			if(!isempt($dev) && !contain($dev,'{'))$str.= " DEFAULT '$dev'";
+			$str.= " COMMENT '$name'";
+			$this->db->query($str);
+		}else{
+			$farr = $allfields[$fields];
+			$ustr = '';
+			$len  = (int)$farr['lens'];
+			if($farr['type']=='varchar'){
+				if($lens>$len)$ustr='varchar('.$lens.')';
+			}
+			if($farr['type']=='smallint' || $farr['type']=='int'){
+				if($lens>6 && $lens>$len)$ustr='int('.$lens.')';
+			}
+			if($ustr!=''){
+				if(!isempt($dev) && !contain($dev,'{'))$ustr.= " DEFAULT '$dev'";
+				$ustr= "ALTER TABLE `[Q]".$tables."` MODIFY column `$fields` ".$ustr." COMMENT '$name'";
+				$this->db->query($ustr);
 			}
 		}
 	}
@@ -639,6 +739,16 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		return array('rows'=>$rows);
 	}
 	
+	public function setcourselistbefore($table)
+	{
+		$where 	= '';
+		$key 	= $this->post('key');
+		if(!isempt($key)){
+			$where = "and (`type`='$key' or `name` like '%$key%' or `table` like '$key%' or `num` like '$key%' or `sericnum` like '$key%')";
+		}
+		return $where;
+	}
+	
 	
 	//删除模块
 	public function delmodeAjax()
@@ -653,44 +763,24 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 		$mrs = m('flow_set')->getone($id);
 		if(!$mrs)return '模块不存在';
 		$num 	= $mrs['num'];
-		if($mrs['type']=='系统')return '系统模块不能删除清空';
-	
+		if($num!='demo' && $mrs['type']=='系统')return '系统类型模块不能删除清空';
+		$flow	= m('flow')->initflow($num);
 		$table 	= $mrs['table'];
-		m('flow_bill')->delete("`modeid`='$id'");
-		$where = $mrs['where'];
+		$where 	= $mrs['where'];
 		if(!isempt($where)){
 			$where = $this->rock->covexec($where);
 			$where = "and $where";
 		}else{
 			$where = '';
 		}
+		
 		$rows  = m($table)->getrows('1=1 '.$where.'');
-		$allids= '0';
 		foreach($rows as $k=>$rs){
 			$ssid 	= $rs['id'];
-			$allids.= ','.$ssid.'';
-			$dwhere	= "`table`='$table' and `mid`='$ssid'";
-			m('file')->delfiles($table, $ssid);
+			$flow->loaddata($ssid, false);
+			$flow->deletebill('清空模块数据', false);
 		}
 		
-		//删除子表
-		$tables = $mrs['tables'];
-		if(!isempt($tables)){
-			$tablesa = explode(',', $tables);
-			foreach($tablesa as $tab1){
-				m($tab1)->delete("mid in($allids)");
-				$this->db->query("alter table `[Q]$tab1` AUTO_INCREMENT=1");
-			}
-		}
-		m($table)->delete('1=1 '.$where.'');
-		
-		$dehwhe = "`table`='$table' and `mid` in($allids)";
-		m('editrecord')->delete($dehwhe);
-		m('todo')->delete($dehwhe);
-		m('reads')->delete($dehwhe);
-		m('flow_log')->delete($dehwhe);
-		m('flow_checks')->delete($dehwhe);
-		m('flow_remind')->delete($dehwhe);
 		$name 	= $mrs['name'];
 		if($dm){
 			m('flow_set')->delete("`id`='$id'");
@@ -893,5 +983,98 @@ class mode_'.$modenum.'ClassAction extends inputAction{
 			}
 		}
 		return $arr;
+	}
+	
+	public function savebeforecname($table, $arr, $id)
+	{
+		$num = $arr['num'];
+		$to  = m('flowcname')->rows("`id`<>'$id' and `num`='$num'");
+		if($to>0)return '编号['.$num.']已存在';
+	}
+	
+	/**
+	*	复制模块
+	*/
+	public function copymodeAjax()
+	{
+		$id 	= (int)$this->post('id','0');
+		$bhnu 	= strtolower(trim($this->post('name')));
+		if(isempt($bhnu))return '新模块编号不能为空';
+		if(is_numeric($bhnu))return '模块编号不能用数字';
+		if(strlen($bhnu)<4)return '编号至少要4位';
+		if(c('check')->isincn($bhnu))return '编号不能包含中文';
+		
+		$dbs 	= m('mode');
+		if($dbs->rows("`num`='$bhnu'")>0)return '模块编号['.$bhnu.']已存在';
+		$mrs 	= $dbs->getone($id);
+		if(!$mrs)return '模块不存在';
+		$ars 	= $mrs;
+		$name	= $mrs['name'].'复制';
+		$biaom	= $bhnu;
+		$obha 	= $mrs['num'];
+		unset($ars['id']);
+		$ars['name'] = $name;
+		$ars['num']  = $bhnu;
+		$ars['table']= $biaom;
+		$tablea[]	 = $mrs['table'];
+		$tables		 = '';
+		if(!isempt($ars['tables'])){
+			$staba = explode(',', $ars['tables']);
+			foreach($staba as $kz=>$zb1){
+				$tables.=','.$biaom.'zb'.($kz+1).'';
+				if(!in_array($zb1, $tablea))$tablea[]=$zb1;
+			}
+			$tables = substr($tables, 1);
+		}
+		$ars['tables'] = $tables;
+		$modeid  = $dbs->insert($ars);
+		
+		//复制表
+		foreach($tablea as $kz=>$tabs){
+			$sqla 	   = $this->db->getall('show create table `[Q]'.$tabs.'`');
+			$createsql = $sqla[0]['Create Table'];
+			$biaom1	   = ''.PREFIX.''.$biaom.'';
+			if($kz>0)$biaom1	   = ''.PREFIX.''.$biaom.'zb'.$kz.'';
+			$createsql = str_replace('`'.PREFIX.''.$tabs.'`','`'.$biaom1.'`',$createsql);
+			$this->db->query($createsql);
+			$this->db->query('alter table `'.$biaom1.'` AUTO_INCREMENT=1');
+		}
+		//复制表单元素
+		$db1  = m('flow_element');
+		$rows = $db1->getall('mid='.$id.'');
+		foreach($rows as $k1=>$rs1){
+			$rs2 = $rs1;
+			unset($rs2['id']);
+			$rs2['mid'] = $modeid;
+			$db1->insert($rs2);
+		}
+		//复制相关布局文件
+		$hurs[] = ''.P.'/model/flow/{bh}Model.php'; //模块接口文件
+		$hurs[] = ''.P.'/flow/input/mode_{bh}Action.php'; //模块控制器
+		$hurs[] = ''.P.'/flow/input/inputjs/mode_{bh}.js'; //模块录入js文件
+		$hurs[] = ''.P.'/flow/page/input_{bh}.html'; //PC录入模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_0.html'; //PC展示模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_1.html'; //手机展示模版
+		$hurs[] = ''.P.'/flow/page/view_{bh}_2.html'; //打印布局
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}.html'; //子模版展示
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_0.html';//子模版PC展示
+		$hurs[] = ''.P.'/flow/page/viewpage_{bh}_1.html';//子模版手机展示
+		
+		foreach($hurs as $k=>$file){
+			$from = str_replace('{bh}',$obha,$file);
+			$to   = str_replace('{bh}',$bhnu,$file);
+			if(file_exists($from)){
+				if($k<=1){
+					$fstr = file_get_contents($from);
+					if($k==0)$fstr = str_replace('flow_'.$obha.'ClassModel','flow_'.$bhnu.'ClassModel',$fstr);
+					if($k==1)$fstr = str_replace('mode_'.$obha.'ClassAction','mode_'.$bhnu.'ClassAction',$fstr);
+					$this->rock->createtxt($to, $fstr);
+				}else{
+					@copy($from, $to);
+				}
+			}
+		}
+		
+		echo 'ok';
 	}
 }

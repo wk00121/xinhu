@@ -1,9 +1,9 @@
 /**
 *	bootstable 表格插件
-*	caratename：chenxihu
+*	caratename：雨中磐石(rainrock)
 *	caratetime：2014-04-06 21:40:00
-*	email:qqqq2900@126.com
-*	homepage:www.xh829.com
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
 
 (function ($) {
@@ -67,9 +67,15 @@
 				if(a.dataIndex=='caozuo')can.columns[i] = this._caozuochengs(a,i);
 			}
 		};
+		this.getcolumns = function(){
+			return can.columns;
+		};
+		this.setCans	= function(cas){
+			for(var i in cas)can[i]=cas[i];
+		};
 		this._create	= function(){
 			var a	= can.columns;
-			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,dlen=this.data.length;
+			var s 	= '',i,len=a.length,val,s1,s2='',cols,s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,dlen=this.data.length;
 			s+='<table id="tablemain_'+rand+'" class="table table-striped table-bordered table-hover" style="margin:0px">';
 			if(!can.hideHeaders){
 				s+='<thead><tr><th width="40"></th>';
@@ -77,9 +83,11 @@
 				for(i=0;i<len;i++){
 					hs = '';
 					attr = '';
+					cols = a[i].colspan;
 					if(can.sort == a[i].dataIndex)hs='style="color:#3399FF"';
 					if(a[i].width)attr+=' width="'+a[i].width+'"';
 					if(a[i].tooltip)attr+=' title="'+a[i].tooltip+'"';
+					if(cols && cols>1)attr+=' colspan="'+cols+'"';
 					s+='<th nowrap '+attr+'><div '+hs+' align="'+a[i].align+'" lfields="'+a[i].dataIndex+'">';
 					if(can.celleditor&&a[i].editor)s+='<i class="icon-pencil"></i>&nbsp;';
 					s+=a[i].text;
@@ -92,6 +100,7 @@
 						}
 					}
 					s+='</div></th>';
+					if(cols>1)i=i+cols-1;
 				}
 				s+='</tr></thead>';
 			}
@@ -147,13 +156,17 @@
 		};
 		this.createrows=function(j){
 			var a	= can.columns;
-			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis;
+			var s 	= '',i,len=a.length,val,s1,s2='',s3='',s4='',s5='',le,st,ov,j,j1,na,attr,sty='',hs='',dis,trsty='';
 			ov	= this.data[j];
 			s3 	= can.rendertr(ov, this, j);
 			s4  = can.rowsbody(ov, this, j);
 			if(s4)s5='rowspan="2"';
-			if(!s3 && ((can.statuschange && ov.status==0) || (ov.ishui==1) || (ov.status==5)))s3='style="color:#aaaaaa"';
-			s='<tr oi="'+j+'" dataid="'+ov.id+'" '+s3+'>';
+			if(!s3 && ((can.statuschange && ov.status==0) || (ov.ishui==1) || (ov.status==5))){
+				trsty='color:#aaaaaa;';
+			}
+			if(ov.trbgcolor)trsty+='background:'+ov.trbgcolor+';';
+			if(trsty)trsty='style="'+trsty+'"';
+			s='<tr oi="'+j+'" dataid="'+ov.id+'" '+s3+' '+trsty+'>';
 			s+='<td '+s5+' align="right" width="40">'+(j+1+can.pageSize*(this.page-1))+'</td>';
 			if(can.checked){
 				dis = '';
@@ -190,6 +203,10 @@
 				if(typeof(a[i].renderstyle)=='function'){
 					s3 = a[i].renderstyle(val, ov, j);
 					if(!isempt(s3))sty+=''+s3+';';
+				}
+				if(typeof(a[i].renderattr)=='function'){
+					s3 = a[i].renderattr(val, ov, j);
+					if(!isempt(s3))attr+=' '+s3+'';
 				}
 				s+='<td align="'+a[i].align+'" '+attr+' style="'+sty+'" row="'+j+'" cell="'+i+'">'+s2+''+s1+'</td>';
 			}
@@ -262,6 +279,7 @@
 			var flx = b.type,attr=b.editorattr;
 			if(!flx)flx='text';
 			if(!attr)attr='';
+			if(b.repEmpty)attr+=' onblur="this.value=strreplace(this.value)" ';
 			if(flx=='checkbox'){
 				if(v=='1')at='checked';
 				s+='<div><label><input type="checkbox" id="inputedit_'+rand+'" '+at+' value="1"> '+b.text+'</label></div>';
@@ -305,6 +323,14 @@
 				});
 			}
 		};
+		this.signature= function(da, url){
+			var time = parseInt(js.now('time')*0.001);
+			var siaa = ''+NOWURL+''+url+''+da.tablename+''+time+'_'+adminid+'';
+			var sign = md5(siaa);
+			da.sys_signature= sign;
+			da.sys_timeature= time;
+			return da;
+		};
 		this._editforcuschen = function(o1, a, farr){
 			var o1= get('inputedit_'+rand+'');
 			var v = o1.value,ov = a.oldvalue;
@@ -321,11 +347,15 @@
 			this.bool = true;
 			var data = {tablename:can.tablename,id:a.id,fieldname:a.fields,value:v,fieldsafteraction:can.fieldsafteraction};
 			$.ajax({
-				data:data,type:'post',url:can.cellurl,
-				success:function(){
-					js.setmsg('处理完成','green',vid);
-					$('#edittable_'+rand+'').remove();
+				data:this.signature(data, can.cellurl),type:'post',url:can.cellurl,
+				success:function(bstr){
 					me.bool = false;
+					$('#edittable_'+rand+'').remove();
+					if(bstr!='success'){
+						js.msg('msg', bstr);
+						return;
+					}
+					js.setmsg('处理完成','green',vid);
 					var ohtml = a.obj.html();
 					ohtml	  = ohtml.replace(ov, v);
 					if(a.type=='checkbox')ohtml='<img height="20" width="20" src="images/checkbox'+v+'.png">';
@@ -341,9 +371,9 @@
 			});
 		};
 		this._itemclick= function(o1, e){
-			this.trobj.css('background','');
+			this.trobj.removeClass(can.selectcls);
 			var o = $(o1);
-			o.css('background', can.selectColor);
+			o.addClass(can.selectcls);
 			var oi = parseFloat(o.attr('oi'));
 			var a  = this.data[oi];
 			this.changedata = a;
@@ -378,6 +408,7 @@
 			das.keywhere=jm.encrypt(das.keywhere.replace(/\'/g, '[F]'));
 			das.where = jm.encrypt(das.where.replace(/\'/g, '[F]'));
 			das.start = can.pageSize*(p-1);
+			das.page  = p;
 			das.limit = can.pageSize;
 			if(!can.fanye)das.limit = can.limit;
 			das		  = js.apply(das, can.params);
@@ -391,7 +422,7 @@
 			can.beforeload();
 			this.bool = true;
 			$.ajax({
-				url:url,type:'POST',data:das,
+				url:url,type:can.method,data:das,
 				success:function(da){
 					if(!get('tablebody_'+rand+''))return;
 					var a = js.decode(da);
@@ -411,27 +442,39 @@
 				}
 			});
 		};
-		this.exceldown = function(bt){
+		this.exceldown = function(bt, lxs,ocsn){
 			if(this.bool)return;
 			var excelfields='',excelheader='',i,a=can.columns;
-			var das = this._loaddata(1, true);
+			var np	= (lxs==2) ? this.page : 1;
+			var das = this._loaddata(np, true);
 			das.limit = 10000;
-			das.execldown 	= 'true';if(!bt)bt=nowtabs.name;
-			das.exceltitle	= jm.encrypt(bt);
-			this.bool = true;
-			js.msg('wait', '下载处理中...');
+			das.execldown 	= 'true';
+			if(!bt)bt=nowtabs.name;
+			das.exceltitle	= bt;
 			for(i=0;i<a.length;i++){
 				if(!a[i].notexcel){
 					excelfields+=','+a[i].dataIndex+'';
 					excelheader+=','+a[i].text+'';
 				}
 			}
-			das.excelfields = jm.encrypt(excelfields.substr(1));
-			das.excelheader = jm.encrypt(excelheader.substr(1));
+			das.excelfields = excelfields.substr(1);
+			das.excelheader = excelheader.substr(1);
+			if(lxs==1)return das;
+			if(lxs==2){
+				das.limit	= can.pageSize;
+			}
+			if(ocsn)for(i in ocsn)das[i]=ocsn[i];
+				
+			das.exceltitle  = jm.encrypt(das.exceltitle);
+			das.excelfields = jm.encrypt(das.excelfields);
+			das.excelheader = jm.encrypt(das.excelheader);
+			this.bool = true;
+			js.msg('wait', '导出处理中...');
 			$.ajax({
 				url:can.url,type:'POST',data:das,dataType:'json',
 				success:function(a1){
-					js.msg('success', '处理成功，共有记录'+a1.totalCount+'条/导出'+a1.downCount+'条，点我直接<a class="a" href="'+a1.url+'" target="_blank">[下载]</a>', 60);
+					var lex = (nwjsgui)?'_self':'_blank';
+					js.msg('success', '处理成功，共有记录'+a1.totalCount+'条/导出'+a1.downCount+'条，点我直接<a class="a" href="'+a1.url+'" target="'+lex+'">[下载]</a>', 60);
 					me.bool=false;
 				},
 				error:function(e){
@@ -439,6 +482,9 @@
 					me.bool = false;
 				}
 			});
+		};
+		this.exceldownnow = function(bt){
+			this.exceldown(bt,2);
 		};
 		this.setparams = function(cans, relo){
 			if(!cans)cans={};
@@ -479,6 +525,27 @@
 				}
 			}
 		};
+		this.hiderows=function(ids){
+			var sid = ids.split(','),id,i;
+			for(i=0;i<sid.length;i++){
+				id	= sid[i];
+				obj.find("tr[dataid='"+id+"']").hide();
+				if(id == this.changeid){
+					this.changeid= 0;
+					this.changedata = {};
+				}
+			}
+		};
+		this.showrows=function(id){
+			var sid = ids.split(','),id,i;
+			for(i=0;i<sid.length;i++){
+				id	= sid[i];
+				obj.find("tr[dataid='"+id+"']").show();
+			}
+		};
+		this.showallrows=function(){
+			obj.find("tr[dataid']").show();
+		}
 		this.order	= function(a, b){
 			if(!a)return;
 			if(!b)b='asc';
@@ -672,7 +739,7 @@
 		
 		this._caozuochengs=function(a,oj){
 			a.renderer=function(v,d,oi){
-				var s='<a oi="'+oi+'" oj="'+oj+'" temp="caozuomenu_'+rand+'">操作<i class="icon-angle-down"></i></a>';
+				var s='<a oi="'+oi+'" oj="'+oj+'" style="TEXT-DECORATION:none" temp="caozuomenu_'+rand+'">操作<i class="icon-angle-down"></i></a>';
 				if(!d.id)s='&nbsp;';
 				return s;
 			};
@@ -684,12 +751,20 @@
 			o2= $(o1);
 			oi= parseFloat(o2.attr('oi'));
 			oj= parseFloat(o2.attr('oj'));
-			d =this.getData(oi);
+			d = this.getData(oi);
 			num=can.modenum;if(num=='')num=this.tablename;
 			mid = d.id;if(d.modenum)num=d.modenum;
 			modename=can.modename;if(d.modename)modename=d.modename;
 			new optmenuclass(o1,num,mid,this,modename,oi,can.columns[oj]);
 		};
+		
+		
+		this.geturlparams=function(bt,ocans){
+			var cshu = this.exceldown(bt, 1),i;
+			cshu.tablename_abc = jm.uncrypt(cshu.tablename_abc);
+			cshu = js.apply(cshu,ocans);
+			return [can.url, cshu];
+		}
 	};
 	
 	/**
@@ -699,13 +774,14 @@
 		3、getcheckdata();//获取复选框选中的数据数组[]
 		4、insert({name:''});//表格中插入一行
 		5、setparams({key:''},true);//设置参数并搜索
+		6、geturlparams();获取当前Url地址参数,订阅时用到的
 	*/
 	
 	
 	$.fn.bootstable	= function(options){
 		var defaultVal = {
 			columns:[],		//表头
-			selectColor:'#DFF0D8', //选中时行颜色
+			selectColor:'#DFF0D8', //(弃用)选中时行颜色
 			pageSize:15,   	//默认分页数
 			limit:0,		//没有分页时展示条数
 			bodyStyle:'',	
@@ -745,6 +821,7 @@
 			loadbefore:function(){}, //数据加载完成后但还没有渲染出来时触发
 			outsearch:function(){return  ''}, //外搜索条件
 			searchview:'',  //没用
+			method:'POST', //post请求
 			rendertr:function(){return  ''}, //少用
 			rowsbody:function(){return ''}, //少用
 			celldblclick:false //没用

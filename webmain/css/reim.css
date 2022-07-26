@@ -71,6 +71,8 @@ input.checkbox,input.radio{ border:none;padding:0;margin-right:5px; width:16px; 
 .offline,.offline font{color:#888888}
 .offline img{filter:Alpha(Opacity=40);opacity:0.4;}
 
+.reimlabel{background-color:#93cdf2;color:white;padding:1px 2px;font-size:12px;border-radius:2px}
+.reimlabel1{background-color:#f9af7e;color:white;padding:1px 2px;font-size:12px;border-radius:2px}
 
 
 .gusertop .div01{height:24px;overflow:hidden;margin:7px 5px 5px 5px;float:left}

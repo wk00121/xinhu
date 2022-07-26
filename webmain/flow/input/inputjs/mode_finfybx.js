@@ -1,4 +1,5 @@
 function initbodys(){
+	if(!form('applydt'))return;
 	$.getScript('js/rmb.js');
 	form('applydt').readOnly=true;
 	form('money').readOnly=true;
@@ -12,7 +13,7 @@ function initbodys(){
 	addchengesss();
 	
 	if(mid=='0'){
-		js.ajax(geturlact('getlast'),{},function(d){
+		if(form('cardid'))js.ajax(geturlact('getlast'),{},function(d){
 			if(d){
 				form('paytype').value=d.paytype;
 				form('cardid').value=d.cardid;

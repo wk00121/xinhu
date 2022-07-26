@@ -10,6 +10,7 @@ class Action extends mainAction
 	public $adminuser	= '';
 	public $adminname	= '';
 	public $admintoken	= '';
+	public $companyid	= 0;
 	public $loadci		= 0;
 	public $flow;
 	
@@ -22,6 +23,7 @@ class Action extends mainAction
 		$this->adminuser	= $this->getsession('adminuser');
 		$this->adminname	= $this->getsession('adminname');
 		$this->admintoken	= $this->getsession('admintoken');
+		$this->companyid	= $this->getsession('companyid');
 		$this->setNowUser($this->adminid, $this->adminname, $this->adminuser);
 		$agid	= $this->rock->get('agentid');
 		if($agid!='')$this->rock->savesession(array('wxqyagentid' => $agid));
@@ -35,20 +37,35 @@ class Action extends mainAction
 		$this->rock->adminuser	= $user;
 	}
 	
+	//免登录验证，用于订阅报表的
+	private function loginsubscribe()
+	{
+		$subscribe_key 	= $this->post('subscribe_key');
+		$subscribe_post = $this->post('subscribe_post');
+		if(isempt($subscribe_key) || isempt($subscribe_post))return false;
+		$url	= $this->rock->nowurl();
+		$time 	= time(); $time1 = $time+1;
+		$keyarr	= array(md5($url.$time.$subscribe_post),md5($url.$time1.$subscribe_post));
+		if(!in_array($subscribe_key, $keyarr))return false;
+		$opkey 	= $this->option->getval('subscribe_key');
+		if(!in_array($opkey, $keyarr))return false;
+		$adminid 		= (int)$this->post('subscribe_adminid','0');
+		$this->setNowUser($adminid,'');
+		return true;
+	}
+	
 	protected function loginnot($ismo=false)
 	{
+		if($this->loginsubscribe())return;//免验证
 		$uid = (int)$this->getsession('adminid',0);
 		if($uid==0){
-			if(isajax()){
-				echo 'sorry! not login';
-			}else{
-				$lurl = '?m=login';
-				if($this->rock->ismobile() || $ismo)$lurl='?d=we&m=login';
-				if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
-				$backurl   = $this->rock->jm->base64encode($this->rock->nowurl());
-				if($backurl!='' && M!='index')$lurl = $lurl.'&backurl='.$backurl.'';
-				$this->rock->location($lurl);
-			}
+			$lurl = '?m=login';
+			if($this->rock->ismobile() || $ismo)$lurl='?d=we&m=login';
+			if(ENTRANCE != 'index')$lurl = 'index.php'.$lurl.'';
+			$backurl   = $this->rock->jm->base64encode($this->rock->nowurl());
+			if($backurl!='' && M!='index')$lurl = $lurl.'&backurl='.$backurl.'';
+			if(!isajax())$this->rock->location($lurl); //不是ajax跳转到登录页面
+			echo '没有登录，去<a href="'.$lurl.'">[登录]</a>';
 			exit();
 		}
 	}
@@ -65,12 +82,14 @@ class Action extends mainAction
 		$this->smartydata['adminid']	= $this->adminid;
 		$this->smartydata['adminuser']	= $this->adminuser;
 		$this->smartydata['adminname']	= $this->adminname;
+		$this->smartydata['logintime']	= $this->getsession('logintime');
 	}
 	
 	private function iszclogin()
 	{
+		if($this->loginsubscribe())return;//免验证
 		$token = $this->admintoken;
-		if($this->isempt($token))exit('sorry1');
+		if(isempt($token))exit('sorry1');
 		$lastt = date('Y-m-d H:i:s',time()-24*3600);
 		$rs = m('logintoken')->getone("`uid`='$this->adminid' and `token`='$token' and `online`=1 and `moddt`>='$lastt'",'`moddt`');
 		if(!$rs)$this->backmsg('登录失效，请重新登录');
@@ -85,13 +104,16 @@ class Action extends mainAction
 	{
 		$where		= $this->request('where');
 		$keywhere	= $this->request('keywhere');
-		$where 		= $this->jm->uncrypt($this->rock->iconvsql($where));
-		$keywhere 	= $this->jm->uncrypt($this->rock->iconvsql($keywhere));
-		$where  	= $this->rock->covexec($where);
-		$keywhere  	= $this->rock->covexec($keywhere);
+		if(!isempt($where)){
+			$where 		= $this->jm->uncrypt($this->rock->iconvsql($where));
+			$where  	= $this->db->filterstr($this->rock->covexec($where));
+		}
+		if(!isempt($keywhere)){
+			$keywhere 	= $this->jm->uncrypt($this->rock->iconvsql($keywhere));
+			$keywhere  	= $this->db->filterstr($this->rock->covexec($keywhere));
+		}
 		
 		$wherea	  .= " $where $keywhere";
-		$wherea	   = $this->db->filterstr($wherea);
 		$order	   = $this->getOrder($order);
 		$group	   = '';
 		if(isset($arr['group']) && !isempt($arr['group']))$group="GROUP BY ".$arr['group']." ";
@@ -151,15 +173,16 @@ class Action extends mainAction
 	public function publicdelAjax()
 	{
 		$this->iszclogin();
-		$id		= $this->rock->post('id');
+		$id		= c('check')->onlynumber($this->rock->post('id'));
 		$table	= $this->rock->iconvsql($this->rock->post('table','',1),1);
 		$modenum= $this->rock->post('modenum');
 		if(getconfig('systype')=='demo')$this->showreturn('', '演示数据禁止删除', 201);
 		if($id=='')$this->showreturn('', 'sorry', 201);
 		$isadmin= (int)$this->getsession('isadmin');
+		$deltba = array('todo','option','menu','wouser');
 		if($modenum==''){
 			if($isadmin != 1 && $table!='todo')$this->showreturn('','只有管理员才能操作' , 201);
-			if(substr($table,0,5)=='flow_'||$table=='todo'||$table=='option'||$table=='menu'){
+			if(substr($table,0,5)=='flow_' || in_array($table, $deltba)){
 				m($table)->delete("`id` in($id)");
 			}else{
 				$this->showreturn('','未设置删除权限' , 201);
@@ -177,7 +200,7 @@ class Action extends mainAction
 	public function publicstoreAjax()
 	{
 		$this->iszclogin();
-		$table			= $this->rock->iconvsql($this->request('tablename_abc','',1),1);
+		$table			= $this->rock->xssrepstr($this->rock->iconvsql($this->request('tablename_abc','',1),1));
 		$fields			= '*';
 		$group			= '';
 		$order			= $this->rock->iconvsql($this->request('defaultorder'));
@@ -189,6 +212,7 @@ class Action extends mainAction
 		$where			= '1=1 ';
 		$beforea		= $this->request('storebeforeaction');
 		$tables 		= $this->T($table);
+		
 		if($modenum != ''){
 			$this->flow = m('flow')->initflow($modenum);
 			$nas		= $this->flow->billwhere($this->adminid, $atype);
@@ -219,6 +243,7 @@ class Action extends mainAction
 				}
 			}
 		}
+		if($tables==PREFIX)exit('无效的访问');
 		$arr	= $this->limitRows($tables, $fields, $where, $order, array(
 			'group' => $group
 		));
@@ -244,7 +269,7 @@ class Action extends mainAction
 				}
 				$rows[$k] 				= $this->flow->flowrsreplace($rs,2);
 			}
-			$bacarr['rows'] = $rows;
+			$bacarr['rows'] = $this->flow->daochusubtable($rows);
 		}
 		if($execldown == 'true'){
 			$this->exceldown($bacarr);
@@ -253,151 +278,131 @@ class Action extends mainAction
 		$this->returnjson($bacarr);
 	}
 	
-	public function publictreestoreAjax()
+	
+	/**
+	*	验证签名
+	*/
+	public function checksignature($table)
 	{
-		$table	= $this->rock->iconvsql($this->rock->post('tablename_abc'),1);
-		$order	= $this->rock->iconvsql($this->rock->get('order'));
-		$fistid	= $this->rock->get('fistid','0');
-		$rows	= $this->publictreestore($fistid, $table, $order);
-		echo json_encode(Array(
-			'root'=>'.','children'=>$rows
-		));
-	}
-	public function publictreestore($pid, $table, $order){
-		$db 		= m($table);
-		$expandall	= $this->rock->get('expandall');
-		$pidfields	= $this->rock->get('pidfields','pid');
-		$idfields	= $this->rock->get('idfields','id');
-		$wheres		= $this->rock->iconvsql($this->rock->post('where'));
-		
-		$where	= "`$pidfields`='$pid' $wheres";
-		if($order!='')$where.=" order by `$order`";
-		$rows = $db->getall($where);
-		foreach($rows as $k=>$rs){
-			$id	= $rs['id'];
-			$rows[$k]['leaf'] 	= true;
-			$rows[$k]['sid']	= $id;
-			if($expandall=='true')$rows[$k]['expanded']	= true;
-			$total	= $db->rows("`$pidfields`='".$rs[$idfields]."' $wheres");
-			if($total >0){
-				$rows[$k]['leaf'] = false;
-				$rows[$k]['children'] = $this->publictreestore($rs[$idfields], $table, $order);
-			}else{
-				$rows[$k]['children'] = array();
-			}
-		}
-		return $rows;
+		if(!getconfig('checksign'))return true;//不验证
+		$sign = $this->post('sys_signature');
+		$time = $this->post('sys_timeature');
+		$signs= md5($this->rock->nowurl().$table.$time.'_'.$this->adminid);
+		return ($sign==$signs);
 	}
 	
 	/**
-		公共保存页面
+	*	公共保存页面
 	*/
 	public function publicsaveAjax()
 	{
 		$this->iszclogin();
 		$msg	= '';
 		$success= false;
-		$table	= $this->rock->iconvsql($this->post('tablename_postabc'),1);
+		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->post('tablename_postabc','',1),1));
 		$id		= (int)$this->post('id');
 		$oldrs  = false;
-		if($table !='' ){
-			$db		= m($table);
-			$where	= "`id`='$id'";
-			if($id==0)$where='';
-			$modenum 			= $this->post('sysmodenumabc');
-			$flow 				= null;
-			if($modenum!='')$flow = m('flow')->initflow($modenum);
-			$msgerrortpl 		= $this->post('msgerrortpl');
-			$aftersavea			= $this->post('aftersaveaction', 'publicaftersave');
-			$beforesavea		= $this->post('beforesaveaction', 'publicbeforesave');
-			$submditfi 			= $this->post('submitfields_postabc');
-			$editrecord			= $this->post('editrecord_postabc'); //是否保存修改记录
-			$fileid 			= $this->post('fileid', '0');
-			$isturn 			= (int)$this->post('isturn_postabc', '1');
-			$int_type 			= ','.$this->post('int_filestype').',';
-			$md5_type 			= ','.$this->post('md5_filestype').',';
-			if($submditfi !=''){
-				$fields	= explode(',', $submditfi);
-				$uaarr	= array();
-				foreach($fields as $field){
-					$val	= $this->post(''.$field.'');
-					$type	= $this->post(''.$field.'_fieldstype');
-					$boa	= true;
-					if($this->contain($int_type, ','.$field.',')){
-						$val = (int)$val;
-					}
-					if($this->contain($md5_type, ','.$field.',')){
-						if($val=='')$boa=false;
-						$val = md5($val);
-					}
-					if($boa)$uaarr[$field]=$val;
-				}
-				
-				$otherfields		= $this->post('otherfields');
-				$addotherfields		= $this->post('add_otherfields');
-				$editotherfields	= $this->post('edit_otherfields');
-				if($id == 0)$otherfields.=','.$addotherfields.'';
-				if($id > 0)$otherfields.=','.$editotherfields.'';
-				if($otherfields != ''){
-					$otherfields = str_replace(array('{now}','{date}','{admin}','{adminid}'),array($this->now,date('Y-m-d'),$this->adminname,$this->adminid),$otherfields);
-					$fiarsse = explode(',', $otherfields);
-					foreach($fiarsse as $ffes){
-						if($ffes!=''){
-							$ssare = explode('=', $ffes);
-							$lea	= substr($ssare[1],0,1);
-							if($lea == '['){
-								$uaarr[$ssare[0]]=$uaarr[substr($ssare[1],1,-1)];
-							}else{
-								$uaarr[$ssare[0]]=$ssare[1];
-							}
-						}
-					}
-				}
-				
-				$ss 	= '';
-				if(!$this->isempt($beforesavea)){
-					if(method_exists($this, $beforesavea)){
-						$befa = $this->$beforesavea($table, $uaarr, $id);
-						if(is_string($befa)){
-							$ss = $befa;
-						}else{
-							if(isset($befa['msg']))$ss=$befa['msg'];
-							if(isset($befa['rows'])){
-								foreach($befa['rows'] as $bk=>$bv)$uaarr[$bk]=$bv;
-							}
-						}
-					}	
-				}
-				$msg 	= $ss;	
-				$idadd 	= false;
-				if($msg == ''){
-					if($id>0 && $editrecord=='true')$oldrs = $db->getone($id);
-					if($db->record($uaarr, $where)){
-						$msg	= '处理成功';
-						$success= true;
-						if($id == 0){
-							$id = $this->db->insert_id();
-							$idadd = true;
-						}
-						if($fileid !='0')m('file')->addfile($fileid,$table,$id);
-						if(!$this->isempt($aftersavea)){
-							if(method_exists($this, $aftersavea)){
-								$this->$aftersavea($table, $uaarr, $id, $idadd);
-							}
-						}
-						//保存修改记录
-						if($oldrs && $flow!=null){
-							$newrs = $db->getone($id);
-							m('edit')->recordstr($flow->fieldsarr,$flow->mtable, $id, $oldrs, $newrs, 2);
-						}
+		if(isempt($table))return returnerror('错误表名');
+		if(!$this->checksignature($this->post('tablename_postabc')))return returnerror('无效请求');
+		$db		= m($table);
+		$where	= "`id`='$id'";
+		if($id==0)$where='';
+		$modenum 			= $this->post('sysmodenumabc');
+		$flow 				= null;
+		$msgerrortpl 		= $this->post('msgerrortpl');
+		$aftersavea			= $this->post('aftersaveaction', 'publicaftersave');
+		$beforesavea		= $this->post('beforesaveaction', 'publicbeforesave');
+		$submditfi 			= $this->rock->jm->base64decode($this->post('submitfields_postabc'));
+		$editrecord			= $this->post('editrecord_postabc'); //是否保存修改记录
+		$fileid 			= $this->post('fileid', '0');
+		$isturn 			= (int)$this->post('isturn_postabc', '1');
+		$int_type 			= ','.$this->post('int_filestype').',';
+		$md5_type 			= ','.$this->post('md5_filestype').',';
+		
+		if(isempt($submditfi))return returnerror('无效字段');
+		
+		if($modenum!='')$flow = m('flow')->initflow($modenum);
+		$fields	= explode(',', $submditfi);
+		
+		$uaarr	= array();
+		foreach($fields as $field){
+			$field	= $this->rock->xssrepstr($field);
+			$val	= $this->post(''.$field.'');
+			$type	= $this->post(''.$field.'_fieldstype');
+			$boa	= true;
+			if($this->contain($int_type, ','.$field.',')){
+				$val = (int)$val;
+			}
+			if($this->contain($md5_type, ','.$field.',')){
+				if($val=='')$boa=false;
+				$val = md5($val);
+			}
+			if($boa)$uaarr[$field]=$val;
+		}
+		
+		$otherfields		= $this->post('otherfields');
+		$addotherfields		= $this->post('add_otherfields');
+		$editotherfields	= $this->post('edit_otherfields');
+		if($id == 0)$otherfields.=','.$addotherfields.'';
+		if($id > 0)$otherfields.=','.$editotherfields.'';
+		if($otherfields != ''){
+			$otherfields = str_replace(array('{now}','{date}','{admin}','{adminid}'),array($this->now,date('Y-m-d'),$this->adminname,$this->adminid),$otherfields);
+			$fiarsse = explode(',', $otherfields);
+			foreach($fiarsse as $ffes){
+				if($ffes!=''){
+					$ssare = explode('=', $ffes);
+					$lea	= substr($ssare[1],0,1);
+					if($lea == '['){
+						$uaarr[$ssare[0]]=$uaarr[substr($ssare[1],1,-1)];
 					}else{
-						$msg = 'Error:'.$this->db->error();
+						$uaarr[$ssare[0]]=$ssare[1];
 					}
 				}
 			}
-		}else{
-			$msg = '错误表名';
 		}
+		
+		$ss 	= '';
+		if(!$this->isempt($beforesavea)){
+			if(method_exists($this, $beforesavea)){
+				$befa = $this->$beforesavea($table, $uaarr, $id);
+				if(is_string($befa)){
+					$ss = $befa;
+				}else{
+					if(isset($befa['msg']))$ss=$befa['msg'];
+					if(isset($befa['rows'])){
+						foreach($befa['rows'] as $bk=>$bv)$uaarr[$bk]=$bv;
+					}
+				}
+			}	
+		}
+		$msg 	= $ss;	
+		$idadd 	= false;
+		if($msg == ''){
+			if($id>0 && $editrecord=='true')$oldrs = $db->getone($id);
+			$sbo	= $db->record($uaarr, $where);
+			if($sbo){
+				$msg	= '处理成功';
+				$success= true;
+				if($id == 0){
+					$id = $this->db->insert_id();
+					$idadd = true;
+				}
+				if($fileid !='0')m('file')->addfile($fileid,$table,$id, $modenum);
+				if(!$this->isempt($aftersavea)){
+					if(method_exists($this, $aftersavea)){
+						$this->$aftersavea($table, $uaarr, $id, $idadd);
+					}
+				}
+				//保存修改记录
+				if($oldrs && $flow!=null){
+					$newrs = $db->getone($id);
+					m('edit')->recordstr($flow->fieldsarr,$flow->mtable, $id, $oldrs, $newrs, 2);
+				}
+			}else{
+				$msg = 'mysqlerr:'.$this->db->lasterror();
+			}
+		}
+		
 		if($msg=='')$msg='处理失败';
 		$arr = array('success'=>$success,'msg'=>$msg,'id'=>$id);
 		echo json_encode($arr);
@@ -406,10 +411,13 @@ class Action extends mainAction
 	public function publicsavevalueAjax()
 	{
 		$this->iszclogin();
-		$table	= $this->rock->iconvsql($this->rock->post('tablename','',1),1);
-		$id		= $this->rock->post('id', '0');
-		$fields	= $this->rock->post('fieldname');
-		$value	= $this->rock->post('value');
+		$table	= $this->rock->xssrepstr($this->rock->iconvsql($this->post('tablename','',1),1));
+		if(!$this->checksignature($this->post('tablename')))return '无效请求';
+		$noupf	= array('pass','user');
+		$id		= c('check')->onlynumber($this->post('id', '0'));
+		$fields	= $this->post('fieldname');
+		if(in_array(strtolower($fields), $noupf))return 'error';
+		$value	= $this->post('value');
 		$where	= "`id` in($id)";
 		m($table)->record(array($fields=>$value), $where);
 		$fiesa  = $this->rock->request('fieldsafteraction');
@@ -427,11 +435,13 @@ class Action extends mainAction
 		$header = explode(',', $this->post('excelheader','',1));
 		$title	= $this->post('exceltitle','',1);
 		$rows	= $arr['rows'];
+		$exceltype	= $this->post('exceltype','xls'); //保存文件类型
+		if(!in_array($exceltype, array('doc','html')))$exceltype = 'xls';
 		$headArr	= array();
 		for($i=0; $i<count($fields); $i++){
 			$headArr[$fields[$i]] = $header[$i];
 		}
-		$url 		= c('html')->execltable($title, $headArr, $rows);
+		$url 		= c('html')->execltable($title, $headArr, $rows, $exceltype);
 		$this->returnjson(array(
 			'url'		=> $url, 
 			'totalCount'=> $arr['totalCount'],
@@ -457,19 +467,17 @@ class ActionNot extends Action
 	protected function logincheck(){}
 	
 	/**
-	*	手机端判断有没有登录
+	*	手机端/单据详情页判断有没有登录就根据cookie登录
 	*/
 	protected function mweblogin($lx=0, $ismo=false)
 	{
-		$uid 	= $this->adminid;
-		$agid	= $this->rock->get('agentid');
-		if($agid!='')$this->rock->savesession(array('wxqyagentid' => $agid));
-		$uid 	= m('login')->autologin($this->get('adminid'), $this->get('token'));
+		$uid 	= m('login')->autologin((int)$this->get('adminid','0'), $this->get('token'));
 		if($uid==0){
 			$this->loginnot($ismo);
 		}else{
-			$this->initProject();
+			$this->initProject(); //登录成功
 		}
 		$this->adminid 		= $uid;
+		return $uid;
 	}
 }

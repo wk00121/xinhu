@@ -15,6 +15,7 @@ function initbodys(){
 function salechange(v){
 	if(v==''){
 		form('custid').value='';
+		form('custname').value='';
 		return;
 	}
 	js.ajax(geturlact('salechange'),{saleid:v},function(a){

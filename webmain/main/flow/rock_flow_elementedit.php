@@ -15,7 +15,9 @@ $(document).ready(function(){
 			try{guanelementedit.reload();}catch(e){}
 		},
 		submitcheck:function(d){
-			
+			if(d.fieldstype.indexOf('change')==0){
+				if(d.data=='')return '此字段元素类型时，数据源必须填写用来存储选择来的Id，如填写为：'+d.fields+'id';
+			}
 		}
 	});
 	h.forminit();
@@ -45,6 +47,23 @@ $(document).ready(function(){
 	blursehs{rand}=function(o1){
 		o1.value = o1.value.replace('select ','[SQL]');
 	}
+	
+	var c = {
+		xuanchang:function(){
+			var val = h.form.fieldstype.value;
+			if(val.indexOf('change')==0){
+				var cans1 = {
+					idobj:h.form.gongsi,
+					type:'deptusercheck',
+					title:'选择范围'
+				};
+				js.getuser(cans1);
+			}else{
+				js.msg('msg','元素类型不是选择人员部门的');
+			}
+		}
+	};
+	js.initbtn(c);
 });
 
 </script>
@@ -79,20 +98,33 @@ $(document).ready(function(){
 			<td  align="right" width="15%" nowrap ><font color=red>*</font> <a target="_blank" href="<?=URLY?>view_element.html">?字段元素类型</a>：</td>
 			<td width="35%"  class="tdinput"><select name="fieldstype" class="form-control"><option value="">-字段-</option></select></td>
 			
-			<td  width="15%" align="right" nowrap>默认值：</td>
-			<td width="35%"  class="tdinput"><input name="dev" class="form-control"></td>
+			<td  width="15%" align="right" nowrap>默认值：<br><a target="_blank" href="<?=URLY?>view_xinhudev.html">看帮助</a>&nbsp;&nbsp;</td>
+			<td width="35%"  class="tdinput"><input name="dev" placeholder="不会设置?看帮助吧" class="form-control"></td>
 		</tr>
 		
 		<tr>
 			<td align="right">字段分类：</td>
-			<td class="tdinput"><select name="iszb" class="form-control"><option value="0">主表字段</option><option value="1">第1个多行子表字段</option><option value="2">第2个多行子表字段</option><option value="3">第3个多行子表字段</option><option value="4">第4个多行子表字段</option><option value="5">第5个多行子表字段</option><option value="6">第6个多行子表字段</option></select></td>
+			<td class="tdinput"><select name="iszb" class="form-control"><option value="0">主表字段</option><option value="1">第1个多行子表字段</option><option value="2">第2个多行子表字段</option><option value="3">第3个多行子表字段</option><option value="4">第4个多行子表字段</option><option value="5">第5个多行子表字段</option><option value="6">第6个多行子表字段</option><option value="7">第7个多行子表字段</option><option value="8">第8个多行子表字段</option><option value="9">第9个多行子表字段</option>
+			<option value="10">第10个多行子表字段</option>
+			<option value="11">第11个多行子表字段</option>
+			<option value="12">第12个多行子表字段</option>
+			<option value="13">第13个多行子表字段</option>
+			<option value="14">第14个多行子表字段</option>
+			<option value="15">第15个多行子表字段</option>
+			<option value="16">第16个多行子表字段</option>
+			<option value="17">第17个多行子表字段</option>
+			<option value="18">第18个多行子表字段</option>
+			<option value="19">第19个多行子表字段</option>
+			<option value="20">第20个多行子表字段</option>
+			<option value="21">用到20多个子表，真厉害，建议拆分多个模块</option>
+			</select></td>
 			<td align="right">字段长度：</td>
 			<td class="tdinput"><input name="lens" value="0" maxlength="4" type="number"  onfocus="js.focusval=this.value" onblur="js.number(this)" class="form-control"></td>
 		</tr>
 	
 		<tr>
-			<td align="right">数据源：</td>
-			<td class="tdinput" colspan="3"><textarea placeholder="可以SQL,数据选项编号,自定义方法等" name="data" style="height:60px" onblur="blursehs{rand}(this)" class="form-control"></textarea></td>
+			<td align="right">数据源：<br><a target="_blank" href="<?=URLY?>view_element.html">看帮助</a>&nbsp;&nbsp;</td>
+			<td class="tdinput" colspan="3"><textarea placeholder="数据选项编号,自定义方法等" name="data" style="height:60px" onblur="blursehs{rand}(this)" class="form-control"></textarea></td>
 		</tr>
 		
 		<tr>
@@ -105,7 +137,7 @@ $(document).ready(function(){
 		</tr>
 		<tr>
 			<td align="right">计算公式：</td>
-			<td class="tdinput" colspan="3"><textarea  name="gongsi" style="height:60px" class="form-control"></textarea><font color=#888888>如：{price}*{shu}，更多公式详见<a target="_blank" href="<?=URLY?>view_gongsi.html">[帮助]</a>哦</font></td>
+			<td class="tdinput" colspan="3"><textarea  name="gongsi" style="height:60px" class="form-control"></textarea><font color=#888888>如：{price}*{shu}，更多公式详见<a target="_blank" href="<?=URLY?>view_gongsi.html">[帮助]</a>哦，字段元素类型为选择人员部门时这个可以设置要<a href="javascript:;" click="xuanchang">选择范围</a>。</font></td>
 		</tr>
 		
 		<tr>

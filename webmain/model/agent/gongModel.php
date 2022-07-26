@@ -18,6 +18,7 @@ class agent_gongClassModel extends agentModel
 		$where	= "id not in($ydid) and `status`=1";
 		$meswh	= m('admin')->getjoinstr('receid', $uid);
 		$where .= $meswh;
+		$where .= m('admin')->getcompanywhere(1);
 		$stotal	= m('infor')->rows($where);
 		return $stotal;
 	}
@@ -31,18 +32,11 @@ class agent_gongClassModel extends agentModel
 		return $a;
 	}
 	protected function agentrows($rows, $rowd, $uid){
-		if($rows){
-			$ydarr	= explode(',', m('log')->getread('infor', $uid));
-			foreach($rowd as $k=>$rs){
-				if(!in_array($rs['id'], $ydarr)){
-					$rows[$k]['statustext'] 	= '未读';
-					$rows[$k]['statuscolor'] 	= '#ED5A5A';
-				}else{
-					$rows[$k]['ishui']			= 1;
-				}
-				$rows[$k]['picurl'] = $rs['fengmian'];
-			}
-		}
-		return $rows;
+		$typearr = array();
+		if($this->loadci==1)$typearr = $this->flow->flowwesearchdata(1);
+		return array(
+			'rows' =>$rows,
+			'typearr' =>$typearr,
+		);
 	}
 }

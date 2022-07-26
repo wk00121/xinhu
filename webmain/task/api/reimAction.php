@@ -45,9 +45,16 @@ class reimClassAction extends apiAction
 			$tos = m('im_groupuser')->rows("`gid`='$gid' and `uid`='$uid'");
 			if($tos==0)$this->showreturn('','您不在此会话中，不允许发送', 201);
 		}
+		
+		$cont 		= $this->post('cont');
+		$cont 		= $this->jm->base64decode($cont);
+		$cont 		= str_replace('<br>','[BR]', $cont);
+		$cont 		= str_replace(array('<','>'),array('&lt;','&gt;'), $cont);
+		$cont 		= $this->jm->base64encode(str_replace('[BR]','<br>',$cont));
+		
 		$arr 		= m('reim')->sendinfor($type, $uid, $gid, array(
 			'optdt' => $this->now,
-			'cont'  => $this->post('cont'),
+			'cont'  => $cont,
 			'fileid'=> (int)$this->post('fileid')
 		), $lx);
 		$this->showreturn($arr);
@@ -128,6 +135,30 @@ class reimClassAction extends apiAction
 		$this->showreturn($msg);
 	}
 	
+	//修改会话名称
+	public function editnameAction()
+	{
+		$gid	= (int)$this->post('gid');
+		$val	= $this->post('val');
+		if(isempt($val))return returnerror('不能为空');
+		m('reim')->editname($gid, $val);
+		$this->showreturn('');
+	}
+	
+	//邀请人员
+	public function yaoqingnameAction()
+	{
+		$gid	= (int)$this->post('gid');
+		$val	= $this->post('val');
+		if(isempt($val))return returnerror('不能为空');
+		$urs 	= m('admin')->geturs($val);
+		if(!$urs)return returnerror('“'.$val.'”不存在');
+		$uids	= ''.$urs['id'].'';
+		$ids 	= m('reim')->adduserchat($gid, $uids, true);
+		$msg	= 'success'.$ids.'';
+		$this->showreturn('ok');
+	}
+	
 	//退出讨论组
 	public function exitgroupAction()
 	{
@@ -149,7 +180,7 @@ class reimClassAction extends apiAction
 	{
 		$gid 	= (int)$this->post('gid');
 		$type 	= $this->post('type');
-		$ids 	= $this->post('ids');
+		$ids 	= c('check')->onlynumber($this->post('ids'));
 		$day 	= (int)$this->post('day');
 		$arr 	= m('reim')->clearrecord($type,$gid,$this->adminid, $ids, $day);
 		$this->showreturn('');
@@ -172,6 +203,16 @@ class reimClassAction extends apiAction
 		m('file')->download($id);
 	}
 	
+	//修改会话头像
+	public function editfaceAction()
+	{
+		$gid 	= (int)$this->get('gid');
+		$fileid = (int)$this->get('fileid');
+		if($gid<=0)return returnerror('error');
+		m('reim')->editface($gid, $fileid);
+		$this->showreturn('');
+	}
+	
 	/**
 	*	文件转发发送给对应人员
 	*/
@@ -184,8 +225,17 @@ class reimClassAction extends apiAction
 		$this->showreturn('');
 	}
 	
-	/**
-	*	信息转发
-	*/
 	
+	/**
+	*	消息撤回
+	*/
+	public function chehuimessAction()
+	{
+		$gid 	= (int)$this->post('gid');
+		$type 	= $this->post('type');
+		$ids 	= (int)$this->post('ids');
+		$barr 	= m('reim')->chehuimess($type, $gid, $ids);
+		if(is_array($barr))$this->showreturn($barr);
+		$this->showreturn('', $barr, 201);
+	}
 }

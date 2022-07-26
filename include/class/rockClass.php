@@ -1,10 +1,10 @@
 <?php 
 /**
 	*****************************************************************
-	* 联系QQ： 290802026/1073744729									*
+	* 联系QQ： 290802026											*
 	* 版  本： V2.0													*
-	* 开发者：雨中磐石工作室										*
-	* 邮  箱： qqqq2900@126.com										*
+	* 开发者：雨中磐石(rainrock)									*
+	* 邮  箱： admin@rockoa.com										*
 	* 说  明: 基础操作类方法										*
 	* 备  注: 未经允许不得商业出售，代码欢迎参考纠正				*
 	*****************************************************************
@@ -28,20 +28,45 @@ final class rockClass
 
 	public function __construct()
 	{		
-		$this->ip		= isset($_SERVER['REMOTE_ADDR'])	? $_SERVER['REMOTE_ADDR']	: '' ;
+		$this->ip		= $this->getclientip();
 		$this->host		= isset($_SERVER['HTTP_HOST'])		? $_SERVER['HTTP_HOST']		: '' ;
 		$this->url		= '';
 		$this->isqywx	= false;
-		$this->win		=  php_uname();
+		$this->win		= php_uname();
 		$this->HTTPweb	= isset($_SERVER['HTTP_USER_AGENT'])? $_SERVER['HTTP_USER_AGENT']	: '' ;
 		$this->web		= $this->getbrowser();
 		$this->unarr	= explode(',','1,2');
 		$this->now		= $this->now();
 		$this->date		= date('Y-m-d');
-		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,outfile,select*from,select*,select%20,delete%20,drop%20,and%20');
-		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
+		$this->lvlaras  = explode(',','select ,alter table,delete ,drop ,update ,insert into,load_file,/*,*/,union,<script,</script,sleep ,outfile,eval(,user(,phpinfo(),select*,union%20,sleep%20,select%20,delete%20,drop%20,and%20');
+		$this->lvlaraa  = explode(',','select,alter,delete,drop,update,/*,*/,insert,from,time_so_sec,convert,from_unixtime,unix_timestamp,curtime,time_format,union,concat,information_schema,group_concat,length,load_file,outfile,database,system_user,current_user,user(),found_rows,declare,master,exec,(),select*from,select*');
 		$this->lvlarab	= array();
 		foreach($this->lvlaraa as $_i)$this->lvlarab[]='';
+	}
+	
+	/**
+	*	特殊字符过滤
+	*/
+	public function xssrepstr($str)
+	{
+		$xpd  = explode(',','(,), ,<,>,\\,*,&,%,$,^,[,],{,},!,@,#,",+,?,;\'');
+		$xpd[]= "\n";
+		return str_ireplace($xpd, '', $str);
+	}
+	
+	//获取IP
+	public function getclientip()
+	{
+		$ip = 'unknow';
+		if(isset($_SERVER['HTTP_CLIENT_IP'])){
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		}else if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else if(isset($_SERVER['REMOTE_ADDR'])){
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		$ip= htmlspecialchars($this->xssrepstr($ip));
+		return $ip;
 	}
 	
 	public function initRock()
@@ -54,8 +79,7 @@ final class rockClass
 	
 	public function iconvsql($str,$lx=0)
 	{
-		$str = strtolower($str);
-		$str = str_replace($this->lvlaraa,$this->lvlarab,$str);
+		$str = str_ireplace($this->lvlaraa,$this->lvlarab,$str);
 		$str = str_replace("\n",'', $str);
 		if($lx==1)$str = str_replace(array(' ',' ','	'),array('','',''),$str);
 		return $str;
@@ -97,6 +121,7 @@ final class rockClass
 		return $this->jmuncode($val, $lx, $name);
 	}
 	
+	//get和post参数处理$lx=1:rockjm，6:basejm, 3:判断是否rockjm
 	public function jmuncode($s, $lx=0, $na)
 	{
 		$jmbo = false;
@@ -109,29 +134,61 @@ final class rockClass
 				if($jmbo)$s = $this->jm->uncrypt($s);
 			}
 		}
-		if(substr($s, 0, 7)=='basejm_'){
-			$s = $this->jm->base64decode(substr($s,7));
+		if(substr($s, 0, 7)=='basejm_' || $lx==5){
+			$s = str_replace('basejm_', '', $s);
+			$s = $this->jm->base64decode($s);
 		}
 		$s=str_replace("'", '&#39', $s);
+		$s=str_replace('%20', '', $s);
 		if($lx==2)$s=str_replace(array('{','}'), array('[H1]','[H2]'), $s);
 		$str = strtolower($s);
 		foreach($this->lvlaras as $v1)if($this->contain($str, $v1)){
-			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params');
-			$s = str_replace($v1,'', $str);
+			$this->debug(''.$na.'《'.$s.'》error:包含非法字符《'.$v1.'》','params_err');
+			$s = $this->lvlarrep($str, $v1);
+			$str = $s;
 		}
-	
+		$cslv = array('m','a','d','ip','web','host','ajaxbool','token','adminid');
+		if(in_array($na, $cslv))$s = $this->xssrepstr($s);
+		return $this->reteistrs($s);
+	}
+	//参数里面禁用/*,*/
+	private function reteistrs($s){
+		$lvlaras = array('/*','*/');
+		$bo = false;
+		foreach($lvlaras as $v1)if($this->contain($s, $v1)){
+			$s  = str_replace($v1,'', $s);
+			$bo = true;
+		}
+		if($bo)$s = $this->reteistrs($s);
 		return $s;
 	}
-	public function debug($txt, $lx)
+	private function lvlarrep($str, $v1){
+		$s = str_ireplace($v1,'', $str);
+		if(contain($s, $v1))$s = $this->lvlarrep($s, $v1);
+		return $s;
+	}
+	public function debug($txt, $lx, $dabo=false)
 	{
-		if(!DEBUG)return;
-$txt	= ''.$txt.'
-URL：'.$_SERVER['QUERY_STRING'].'
-';
-		$this->createtxt(''.UPDIR.'/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.rand(1000,9000).'.log', $txt);
+		if(!DEBUG && !$dabo)return;
+		$txt	= ''.$txt.''.chr(10).'[URL]'.chr(10).''.$this->nowurl().'';
+		if($_POST){
+			$pstr = '';
+			foreach($_POST as $k=>$v)$pstr.=''.chr(10).'['.$k.']:'.$v.'';
+			$txt.=''.chr(10).''.chr(10).'[POST]'.$pstr.'';
+		}
+		$txt.=''.chr(10).''.chr(10).'[IP]'.chr(10).''.$this->ip.'';
+		$txt.=''.chr(10).''.chr(10).'[datetime]'.chr(10).''.$this->now().'';
+		$txt.=''.chr(10).''.chr(10).'[Browser]'.chr(10).''.$this->HTTPweb.'';
+		
+		$file = ''.UPDIR.'/logs/'.date('Y-m').'/'.$lx.''.date('YmdHis').'_'.str_shuffle('abcdefghijklmn').'.log';
+		$this->createtxt($file, $txt);
+		return $file;
 	}
 	
-	private function isjm($s)
+	/**
+	*	是否加密的字符串
+	*/
+	public function isjm($s)
 	{
 		$bo = false;
 		if(!$s)return $bo;
@@ -247,24 +304,36 @@ URL：'.$_SERVER['QUERY_STRING'].'
 	{
 		$arr = array('日','一','二','三','四','五','六');
 		return $arr[date('w', strtotime($date))];
-	}	
+	}
+	
+	/**
+	*	判断类型0微信,1钉钉,2安卓原生app,3企业微信,4华为welink,5苹果,6QQ
+	*/
+	public function iswebbro($lx=0)
+	{
+		$lxar = array('micromessenger','dingtalk','xinhuapp','wxwork','huawei-anyoffice','iphone','mqqbrowser');
+		return contain(strtolower($this->HTTPweb), $lxar[$lx]);
+	}
 		
 	public function getbrowser()
 	{
 		$web 	= $this->HTTPweb;
 		$val	= 'IE';
 		$parr	= array(
-			array('MSIE 5'),array('MSIE 6'),array('XIAOMI','xiaomi'),array('HUAWEI','huawei'),array('XINHUAPP','xinhu'),array('DingTalk','ding'),array('MSIE 7'),array('MSIE 8'),array('MSIE 9'),array('MSIE 10'),array('MSIE 11'),array('rv:11','MSIE 11'),array('MSIE 12'),array('MicroMessenger','wxbro'),
-			array('MSIE 13'),array('Firefox'),array('OPR/','Opera'),array('Chrome'),array('Safari'),array('Android'),array('iPhone')
+			array('MSIE 5'),array('MSIE 6'),array('XIAOMI','xiaomi'),array('HUAWEI','huawei'),array('XINHUAPP','xinhu'),array('DingTalk','ding'),array('MSIE 7'),array('MSIE 8'),array('MSIE 9'),array('MSIE 10'),array('MSIE 11'),array('rv:11','MSIE 11'),array('MSIE 12'),array('HuaWei-AnyOffice','welink'),array('MicroMessenger','wxbro'),
+			array('MSIE 13'),array('Firefox'),array('OPR/','Opera'),array('Edge'),array('MQQBrowser','mqq'),array('Chrome'),array('Safari'),array('Android'),array('iPhone')
 		);
 		foreach($parr as $wp){
-			if($this->contain($web, $wp[0])){
+			if(contain($web, $wp[0])){
 				$val	= $wp[0];
 				if(isset($wp[1]))$val	= $wp[1];
 				break;
 			}
 		}
-		if($val=='wxbro' && $this->contain($web, 'wxwork'))$this->isqywx = true;
+		$web = strtolower($web);
+		if(contain($web,'micromessenger'))$val='wxbro';//微信浏览器
+		if(contain($web,'dingtalk'))$val='ding';//钉钉浏览器
+		if($val=='wxbro' && contain($web, 'wxwork'))$this->isqywx = true;
 		return $val;
 	}
 	
@@ -289,11 +358,11 @@ URL：'.$_SERVER['QUERY_STRING'].'
 	/**
 		全角半角转换
 	*/
-	public function replace($str,$type='ban')
+	public function replace($str,$quantoban=true)
 	{
 		$search=array('0','1','2','3','4','5','6','7','8','9',',','.','?','\'','(',')',';','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		$replace=array('０','１','２','３','４','５','６','７','８','９','，','。','？','’','（','）','；','ａ','ｂ','ｃ','ｄ','ｅ','ｆ','ｇ','ｈ','ｉ','ｊ','ｋ','ｌ','ｍ','ｎ','ｏ','ｐ','ｑ','ｒ','ｓ','ｔ','ｕ','ｖ','ｗ','ｘ','ｙ','ｚ','Ａ','Ｂ','Ｃ','Ｄ','Ｅ','Ｆ','Ｇ','Ｈ','Ｉ','Ｊ','Ｋ','Ｌ','Ｍ','Ｎ','Ｏ','Ｐ','Ｑ','Ｒ','Ｓ','Ｔ','Ｕ','Ｖ','Ｗ','Ｚ','Ｙ','Ｚ');
-		if($type=='ban'){
+		if($quantoban){
 			$str=str_replace($replace,$search,$str);
 		}else{
 			$str=str_replace($search,$replace,$str);
@@ -515,9 +584,10 @@ URL：'.$_SERVER['QUERY_STRING'].'
 	public function debugs($str, $lxs='')
 	{
 		if(!DEBUG)return;
-		$msg 	= '['.$this->now.']:'.$str.'';
-		$mkdir 	= ''.UPDIR.'/'.date('Y-m').'';
-		$this->createtxt(''.$mkdir.'/'.$lxs.''.time().'_'.rand(100,999).'.log', $msg);
+		if(is_array($str))$str = json_encode($str, JSON_UNESCAPED_UNICODE);
+		$msg 	= '['.$this->now.']:'.$this->nowurl().''.chr(10).''.$str.'';
+		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
+		$this->createtxt(''.$mkdir.'/'.$lxs.''.date('Y-m-d.H.i.s').'_'.str_shuffle('abcdefghijklmn').'.log', $msg);
 	}
 	
 	public function arrvalue($arr, $k, $dev='')
@@ -533,7 +603,9 @@ URL：'.$_SERVER['QUERY_STRING'].'
 	public function nowurl()
 	{
 		if(!isset($_SERVER['HTTP_HOST']))return '';
-		$url = 'http://'.$_SERVER['HTTP_HOST'];
+		$qz  = 'http';
+		if($_SERVER['SERVER_PORT']==443)$qz='https';
+		$url = ''.$qz.'://'.$_SERVER['HTTP_HOST'];
 		if(isset($_SERVER['REQUEST_URI']))$url.= $_SERVER['REQUEST_URI'];
 		return $url;
 	}
@@ -556,6 +628,7 @@ URL：'.$_SERVER['QUERY_STRING'].'
 		$match	= '/\{(.*?)\}/';
 		if($lx==1)$match	= '/\[(.*?)\]/';
 		if($lx==2)$match	= '/\`(.*?)\`/';
+		if($lx==3)$match	= '/\#(.*?)\#/';
 		preg_match_all($match, $str, $list);
 		$barr = array();
 		foreach($list[1] as $k=>$nrs){
@@ -573,5 +646,35 @@ URL：'.$_SERVER['QUERY_STRING'].'
 		foreach($arr as $k=>$v)$s.='_'.$v.'';
 		$s = ''.$qz.''.$s.'';
 		return $s;
+	}
+
+	/**
+	*	获取外网地址
+	*/
+	public function getouturl($dz='')
+	{
+		if($dz=='')$dz = URL;
+		$xurl	= URL;
+		$xurl1	= getconfig('outurl');
+		if(!isempt($xurl1))$xurl = $xurl1;
+		if(substr($xurl,-1)!='/')$xurl.='/';
+		return $xurl;
+	}
+	
+	/**
+	*	一个完整绝对路径
+	*/
+	public function gethttppath($path, $url='', $dev='')
+	{
+		if($url=='')$url = URL;
+		if(isempt($path))return $dev;
+		if(contain($path, '{PLATURL}')){
+			$platurl = getconfig('xinhudoc_platury');
+			if(!$platurl)$platurl = getconfig('xinhudoc_platurl');
+			if(substr($platurl,-1)!='/')$platurl.='/';
+			$path = str_replace('{PLATURL}',$platurl,$path);
+		}
+		if(substr($path,0,4)!='http')$path = ''.$url.''.$path.'';
+		return $path;
 	}
 }

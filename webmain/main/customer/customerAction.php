@@ -15,6 +15,9 @@ class customerClassAction extends Action
 			$s 		= m('admin')->getdownwheres('id', $uid, 0);
 			$where 	=' and ('.$s.' or `id`='.$uid.')';
 		}
+		if($lx!='my' && $lx!='down'){
+			$where  = m('admin')->getcompanywhere(5);
+		}
 		if($key!=''){
 			$where .= m('admin')->getkeywhere($key);
 		}
@@ -78,8 +81,8 @@ class customerClassAction extends Action
 	//客户转移
 	public function movecustAjax()
 	{
-		$sid 	= $this->post('sid');
-		$toid 	= $this->post('toid');
+		$sid 	= c('check')->onlynumber($this->post('sid'));
+		$toid 	= (int)$this->post('toid');
 		if($sid==''||$sid=='')return;
 		m('crm')->movetouser($this->adminid, $sid, $toid);
 	}
@@ -113,7 +116,7 @@ class customerClassAction extends Action
 	//分配客户
 	public function distcustAjax()
 	{
-		$sid 	= $this->post('sid','0');
+		$sid 	= c('check')->onlynumber($this->post('sid','0'));
 		$sname 	= $this->post('sname');
 		$snid 	= $this->post('snid');
 		$lx 	= $this->post('lx');
@@ -121,6 +124,7 @@ class customerClassAction extends Action
 		$uarr['optname'] = '';
 		if($lx==1 && $snid!='' && $sname!=''){
 			$uarr['uid'] 	 = $snid;
+			$uarr['isgh'] 	 = '0';
 			m('crm')->update($uarr, "`id` in($sid)");
 		}
 		if($lx==0){

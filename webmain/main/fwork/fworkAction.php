@@ -60,29 +60,35 @@ class fworkClassAction extends Action
 		$lx 	= $this->post('atype');
 		$this->atypess = $lx;
 		$dt 	= $this->post('dt1');
+		$dt2 	= $this->post('dt2');
 		$key 	= $this->post('key');
 		$zt 	= $this->post('zt');
 		$modeid = (int)$this->post('modeid','0');
 		$uid 	= $this->adminid;
-		$where	= 'and a.uid='.$uid.'';
+		$where	= 'and (a.`uid`='.$uid.' or a.`optid`='.$uid.')';
 		//待办
 		if($lx=='daib'){
-			$where	= 'and a.`status` not in(1,2) and '.$this->rock->dbinstr('a.nowcheckid', $uid);
+			$where	= 'and a.`isturn`=1 and  a.`status` not in(1,2) and '.$this->rock->dbinstr('a.nowcheckid', $uid);
 		}
 		
 		//我下属申请
 		if($lx=='xia'){
-			$where	= 'and '.$this->rock->dbinstr('b.superid', $uid);
+			$where	= 'and a.`isturn`=1 and  '.$this->rock->dbinstr('b.superid', $uid);
 		}
 		
 		//我参与
 		if($lx=='jmy'){
-			$where	= 'and '.$this->rock->dbinstr('a.allcheckid', $uid);
+			$where	= 'and a.`isturn`=1 and  '.$this->rock->dbinstr('a.allcheckid', $uid);
 		}
 		
 		//未通过
 		if($lx=='mywtg'){
 			$where.=" and a.status=2";
+		}
+		
+		//待提交
+		if($lx=='daiturn'){
+			$where.=" and a.`status` not in(5) and a.`isturn`=0 "; //未提交
 		}
 		
 		//异常
@@ -101,6 +107,42 @@ class fworkClassAction extends Action
 			}
 		}
 		
+		$this->modeids	= false;
+		
+		//抄送的
+		if($lx=='chaosview'){
+			$where =' and 1=2';
+			$crows = $this->db->getall("select * from `[Q]flow_chao` where ".$this->rock->dbinstr('csnameid', $uid)."");
+			$this->modeids = '0';
+			if($crows){
+				$modeids = '';
+				$mids 	 = '';
+				foreach($crows as $k1=>$rs1){
+					$modeids.=','.$rs1['modeid'].'';
+					$mids.=','.$rs1['mid'].'';
+				}
+				$this->modeids = substr($modeids,1);
+				$where = " and a.`isturn`=1 and a.`modeid` in(".$this->modeids.") and a.`mid` in(".substr($mids,1).")";
+			}
+		}
+		
+		//流程监控
+		if($lx=='jiankong'){
+			$where =' and 1=2';
+			$this->modeids = '0';
+			if($modeid==0){
+				$rows = m('view')->getjilu($this->adminid);
+				foreach($rows as $k1=>$rs1){
+					$this->modeids.=','.$rs1['modeid'].'';
+				}
+			}else{
+				$wwhere = m('view')->jiankongwhere($modeid, $this->adminid);//返回主表的条件
+				$wwhere = str_replace('{asqom}','', $wwhere);
+				$moders = $this->db->getone('[Q]flow_set', $modeid);
+				$where =' and `mid` in(select `id` from `[Q]'.$moders['table'].'` where 1=1 '.$wwhere.')';
+			}
+		}
+		
 		if($zt!=''){
 			if($zt!='6'){
 				$where.=" and a.`status`='$zt'";
@@ -109,10 +151,13 @@ class fworkClassAction extends Action
 				$where.=" and a.`status` not in(5) and a.`isturn`=0 "; //未提交
 			}
 		}
-		if($dt!='')$where.=" and a.applydt='$dt'";
-		if($modeid>0)$where.=' and a.modeid='.$modeid.'';
-		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.sericnum like '$key%')";
+		if($dt!='')$where.=" and a.`applydt`>='$dt'";
+		if($dt2!='')$where.=" and a.`applydt`<='$dt2'";
 		
+		if($modeid>0)$where.=' and a.modeid='.$modeid.'';
+		if(!isempt($key))$where.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%' or a.`sericnum` like '$key%' or a.`nowcheckname`='$key' or a.`modename`='$key')";
+		
+
 		
 		return array(
 			'table' => '`[Q]flow_bill` a left join `[Q]admin` b on a.uid=b.id',
@@ -127,7 +172,11 @@ class fworkClassAction extends Action
 		$rows = m('flowbill')->getbilldata($rows);
 		$flowarr = array();
 		if($this->atypess!='error'){
-			$flowarr = m('mode')->getmodemyarr($this->adminid);
+			if($this->modeids===false){
+				$flowarr = m('mode')->getmodemyarr($this->adminid);
+			}else{
+				$flowarr = m('mode')->getmodemyarr(0,'and `id` in('.$this->modeids.')');
+			}
 		}else if($rows){
 			foreach($rows as $k=>$rs){
 				$errorsm	= '';
@@ -170,7 +219,7 @@ class fworkClassAction extends Action
 		
 		return array(
 			'where' => $where,
-			'order' => '`id` desc'
+			'order' => '`adddt` desc'
 		);
 	}
 	public function flowtodosafter($table, $rows)
@@ -227,7 +276,7 @@ class fworkClassAction extends Action
 		$jg 		= $dtobj->datediff('d',$startdt, $enddt);
 		if($jg>30)$jg = 30;
 		$flow 		= m('flow:meet');
-		$data 		= m('meet')->getall("`status`=1 and `type`=0 and `startdt`<='$enddt 23:59:59' and `enddt`>='$startdt' order by `startdt` asc",'hyname,title,startdt,enddt,state,joinname,optname');
+		$data 		= m('meet')->getall("`status`=1 and `type`=0 and `startdt`<='$enddt 23:59:59' and `enddt`>='$startdt' order by `startdt` asc",'hyname,title,startdt,enddt,state,joinname,optname,id');
 		$datss 		= array();
 		foreach($data as $k=>$rs){
 			$rs 	= $flow->flowrsreplace($rs);

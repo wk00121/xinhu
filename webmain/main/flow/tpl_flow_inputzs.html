@@ -79,6 +79,20 @@ var c={
 			editor.html(s);
 		});
 		
+	},
+	clearkong:function(){
+		editor.html('');
+		js.msg('success','已清空，保存后自动删除对应模版文件');
+	},
+	biaotiqieh:function(){
+		var nr= editor.html(),th='<span class="notitle"></span>';
+		if(nr.indexOf('notitle')>-1){
+			js.msg('success','已加入默认标题显示');
+			editor.html(nr.replace(th,''));
+		}else{
+			js.msg('success','已删除标题显示');
+			editor.html(nr+''+th+'');
+		}
 	}
 };
 </script>
@@ -95,13 +109,13 @@ select{font-size:12px}
 <table width="100%">
 <tr>
 	<td  bgcolor="#f5f5f5">
-		<div style="width:210px;">
+		<div style="width:270px;">
 			<div class="yangss"><h1>&nbsp;<?=$da['rs']['name']?>(元素)</h1></div>
 			<div id="page_left" style="overflow:auto">
 				<?php
 				foreach($da['fleft'] as $k=>$rs){
 					$str = '<div fields="'.$rs[0].'" fname="'.$rs[1].'" iszb="'.$rs[2].'">';
-					$str.= ''.($k+1).'. '.$rs[1].'';
+					$str.= ''.($k+1).'. '.$rs[1].'('.$rs[0].')';
 					if($rs[0]){
 						$str.= ' <a href="javascript:" onclick="c.insert1(this,0)">＋</a> <a href="javascript:" onclick="c.insert1(this,1)">⊥</a>';
 					}else{
@@ -113,14 +127,17 @@ select{font-size:12px}
 				?>
 			</div>
 			<div class="yangss" align="left">&nbsp; &nbsp;<a href="javascript:" onclick="return c.save()" class="webbtn">保存</a>&nbsp; 
-			<a href="javascript:" onclick="return c.addmobo()" style="background-color:#888888" class="webbtn">使用录入页面</a>
+			<a href="javascript:" onclick="return c.addmobo()" style="background-color:#888888" class="webbtn">使用录入页面</a>&nbsp; 
+			<a href="javascript:" onclick="return c.clearkong()" style="background-color:#888888" class="webbtn">清空</a>
 			</div>
 		</div>
 	</td>
 	<td width="100%">
 		<div style="overflow:auto" id="page_conent">
 			<div style="padding:10px"><textarea style="width:650px;" id="content"><?=$da['content']?></textarea></div>
-			<div align="left" style="font-size:12px;padding:0px 10px">模版保存在：<?=$da['p']?>/flow/page/view_<?=$da['rs']['num']?>_<?=$da['atype']?>.html</div>
+			<div align="left" style="font-size:12px;padding:0px 10px">
+			<a href="javascript:" onclick="return c.biaotiqieh()" style="background-color:#888888" class="webbtn">是否标题切换</a>&nbsp;
+			模版保存在：<?=$da['p']?>/flow/page/view_<?=$da['rs']['num']?>_<?=$da['atype']?>.html</div>
 		</div>
 	</td>
 </tr>

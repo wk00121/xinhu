@@ -19,20 +19,17 @@ $(document).ready(function(){
 			pid = d.id;
 			get('set_{rand}').disabled=false;
 			get('setadds_{rand}').disabled=false;
+			get('setjjr_{rand}').disabled=false;
 			b.setparams({pid:pid},true);
 		}
 	});
 	
 	var b = $('#viewa_{rand}').bootstable({
-		tablename:'kqxxsj',autoLoad:false,url:publicstore('{mode}','{dir}'),storebeforeaction:'kqxxsjdtbefore',storeafteraction:'kqxxsjdtafter',fanye:true,
+		tablename:'kqxxsj',autoLoad:false,url:publicstore('{mode}','{dir}'),storebeforeaction:'kqxxsjdtbefore',storeafteraction:'kqxxsjdtafter',fanye:true,checked:true,
 		columns:[{
 			text:'休息日期',dataIndex:'dt',sortable:true
 		},{
 			text:'星期',dataIndex:'week'
-		},{
-			text:'操作',dataIndex:'id',renderer:function(s){
-				return '<a href="javascript:;" onclick="renfw{rand}()">删</a>';
-			}
 		}]
 	});
 	
@@ -48,7 +45,7 @@ $(document).ready(function(){
 			}});
 		},
 		dela:function(){
-			b.del({url:js.getajaxurl('kqsjgzdatadel','{mode}','{dir}',{type:3})});
+			b.del({url:js.getajaxurl('kqsjgzdatadel','{mode}','{dir}',{type:3}),checked:true});
 		},
 		clickwin:function(o1,lx){
 			var h = $.bootsform({
@@ -106,12 +103,25 @@ $(document).ready(function(){
 				//return;
 			}
 			b.setparams({'month':month},true);
+		},
+		addjieri:function(){
+			var month = $('#dt1_{rand}').val();
+			if(!month){
+				js.msg('msg','请选择年份月份');
+				return;
+			}
+			js.msg('wait','设置添加中...');
+			js.ajax(js.getajaxurl('setjiedate','{mode}','{dir}'),{'month':month,'pid':pid},function(ret){
+				if(ret.success){
+					b.reload();
+					js.msg('success','设置添加完成');
+				}else{
+					js.msg('msg',ret.msg);
+				}
+			},'get,json');
 		}
 	};
-	renfw{rand}=function(){
-		setTimeout(function(){c.dela()},1);
-	}
-
+	
 	js.initbtn(c);
 	//$('#dt1_{rand}').val(js.now('Y-m'));
 });
@@ -163,9 +173,13 @@ $(document).ready(function(){
 				</div>
 				
 			</td>
+			<td style="padding-left:10px">
+			<button class="btn btn-danger" click="dela" type="button"><i class="icon-trash"></i> 选中删除</button></td>
 		</tr></table>
+			
 		</div>
-		</div>
+		<div class="blank10"></div>
+		<div><button class="btn btn-default" id="setjjr_{rand}" click="addjieri" disabled type="button">一键添加年度法定节假日和周六日休息日</button></div>
 		<div class="blank10"></div>
 		<div id="viewa_{rand}"></div>
 		<div class="blank10"></div>

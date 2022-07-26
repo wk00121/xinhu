@@ -73,7 +73,7 @@ class flowClassModel extends Model
 	
 	public function repipei($whe='')
 	{
-		$srows 	= $this->db->getrows('[Q]flow_set','status=1 and isflow=1 '.$whe.'','`num`,`name`,`table`,id,`where`','sort');
+		$srows 	= $this->db->getrows('[Q]flow_set','status=1 and isflow>0 '.$whe.'','`num`,`name`,`table`,id,`where`','sort');
 		$str 	= '';
 		$dbs 	= m('flow_bill');
 		foreach($srows as $k=>$rs){
@@ -106,5 +106,43 @@ class flowClassModel extends Model
 		}
 		$dbs->update('`isturn`=1','`status`=1');
 		return $str;
+	}
+	
+	/**
+	*	往一个模块新增单据数据
+	*	返回单据id
+	*	调用方法m('flow')->querydata('模块编号', array());
+	*/
+	public function querydata($num, $cans, $sm='')
+	{
+		$flow 		= $this->initflow($num);
+		$allfields 	= $this->db->getallfields('[Q]'.$flow->mtable.'');
+		if(in_array('uid', $allfields) && !isset($cans['uid']))$cans['uid'] = $this->adminid;
+		if(in_array('optid', $allfields))$cans['optid'] = $this->adminid;
+		if(in_array('createid', $allfields))$cans['createid'] = $this->adminid;
+		if(in_array('createname', $allfields))$cans['createname'] = $this->adminname;
+		if(in_array('optname', $allfields))$cans['optname'] = $this->adminname;
+		if(in_array('optdt', $allfields))$cans['optdt'] = $this->rock->now;
+		if(in_array('createdt', $allfields))$cans['createdt'] = $this->rock->now;
+		if(in_array('adddt', $allfields))$cans['adddt'] = $this->rock->now;
+		if(in_array('applydt', $allfields) && !isset($cans['applydt']))$cans['applydt'] = $this->rock->date;
+		if(in_array('status', $allfields) && !isset($cans['status']))$cans['status'] = 0;
+		if(in_array('isturn', $allfields) && !isset($cans['isturn']))$cans['isturn'] = 1;//是否提交
+		
+		if(isset($cans['uid'])){
+			$urs = $flow->adminmodel->getone($cans['uid']);
+			in_array('uname', $allfields) and $cans['uname'] = $urs['name'];
+			in_array('applyname', $allfields) and $cans['applyname'] = $urs['name'];
+			in_array('applydeptname', $allfields) and $cans['applydeptname'] = $urs['deptname'];
+		}
+		
+		foreach($cans as $k=>$v)if(!in_array($k, $allfields))unset($cans[$k]);
+		$mid 		= $flow->insert($cans);
+		$isturn		= isset($cans['isturn']) ? $cans['isturn'] : 1;
+		$na 		= '';
+		if($isturn==0)$na = '保存';
+		$flow->loaddata($mid, false);
+		$flow->submit($na, $sm);
+		return $mid;
 	}
 }

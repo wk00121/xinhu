@@ -3,7 +3,7 @@
 $(document).ready(function(){
 	var lestore = [[0,'第一列'],[1,'第二列'],[2,'第三列'],[3,'第四列']];
 	var a = $('#veiw_{rand}').bootstable({
-		tablename:'homeitems',celleditor:true,defaultorder:'row,sort',
+		tablename:'homeitems',celleditor:true,defaultorder:'`row`,`sort`',
 		columns:[{
 			text:'名称',dataIndex:'name',editor:true
 		},{

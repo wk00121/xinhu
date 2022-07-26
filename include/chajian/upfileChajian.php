@@ -15,7 +15,7 @@ class upfileChajian extends Chajian{
 	private $jpgallext		= '|jpg|png|gif|bmp|jpeg|';	//图片格式
 	
 	//可上传文件类型，也就是不保存为uptemp的文件
-	private $upallfile		= '|doc|docx|xls|xlsx|ppt|pptx|pdf|swf|rar|zip|txt|gz|wav|mp3|mp4|flv|wma|chm|apk|amr|log|json|';
+	private $upallfile		= '|doc|docx|xls|xlsx|ppt|pptx|pdf|swf|rar|zip|txt|gz|wav|mp3|avi|mp4|flv|wma|chm|apk|amr|log|json|cdr|';
 	
 	/**
 		初始化
@@ -103,6 +103,12 @@ class upfileChajian extends Chajian{
 		return $arr;
 	}
 	
+	public function isoffice($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|pdf|', '|'.$ext.'|');
+	}
+	
+	
 	/**
 		上传
 		@param	$name	string	对应文本框名称
@@ -123,11 +129,11 @@ class upfileChajian extends Chajian{
 		}
 		$file_sizecn	= $this->formatsize($file_size);
 		$file_ext		= $this->getext($file_name);//文件扩展名
-		
-		
+
 		$file_img		= $this->isimg($file_ext);
 		$file_kup		= $this->issavefile($file_ext);
 		
+		if(!$file_img && !$this->isoffice($file_ext) && getconfig('systype')=='demo')return '演示站点禁止文件上传';
 		
 		if($file_error>0){
 			$rrs = $this->geterrmsg($file_error);
@@ -161,6 +167,7 @@ class upfileChajian extends Chajian{
 		}
 		
 		$save_path	= ''.str_replace('|','/',$this->path);
+		//if(!is_writable($save_path))return '目录'.$save_path.'无法写入不能上传';
 		$allfilename= $save_path.'/'.$file_newname.'';
 		$uptempname	= $save_path.'/'.$randname.'.uptemp';
 
@@ -216,9 +223,7 @@ class upfileChajian extends Chajian{
 	//返回文件大小
 	public function formatsize($size)
 	{
-		$arr 	= array('Byte', 'KB', 'MB', 'GB', 'TB', 'PB');
-		$e 		= floor(log($size)/log(1024));
-		return number_format(($size/pow(1024,floor($e))),2,'.','').' '.$arr[$e];
+		return $this->rock->formatsize($size);
 	}
 	
 	//获取扩展名

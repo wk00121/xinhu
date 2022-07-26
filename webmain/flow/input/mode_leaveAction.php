@@ -10,11 +10,12 @@ class mode_leaveClassAction extends inputAction{
 	{
 		$start	= $this->post('stime');
 		$end	= $this->post('etime');
+		$uid	= $this->post('uid', $this->adminid);
 		$kq 	= m('kaoqin');
 		//$date	= c('date', true);
 		//$sj		= $date->datediff('H', $start, $end);
-		$sj 	= $kq->getsbtime($this->adminid,$start, $end);
-		$sbtime = $kq->getworktime($this->adminid, $start); //一天上班小时
+		$sj 	= $kq->getsbtime($uid,$start, $end);
+		$sbtime = $kq->getworktime($uid, $start); //一天上班小时
 		$sj 	= $this->qjshieuts($sj);
 		return array($sj, '', $sbtime);
 	}
@@ -36,12 +37,19 @@ class mode_leaveClassAction extends inputAction{
 
 	
 	//统计剩余时间
-	public function getshentime()
+	public function getshentime($mid, $flow=null)
 	{
-		$mid = (int)$this->get('mid');
 		$kqm = m('kaoqin');
-		$str = $kqm->getqjsytimestr($this->adminid, '', $mid);
-		return $str;
+		$uid = 0;
+		$name = $this->adminname;
+		if($mid>0){
+			$uid = (int)$flow->getmou('uid',$mid);
+			if($uid>0){
+				$name 	= m('admin')->getmou('name', $uid);
+			}
+		}
+		$str = $kqm->getqjsytimestr($uid, '', $mid);
+		return $name.$str;
 	}
 }	
 			

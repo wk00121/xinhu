@@ -4,10 +4,12 @@ class mode_dailyClassAction extends inputAction{
 	
 	protected function savebefore($table, $arr, $id, $addbo){
 		
-		$type 	= $arr['type'];
-		$uid 	= $arr['uid'];
-		$dt 	= $arr['dt'];
-		$enddt 	= $arr['enddt'];
+		$type 	= arrvalue($arr, 'type');
+		$uid 	= arrvalue($arr, 'uid');
+		
+		$dt 	= arrvalue($arr, 'dt');
+		if(isempt($dt))return '';
+		$enddt 	= arrvalue($arr, 'enddt');
 		$where  = "id<>$id and `uid`=$uid and `type`='$type' and `dt`='$dt'";
 		if(!isempt($enddt))$where.=' and `enddt`='.$enddt.'';
 		if($type==0 && $dt>$this->date)return '日期['.$dt.']还是个未来呢';
@@ -60,6 +62,7 @@ class mode_dailyClassAction extends inputAction{
 			$s = 'and a.`id`='.$this->adminid.'';
 		}else{
 			if($isdaily=='1')$s.=" and a.`isdaily`=$isdaily";
+			$s.= m('admin')->getcompanywhere(5,'a.');
 		}
 		if($atype=='down'){
 			$dids = $dbs->getdown($this->adminid, 1);
@@ -68,7 +71,7 @@ class mode_dailyClassAction extends inputAction{
 		}
 		
 		if(!isempt($key))$s.=" and (a.`name` like '%$key%' or a.`ranking` like '%$key%' or a.`deptname` like '%$key%')";
-		$table  = "[Q]userinfo a left join `[Q]dailyfx` b on a.id=b.uid and b.`month`='$dt1'";
+		$table  = "`[Q]userinfo` a left join `[Q]dailyfx` b on a.id=b.uid and b.`month`='$dt1'";
 		
 		$fields = 'a.id,a.name,a.deptname,a.ranking,a.workdate,a.state,b.*';
 		return array(
@@ -129,9 +132,10 @@ class mode_dailyClassAction extends inputAction{
 		$dta 	= explode('-', $dt);
 		$month 	= substr($dt, 0,7);
 		$d 	 	= (int)$dta[2];
+		$where 	= m('admin')->getcompanywhere(5,'a.');
 		return array(
 			'table' => '`[Q]dailyfx` b left join `[Q]userinfo` a on a.`id`=b.`uid`',
-			'where'	=> "and b.`month`='$month' and b.`day".$d."`=0",
+			'where'	=> "and b.`month`='$month' and b.`day".$d."`=0 ".$where."",
 			'fields'=> 'b.totalw,b.totalx,b.totaly,a.name,a.deptname'
 		);
 	}
@@ -152,9 +156,10 @@ class mode_dailyClassAction extends inputAction{
 		$dta 	= explode('-', $dt);
 		$month 	= substr($dt, 0,7);
 		$d 	 	= (int)$dta[2];
+		$where 	= m('admin')->getcompanywhere(5,'a.');
 		return array(
 			'table' => '`[Q]dailyfx` b left join `[Q]userinfo` a on a.`id`=b.`uid`',
-			'where'	=> "and b.`month`='$month' and b.`day".$d."`=0",
+			'where'	=> "and b.`month`='$month' and b.`day".$d."`=0 $where",
 			'fields'=> 'count(1) as value,a.deptname as name',
 			'order' => '`value`',
 			'group'	=> 'a.deptname'

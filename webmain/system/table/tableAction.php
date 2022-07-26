@@ -26,6 +26,7 @@ class tableClassAction extends Action
 		$value 	= $this->post('value');
 		$sql 	= "ALTER TABLE `$id` COMMENT '$value';";
 		$this->db->query($sql);
+		return 'success';
 	}
 	
 	public function tablefieldsAjax()
@@ -58,7 +59,7 @@ class tableClassAction extends Action
 			$sql.=' MODIFY';
 		}
 		$sql.=" `$name`";
-		$cew = '[varchar][int][smallint][tinyint][decimal]';
+		$cew = '[varchar][mediumint][int][bigint][smallint][tinyint][decimal]';
 		if(contain($cew,'['.$type.']')){
 			if($lens=='0')$lens='10';
 			$sql.=" $type($lens)";
@@ -87,5 +88,41 @@ class tableClassAction extends Action
 		$bo = $this->db->query($sql);
 		if(!$bo)$msg='错误《'.$sql.'》';
 		backmsg($msg);
+	}
+	
+	
+	
+	public function tablerecord_before()
+	{
+		$stable = $this->post('stable','', 1);
+		$key = (int)$this->post('key','0');
+		$this->nowtablename = $stable;
+		$where = '';
+		if($key>0)$where=" and `id`={$key}";
+		return array(
+			'table' => $stable,
+			'order' => 'id desc',
+			'where'	=> $where
+		);
+	}
+	public function tablerecord_after($table, $rows)
+	{
+		$fieldsar	= array();
+		if($this->loadci==1){
+			$fieldsarr 	= $this->db->gettablefields($this->nowtablename);
+			foreach($fieldsarr as $k1=>$rs1){
+				$sortable = in_array($rs1['type'], array('int','date','datetime','tinyint','smallint','decimal'));
+				$text = $rs1['name'];
+				if(!isempt($rs1['explain']))$text.='('.$rs1['explain'].')';
+				$fieldsar[] = array(
+					'text' 		=> $text,
+					'dataIndex' => $rs1['name'],
+					'sortable' 	=> $sortable
+				);
+			}
+		}
+		return array(
+			'fieldsarr' => $fieldsar
+		);
 	}
 }

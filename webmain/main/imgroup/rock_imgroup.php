@@ -34,7 +34,7 @@ $(document).ready(function(){
 			at.setparams({gid:gid},true);
 		}
 	});
-	
+	var alluserid = '';
 	var at = $('#veiwuser_{rand}').bootstable({
 		tablename:'admin',sort:'sort',dir:'asc',fanye:true,
 		url:publicstore('{mode}','{dir}'),
@@ -50,14 +50,21 @@ $(document).ready(function(){
 		},{
 			text:'操作',dataIndex:'opt',renderer:function(v,d){
 				var s = '&nbsp;';
-				if(isempt(changdata.deptid))s = '<a href="javascript:" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
+				if(isempt(changdata.deptid)||changdata.deptid=='0')s = '<a href="javascript:;" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
 				return s;
 			}
 		}],
-		load:function(d){
+		load:function(da){
 			var bo = false;
 			if(!isempt(changdata.deptid))bo=true;
+			if(changdata.deptid=='0')bo=false;
 			get('add_{rand}').disabled=bo;
+			
+			alluserid = '';
+			for(var i=0;i<da.rows.length;i++){
+				alluserid+=','+da.rows[i].id+'';
+			}
+			if(alluserid!='')alluserid = alluserid.substr(1);
 		}
 	});
 	
@@ -101,6 +108,7 @@ $(document).ready(function(){
 			var cans = {
 				type:'usercheck',
 				title:'选择人员',
+				changerangeno:alluserid,
 				callback:function(sna,sid){
 					c.savedist(sid);
 				}

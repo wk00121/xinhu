@@ -1,8 +1,10 @@
-var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',ISDEMO=false,NOWURL='',nwjsgui=false;
+var MODE	= '',ACTION = '',DIR='',PROJECT='',HOST='',PARAMS='',QOM='xinhu_',apiurl='',token='',device='',CFROM='pc',ISDEMO=false,NOWURL='',nwjsgui=false,apicloud=false,isapp=false;
 var windows	= null,ismobile=0;
 function initbody(){}
 function bodyunload(){}
 function globalbody(){}
+function initApp(){}
+function apiready(){apicloud=true;initApp();}
 $(document).ready(function(){
 	try{if(typeof(nw)=='object'){nwjsgui = nw;}else{nwjsgui = require('nw.gui');}}catch(e){nwjsgui=false;}
 	$(window).scroll(js.scrolla);
@@ -10,12 +12,14 @@ $(document).ready(function(){
 	adminid=js.request('adminid');
 	token=js.request('token');
 	js.getsplit();
+	device= js.cookie('deviceid');
+	if(device=='')device=js.now('time');
+	js.savecookie('deviceid', device, 365);
 	try{
 		var winobj = js.request('winobj');
 		if(nwjsgui)window.focus=function(){nw.Window.get().focus()}
 		if(winobj!='')opener.js.openarr[winobj]=window;
 	}catch(e){}
-	
 	globalbody();
 	initbody();
 	$('body').click(function(e){
@@ -25,12 +29,14 @@ $(document).ready(function(){
 		js.onunload();
 		bodyunload();
 	});
-	
-	//移动端添加返回
-	if(ismobile==1 && history.length>1 && typeof(grouparr)=='undefined' && !get('header_title')){
-		var s = '<div onclick="js.back()" style="position:fixed;left:5px;top:40%;width:30px;height:30px; background:rgba(0,0,0,0.3);z-index:9;border-radius:50%;font-size:14px;color:white;text-align:center;line-height:30px">&lt;</div>';
-		$('body').append(s);
-	}
+	var openfrom = js.request('openfrom',js.getoption('openfrom','', true));
+	js.setoption('openfrom', openfrom, true);
+	document.addEventListener('plusready', function(){
+		plus.navigator.setStatusBarBackground('#1389D3');
+		isapp = true;
+		plus.key.addEventListener('backbutton',function(){js.back();},false);
+		initApp();
+	});
 });
 var js={path:'index',url:'',bool:false,login:{},initdata:{},openarr:{},scroll:function(){}};
 var isIE=true;
@@ -70,8 +76,15 @@ js.getcan = function(i,dev){
 js.gethost=function(){
 	var url = location.href,sau='';
 	try{sau = url.split('//')[1].split('/')[0];}catch(e){}
-	if(sau.indexOf('demo.rockoa.com')>=0)ISDEMO=true;
+	if(sau.indexOf('demo.rockoa.com')>=0 || sau.indexOf('demo1.rockoa.com')>=0)ISDEMO=true;
 	var lse = url.lastIndexOf('/');NOWURL = url.substr(0, lse+1);
+	QOM		= NOWURL.replace(/\./g,'').replace(/\//g,'').replace(/\:/g,'')+'_';
+	var cfrom= this.request('cfrom','',url);
+	if(!cfrom)cfrom=this.getoption('CFROM');
+	if(cfrom){this.setoption('CFROM', cfrom);CFROM = cfrom;}
+	this.opentype = this.getoption('opentype');
+	var otype= this.request('opentype','',url);
+	if(otype){this.setoption('opentype', otype);this.opentype = otype;}
 	return sau;
 }
 function winHb(){
@@ -87,15 +100,18 @@ js.scrolla	= function(){
 	js.scroll(top);
 }
 js.request=function(name,dev,url){
+	this.requestarr = {};
 	if(!dev)dev='';
 	if(!name)return dev;
 	if(!url)url=location.href;
 	if(url.indexOf('\?')<0)return dev;
+	if(url.indexOf('#')>0)url = url.split('#')[0];
 	var neurl=url.split('\?')[1];
 	neurl=neurl.split('&');
 	var value=dev,i,val;
 	for(i=0;i<neurl.length;i++){
 		val=neurl[i].split('=');
+		this.requestarr[val[0]] = val[1];
 		if(val[0].toLowerCase()==name.toLowerCase()){
 			value=val[1];
 			break;
@@ -211,6 +227,9 @@ js.email=function(str){
 	if(reg.test(str))return false ;
 	return true;
 }
+js.reload=function(){
+	location.reload();
+}
 js.move=function(id,rl){
 	var _left=0,_top=0,_x=0,_right=0,_y=0;
 	var obj	= id;if(!rl)rl='left';
@@ -250,11 +269,11 @@ js.upload=function(call,can, glx){
 	if(!can)can={};
 	js.uploadrand	= js.now('YmdHis')+parseInt(Math.random()*999999);
 	var url = 'index.php?m=upload&d=public&callback='+call+'&upkey='+js.uploadrand+'';
-	for(var a in can)url+='&'+a+'='+can[a]+'';
+	for(var i in can)if(i!='title')url+='&'+i+'='+can[i]+'';
 	if(glx=='url')return url;
 	var s='',tit=can.title;if(!tit)tit='上传文件';
-	js.tanbody('uploadwin',tit,450,300,{
-		html:'<div style="height:260px;overflow:hidden"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+	js.tanbody('uploadwin',tit,500,300,{
+		html:'<div style="height:280px;overflow:hidden"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
 		bbar:'none'
 	});
 	winiframe.location.href=url;
@@ -266,12 +285,16 @@ js.locationshow=function(sid){
 	js.winiframe('地图位置查看', url);
 	return false;
 }
+js.winiframemax=45;
+js.winiframewidth = '900x800'; //默认的宽x高
 js.winiframe=function(tit, url){
-	var mxw= 900;
-	var hm = winHb()-150;if(hm>800)hm=800;if(hm<400)hm=400;
+	var mxw= 900,mxh=800,tar = this.winiframewidth.split('x');
+	if(tar[0])mxw=parseFloat(tar[0]);
+	if(tar[1])mxh=parseFloat(tar[1]);
+	var hm = winHb()-150;if(hm>mxh)hm=mxh;if(hm<400)hm=400;
 	if(url.indexOf('wintype=max')>0){
-		mxw= 900;
-		hm=winHb()-45;
+		if(mxw<1000)mxw= 1000;
+		hm=winHb()-js.winiframemax;
 	}
 	var wi = winWb()-150;if(wi>mxw)wi=mxw;if(wi<700)wi=700;
 	js.tanbody('winiframe',tit,wi,410,{
@@ -281,8 +304,15 @@ js.winiframe=function(tit, url){
 	openinputiframe.location.href=url;
 	return false;	
 }
-js.downshow=function(id){
-	js.open('?id='+id+'&a=down',600,350);
+
+//下载
+js.downshow=function(id, fnun, cans){
+	if(this.fileoptWin(id))return;
+	if(appobj1('openfile', id))return;
+	if(!isempt(fnun)){this.fileopt(id, 1);return false;}
+	var url = 'api.php?m=upload&id='+id+'&a=down';
+	if(cans)for(var i in cans)url+='&'+i+'='+cans[i]+'';
+	this.location(url);
 	return false;
 }
 js.downupdels=function(sid, said, o1){
@@ -310,20 +340,122 @@ js.downupdel=function(sid, said, o1){
 	$('#fileid_'+said+'').val(s1);
 }
 js.downupshow=function(a, showid, nbj){
-	var s = '',i=0,s1='';
+	var s = '',i=0,s1='',fis;
 	var o = $('#view_'+showid+'');
 	for(i=0; i<a.length; i++){
-		s='<div onmouseover="this.style.backgroundColor=\'#f1f1f1\'" onmouseout="this.style.backgroundColor=\'\'" style="padding:4px 5px;border-bottom:1px #eeeeee solid;font-size:14px"><span>'+(i+1)+'</span><font style="display:none">'+a[i].id+'</font>、<img src="web/images/fileicons/'+js.filelxext(a[i].fileext)+'.gif" align="absmiddle"> <a class="a" onclick="return js.downshow('+a[i].id+',\''+a[i].fileext+'\')" href="javascript:;">'+a[i].filename+'</a> ('+a[i].filesizecn+')';
+		fis= 'web/images/fileicons/'+js.filelxext(a[i].fileext)+'.gif';
+		if(js.isimg(a[i].fileext) && !isempt(a[i].thumbpath))fis=a[i].thumbpath;
+		s='<div onmouseover="this.style.backgroundColor=\'#f1f1f1\'" onmouseout="this.style.backgroundColor=\'\'" style="padding:4px 5px;border-bottom:1px #eeeeee solid;font-size:14px"><span>'+(i+1)+'</span><font style="display:none">'+a[i].id+'</font>、<img src="'+fis+'" align="absmiddle" height="20" width="20"> '+a[i].filename+' ('+a[i].filesizecn+')';
+		s+=' <a class="a" temp="yula" onclick="return js.fileopt('+a[i].id+',1)" href="javascript:;">下载</a>';
+		s+=' <a class="a" temp="yula" onclick="return js.fileopt('+a[i].id+',0)" href="javascript:;">预览</a>';
 		s+=' <a class="a" temp="dela" onclick="return js.downupdels('+a[i].id+',\''+showid+'\', this)" href="javascript:;">×</a>';
 		s+='</div>';
 		o.append(s);
 	}
 	js.downupdel(0, showid, false);
-	if(nbj)o.find('[temp]').remove();//禁止编辑
+	if(nbj)o.find('[temp="dela"]').remove();//禁止编辑
+}
+js.loading=function(txt){
+	js.msg('wait',txt);
+}
+js.msgerror=function(txt){
+	js.msg('msg',txt);
+}
+js.unloading=function(){js.msg();}
+//文件操作id文件id,lx0预览,1下载,2编辑
+js.fileopt=function(id,lx){
+	if(!lx)lx=0;
+	if(ismobile==1 && lx==1 && this.fileoptWin(id))return;
+	js.loading('加载中...');
+	var gurl = 'api.php?a=fileinfo&m=upload&id='+id+'&type='+lx+'&ismobile='+ismobile+'';
+	$.ajax({
+		type:'get',url:gurl,dataType:'json',
+		success:function(ret){
+			js.unloading();
+			if(ret.success){
+				var da = ret.data;
+				var ext= da.fileext;
+				var url= da.url;
+				if(ismobile==1){
+					if(da.type==0 && !da.isview && appobj1('openfile', id))return; //不能预览就用app打开
+					if(da.type==0 && !da.isview && js.fileoptWin(id))return; //不能预览就用app打开
+					if(da.type==1 && appobj1('openfile', id))return; //下载用app的
+					if(da.type==0 && !js.isimg(ext)){
+						if(appobj1('openWindow', url))return;
+						if(js.apiopenWin(url))return;
+					}
+				}
+				if(da.type==1){js.location(url);return;}//下载直接跳转
+				if(js.isimg(ext)){
+					$.imgview({'url':url,'ismobile':ismobile==1,'downbool':false});
+				}else if(ext=='rockedit'){
+					if(ismobile==0){
+						js.open(url,screen.width-200,screen.height-200);
+					}else{
+						js.location(url);
+					}
+				}else if(ext=='rockoffice'){
+					js.sendeditoffices(url);
+				}else{
+					url+='&wintype=max';
+					if(ismobile==0){
+						if(!nwjsgui){
+							js.winiframe(da.filename,url);
+						}else{
+							js.open(url, 900,500);
+						}
+					}else{
+						js.location(url);
+					}
+				}
+			}else{
+				js.msgerror(ret.msg);
+			}
+		},
+		error:function(e){
+			js.unloading();
+			js.msg('msg','处理出错:'+e.responseText+'');
+		}
+	});
+}
+
+js.fileoptWin=function(id){
+	var otype = this.opentype,ourl='widget://index.html';
+	if(otype && otype!='nei')ourl=jm.base64decode(otype);
+	var bstr=jm.base64encode('{"name":"文件","fileid":"'+id+'","url":"fileopen","fileext":""}');
+	var url = ''+ourl+'?bstr='+bstr+'';
+	return this.apiopenWin(url);
+}
+js.apiopenWin=function(url){
+	if(!apicloud)return false;
+	api.openWin({name:'url'+js.getrand(),url: url,bounces:false,softInputBarEnabled:false,slidBackEnabled:true,vScrollBarEnabled:false,hScrollBarEnabled:false,allowEdit:false,progress:{type:'',title:'', text:'',   color:''}});	
+	return true;
+}
+
+//文件预览
+js.yulanfile=function(id, ext,pts, sne, fnun,isxq){
+	if(!isempt(fnun)){this.fileopt(id, 0);return false;}
+	var url = 'index.php?m=public&a=fileviewer&id='+id+'&wintype=max';
+	if(pts!=''&&js.isimg(ext)){
+		$.imgview({'url':pts,'ismobile':ismobile==1,'downbool':false});
+		$.get('api.php?m=upload&a=logs&fileid='+id+'&type=0');
+		return false;
+	}
+	if(ismobile==1){
+		var docsx = ',doc,docx,ppt,pptx,xls,xlsx,pdf,txt,html,';
+		if(docsx.indexOf(','+ext+',')==-1)
+			if(appobj1('openfile', id))return;
+		if(appobj1('openWindow', url))return;
+		js.location(url);
+	}else{
+		if(!sne)sne='文件预览';
+		if(isxq=='xq'){js.open(url,screen.width-200,screen.height-200)}else{js.winiframe(sne,url);}
+	}
+	return false;
 }
 js.apiurl = function(m,a,cans){
 	var url='api.php?m='+m+'&a='+a+'';
-	url+='&cfrom=pc';
+	url+='&cfrom='+CFROM+'';
 	if(!cans)cans={};
 	for(var i in cans)url+='&'+i+'='+cans[i]+'';
 	return url;
@@ -338,7 +470,7 @@ js.getajaxurl=function(a,m,d,can){
 	var url	= ''+this.path+'.php?a='+a+'&m='+m+'&d='+d+'';
 	for(var c in can)url+='&'+c+'='+can[c]+'';
 	if(jga!='@')url+='&ajaxbool=true';	
-	url+='&rnd='+Math.random()+'';	
+	url+='&rnd='+parseInt(Math.random()*999999)+'';	
 	return url;
 }
 js.formatsize=function(size){
@@ -371,6 +503,7 @@ js.getformdata=function(nas){
 	obj	= document[nas];
 	for(i=0;i<obj.length;i++){
 		o 	 = obj[i];type = o.type,val = o.value,na = o.name;
+		if(!na)continue;
 		if(type=='checkbox'){
 			val	= '0';
 			if(o.checked)val='1';
@@ -535,6 +668,7 @@ js.tanclose=function(act, guan){
 	js.xpbody(act,'none');
 	return false;
 }
+js.xpbodysplit = 0;
 js.xpbody=function(act,type){
 	if(type=='none'){
 		$("div[xpbody='"+act+"']").remove();
@@ -542,9 +676,10 @@ js.xpbody=function(act,type){
 		return;
 	}
 	if(get('xpbg_bodydds'))return false;
-	var H	= (document.body.clientHeight<winHb())?winHb()-5:document.body.clientHeight;
-	var W	= document.documentElement.scrollWidth+document.body.scrollLeft;
-	var bs='<div id="xpbg_bodydds" xpbody="'+act+'" oncontextmenu="return false" style="position:absolute;display:none;width:'+W+'px;height:'+H+'px;filter:Alpha(opacity=30);opacity:0.3;left:0px;top:0px;background-color:#000000;z-index:80"></div>';
+	var H	= (document.body.scrollHeight<winHb())?winHb()-this.xpbodysplit-5:document.body.scrollHeight-this.xpbodysplit*2;
+	var W	= document.documentElement.scrollWidth+document.body.scrollLeft-this.xpbodysplit*2;
+	
+	var bs='<div id="xpbg_bodydds" xpbody="'+act+'" oncontextmenu="return false" style="position:absolute;display:none;width:'+W+'px;height:'+H+'px;filter:Alpha(opacity=30);opacity:0.3;left:'+this.xpbodysplit+'px;top:'+this.xpbodysplit+'px;background-color:#000000;z-index:80"></div>';
 	$('body').prepend(bs);	
 	$('#xpbg_bodydds').fadeIn(300);
 }
@@ -610,13 +745,16 @@ js.chao=function(obj,shuzi,span,guo){
 }
 js.debug	= function(s){
 	if(typeof(console)!='object')return;
-	console.log(s);
+	console.error(s);
 }
 js.alert = function(txt,tit,fun){
 	js.confirm(txt, fun, '', tit, 2, '');
 }
 js.wait	= function(txt,tit,fun){
 	js.confirm(txt, fun, '', tit, 3, '');
+}
+js.alertclose=function(){
+	js.tanclose('confirm');
 }
 js.tanstyle = 0;
 js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
@@ -628,11 +766,11 @@ js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 		if(!tcls)tcls='';if(!ostr)ostr='';if(!bstr)bstr='';
 		h='<div style="padding:10px;" align="center">'+ostr+'';
 		h+='<div align="left" style="padding-left:10px">'+txt+'</div>';
-		h+='<div ><textarea class="input" id="confirm_input" style="width:'+(w-40)+'px;height:60px">'+tcls+'</textarea></div>'+bstr+'';
+		h+='<div ><textarea class="input form-control" id="confirm_input" style="width:'+(w-40)+'px;height:60px">'+tcls+'</textarea></div>'+bstr+'';
 	}else if(lx==3){
 		h+='<img src="images/mloading.gif" height="32" width="32" align="absmiddle">&nbsp; '+txt+'';
 	}else{
-		h+='<img src="images/helpbg.png" align="absmiddle">&nbsp; '+txt+'';
+		h+=''+txt+'';
 	}
 	h+='</div>';
 	h+='<div style="padding:10px" align="center">';
@@ -657,7 +795,7 @@ js.confirm	= function(txt,fun, tcls, tis, lx,ostr,bstr){
 			var cbo = fun(jg, val);
 			if(cbo)return false;
 		}
-		js.tanclose('confirm');
+		js.alertclose();
 		return false;
 	}
 	$('#confirm_btn1').click(backl);
@@ -681,7 +819,8 @@ js.msg = function(lx, txt,sj){
 		sj	= 60;
 	}
 	if(lx=='msg')txt='<font color=red>'+txt+'</font>';var t=10;
-	var s = '<div onclick="$(this).remove()" id="msgshowdivla" style="position:fixed;top:'+t+'px;z-index:200;" align="center"><div style="padding:8px 20px;background:rgba(0,0,0,0.7);color:white;font-size:16px;">'+txt+'</div></div>';
+	if(get('header_title'))t+=50;
+	var s = '<div onclick="$(this).remove()" id="msgshowdivla" style="position:fixed;top:'+t+'px;z-index:200;" align="center"><div style="padding:8px 20px;background:rgba(0,0,0,0.7);color:white;font-size:16px;border-radius:5px">'+txt+'</div></div>';
 	$('body').append(s);
 	var w=$('#msgshowdivla').width(),l=(winWb()-w)*0.5;
 	$('#msgshowdivla').css('left',''+l+'px');
@@ -743,7 +882,7 @@ js.getparenta=function(o, oi){
 js.ajaxwurbo = false;
 js.ajaxbool = false;
 js.ajax = function(url,da,fun,type,efun, tsar){
-	if(js.ajaxbool)return;
+	if(js.ajaxbool && !js.ajaxwurbo)return;
 	if(!da)da={};if(!type)type='get';if(!tsar)tsar='';tsar=tsar.split(',');
 	if(typeof(fun)!='function')fun=function(){};
 	if(typeof(efun)!='function')efun=function(){};
@@ -771,8 +910,8 @@ js.ajax = function(url,da,fun,type,efun, tsar){
 	if(dtyp)ajaxcan.dataType=dtyp;
 	$.ajax(ajaxcan);
 }
-js.setoption=function(k,v){
-	k=QOM+k;
+js.setoption=function(k,v,qzb){
+	if(!qzb)k=QOM+k;
 	try{
 		if(isempt(v)){
 			localStorage.removeItem(k);
@@ -784,9 +923,9 @@ js.setoption=function(k,v){
 	}
 	return true;
 }
-js.getoption=function(k,dev){
+js.getoption=function(k,dev, qzb){
 	var s = '';
-	k=QOM+k;
+	if(!qzb)k=QOM+k;
 	try{s = localStorage.getItem(k);}catch(e){s=js.cookie(k);}
 	if(s)s=unescape(s);
 	if(isempt(dev))dev='';
@@ -815,37 +954,80 @@ js.isimg = function(lx){
 	if(ftype.indexOf('|'+lx+'|')>-1)bo=true;
 	return bo;
 }
+js.changeuser_before=function(na){}
+js.changeuser_after=function(){}
 js.changeuser=function(na, lx, tits,ocans){
-	var h = winHb()-70;if(!ocans)ocans={};
+	var h = winHb()-70,w=350;if(!ocans)ocans={};
 	if(h>400)h=400;if(!tits)tits='请选择...';
-	js.tanbody('changeaction',tits,350,h,{
-		html:'<div id="showuserssvie" style="height:'+h+'px"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
-		bbar:'none'
-	});
+	var nibo = ((lx=='changedeptusercheck'||lx=='deptusercheck') && ismobile==0);
+	if(nibo)w=650;
+	var formname = '';
 	var can = {
 		'changetype': lx,
 		'showview' 	: 'showuserssvie',
 		'titlebool'	:false,
+		'changevalue':'',
+		'changerange':'', //选择范围
 		'oncancel'	:function(){
 			js.tanclose('changeaction');
+		},
+		'onselect':function(sna,sid){
+			js.changeuser_after(this.formname,this,sna,sid);
 		}
 	};
 	if(na){
 		can.idobj = get(na+'_id');
 		can.nameobj = get(na);
+		if(can.nameobj)formname = can.nameobj.name;
 	}
-	for(var i in ocans)can[i]=ocans[i];
-	$('#showuserssvie').chnageuser(can);
+	
+	can.formname= formname;
+	var bcar = js.changeuser_before(formname,1),i;
+	for(i in ocans)can[i]=ocans[i];
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
+	if(typeof(bcar)=='object')for(i in bcar)can[i]=bcar[i];
+	
+	js.tanbody('changeaction',tits,w,h,{
+		html:'<div id="showuserssvie" style="height:'+h+'px"><iframe src="" name="winiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+		bbar:'none'
+	});
+	
+	if(nibo){
+		if(can.idobj)can.changevalue=can.idobj.value;
+		changcallback=function(sna,sid){
+			if(can.idobj)can.idobj.value = sid;
+			if(can.nameobj){
+				can.nameobj.value = sna;
+				can.nameobj.focus();
+			}
+			js.changeuser_after(formname, can, sna,sid);
+			js.tanclose('changeaction');
+			if(can.callback)can.callback(sna,sid);
+		}
+		var url = 'index.php?d=system&m=dept&changetype='+lx+'&changevalue='+can.changevalue+'&callback=changcallback&changerange='+can.changerange+'';
+		winiframe.location.href = url;
+	}else{
+		$('#showuserssvie').chnageuser(can);
+	}
 	return false;
 }
 js.back=function(){
-	history.back();
-	try{api.closeWin();}catch(e){}
+	if(isapp){
+		plus.webview.currentWebview().close('auto');
+	}else if(apicloud){
+		api.historyBack({},function(ret){if(!ret.status)api.closeWin();});
+	}else{
+		history.back();
+	}
 }
 js.changeclear=function(na){
+	var fne  = get(na).name;
+	var bcar = js.changeuser_before(fne,0);
+	if(typeof(bcar)=='string' && bcar){js.msg('msg', bcar);return;}
 	get(na).value='';
 	get(na+'_id').value='';
 	get(na).focus();
+	js.changeuser_after(fne,{nameobj:get(na),idobj:get(na+'_id')},'','');
 }
 js.changedate=function(o1,id,v){
 	if(!v)v='date';
@@ -913,15 +1095,55 @@ function appobj1(act, can1){
 }
 //向PC客户端发送命令
 js.cliendsend=function(at, cans, fun,ferr){
-	var url = unescape('http%3A//127.0.0.1%3A2829/%3Fatype');
+	var dk  = '2829';
+	if(at=='rockoffice')dk='2827';
+	var url = unescape('http%3A//127.0.0.1%3A'+dk+'/%3Fatype');
 	if(!cans)cans={};if(!fun)fun=function(){};if(!ferr)ferr=function(){return false;}
 	url+='='+at+'&callback=?';
+	var llq = navigator.userAgent.toLowerCase();
+	if(llq.indexOf('windows nt 5')>0 && dk=='2829'){
+		if(!ferr())js.msg('msg','XP的系统不支持哦');
+		return;
+	}
 	var i,v,bo=typeof(jm);
 	for(i in cans){
 		v = cans[i];
 		if(bo=='object')v='base64'+jm.base64encode(v)+'';
 		url+='&'+i+'='+v+'';
 	}
-	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用,可能没有登录PC客户端');},1000);
+	var timeoout = setTimeout(function(){if(!ferr())js.msg('msg','无法使用，可能没有登录REIM客户端');},500);
 	$.getJSON(url, function(ret){clearTimeout(timeoout);fun(ret);});
+}
+
+//发送文档编辑
+js.sendeditoffice=function(id,lx){
+	if(!lx)lx='0';
+	this.ajax('api.php?m=upload&a=rockofficeedit',{id:id,lx:lx},function(ret){
+		if(ret.success){
+			js.sendeditoffices(ret.data);
+		}else{
+			js.msg('msg', ret.msg);
+		}
+	},'get,json');
+}
+js.sendeditoffices=function(str){
+	js.cliendsend('rockoffice',{paramsstr:str},false,function(){js.msg('msg','无法使用，可能没有安装在线编辑插件');return true;});
+}
+
+js.ontabsclicks=function(){};
+js.inittabs=function(){
+	$('.r-tabs div').click(function(){
+		js.tabsclicks(this);
+	});
+}
+js.tabsclicks=function(o1){
+	var o = $(o1);
+	var tid= o.parent().attr('tabid');
+	$('.r-tabs[tabid="'+tid+'"] div').removeClass('active');
+	$('[tabitem][tabid="'+tid+'"]').hide();
+	var ind = o.attr('index');
+	o.addClass('active');
+	var ho = $('[tabitem='+ind+'][tabid="'+tid+'"]');
+	ho.show();
+	this.ontabsclicks(ind, tid, o, ho);
 }

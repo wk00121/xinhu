@@ -3,7 +3,7 @@
 class flow_custsaleClassModel extends flowModel
 {
 	public function initModel(){
-		$this->statearr		 = c('array')->strtoarray('跟进中|blue,已成交|green,已丢失|#888888');
+		$this->statearr		 = c('array')->strtoarray('跟进中|blue,已成交|green,已丢失|#888888,暂缓|#ff6600');
 	}
 
 	
@@ -14,6 +14,11 @@ class flow_custsaleClassModel extends flowModel
 		$rs['state']	 = '<font color="'.$zt[1].'">'.$zt[0].'</font>';
 		if($rs['htid']>0)$rs['state'].=',<font color=#888888>并建立合同</font>';
 		return $rs;
+	}
+	
+	protected function flowsubmit($na, $sm)
+	{
+		m('crm')->update('`lastdt`=now()', $this->rs['custid']);
 	}
 	
 	protected function flowoptmenu($ors, $crs)
@@ -34,7 +39,11 @@ class flow_custsaleClassModel extends flowModel
 				'optname' 	=> $cname
 			), $this->id);
 			$this->push($cnameid, '客户销售', ''.$this->adminname.'将一个客户【{custname}】的一个销售单转移给你');
-		}	
+		}
+		
+		if($num=='genjin' || $num=='ztqh'){
+			m('crm')->update('`lastdt`=now()', $this->rs['custid']);
+		}
 	}
 	
 	protected function flowbillwhere($uid, $lx)

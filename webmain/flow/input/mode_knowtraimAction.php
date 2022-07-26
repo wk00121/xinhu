@@ -9,15 +9,20 @@ class mode_knowtraimClassAction extends inputAction{
 	protected function savebefore($table, $arr, $id, $addbo){
 		$dsshu	= abs((int)$arr['dsshu']);
 		$dxshu	= abs((int)$arr['dxshu']);
+		$pdshu	= abs((int)$arr['pdshu']);
 		$state	= 0;
 		if($arr['startdt']>=$arr['enddt'])return '开始时间不能大于截止时间';
 		
 		$where  = $this->flow->gettikuwhere($arr['tikuid']);
 		$darr 	= $this->db->getall('SELECT `type`,count(1)stotal FROM `[Q]knowtiku` where `status`=1 '.$where.' group by `type`');
-		$darrs 	= array(0,0);
+		$darrs 	= array(0,0,0);
 		foreach($darr as $k=>$rs)$darrs[$rs['type']] = (int)$rs['stotal'];
 		if($dsshu>$darrs[0])return '单选数量太多，题库里只有'.$darrs[0].'题';
 		if($dxshu>$darrs[1])return '多选数量太多，题库里只有'.$darrs[1].'题';
+		if($pdshu>$darrs[2])return '判断数量太多，题库里只有'.$darrs[2].'题';
+		
+		if($dsshu+$dxshu+$pdshu==0)return '至少要一个题目数';
+		
 		$now 	= $this->rock->now;
 		if($arr['enddt']<$now){
 			$state = 2;
@@ -26,6 +31,7 @@ class mode_knowtraimClassAction extends inputAction{
 		}
 		$rows['dsshu']	= $dsshu;
 		$rows['dxshu']	= $dxshu;
+		$rows['pdshu']	= $pdshu;
 		$rows['state']	= $state;
 		
 		return array(
@@ -39,6 +45,7 @@ class mode_knowtraimClassAction extends inputAction{
 		$ustrs 	= m('admin')->gjoin($arr['receid'],'ud');
 		$ustrsa	= explode(',', $ustrs);
 		$dbs 	= m('knowtrais');
+		$mrs	= m('knowtraim')->getone($id);
 		$ids 	= '0';
 		$reshu	= 0;
 		foreach($ustrsa as $uid){
@@ -49,7 +56,8 @@ class mode_knowtraimClassAction extends inputAction{
 			}
 			$uarr	= array(
 				'mid' 	=> $id,
-				'uid'	=> $uid
+				'uid'	=> $uid,
+				'comid' => $mrs['comid']
 			);
 			$sids	= $dbs->record($uarr, $where);
 			if($sid==0)$sid = $this->db->insert_id();
@@ -77,12 +85,19 @@ class mode_knowtraimClassAction extends inputAction{
 	{
 		$atype = $this->post('atype');
 		$key   = $this->post('key');
-		$mid   = $this->post('mid','0');
+		$mid   = (int)$this->post('mid','0');
 		$where = '';
-		if($atype=='my')$where=' and a.`uid`='.$this->adminid.' ';
-		if($mid!='0')$where.=' and a.`mid`='.$mid.'';
+		if($atype=='my'){
+			$where=' and a.`uid`='.$this->adminid.' ';
+		}else{
+			if($mid==0 && ISMORECOM){
+				$where=" and a.`comid`=".m('admin')->getcompanyid()."";
+			}
+		}
+		if($mid!=0)$where.=' and a.`mid`='.$mid.'';
 		if($key!='')$where.=m('admin')->getkeywhere($key,'c.',"or b.`title` like '%$key%'");
 		m('flow:knowtraim')->reloadstate();
+		
 		return array(
 			'table' => '`[Q]'.$table.'` a left join `[Q]knowtraim` b on a.mid=b.id left join `[Q]admin` c on c.id=a.`uid`',
 			'where'	=> $where,
@@ -119,7 +134,7 @@ class mode_knowtraimClassAction extends inputAction{
 		if(!$ors)return '记录不存在';
 		if($ors['isks']=='1')return '你已经考试过了';
 		
-		$dbss	= m('flow:knowtraim');
+		$dbss	= m('flow')->initflow('knowtraim');
 		$dbss->reloadstate($ors['mid']);//更新状态
 		
 		$mrs = m('knowtraim')->getone($ors['mid']);
@@ -128,14 +143,16 @@ class mode_knowtraimClassAction extends inputAction{
 		
 		$dxshu	= (int)$mrs['dxshu'];//多选
 		$dsshu	= (int)$mrs['dsshu']; //单选
+		$pdshu	= (int)$mrs['pdshu']; //单选
 		$ids 	= '';
 		
-		$wheress= $dbss->gettikuwhere($mrs['tikuid']);
+		$wheress= $dbss->gettikuwhere($mrs['tikuid'], arrvalue($mrs,'comid','0'));
 		$itros	= m('knowtiku')->getall('`status`=1 '.$wheress.'','id,`type`','`type`,`id`');
-		$dxarr	= $dsarr = array();
+		$dxarr	= $dsarr = $pdarr = array();
 		foreach($itros as $k=>$rs){
 			if($rs['type']=='0')$dsarr[] = $rs;
 			if($rs['type']=='1')$dxarr[] = $rs;
+			if($rs['type']=='2')$pdarr[] = $rs;
 		}
 		
 		for($i=1;$i<=$dsshu; $i++){
@@ -151,6 +168,14 @@ class mode_knowtraimClassAction extends inputAction{
 			$dxarr = $idarr['rows'];
 			$idss  = $idarr['id'];
 			if($idss=='0')return '多选的题库不够';
+			$ids  .= ','.$idss.'';
+		}
+		
+		for($i=1;$i<=$pdshu; $i++){
+			$idarr = $this->getrandts($pdarr);
+			$pdarr = $idarr['rows'];
+			$idss  = $idarr['id'];
+			if($idss=='0')return '判断的题库不够';
 			$ids  .= ','.$idss.'';
 		}
 		
@@ -187,7 +212,7 @@ class mode_knowtraimClassAction extends inputAction{
 		$oi 	= (int)$this->get('oi');
 		$sid 	= (int)$this->get('sid');
 		$tid 	= (int)$this->get('tid');
-		$dy 	= $this->get('dy');
+		$dy 	= strtoupper($this->get('dy'));
 		$uid = $this->adminid;
 		$dbs = m('knowtrais');
 		$ors = $dbs->getone("`id`='$sid' and `uid`='$uid'");
@@ -332,18 +357,8 @@ class mode_knowtraimClassAction extends inputAction{
 	//读取对应题库
 	public function tikunamedata()
 	{
-		$rows = $this->option->getselectdata('knowtikutype', true);
-		$arr  = array();
-		foreach($rows as $k=>$rs){
-			$rows[$k]['value'] = $rs['id'];
-			$rows[$k]['name'] = $rs['nameo'];
-			$arr[] = array(
-				'value' => $rs['id'],
-				'name'  => $rs['nameo'],
-				'padding'  => $rs['padding'],
-			);
-		}
-		return $rows;
+		return $this->option->getcnumdata('knowtikutype');
 	}
+	
 }	
 			

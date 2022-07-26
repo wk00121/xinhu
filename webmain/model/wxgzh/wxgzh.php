@@ -12,11 +12,11 @@ class wxgzhModel extends Model
 	
 	//发模版消息的
 	protected $URL_tplsend		= 'message/template/send';
+	protected $URL_tplgetlist	= 'template/get_all_private_template';
 	
 
 	
 	public $appid 		= '';
-	public $tplid 		= '';
 	public $optionpid 	= '-4';
 	public $backarr 	= array();
 	protected $secret 	= '';
@@ -49,7 +49,6 @@ class wxgzhModel extends Model
 		$this->appid 	= $this->option->getval('wxgzh_appid');
 		$this->secret	= $this->option->getval('wxgzh_secret');
 		$this->corpid	= $this->option->getval('weixin_corpid');
-		$this->tplid	= $this->option->getval('wxgzh_tplid');
 		return $this->appid;
 	}
 	
@@ -59,12 +58,25 @@ class wxgzhModel extends Model
 	*/
 	public function isusegzh($lx=0)
 	{
-		if($this->rock->web!='wxbro' || $this->rock->isqywx)return 0;
+		if(!$this->rock->iswebbro(0) || $this->rock->isqywx)return 0;
 		$this->readwxset();
 		$is = 1;
 		if($this->appid=='' || $this->secret=='')$is = 0;
 		if($lx==0 && !isempt($this->corpid))$is = 0;
 		return $is;
+	}
+	
+	/**
+	*	是否有设置微信公众号
+	*/
+	public function issetwxgzh()
+	{
+		$str = $this->option->getval('wxgzh_token');
+		if($str){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	//获取token
@@ -120,9 +132,10 @@ class wxgzhModel extends Model
 	}
 
 	
-	public function setbackarr($code, $msg)
+	public function setbackarr($msg, $code=-1)
 	{
 		$this->backarr	= array('errcode'=>$code, 'msg'=>$msg);
+		return $this->backarr;
 	}
 	
 	public function clearalltoken()

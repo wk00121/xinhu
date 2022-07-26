@@ -10,16 +10,23 @@ var todocontent = '',homeobject={},homenums=<?=json_encode($homearrs)?>;
 
 <div style="padding:10px">
 
-<div align="left">
+<?php
+if(in_array('kjrko',$homearrs)){
+	$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_kjrko.php';
+	if(file_exists($paths))include_once($paths);
+}
+?>
 
+<div align="left">
 	<table  border="0" width="100%" cellspacing="0" cellpadding="0">
 	<tr valign="top">
 		
 		<?php
 		$bili = 100 / count($homeitems);
 		echo '<td width="'.$bili.'%">';
-		if(isset($homeitems[0]))foreach($homeitems[0] as $nums){
-			$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$nums.'.php';
+		if(isset($homeitems[0]))foreach($homeitems[0] as $hi=>$hrs){
+			$itemnowname = $hrs['name'];
+			$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$hrs['num'].'.php';
 			if(file_exists($paths))include_once($paths);
 		}
 		
@@ -27,8 +34,9 @@ var todocontent = '',homeobject={},homenums=<?=json_encode($homearrs)?>;
 		
 		for($i=1;$i<=3;$i++)if(isset($homeitems[$i])){
 			echo '<td width="'.$bili.'%" style="padding-left:20px;">';
-			foreach($homeitems[$i] as $nums){
-				$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$nums.'.php';
+			foreach($homeitems[$i] as $hi=>$hrs){
+				$itemnowname = $hrs['name'];
+				$paths = ''.ROOT_PATH.'/'.P.'/home/desktop/items_'.$hrs['num'].'.php';
 				if(file_exists($paths))include_once($paths);
 			}
 			echo '</td>';
@@ -62,6 +70,9 @@ $(document).ready(function(){
 			js.ajax(url,{},function(da){
 				c.gettotalshow(da);
 			},'get,json');
+			homeobject.refresh=function(){
+				c.refresh();
+			};
 		},
 		//初始化
 		init:function(){
@@ -86,6 +97,8 @@ $(document).ready(function(){
 			if(homeobject.showtime)homeobject.showtime();
 		},
 		gettotalshow:function(a){
+			miao = a.miaoshu;
+			if(a.tanwidth)js.winiframewidth=a.tanwidth;
 			this.shumiao(miao);
 			loadci++;
 			optdt = a.optdt;
@@ -98,11 +111,15 @@ $(document).ready(function(){
 			//显示桌面项数据
 			for(i=0;i<homenums.length;i++){
 				nust = homenums[i];
-				if(homeobject['show'+nust+'list'] && a[''+nust+'arr'])homeobject['show'+nust+'list'](a[''+nust+'arr']);
+				if(a[''+nust+'arr']){
+					if(homeobject['show'+nust+'list'])homeobject['show'+nust+'list'](a[''+nust+'arr']);
+					if(homeobject['show_'+nust+'_list'])homeobject['show_'+nust+'_list'](a[''+nust+'arr']);
+				}
 			}
 			if(a.reimstotal=='0')a.reimstotal='';
 			$('#reim_stotal').html(a.reimstotal+'');
-			if(a.reimstotal!=''){
+			try{resizewh();}catch(e){}
+			if(a.reimstotal!='' && a.notodo!='1'){
 				notifyobj.show({
 					icon:'images/todo.png',title:'REIM提醒',rand:'reimto',
 					body:'未读REIM消息('+a.reimstotal+')条',
@@ -111,12 +128,13 @@ $(document).ready(function(){
 					}
 				});
 			}
-			if(a.total)for(oi in a.total)this.showtotal(a.total[oi],oi);
+			menubadge = a.total;
+			showmenubadge();//显示角标
 			var s=a.msgar[0],s1=a.msgar[1];
 			if(s!=''){
 				todocontent = s;
 				var tx = this.opennewtx(1);
-				if(tx=='0'){
+				if(tx=='0'  && a.notodo!='1'){
 					$('#tishidivshow').fadeIn();
 					$('#tishicontent').html(s);
 					notifyobj.showpopup(s1,{icon:'images/todo.png',rand:'systodo',title:'系统提醒',click:function(b){
@@ -125,19 +143,19 @@ $(document).ready(function(){
 					}});
 				}
 			}
-		},
-		showtotal:function(to, sid){
-			var o = $('#'+sid+'_{rand}');
-			if(!o)return;
-			if(to<=0){
-				o.hide();
-			}else{
-				o.show();
-				o.html(to);
-			}
+			if(a.editpass==0)this.showeditpass();
 		},
 		opennewtx:function(lx){
 			return '0';
+		},
+		showeditpass:function(){
+			loadmenu = clickmenu=function(){
+				js.msgerror('请先修改密码后在使用');
+			}
+			this.shumiao=function(){};
+			js.alert('系统开启强制修改密码，请先修改后在使用','修改密码提示', function(){
+				addtabs({num:'grcog',url:'system,geren,cog,stype=pass',hideclose:true,name:'修改密码',icons:'lock'});
+			});
 		}
 	}
 	
@@ -178,12 +196,14 @@ $(document).ready(function(){
 	}
 	
 	//打开REIM窗口界面
-	openreim=function(){
+	openreim=function(o1){
 		$('#reim_stotal').html('');
+		var str = 'REIM';
+		if(o1)str=strreplace($(o1).text());
 		var ops = js.openrun('reim','winfocus');
 		if(!ops){
 			js.cliendsend('focus',{},false,function(){
-				js.confirm('可能没有使用REIM的PC客户端，是否打开网页版的？',function(jg){
+				js.confirm('可能没有使用'+str+'的PC客户端，是否打开网页版的？',function(jg){
 					if(jg=='yes'){
 						js.open('?d=reim',260,530,'reim');
 					}

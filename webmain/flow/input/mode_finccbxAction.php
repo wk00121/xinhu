@@ -7,7 +7,10 @@ class mode_finccbxClassAction extends inputAction{
 	
 	
 	protected function savebefore($table, $arr, $id, $addbo){
-		
+		$rows['type'] = '1';//一定要是1，不能去掉
+		return array(
+			'rows'=>$rows
+		);
 	}
 	
 

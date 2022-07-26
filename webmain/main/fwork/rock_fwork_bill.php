@@ -20,9 +20,9 @@ $(document).ready(function(){
 		},{
 			text:'申请日期',dataIndex:'applydt',sortable:true
 		},{
-			text:'操作时间',dataIndex:'optdt',sortable:true
-		},{
 			text:'摘要',dataIndex:'summary',align:'left',width:300
+		},{
+			text:'操作人',dataIndex:'optname',sortable:true
 		},{
 			text:'状态',dataIndex:'status',sortable:true
 		},{
@@ -55,7 +55,7 @@ $(document).ready(function(){
 		}
 	});
 	function btn(bo){
-		get('xiang_{rand}').disabled = bo;
+		//get('xiang_{rand}').disabled = bo;
 	}
 	xing{rand}=function(oi){
 		a.changedata = a.getData(oi);
@@ -73,6 +73,7 @@ $(document).ready(function(){
 			a.setparams({
 				key:get('key_{rand}').value,
 				dt1:get('dt1_{rand}').value,
+				dt2:get('dt2_{rand}').value,
 				modeid:get('mode_{rand}').value
 			},true);
 		},
@@ -142,7 +143,7 @@ $(document).ready(function(){
 	
 	$('#state{rand}_'+zt+'').addClass('active');
 	
-	if(atype=='mywtg'){
+	if(atype=='mywtg' || atype=='daiturn'){
 		$('#stewwews{rand}').hide();
 	}
 	if(atype!='daib'){
@@ -167,15 +168,16 @@ $(document).ready(function(){
 		<select style="width:150px" id="mode_{rand}" class="form-control" ><option value="0">-选择模块-</option></select>	
 	</td>
 	<td  style="padding-left:10px">
-		<div style="width:130px"  class="input-group">
-			<input placeholder="申请日期" readonly class="form-control" id="dt1_{rand}" >
-			<span class="input-group-btn">
-				<button class="btn btn-default" click="clickdt,1" type="button"><i class="icon-calendar"></i></button>
-			</span>
-		</div>
+		<input style="width:110px" onclick="js.changedate(this)" placeholder="申请日期" readonly class="form-control datesss" id="dt1_{rand}" >
 	</td>
+	<td nowrap>&nbsp;至&nbsp;</td>
+	<td nowrap>
+		<input style="width:110px" onclick="js.changedate(this)" readonly class="form-control datesss" id="dt2_{rand}" >
+	</td>
+	
+
 	<td  style="padding-left:10px">
-		<input class="form-control" style="width:160px" id="key_{rand}"   placeholder="姓名/部门/单号">
+		<input class="form-control" style="width:130px" id="key_{rand}"   placeholder="单号/处理人/姓名/部门">
 	</td>
 	
 	<td  style="padding-left:10px">
@@ -195,7 +197,6 @@ $(document).ready(function(){
 	
 	
 	<td align="right" nowrap>
-		<button class="btn btn-default" id="xiang_{rand}" click="view" disabled type="button">详情</button> &nbsp; 
 		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
 	</td>
 	</tr>

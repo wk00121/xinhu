@@ -8,7 +8,8 @@ class agentModel extends Model
 	public $agentid		= '0';
 	public $modeid		= 3;
 	public $page		= 1;
-	public $limit		= 10;
+	public $loadci		= 1;
+	public $limit		= 10; //默认加载的条数
 	public $user_id		= 0;
 	public $event		= '';
 	public $agentrs;
@@ -24,6 +25,8 @@ class agentModel extends Model
 	protected function agentrows($rows, $rowd, $uid){return $rows;}
 	protected function agenttotals($uid){return array();}
 	protected function agentdata($uid, $lx){return false;}
+	
+	protected $showuface	= true;//是否显示对应人员头像
 	
 	
 	public function gettotal()
@@ -58,6 +61,7 @@ class agentModel extends Model
 				$lx  = $lxa[0];
 			}
 		}
+		$this->loadci 	= (int)$this->rock->get('loadci','0');
 		$this->getagentinfor($num);
 		$this->page 	= $page;
 		$this->user_id 	= $uid;
@@ -79,6 +83,10 @@ class agentModel extends Model
 		);
 		if(is_array($narr))foreach($narr as $k=>$v)$arr[$k]=$v;
 		$barr 			= $this->agentrows($arr['rows'],$arr['rowd'], $uid);
+		if(isset($barr['rows'])){
+			foreach($barr as $k=>$v)$arr[$k]=$v;
+			$barr = $barr['rows'];
+		}
 		$arr['rows'] 	= $this->showrowsface($barr);
 		$arr['stotal']	= $this->agenttotals($uid);
 		unset($arr['rowd']);
@@ -127,7 +135,10 @@ class agentModel extends Model
 		$arr 	= m($table)->getlimit($where, $this->page, $fields, $order, $this->limit, $tables);
 		$rows 	= $arr['rows'];
 		$row 	= array();
-		$suarr  = $this->zhaiyaoar($this->flow->moders['summarx']);
+		$summarx= $this->flow->moders['summarx'];
+		if(isempt($summarx))$summarx = 'cont:'.$this->flow->moders['summary'].'';
+		$suarr  = $this->zhaiyaoar($summarx);
+		$rows 	= $this->flow->viewjinfields($rows);//禁看字段处理
 		foreach($rows as $k=>$rs){
 			$jarr 	= array();
 			$rs 	= $this->flow->flowrsreplace($rs, 2);
@@ -140,7 +151,7 @@ class agentModel extends Model
 				$jarr[$f] 	= $str;
 			}
 			$rows[$k] 	= $rs;
-			$row[]  	= $jarr;
+			$row[]  	= $this->flow->flowrsreplace_we($jarr, $rs);
 		}
 		$arr['rows'] 	= $row;
 		$arr['rowd'] 	= $rows;
@@ -182,6 +193,7 @@ class agentModel extends Model
 	*/
 	private function showrowsface($rows)
 	{
+		if(!$this->showuface)return $rows;
 		$uids	= '0';
 		foreach($rows as $k=>$rs){
 			if(isset($rs['uid']))$uids		.=','.$rs['uid'].'';

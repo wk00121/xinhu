@@ -28,7 +28,7 @@ class flowtotalClassAction extends Action
 		$rows 	= m('flow_element')->getall('mid='.$modeid.' and `istj`=1','`fields`,`name`,`fieldstype`','`sort`');
 		$fset 	= m('flow_set')->getone($modeid);
 		$farr	= array();
-		if(arrvalue($fset,'isflow')=='1'){
+		if(arrvalue($fset,'isflow')>0){
 			$farr[]= array(
 				'name' => '申请人',
 				'fields' => 'b.`uname`',

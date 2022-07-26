@@ -2,31 +2,64 @@
 class kaoqinClassAction extends Action
 {
 	
-	//定位打卡的
-	/*
-	public function locationbeforeshow($table)
+
+	public function kqdkjlaftershow($table, $rows)
 	{
-		$atype	= $this->post('atype');
+		$reimbo = m('reim');
+		return array(
+			'rows' => $rows,
+			'qybo' => $reimbo->installwx(1),
+			'ddbo' => $reimbo->installwx(2),
+		);
+	}
+	
+	//获取打卡记录
+	public function getdkjlAjax()
+	{
+		$reimbo = m('reim');
+		$uids	= $this->adminid;
+		if($this->post('atype')=='all')$uids = '';//全部
 		$dt1	= $this->post('dt1');
 		$dt2	= $this->post('dt2');
-		$key	= $this->post('key');
-		$s 		= '';
-		if($atype=='my')$s.=' and b.id='.$this->adminid.'';
-		if(!isempt($dt1))$s.=" and a.`optdt`>='$dt1'";
-		if(!isempt($dt2))$s.=" and a.`optdt`<='$dt2 23:59:59'";
-		if(!isempt($key))$s.=m('admin')->getkeywhere($key, 'b.');
-		$fields = 'a.*,b.name,b.deptname';
-		$table  = '[Q]'.$table.' a left join `[Q]admin` b on a.uid=b.id';
-		return array('where'=>$s,'table'=>$table, 'fields'=>$fields);
-	}
-	public function locationaftershow($table, $rows)
-	{
-		$dtobj = c('date');
-		foreach($rows as $k=>$rs){
-			$rows[$k]['week'] = $dtobj->cnweek($rs['optdt']);
+		$msg 	= '获取成功';
+		if($reimbo->installwx(1)){
+			$barr 	= m('weixinqy:daka')->getrecord($uids, $dt1, $dt2, 1);
+			//加入异步
+			$send = 0;
+			if($uids=='' && $barr['errcode']==0 && $barr['maxpage']>1){
+				for($i=1;$i<=$barr['maxpage'];$i++){
+					if($i>1)$reimbo->asynurl('asynrun','wxdkjl', array(
+						'dt1' 		=> $dt1,
+						'dt2' 		=> $dt2,
+						'page' 		=> $i
+					));
+				}
+				$send++;
+			}
+			if($barr['errcode']!=0){
+				$msg .= ',企业微信('.$barr['msg'].')';
+			}else{
+				if(isset($barr['zongts']))$msg .= ',微信打卡(共'.$barr['zongts'].'条,新增'.$barr['okload'].'条)';
+				if($send>0)$msg .= ',并发送异步请求'.$send.'条';
+			}
 		}
-		return array('rows'=>$rows);
-	}*/
+		
+		//钉钉
+		if($reimbo->installwx(2)){
+			$barr = m('dingding:daka')->getrecord($uids, $dt1, $dt2);
+			if($barr['errcode']!=0)$msg .= ',钉钉('.$barr['msg'].')';
+		}
+		return returnsuccess($msg);
+	}
+	
+	
+	public function kqdwbefore($table)
+	{
+		$key	= $this->post('key');
+		$where 	= '';
+		if(!isempt($key))$where=" and (`name` like '%$key%' or `address` like '%$key%')";
+		return $where;
+	}
 	
 	
 	//考勤信息
@@ -41,12 +74,14 @@ class kaoqinClassAction extends Action
 		$s 		= '';
 		
 		if($atype=='all'){
-			$s = '';
+			$s = m('admin')->getcompanywhere(4);
 		}
 		if($atype=='my'){
 			$s = 'and uid='.$uid.'';
 		}
-		
+		if($atype=='down'){
+			$s  = 'and '.m('admin')->getdownwheres('a.uid', $uid, 0);
+		}
 		
 		if(!isempt($dt1))$s.=" and a.`stime` >= '$dt1'";
 		if(!isempt($dt2))$s.=" and a.`stime` <= '$dt2 23:59:59'";
@@ -83,14 +118,18 @@ class kaoqinClassAction extends Action
 			$totday			= floatval(arrvalue($rs,'totday','0'));
 			if($totday>0)$rows[$k]['totals'].='('.$totday.'天)';
 			$rows[$k]['jiatype'] = $jiatype;
+			if(!isempt($rs['enddt'])){
+				$rows[$k]['etime'] = $rs['enddt']; //截止时间
+				if($rs['enddt']<$this->rock->now)$rows[$k]['ishui'] = 1;
+			}
 		}
 		$month	= $this->post('dt1', date('Y-m'));
 		$str = '';
 		if($this->post('atype')=='my'){
 			$kqm 	= m('kaoqin');
 			$jiafee = $kqm->getjiafee($uid, $month);
-			$str	= ''.$kqm->getqjsytimestr($uid).'，'.substr($month,0,7).'加班费('.$jiafee.'元)';
-			
+			$str	= ''.$kqm->getqjsytimestr($uid).'';
+			if($jiafee>0)$str.='，'.substr($month,0,7).'加班费('.$jiafee.'元)';
 		}
 		return array('rows'=>$rows,'totalstr'=> $str);
 	}
@@ -132,7 +171,10 @@ class kaoqinClassAction extends Action
 		if($type==0)m('kqsjgz')->delete("`id`='$id' or pid='$id'");
 		if($type==1)m('kqdist')->delete("`id`='$id'"); //分配的
 		if($type==2)m('kqxxsj')->delete("`id`='$id' or pid='$id'");
-		if($type==3)m('kqxxsj')->delete("`id`='$id'");
+		if($type==3){
+			$ida = c('check')->onlynumber($this->post('id'));
+			m('kqxxsj')->delete("`id` in($ida)");
+		}
 		showreturn();
 	}
 	
@@ -226,6 +268,43 @@ class kaoqinClassAction extends Action
 		}
 	}
 	
+	//一键添加节假日
+	public function setjiedateAjax()
+	{
+		$month 	= $this->post('month');
+		$pid 	= (int)$this->post('pid','0');
+		if(isempt($month) || $pid==0)return;
+		$dtobj 	= c('date');
+		$year 	= substr($month,0,4);
+		$dt		= ''.$year.'-01-01';
+		$db 	= m('kqxxsj');
+		//从官网读取节假日日期
+		$barr 	= c('xinhuapi')->getjiari();
+		if(!$barr['success'])return $barr;
+		$jierixiuxi 	= $barr['data']['jierixiuxi']; //休息日
+		$jierishangban 	= $barr['data']['jierishangban']; //上班日
+		
+		for($i=0;$i<366;$i++){
+			if($i>0)$dt = $dtobj->adddate($dt,'d', 1);
+			$we = $dtobj->cnweek($dt);
+			$isxiu = 0;
+			if($we=='六' || $we=='日'){
+				$isxiu = 1;
+			}
+			if(contain($jierixiuxi, $dt))$isxiu = 1;
+			if(contain($jierishangban, $dt))$isxiu = 0;//上班
+			
+			$where = "pid='$pid' and `dt`='$dt'";
+			if($isxiu==1){
+				if($db->rows($where)==0)$db->insert("pid='$pid',`dt`='$dt'");
+			}else{
+				$db->delete($where);
+			}
+			if($dt==''.$year.'-12-31')break;
+		}
+		return returnsuccess();
+	}
+	
 	
 	//考勤分析
 	public function kqanaybeforeshow($table)
@@ -242,6 +321,7 @@ class kaoqinClassAction extends Action
 		if(!isempt($dt2))$s.=" and a.`dt` <= '$dt2'";
 		if(!isempt($key))$s.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%')";
 		$fields = 'a.*,b.name,b.deptname';
+		if(ISMORECOM && $this->adminid>1)$s.=' and b.`companyid`='.m('admin')->getcompanyid().'';
 		$table  = '[Q]'.$table.' a left join `[Q]userinfo` b on a.uid=b.id';
 		return array('where'=>$s,'table'=>$table, 'fields'=>$fields,'order'=>'a.`dt` desc,a.`uid`,`sort`');
 	}
@@ -249,17 +329,16 @@ class kaoqinClassAction extends Action
 	{
 		$dtobj = c('date');
 		$ustie = '';
+		$iswordk = array('否','是');
+		$kq 	= m('kaoqin');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['status'] 	= $rs['iswork'];
 			$rows[$k]['week']	 	= $dtobj->cnweek($rs['dt']);
-			$miaocn	= '';
-			if($rs['emiao']>0){
-				$stssa = explode(':', $dtobj->sjdate($rs['emiao'],'H:i:s'));
-				if($stssa[0]>0)$miaocn=''.$stssa[0].'时';
-				$miaocn.=''.$stssa[1].'分'.$stssa[2].'秒';
-			}
-			$rows[$k]['miaocn'] = $miaocn;
 			$keys= ''.$rs['dt'].''.$rs['uid'].'';
+			$rows[$k]['iswork'] = arrvalue($iswordk, $rs['iswork']);
+			
+			$rows[$k]['state']	= $kq->getkqstate($rs);
+
 			if($ustie!='' && $ustie==$keys){
 				$rows[$k]['deptname'] 	= '';
 				$rows[$k]['name'] 		= '';
@@ -278,7 +357,62 @@ class kaoqinClassAction extends Action
 		$whe 	= '';
 		if($atype=='my')$whe=' and id='.$this->adminid.'';
 		m('kaoqin')->kqanayall($dt, $whe);
+	}
+	public function kqanayallinitAjax()
+	{
+		$dt 	= $this->post('dt');
+		$atype 	= $this->post('atype');
+		if($atype=='my'){
+			$this->kqanayallAjax();
+			return '{"zong":"ok"}';
+		}
+		return m('kaoqin')->kqanayallfirst($dt, 1);
+	}
+	public function kqanayallpageAjax()
+	{
+		$dt 	= $this->post('dt');
+		$page 	= (int)$this->post('page');
+		m('kaoqin')->kqanayall($dt, '', $page);
 		echo 'ok';
+	}
+	
+	
+	//考勤分析总表
+	public function kqanayallbeforeshow($table)
+	{
+		$this->month	= substr($this->post('dt1',date('Y-m')),0,7);
+		$key	= $this->post('key');
+		$iskq	= $this->post('iskq','1');
+		$s 		= m('admin')->monthuwhere($this->month, 'b.');
+		if($iskq=='1')$s.=" and b.`iskq`=$iskq";
+		if(!isempt($key))$s.=" and (b.`name` like '%$key%' or b.`deptname` like '%$key%')";
+		$fields = 'b.name,b.deptname,b.ranking';
+		$table  = '`[Q]userinfo` b';
+		return array('where'=>$s,'table'=>$table, 'fields'=>$fields);
+	}
+	public function kqanayallaftershow($table, $rows)
+	{
+		$barr 	= array();
+		$kq 	= m('kaoqin');
+		$dtobj 	= c('date');
+		
+		$barr[] = array(
+			'dt1_0' => '上班',
+			'dt1_1' => '下班',
+			'dt2_0' => '上班',
+			'dt2_1' => '下班',
+		);
+		
+		foreach($rows as $k=>&$rs){
+			$rs['dt1_0'] = '正常';
+			$rs['dt1_1'] = '正常';
+			
+			$rs['dt2_0'] = '未打卡';
+			$rs['dt2_1'] = '未打卡';
+			
+			$barr[] = $rs;
+		}
+		return array('rows'=>$barr);
 	}
 	
 	
@@ -329,22 +463,33 @@ class kaoqinClassAction extends Action
 	//考勤统计
 	public function kqtotalbeforeshow($table)
 	{
-		$dt1			= $this->post('dt1', date('Y-m'));
+		$dt1			= $this->post('month', date('Y-m'));
+		$iskq			= $this->post('iskq','1');
 		$iskq			= $this->post('iskq','1');
 		$this->months 	= $dt1;
 		$key	= $this->post('key');
 		$atype	= $this->post('atype');
+		$receid	= $this->post('receid');
 		$s 		= m('admin')->monthuwhere($dt1);
 		
-		
+		//下属,userinfo下的
+		if($atype=='down'){
+			$s  .= 'and '.m('admin')->getdownwheres('id', $this->adminid, 0);
+		}
 		
 		if($atype=='my'){
 			$s = 'and id='.$this->adminid.'';
 		}else{
 			if($iskq=='1')$s.=" and `iskq`=$iskq";
+			if(ISMORECOM)$s.=" and `companyid`=".m('admin')->getcompanyid()."";
 		}
-		
-		if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
+		if(isempt($receid)){
+			if(!isempt($key))$s.=" and (`name` like '%$key%' or `ranking` like '%$key%' or `deptname` like '%$key%')";
+		}else{
+			$ofval = m('admin')->gjoin($receid,'', 'all');
+			if(!$ofval)$ofval='0';
+			$s	.= ' and `id` in ('.$ofval.')';
+		}
 		
 		$fields = 'id,name,deptname,ranking,workdate,state';
 		return array('where'=>$s,'fields'=>$fields,'order'=>'`id`');
@@ -353,11 +498,67 @@ class kaoqinClassAction extends Action
 	public function kqtotalaftershow($table, $rows)
 	{
 		$zta 	= m('flow:userinfo');
+		$pnum	= $this->post('pnum');
+		$colalls= array();
 		foreach($rows as $k=>$rs){
 			if($rs['state']==5)$rows[$k]['ishui']=1;
 			$rows[$k]['state'] = $zta->getuserstate($rs['state']);
 		}
-		return m('kaoqin')->alltotalrows($this->months, $rows);
+		$kqobj 	= m('kaoqin');
+		$barr 	= $kqobj->alltotalrows($this->months, $rows);
+		$rows 	= $barr['rows'];
+		$darr 	= array();
+		//读取表头
+		if($pnum=='all'){
+			$dt 	= $this->months.'-01';
+			//获取每天考勤几个状态
+			$nuuid	= $this->adminid;
+			if($rows)$nuuid = $rows[0]['id'];
+			$sbarr	= $kqobj->getsbarr($nuuid, $dt);
+			$lenz 	= count($sbarr); //每天考勤几个状态
+			$touar 	= array();
+			
+			$max 	= $kqobj->dtobj->getmaxdt($this->months);
+			for($i=1;$i<=$max;$i++){
+				$xq = $kqobj->dtobj->cnweek($this->months.'-'.$i.'');
+				for($j=0;$j<$lenz;$j++){
+					$dataIndex = 'dt'.$i.'_'.$j.'';
+					$colalls[] = array(
+						'text' => ''.$i.'('.$xq.')',
+						'dataIndex' => $dataIndex, //字段名
+						'colspan' => $lenz
+					);
+					$touar[$dataIndex] = $sbarr[$j]['name'];
+				}
+			}
+			
+			$darr[] = $touar;
+			
+			//读取人员考勤状态
+			foreach($rows as $k=>$rs){
+				$uid 	= $rs['id'];
+				$kqarr 	= $kqobj->getanay($uid, $this->months);
+				for($i=1;$i<=$max;$i++){
+					$oi = $i<10?'0'.$i.'':$i;
+					$dt = $this->months.'-'.$oi.'';
+					if(isset($kqarr[$dt]))foreach($kqarr[$dt] as $j=>$rs1){
+						$dataIndex = 'dt'.$i.'_'.$j.'';
+						$rs[$dataIndex] = $kqobj->getkqstate($rs1); //考勤状态
+					}
+				}
+				$darr[] = $rs;
+			}
+		}else{
+			$darr = $rows;
+		}
+		
+		
+		$barr['colalls'] = $colalls;
+		$barr['rows'] 	 = $darr;
+		
+		
+		
+		return $barr;
 	}
 	
 	
@@ -434,6 +635,7 @@ class kaoqinClassAction extends Action
 		if(!$rs)exit('not found record');
 		if($rs['scale']<=0)$rs['scale']=12;
 		$this->smartydata['rs'] = $rs;
+		$this->smartydata['qqmapkey']	= getconfig('qqmapkey','55QBZ-JGYLO-BALWX-SZE4H-5SV5K-JCFV7');
 	}
 	
 	public function locationchangeAction()
@@ -446,6 +648,7 @@ class kaoqinClassAction extends Action
 		$this->assign('location_x', $location_x);
 		$this->assign('location_y', $location_y);
 		$this->assign('scale', $scale);
+		$this->smartydata['qqmapkey']	= getconfig('qqmapkey','55QBZ-JGYLO-BALWX-SZE4H-5SV5K-JCFV7');
 	}
 	
 	//删除打卡记录
@@ -471,8 +674,11 @@ class kaoqinClassAction extends Action
 		
 		//根据组
 		if($pblx==1){
+			$where1 = '';
+			if(ISMORECOM)$where1='and `companyid` in(0,'.m('admin')->getcompanyid().')';
 			return array(
-				'table' => '`[Q]group`'
+				'table' => '`[Q]group`',
+				'where' => $where1
 			);
 		}
 		
@@ -483,6 +689,8 @@ class kaoqinClassAction extends Action
 		$s 		= m('admin')->monthuwhere($dt1,'a.');
 		if($atype=='my'){
 			$s = 'and a.`id`='.$this->adminid.'';
+		}else{
+			if(ISMORECOM)$s.='and a.`companyid`='.m('admin')->getcompanyid().'';
 		}
 		
 		if(!isempt($key))$s.=" and (a.`name` like '%$key%' or a.`ranking` like '%$key%' or a.`deptname` like '%$key%')";
@@ -606,5 +814,97 @@ class kaoqinClassAction extends Action
 				}
 			}
 		}
+	}
+	
+	//自动添加年假
+	public function addnianjiaAjax()
+	{
+		$dt 	= $this->get('dt');
+		$barr	= m('flow:leave')->autoaddleave($dt);
+		return '共添加'.count($barr).'人';
+	}
+	
+	
+	//剩余假期统计
+	public function kqtotalafterjiashow($table, $rows)
+	{
+		$zta 	= m('flow:userinfo');
+		$dt 	= $this->post('month');
+		$kqkind	= $this->option->getmnum('kqkind');
+		$kq 	= m('kaoqin');
+		
+		foreach($rows as $k=>$rs){
+			if($rs['state']==5)$rows[$k]['ishui']=1;
+			$rows[$k]['state'] = $zta->getuserstate($rs['state']);
+	
+			foreach($kqkind as $k1=>$rs1){
+				$tosss = $kq->getqjsytime($rs['id'], str_replace('增加','', $rs1['name']), $dt);
+				if($tosss==0)$tosss='';
+				$rows[$k]['total'.$k1.''] = $tosss;
+			}
+			$tosss = $kq->getqjsytime($rs['id'], '调休', $dt);
+			if($tosss==0)$tosss='';
+			$rows[$k]['tiaoxiu'] = $tosss;
+		}
+		return array(
+			'rows'=> $rows,
+			'kqkind'=> $kqkind,
+		);
+	}
+	
+	public function updateenddtAjax()
+	{
+		$to	= m('flow:leave')->updateenddt();
+		return '更新成功';
+	}
+	
+	public function kqtotalmxbefore($table)
+	{
+		$uid 	= (int)$this->post('uid');
+		$qjkind = $this->post('qjkind');
+		$this->optuid 		= $uid;
+		$this->optqjkind 	= $qjkind;
+		$where 	= 'and `uid`='.$uid.'';
+		$this->optkind		= '';
+		if($qjkind=='调休'){
+			$this->optkind = '加班';
+			$where .= " and ((`qjkind`='$qjkind' and `status` in(0,1)) or (`kind`='$this->optkind' and `status`=1 and `jiatype`=0))";
+		}else{
+			$this->optkind = '增加'.$qjkind.'';
+			$where .= " and ((`qjkind`='$qjkind' and `status` in(0,1)) or (`kind`='$this->optkind' and `status`=1))";
+		}
+		return array(
+			'where' => $where,
+			'order' => '`stime`'
+		);
+	}
+	
+	public function kqtotalmxafter($table, $rows)
+	{
+		$urs = m('userinfo')->getone($this->optuid);
+		foreach($rows as $k=>$rs){
+			if($urs){
+				$rows[$k]['uname'] = $urs['name'];
+				$rows[$k]['deptname'] = $urs['deptname'];
+			}
+			
+			if(!isempt($rs['enddt'])){
+				$rows[$k]['etime'] = $rs['enddt']; //截止时间
+				if($rs['enddt']<$this->rock->now)$rows[$k]['ishui'] = 1;
+			}else{
+				if($rs['kind']==$this->optkind)$rows[$k]['etime'] = '';
+			}
+		}
+		$kqkind	= $this->option->getmnum('kqkind');
+		if($rows){
+			$rows[] = array(
+				'deptname' => '合计',
+				'totals1'	=> m('kaoqin')->getqjsytime($this->optuid, $this->optqjkind)
+			);
+		}
+		return array(
+			'rows' 		=> $rows,
+			'kqkind' 	=> $kqkind,
+		);
 	}
 }

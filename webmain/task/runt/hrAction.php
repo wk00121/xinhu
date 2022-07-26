@@ -34,7 +34,12 @@ class hrClassAction extends runtAction
 		//生日提醒
 		m('flow')->initflow('userinfo')->birthdaytodo();
 		
-		echo 'success';
+		//自动从考核项目中添加
+		m('flow')->initflow('hrcheck')->hrkaohemrun();
+		
+		//个人资料完善提醒
+		
+		return 'success';
 	}
 	
 	

@@ -17,13 +17,40 @@ var strformat = {
 	},
 	emotspath:'',
 	strcont:function(nr){
-		var str = unescape(nr);
-		str	= this.strcontss(str,'A', '<a target="_blank" href="{s1}">{s2}</a>');
-		str	= this.strcontss(str,'IMGS', '<img src="{s1}" onclick="strformat.openimg(this.src)">');
-		str	= this.strcontss(str,'IMG', '<img src="{s1}" onclick="strformat.openimg(this.src)" width="150">');
-		str	= this.strcontss(str,'FILE', '<a onclick="strformat.downshow(\'{s1}\')" href="javascript:;"><img src="'+this.emotspath+'images/fileicons/{s3}.gif" align="absmiddle" class="icon">{s2}</a>');
-		var patt1	= new RegExp("\\[(.*?)\\](.*?)", "gi"),emu,i,st1,oi;
-		 emu		= str.match(patt1);
+		var str = unescape(nr),patt1,emu,i,st1,oi;
+		
+		if(str.indexOf('<img')==-1){
+			var strRegex = "((https|http)?://){1}" 
+				 + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@ 
+				  + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184 
+				  + "|" // 允许IP和DOMAIN（域名）
+				  + "([0-9a-z_!~*'()-]+\.)*" // 域名- www. 
+				  + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名 
+				  + "[a-z]{2,6})" // first level domain- .com or .museum 
+				  + "(:[0-9]{1,4})?" // 端口- :80 
+				  + "((/?)|" // a slash isn't required if there is no file name 
+				  + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)"; 
+			patt1	= new RegExp(strRegex, 'gi'); 
+			emu		= str.match(patt1);
+			if(emu!=null){
+				for(i=0;i<emu.length; i++){
+					st1 = emu[i];
+					if(st1.indexOf('http')==0){
+						str = str.replace(st1, '{URL'+i+'}');
+					}
+				}
+				for(i=0;i<emu.length; i++){
+					st1 = emu[i];
+					if(st1.indexOf('http')==0){
+						str = str.replace('{URL'+i+'}', '<a onclick="return strformat.openurl(\''+st1+'\')" href="javascript:;">'+st1+'</a>');
+					}
+				}
+			}
+		}
+		
+		
+		patt1	= new RegExp("\\[(.*?)\\](.*?)", 'gi');
+		emu		= str.match(patt1);
 		if(emu!=null){
 			for(i=0;i<emu.length; i++){
 				st1=emu[i];
@@ -73,7 +100,7 @@ var strformat = {
 		}
 		var nowa	= js.serverdt('Y-m-d H:i:s 星期W'),
 			nowas	= nowa.split(' ');
-		var ztstr	= [['now',nowa],['date',nowas[0]],['time',nowas[1]],['week',nowas[2]],['百度','https://www.baidu.com/',1],['官网','http://www.rockoa.com/',1]];
+		var ztstr	= [['now',nowa],['date',nowas[0]],['time',nowas[1]],['week',nowas[2]]];
 		var patt1,a,thnr,ths='';
 		for(var i=0; i<ztstr.length; i++){
 			a	=	ztstr[i];
@@ -196,7 +223,7 @@ var strformat = {
 	},
 	cancelup:function(nuid){
 		if(!nuid)nuid=this.nuidup_tep;
-		if(this.upobj)this.upobj.abort();
+		try{if(this.upobj)this.upobj.abort();}catch(e){}
 		$('#ltcont_'+nuid+'').remove();
 	},
 	openimg:function(src){
@@ -224,19 +251,22 @@ var strformat = {
 		if(js.isimg(d.fileext)){
 			sttr='';
 			if(d.thumbpath){
-				s='<img src="'+apiurl+''+d.thumbpath+'" fid="'+d.fileid+'">';
+				s='<img src="'+d.thumbpath+'" fid="'+d.fileid+'">';
 			}else{
 				if(d.width){
 					if(d.width>150)sttr='width="150"';
 				}else{
 					sttr='width="150"';
 				}
-				s='<img src="'+apiurl+''+d.filepath+'" '+sttr+' fid="'+d.fileid+'">';
+				s='<img src="'+d.filepath+'" '+sttr+' fid="'+d.fileid+'">';
 			}
+		}else if(d.fileext=='amr'){
+			s+='<i class="icon-volume-up"></i> '+(parseInt(d.filesize/1000))+'"';
+			s+='&nbsp;<a href="javascript:;" style="font-size:12px" onclick="js.fileopt('+d.fileid+',1)">下载</a>';
 		}else{
 			slx = d.fileext;if(!lj)lj='';
 			if(js.fileall.indexOf(','+slx+',')<0)slx='wz';
-			s=''+d.filename+'<br><a href="javascript:;" onclick="js.downshow('+d.fileid+')">下载</a>&nbsp;&nbsp;<a href="javascript:;" onclick="im.fileyulan(\''+d.filename+'\','+d.fileid+')">预览</a>&nbsp;'+d.filesizecn+'';
+			s=''+d.filename+'<br><a href="javascript:;" onclick="js.fileopt('+d.fileid+',1)">下载</a>&nbsp;&nbsp;<a href="javascript:;" onclick="js.fileopt('+d.fileid+',0)">预览</a>&nbsp;'+d.filesizecn+'';
 			s='<table><tr><td><div class="qipaofile">'+d.fileext.toUpperCase()+'</div></td><td>'+s+'</td></tr></table>';
 		}
 		return s;

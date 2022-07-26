@@ -1,6 +1,7 @@
 <?php
 class flow_gongClassModel extends flowModel
 {
+	private $readunarr = array();//未读人员
 	
 	public function initModel()
 	{
@@ -10,8 +11,8 @@ class flow_gongClassModel extends flowModel
 	protected function flowchangedata(){
 		$cont 	= c('html')->replace($this->rs['content']);
 		$fm 	= $this->rs['fengmian'];
-		if(!isempt($fm) && file_exists($fm)){
-			$cont='<div align="center"><img style="max-width:500px" src="'.$fm.'"></div>'.$cont.'';
+		if(!isempt($fm)){
+			$cont='<div align="center"><img style="max-width:100%" src="'.$this->rock->gethttppath($fm).'"></div>'.$cont.'';
 		}
 		$this->rs['content'] = $cont;
 	}
@@ -28,6 +29,7 @@ class flow_gongClassModel extends flowModel
 			if(isempt($receid))$receid='all';
 			$barr 	= m('log')->getreadshu($this->mtable, $rs['id'],$receid , $rs['optdt'], $this->adminmodel);
 			foreach($barr as $k=>$v)$rs[$k]=$v;
+			$this->readunarr = $barr['wduarr'];
 		}
 		if($mintou>0){
 			$rs['title'] .='(投票)';
@@ -38,6 +40,31 @@ class flow_gongClassModel extends flowModel
 	protected function flowsubmit($na, $sm)
 	{
 		if($this->rs['status']==1)$this->tisongtodo();
+	}
+	
+	//移动端列表
+	private $ydarr = false;
+	public function flowrsreplace_we($row, $rs)
+	{
+		if(!isempt($rs['fengmian']))$row['picurl'] = $rs['fengmian'];
+		if($this->ydarr===false)$this->ydarr	= explode(',', m('log')->getread('infor', $this->adminid));
+		
+		if(!in_array($rs['id'], $this->ydarr)){
+			$row['statustext'] 	= '未读';
+			$row['statuscolor'] = '#ED5A5A';
+		}else{
+			$row['ishui']		= 1;
+		}
+		
+		return $row;
+	}
+	public function flowwesearchdata($lx)
+	{
+		if($lx==1)return $this->option->getselectdata('gongtype', true);
+		return array(
+			'typename' => '所有通知',
+			'searchmsg' => '通知标题/分类',
+		);
 	}
 	
 	//审核完成后发通知
@@ -66,11 +93,30 @@ class flow_gongClassModel extends flowModel
 	//发送推送通知
 	private function tisongtodo()
 	{
+		//还没到展示时间就不发送提醒
+		$zstart= arrvalue($this->rs, 'zstart');
+		if(!isempt($zstart) && $zstart>$this->rock->date)return;
+		
 		$h 	  = c('html');
 		$cont = $h->htmlremove($this->rs['content']);
 		$cont = $h->substrstr($cont,0, 50);
 		if(strlen($cont)>40)$cont.='...';
+		if(isempt($cont))$cont = $this->rs['title']; //为空时
 		$this->push($this->rs['receid'], '通知公告', $cont, $this->rs['title'],1);
+		
+		//添加短信提醒，短信提醒
+		if(arrvalue($this->rs,'issms')=='1'){
+			$receid = $this->rs['receid'];//接收人ID，可以为部门合聚，如d2,u1(必须)
+			if(isempt($receid))$receid = 'all'; //为空就是全部人
+			$qiannum= ''; //【系统→短信管理→短信签名】下获取,如没有自己的签名默认【信呼OA】
+			$tplnum	= m('option')->getval('gongsmstpl', 'gongsms');//到【数据选项→行政选项】下设置通知短信模版编号
+			$params = array(
+				'title' 	=> $this->rs['title'],
+				'typename' 	=> $this->rs['typename'],
+			);
+			$url	= $this->getxiangurlx();//详情连接地址(选填)，短信模版有url就需要填写
+			c('xinhuapi')->sendsms($receid, $qiannum, $tplnum, $params, $url);
+		}
 	}
 	
 	protected function flowgetoptmenu($opt)
@@ -103,13 +149,26 @@ class flow_gongClassModel extends flowModel
 	protected function flowbillwhere($uid, $lx)
 	{
 		$key 	= $this->rock->post('key');
+		$typeid 	= (int)$this->rock->post('typeid','0');
 		$keywere= '';
+		$whyere = '';
 		if(!isempt($key))$keywere.=" and (`title` like '%$key%' or `typename`='$key')";
+		//我和我未读
+		if($lx=='my' || $lx=='wexx'){
+			$whyere= "and (`zstart` is null or `zstart`<='{$this->rock->date}')";
+			$whyere.= " and (`zsend` is null or `zsend`>='{$this->rock->date}')";
+		}
+		
+		if($typeid>0){
+			$typename=$this->option->getmou('name', $typeid);
+			$whyere.=" and `typename`='$typename'";
+		}
 		
 		return array(
-			'order' 	=> 'optdt desc',
+			'order' 	=> '`istop` desc,`optdt` desc',
 			'keywere' 	=> $keywere,
-			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou'
+			'where' 	=> $whyere,
+			'fields'	=> 'id,typename,optdt,title,optname,zuozhe,indate,recename,fengmian,mintou,`status`,`istop`,`appxs`'
 		);
 	}
 	
@@ -122,6 +181,7 @@ class flow_gongClassModel extends flowModel
 		$maxtou		= (int)arrvalue($this->rs, 'maxtou','0');
 		$status		= (int)arrvalue($this->rs, 'status','0');
 		$touarr		= array();
+		$logarr 	= array();
 		if($mintou>0){
 			$istoupiao	= 4;
 			$toutype 	= 0;//不需要投票，1已投票，2未投票
@@ -167,7 +227,11 @@ class flow_gongClassModel extends flowModel
 			//判断是否可以显示结果
 			$showtou	= 0;
 			if($istoupiao!=2 && $status==1 && ($toutype==1 || $toutype==0))$showtou = 1;
-			
+			if($showtou==0){
+				foreach($arr['logarr'] as $k1=>$rs1){
+					if($rs1['actname']!='投票')$logarr[] = $rs1;
+				}
+			}
 			
 			$touarr['showtou'] = $showtou;
 			$touarr['mintou'] = $mintou;
@@ -181,6 +245,11 @@ class flow_gongClassModel extends flowModel
 		$arr['toupiaostatus'] 	= $toupiaoarrr[$istoupiao];
 		$arr['title'] 		= '';
 		$arr['touarr'] 		= $touarr;
+		if($logarr)$arr['logarr'] 	= $logarr;
+		
+		
+		$arr['readunarr'] 			= $this->readunarr;//读取未查阅
+		
 		return $arr;
 	}
 }

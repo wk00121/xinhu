@@ -8,7 +8,7 @@ $(document).ready(function(){
 		window:false,rand:'{rand}',tablename:'flow_set',
 		url:publicsave('{mode}','{dir}'),url:publicsave('{mode}','{dir}'),
 		params:{otherfields:'optdt={now}'},aftersaveaction:'flowsetsaveafter',beforesaveaction:'flowsetsavebefore',
-		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,isup,isgbcy,isbxs,lbztxs',
+		submitfields:'name,tables,type,num,table,sort,isscl,status,where,summary,summarx,pctx,mctx,wxtx,emtx,ddtx,isflow,sericnum,receid,recename,names,statusstr,isgbjl,ispl,ishz,istxset,isup,isflowlx,isgbcy,isbxs,lbztxs,iscs,zfeitime',
 		requiredfields:'name,type,num,table',
 		success:function(){
 			closenowtabs();
@@ -129,7 +129,7 @@ $(document).ready(function(){
 		
 		<tr>
 			<td  align="right" >相应条件：</td>
-			<td class="tdinput" colspan="3"><textarea  name="where" style="height:60px" class="form-control"></textarea></td>
+			<td class="tdinput" colspan="3"><textarea  placeholder="非共用主表，不要需要设置，请留空" name="where" style="height:60px" class="form-control"></textarea></td>
 		</tr>
 		
 		<tr>
@@ -150,9 +150,22 @@ cont:
 		</tr>
 		
 		<tr>
+			<td  align="right" >流程审批模式：</td>
+			<td class="tdinput" colspan="3">
+			<select class="form-control" name="isflow">
+			<option value="0">无流程</option>
+			<option value="1">顺序流程(按照预设好的步骤一步一步审核)</option>
+			<option value="2">顺序前置流程(出现重复人审核自动跳过)</option>
+			<?php
+			
+			?>
+			</select>
+			</td>
+		</tr>
+		
+		<tr>
 			<td  align="right" ></td>
 			<td class="tdinput" colspan="3">
-				<label><input name="isflow" value="1" type="checkbox"> 有流程?</label>&nbsp; &nbsp; 
 				<label><input name="pctx" value="1" type="checkbox"> PC端提醒</label>&nbsp; &nbsp; 
 				<label><input name="emtx" value="1" type="checkbox"> 邮件提醒</label>&nbsp; &nbsp; 
 				<label><input name="mctx" value="1" type="checkbox"> APP提醒</label>&nbsp; &nbsp; 
@@ -174,18 +187,31 @@ cont:
 		</tr>
 		
 		<tr>
+			<td  align="right" >流程上选项：</td>
+			<td class="tdinput" colspan="3">
+				<label>申请人提交编辑时:<select name="isflowlx"><option value="0">在原来流程上</option><option value="1">重头走审批</option></label>
+			</td>
+		</tr>
+		
+		<tr>
 			<td  align="right" >单据详情上：</td>
 			<td class="tdinput" colspan="3">
 				<label><input name="isgbjl" value="1" type="checkbox"> 不显示操作记录</label>&nbsp; &nbsp; 
 				<label><input name="isgbcy" value="1" type="checkbox"> 不显示查阅记录</label>&nbsp; 
-				<label><input name="isscl" value="1" type="checkbox"> 标识已生成列表页</label>
+				<label><input name="isscl" value="1" type="checkbox"> 标识已生成列表页</label>&nbsp; 
+				<label><input name="ispl" value="1" type="checkbox"> 开启可评论</label>
+				&nbsp; 
+				<label><input name="istxset" value="1" type="checkbox"> 开启单据提醒设置</label>
+				&nbsp; 
+				<label><input name="ishz" value="1" type="checkbox"> 开启回执确认</label>
 			</td>
 		</tr>
 		
 		<tr>
 			<td  align="right" >录入页面上：</td>
 			<td class="tdinput" colspan="3">
-				<label><input name="isbxs" value="1" type="checkbox"> 不显示流程图</label>
+				<label><input name="isbxs" value="1" type="checkbox"> 不显示流程图</label>&nbsp; &nbsp; 
+				用户抄送:<select name="iscs"><option value="0">不开启</option><option value="1">开启(可选抄送对象)</option><option value="2">开启(必须选择抄送对象)</option></select>
 			</td>
 		</tr>
 		
@@ -193,6 +219,13 @@ cont:
 			<td  align="right" >列表页面上：</td>
 			<td class="tdinput" colspan="3">
 				状态搜索显示:<select name="lbztxs"><option value="0">默认</option><option value="1">必须显示</option><option value="2">不要显示</option></select>
+			</td>
+		</tr>
+		
+		<tr>
+			<td  align="right" ></td>
+			<td class="tdinput" colspan="3">
+				超过<input class="input" type="number" id="shijian_{rand}" onfocus="js.focusval=this.value" value="0" onblur="js.number(this)" min="0"  style="width:70px" name="zfeitime">分钟自动作废,0不限制。<select onchange="$('#shijian_{rand}').val(this.value)"><option value="0">不限制</option><option value="30">30分钟</option><option value="120">2小时</option><option value="360">6小时</option><option value="1440">1天</option><option value="2880">2天</option><option value="10080">7天</option><option value="21600">15天</option><option value="43200">30天</option></select>
 			</td>
 		</tr>
 		

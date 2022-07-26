@@ -2,18 +2,24 @@
 <script >
 $(document).ready(function(){
 	{params}
-	var bools = false;
-	var type = params.type,typename='入库';
+	var bools = false,type = params.type,typename='入库',mid=params.mid;
 	if(type==1)typename='出库';
+	if(!mid)mid=0;
 	var a = $('#view_{rand}').bootstable({
-		tablename:'goods',celleditor:true,fanye:true,params:{'type':type},
+		tablename:'goods',celleditor:true,fanye:true,params:{'type':type,'mid':mid},
 		url:publicstore('{mode}','{dir}'),storebeforeaction:'beforeshow',storeafteraction:'aftershow',
 		columns:[{
-			text:'<font color=red>*</font>'+typename+'数量',dataIndex:'shu',renderer:function(v,d){
-				return '<input name="shu_{rand}" valid="'+d.id+'" style="width:80px;text-align:center" onfocus="js.focusval=this.value" onblur="js.number(this)" type="number" value="" class="form-control">';
+			text:'<font color=red>*</font>要'+typename+'数量',dataIndex:'shu',renderer:function(v,d){
+				var maxss = d.maxcount;
+				if(!maxss)maxss='99999999';
+				var sv = '<input name="shu_{rand}" valid="'+d.id+'" style="width:70px;text-align:center" onfocus="js.focusval=this.value" min="0" max="'+maxss+'" onblur="js.number(this)" type="number" value="" class="form-control">';
+				if(d.maxcount)sv+=' 还可'+typename+'数'+d.maxcount+'';
+				return sv;
 			}
 		},{
-			text:'库存',dataIndex:'stock',sortable:true
+			text:'总库存',dataIndex:'stock',sortable:true
+		},{
+			text:'编号',dataIndex:'num'
 		},{
 			text:'名称',dataIndex:'name'
 		},{
@@ -27,8 +33,6 @@ $(document).ready(function(){
 		},{
 			text:'型号',dataIndex:'xinghao'
 		},{
-			text:'库存',dataIndex:'stock',sortable:true
-		},{
 			text:'ID',dataIndex:'id'	
 		}],
 		itemdblclick:function(d){
@@ -36,14 +40,18 @@ $(document).ready(function(){
 		},
 		load:function(d){
 			if(!bools){
+				if(params.kindname){
+					d.typearr = [{'name':params.kindname,'value':params.kind}];
+				}
 				js.setselectdata(get('type_{rand}'),d.typearr,'value');
+				js.setselectdata(get('depotid_{rand}'),d.depotarr,'id');
 			}
 			bools=true;
 		}
 	});
 	var c = {
 		save:function(o1){
-			var d={dt:$('#dt1_{rand}').val(),type:type,kind:get('type_{rand}').value,sm:get('explain_{rand}').value};
+			var d={dt:$('#dt1_{rand}').val(),'type':type,kind:get('type_{rand}').value,sm:get('explain_{rand}').value,'depotid':get('depotid_{rand}').value,'mid':mid};
 			var msgid='msgview_{rand}';
 			d.cont = c.getshul();
 			if(d.cont==''){
@@ -58,6 +66,10 @@ $(document).ready(function(){
 				js.setmsg('请选择'+typename+'类型','', msgid);
 				return;
 			}
+			if(d.depotid==''){
+				js.setmsg('请选择'+typename+'的仓库','', msgid);
+				return;
+			}
 			js.setmsg(''+typename+'中...','', msgid);
 			o1.disabled=true;
 			js.ajax(js.getajaxurl('chukuopt','{mode}','{dir}'),d,function(s){
@@ -66,8 +78,8 @@ $(document).ready(function(){
 					a.reload();
 				}else{
 					js.setmsg(s,'', msgid);
-					o1.disabled=false;
 				}
+				o1.disabled=false;
 			},'post');
 		},
 		getshul:function(){
@@ -106,7 +118,7 @@ $(document).ready(function(){
 	</td>
 	<td  style="padding-left:10px">
 		<div class="input-group" style="width:250px">
-			<input class="form-control" id="key_{rand}"   placeholder="名称">
+			<input class="form-control" id="key_{rand}"   placeholder="名称/编号/型号">
 			<span class="input-group-btn">
 				<button class="btn btn-default" click="search" type="button"><i class="icon-search"></i></button>
 			</span>
@@ -138,6 +150,12 @@ $(document).ready(function(){
 	<td align="right" ><font color=red>*</font>类型：</td>
 	<td class="tdinput">
 		<select  id="type_{rand}" style="width:200px" class="form-control"><option value="">-请选择-</option></select>
+	</td>
+	</tr>
+	<tr>
+	<td align="right" ><font color=red>*</font>选择仓库：</td>
+	<td class="tdinput">
+		<select  id="depotid_{rand}" style="width:200px" class="form-control"><option value="">-请选择-</option></select>
 	</td>
 	</tr>
 	<tr>

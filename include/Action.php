@@ -4,7 +4,7 @@
 	* 联系QQ： 290802026/1073744729									*
 	* 版  本： V2.0													*
 	* 开发者：雨中磐石工作室										*
-	* 邮  箱： qqqq2900@126.com										*
+	* 邮  箱： admin@rockoa.com										*
 	* 网  址： http://www.rockoa.com/								*
 	* 说  明: 主控制器处理											*
 	* 备  注: 未经允许不得商业出售，代码欢迎参考纠正				*
@@ -42,6 +42,8 @@ abstract class mainAction{
 	public $tpltype		= 'tpl';
 	public $tpldom		= 'html';
 	public $displayfile	= '';
+	
+	public $bodyMessage	= '';		//返回的内容
 	
 	public function __construct()
 	{
@@ -110,7 +112,12 @@ abstract class mainAction{
 		$web 	= $this->rock->web;
 		$this->assign('web', $web);
 		$showheader	= 1;
-		if(in_array($web, array('xinhu','wxbro','ding')))$showheader = 0;
+		if($this->rock->iswebbro(0)
+			|| $this->rock->iswebbro(1)
+			|| $this->rock->iswebbro(4)
+			|| $this->rock->get('hideheader')=='true'
+			|| $this->rock->iswebbro(2))$showheader = 0; //隐藏头部
+		//if($showheader == 0 && $this->get('show')=='we')$showheader	= 1;
 		$this->assign('showheader', $showheader);
 	}
 

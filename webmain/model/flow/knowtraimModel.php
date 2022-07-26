@@ -93,10 +93,13 @@ class flow_knowtraimClassModel extends flowModel
 		
 	}
 	
-	//得条件
-	public function gettikuwhere($tiid)
+	//选取选择题库的条件
+	public function gettikuwhere($tiid, $dwid=0)
 	{
-		if(isempt($tiid))return '';
+		$str1	= '';
+		if($dwid==0)$dwid 	= $this->adminmodel->getcompanyid();
+		if(ISMORECOM)$str1	= " and `comid`=".$dwid."";
+		if(isempt($tiid))return $str1;
 		$sid 	= '';
 		$tarr	= explode(',', $tiid);
 		$dbs 	= m('option');
@@ -108,7 +111,13 @@ class flow_knowtraimClassModel extends flowModel
 			$sid = substr($sid, 1);
 			return ' and `typeid` in('.$sid.')';
 		}else{
-			return '';
+			return $str1;
 		}
+	}
+	
+	//删除单据时调用
+	protected function flowdeletebill($sm)
+	{
+		m('knowtrais')->delete("`mid`='".$this->id."'");
 	}
 }

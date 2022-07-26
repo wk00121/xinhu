@@ -2,7 +2,7 @@
 <script >
 $(document).ready(function(){
 	var a = $('#view_{rand}').bootstable({
-		tablename:'kqdw',celleditor:true,
+		tablename:'kqdw',celleditor:true,fanye:true,url:publicstore('{mode}','{dir}'),storebeforeaction:'kqdwbefore',
 		columns:[{
 			text:'规则名称',dataIndex:'name',align:'left',editor:true
 		},{
@@ -64,6 +64,10 @@ $(document).ready(function(){
 			});
 			if(lx==1)h.setValues(a.changedata);
 			h.getField('name').focus();
+		},
+		search:function(){
+			var s=get('key_{rand}').value;
+			a.setparams({key:s},true);
 		}
 	};
 	
@@ -87,8 +91,13 @@ $(document).ready(function(){
 	<td nowrap>
 		<button class="btn btn-primary" click="clickwin,0" type="button"><i class="icon-plus"></i> 新增</button>
 	</td>
-	
-	<td></td>
+	<td  style="padding-left:10px">
+		<input class="form-control" style="width:200px" id="key_{rand}"  placeholder="规则/位置名称">
+	</td>
+	<td  style="padding-left:10px">
+		<button class="btn btn-default" click="search" type="button">搜索</button>
+	</td>
+	<td width="100%"></td>
 	<td align="right" nowrap>
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button> &nbsp; 
 		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button>

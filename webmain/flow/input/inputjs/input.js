@@ -18,9 +18,11 @@ xh xh   xhxhxhxhxh    xhxhxh       xh
 */
 
 var ismobile=0,firstrs={},alldata={},isxiang=0,
+	submitparams={},//要提交提交的参数
 	subdataminlen=[];//子表至少行数
 function initbodys(){};
 function savesuccess(){};
+function saveerror(){};
 function eventaddsubrows(){}
 function eventdelsubrows(){}
 function geturlact(act,cns){
@@ -30,12 +32,12 @@ function geturlact(act,cns){
 function initbody(){
 	js.tanstyle = 1;
 	$('body').keydown(function(et){
-		var code	= event.keyCode;
+		var code	= et.keyCode;
 		if(code==27){
 			c.close();
 			return false;
 		}
-		if(event.altKey){
+		if(et.altKey){
 			if(code == 83){
 				get('AltS').click();
 				return false;
@@ -68,6 +70,7 @@ function initbody(){
 			c.saveken();
 		}
 	});
+	$('#view_fileidview').click(function(){c.loadicons()});
 }
 function changesubmit(d){};
 function changesubmitbefore(){};
@@ -92,13 +95,27 @@ js.apiurl = function(m,a,cans){
 	return url;
 }
 
+//选择人员前处理
+js.changeuser_before=function(na){
+	if(na=='sys_nextcoursename'){
+		var fw = '',o = form('sys_nextcourseid');
+		if(o){
+			if(o.value==''){o.focus();return '请先选择下步处理步骤'};
+			var o1= o.options[o.selectedIndex];
+			fw = $(o1).attr('changerange');
+			return {'changerange':fw};
+		}
+	}
+	return c.changeuser_before(na);
+}
+
 var c={
-	callback:function(cs){
+	callback:function(cs, msg){
 		var calb = js.request('callback');
-		var msg  = (mid=='0')?'新增':'编辑'
+		if(ismobile==1 && js.msgok)js.msgok(msg, function(){js.back()},1);
 		if(!calb){
 			if(ismobile==0){
-				try{parent.js.msg('success',''+msg+'保存成功');}catch(e){}
+				try{parent.js.msgok(msg);}catch(e){}
 				try{parent.bootstableobj[moders.num].reload();}catch(e){}
 				try{parent.js.tanclose('winiframe');}catch(e){}
 			}
@@ -106,7 +123,7 @@ var c={
 		}
 		try{parent[calb](cs);}catch(e){}
 		try{opener[calb](cs);}catch(e){}
-		try{parent.js.msg('success',''+msg+'保存成功');}catch(e){}
+		try{parent.js.msgok(msg);}catch(e){}
 		try{parent.js.tanclose('winiframe');}catch(e){}
 	},
 	
@@ -126,12 +143,16 @@ var c={
 		if(!d)return;
 		this.saveok(d);
 	},
-	showtx:function(msg){
+	showtx:function(msg, fid){
 		js.setmsg(msg);
 		if(ismobile==1)js.msg('msg', msg);
+		if(fid && form(fid))form(fid).focus();
 	},
 	selectdatadata:{},
 	onselectdata:{},
+	changeuser_before:function(){},
+	onselectdatabefore:function(){},
+	onselectdataall:function(){},
 	selectdata:function(s1,ced,fid,tit,zbis){
 		if(isedit==0)return;
 		if(!tit)tit='请选择...';
@@ -139,40 +160,57 @@ var c={
 		var a1 = s1.split(','),idobj=false,acttyle='act';
 		var fids = a1[1];
 		if(fids){
-			if(zbis==1){
+			if(zbis>=1){//说明是子表
 				var gezs = this.getxuandoi(fid);
 				fids+=gezs[2];
 			}
 			idobj=form(fids);
 		}
+		var gcan,dass,i,befs
+		gcan = {'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num,'sysmid':mid};
+		dass = this.selectdatadata[fid];
+		befs = this.onselectdatabefore(fid,zbis,s1);
+		if(befs){
+			if(typeof(befs)=='string'){js.msg('msg',befs);return;}
+			if(typeof(befs)=='object'){
+				dass=[];
+				for(i in befs)gcan[i]=befs[i];
+			}
+		}
 		$.selectdata({
-			data:this.selectdatadata[fid],title:tit,
-			fid:fid,
-			url:geturlact('getselectdata',{'act':a1[0],'acttyle':acttyle,'sysmodenum':moders.num}),
+			data:dass,title:tit,fid:fid,
+			url:geturlact('getselectdata', gcan),
 			checked:ced, nameobj:form(fid),idobj:idobj,
 			onloaddata:function(a){
 				c.selectdatadata[fid]=a;
 			},
 			onselect:function(seld,sna,sid){
+				c.onselectdataall(this.fid,seld,sna,sid);
 				if(c.onselectdata[this.fid])c.onselectdata[this.fid](seld,sna,sid);
 			}
 		});
 	},
+	changisturn:function(){
+		var txt = '提交(S)';
+		if(!get('sysisturn').checked)txt='存草稿(S)';
+		get('AltS').value=txt;
+	},
 	savesss:function(){
 		if(js.ajaxbool||isedit==0)return false;
-		var len = arr.length,i,val,fid,flx,nas,j,j1,zbd,sda,zbs,zbmc;
+		var len = arr.length,i,val,fid,flx,nas,j,j1,zbd,sda,zbs,zbmc,fa,sdtname,edename;
 		changesubmitbefore();
 		var d = js.getformdata();
 		for(i=0;i<len;i++){
 			if(arr[i].iszb!='0')continue;
-			fid=arr[i].fields;
-			flx=arr[i].fieldstype;
-			nas=arr[i].name;
-			if(ismobile==0 && arr[i].islu=='1' && flx=='htmlediter'){
+			fa = arr[i];
+			fid=fa.fields;
+			flx=fa.fieldstype;
+			nas=fa.name;
+			if(ismobile==0 && fa.islu=='1' && flx=='htmlediter'){
 				d[fid] = this.editorobj[fid].html();
 			}
 			val=d[fid];
-			if(arr[i].isbt=='1'){
+			if(fa.isbt=='1'){
 				if(flx=='uploadfile' && val=='0'){
 					this.showtx('请选择'+nas+'');
 					return false;
@@ -190,7 +228,17 @@ var c={
 					return false;
 				}
 			}
+			if(fid=='startdt')sdtname=fa.name;
+			if(fid=='enddt')edename=fa.name;
 		}
+		
+		if(sdtname && edename && d.startdt && d.enddt){
+			if(d.startdt>=d.enddt){
+				this.showtx(''+sdtname+'必须大于'+edename+'', 'enddt');
+				return false;
+			}
+		}
+		
 		//子表判断记录是不是空
 		len = subfielsa.length;
 		for(i=0;i<this.subcount;i++){//子表数
@@ -212,33 +260,89 @@ var c={
 						if(isempt(val)){
 							if(form(fid))form(fid).focus();
 							this.showtx('['+sda.zbname+']第'+(j1+1)+'行上'+sda.name+'不能为空');
+							this.subshantiss(i, fid,0);
 							return false;
 						}
 						if(flx=='number'&&parseFloat(val)==0){
 							if(form(fid))form(fid).focus();
 							this.showtx('['+sda.zbname+']第'+(j1+1)+'行上'+sda.name+'不能为0');
+							this.subshantiss(i, fid,0);
 							return false;
 						}
 					}
 				}
 			}
 		}
-		if(firstrs.isbt==1){
+		var bo = true;
+		if(form('istrun') && d.istrun=='0')bo=false; //是否提交的判断
+		if(get('sysisturn')){
+			if(get('sysisturn').checked){
+				d.istrun = 1;
+			}else{
+				d.istrun = 0;
+				bo=false;
+			}
+		}
+		if(firstrs.isbt==1 && bo){
 			if(!d.sysnextoptid && form('sysnextopt')){
 				this.showtx('请指定['+firstrs.name+']处理人');
 				form('sysnextopt').focus();
 				return false;
 			}
 		}
+		
+		if(form('sys_nextcourseid') && bo){
+			if(!d.sys_nextcourseid){
+				this.showtx('请指定下步处理步骤');
+				form('sys_nextcourseid').focus();
+				return false;
+			}
+			if(!d.sys_nextcoursenameid && this.changenextbool){
+				this.showtx('请选择下步处理人');
+				return false;
+			}
+		}
+		
+		if(moders.iscs=='2' && isempt(d.syschaosongid) && bo){
+			this.showtx('请选择抄送对象');
+			return false;
+		}
+		
 		var s=changesubmit(d);
 		if(typeof(s)=='string'&&s!=''){
 			this.showtx(s);
 			return false;
 		}
 		if(typeof(s)=='object')d=js.apply(d,s);
+		d = js.apply(d,submitparams);
 		d.sysmodeid=moders.id;
 		d.sysmodenum=moders.num;
 		return d;
+	},
+	changenextbool:true,
+	changenextcourse:function(o,lx){
+		if(lx!=4)return;
+		var o1= o.options[o.selectedIndex];
+		var clx = $(o1).attr('checktype');
+		var dov = $('#sys_nextcoursediv1')
+		if(clx=='change'){
+			this.changenextbool=true;
+			dov.show();
+		}else{
+			this.changenextbool=false;
+			dov.hide();
+		}
+	},
+	subshantiss:function(i,fid,oi){
+		if(!form(fid))return;
+		clearTimeout(this.subshantistime1);
+		if(oi%2==0){
+			$(form(fid)).parent().css('background','red');
+		}else{
+			$(form(fid)).parent().css('background','');
+			if(oi>10)return;
+		}
+		this.subshantistime1 = setTimeout(function(){c.subshantiss(i,fid,oi+1);},200);
 	},
 	saveok:function(d){
 		js.setmsg('保存中...');
@@ -254,30 +358,38 @@ var c={
 	backsave:function(a,str){
 		var msg = a.msg;
 		if(a.success){
-			var msgs  = (mid=='0')?'新增':'编辑'
-			var sumsg = ''+msgs+'保存成功';
+			//var msgs  = (mid=='0')?'新增':'编辑'
+			var sumsg = ''+a.msg+'成功';
 			js.setmsg(sumsg,'green');
 			js.msg('success',sumsg);
 			this.formdisabled();
-			$('#AltS').hide();
+			$('#AltSspan').hide();
 			form('id').value=a.data;
 			isedit=0;
-			this.callback(a.data);
+			savesuccess();
+			this.callback(a.data, sumsg);
 			try{
 			js.sendevent('reload', 'yingyong_mode_'+moders.num+'');
 			js.backla();}catch(e){}
-			savesuccess();
 		}else{
 			if(typeof(msg)=='undefined')msg=str;
 			get('AltS').disabled=false;
 			this.showtx(msg);//错误提醒
+			saveerror(msg);
+		}
+	},
+	changeturn:function(){
+		if(get('sysisturn').checked){
+			get('AltS').value='提交';
+		}else{
+			get('AltS').value='保存草稿';
 		}
 	},
 	showdata:function(){
 		var smid=form('id').value;
 		if(smid=='0'||smid==''){
 			isedit=1;
-			$('#AltS').show();
+			$('#AltSspan').show();
 			c.initdatelx();
 			c.initinput();
 			initbodys(smid);
@@ -291,10 +403,11 @@ var c={
 		}
 	},
 	//初始上传框
+	filearr:{},
+	uploadback:function(){},
 	initinput:function(){
 		var o,o1,sna,i,tsye,uptp,tdata,farr=alldata.filearr,far;
 		var o = $('div[id^="filed_"]');
-		if(isedit==1)o.show();
 		for(i=0;i<o.length;i++){
 			o1 = o[i];sna= $(o1).attr('tnam');tsye=$(o1).attr('tsye');tdata=$(o1).attr('tdata');
 			if(isedit==1){
@@ -302,6 +415,9 @@ var c={
 				if(tsye=='file'){
 					uptp='*';
 					if(!isempt(tdata))uptp=tdata;
+					$('#'+sna+'_divadd').show();
+				}else{
+					$(o1).show();
 				}
 				$.rockupload({
 					'inputfile':''+o1.id+'_inp',
@@ -312,41 +428,154 @@ var c={
 						if(tsye=='img'){
 							get('imgview_'+sna+'').src = d.filepath;
 							form(sna).value=d.filepath;
+							c.upimages(sna,d.id,false);
 						}else if(tsye=='file'){
-							$('#fileview_'+sna+'').html(c.showfilestr(d));
-							form(sna).value=d.id;
+							$('#meng_'+c.uprnd+'').remove();
+							$('#up_'+c.uprnd+'').attr('upid_'+sna+'',d.id);
+							c.upfbo = false;
+							c.filearr['f'+d.id+''] = f;
+							c.showupid(sna);//显示ID	
 						}
+						c.uploadback(sna, f);
 					},
 					'onprogress':function(f,bl){
 						var sna= f.sname,tsye=f.snape;
 						if(tsye=='file'){
-							$('#fileview_'+sna+'').html('上传中('+bl+'%)...');
+							$('#meng_'+c.uprnd+'').html(''+bl+'%');
+						}
+					},
+					onchange:function(f){
+						var sna= f.sname,tsye=f.snape;
+						if(tsye=='file'){
+							var flx = js.filelxext(f.fileext);
+							c.uprnd = js.getrand();
+							c.upfbo = true;
+							var s='<div onclick="c.clickupfile(this,\''+sna+'\')" id="up_'+c.uprnd+'" title="'+f.filename+'('+f.filesizecn+')"  class="upload_items">';
+							if(f.isimg){
+								s+='<img class="imgs" src="'+f.imgviewurl+'">'
+							}else{
+								s+='<div class="upload_items_items"><img src="web/images/fileicons/'+flx+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
+							}
+							s+='<div id="meng_'+c.uprnd+'" class="upload_items_meng" style="font-size:16px">0%</div></div>';
+							$('#'+sna+'_divadd').before(s);
+						}else if(tsye=='img'){
+							js.loading('上传中...');
 						}
 					}
 				});
 			}
 			var val = form(sna).value;
 			if(tsye=='img'){
-				if(val)get('imgview_'+sna+'').src=val;
+				var val1 = data[''+sna+'_view'];
+				if(!val1)val1=val;
+				if(val1)get('imgview_'+sna+'').src=val1;
 			}
-			if(tsye=='file' && val && val>0){
-				far = farr['f'+val];
-				if(far){
-					$('#fileview_'+sna+'').html(c.showfilestr(far));
-				}else{
-					form(sna).value='0';
+			//显示上传文件信息
+			if(tsye=='file' && farr && val){
+				var fid,f,s,vals=','+val+',';
+				for(fid in farr){
+					f = farr[fid];
+					if(!f || vals.indexOf(','+f.id+',')<0)continue;
+					this.showfileup(sna, f);
 				}
+				this.showupid(sna);
 			}
 		}
+		
+		if(ismobile==1){
+			$('div[tmp="mobilezbiao"]').css('width',''+($(window).width()-12)+'px');
+		}
 	},
+	showfileup:function(sna, f){
+		var s = '';
+		s='<div onclick="c.clickupfile(this,\''+sna+'\')" title="'+f.filename+'('+f.filesizecn+')" upid_'+sna+'="'+f.id+'" class="upload_items">';
+		if(js.isimg(f.fileext)){
+			s+='<img class="imgs" src="'+f.thumbpath+'">';
+		}else{
+			s+='<div class="upload_items_items"><img src="web/images/fileicons/'+js.filelxext(f.fileext)+'.gif" alian="absmiddle"> ('+f.filesizecn+')<br>'+f.filename+'</div>';
+		}
+		s+='</div>';
+		$('#'+sna+'_divadd').before(s);
+		this.filearr['f'+f.id+''] = f;
+	},
+	upimages:function(fid,fileid,bs){
+		if(!bs){
+			js.loading('等待上传完成...');
+			setTimeout("c.upimages('"+fid+"','"+fileid+"', true)",3000);
+		}else{
+			js.ajax(geturlact('upimagepath'),{fileid:fileid,fid:fid},function(ret){
+				js.unloading();
+				var da = ret.data;
+				if(da.path)form(da.fid).value=da.path;
+			},'get,json');
+		}
+	},
+	//多文件点击上传
+	uploadfileibefore:function(){},
+	uploadfilei:function(sna){
+		if(isedit==0)return;
+		var ts = this.uploadfileibefore(sna);
+		if(ts){js.msg('msg',ts);return;}
+		if(this.upfbo){js.msg('msg','请等待上传完成在添加');return;}
+		get('filed_'+sna+'_inp').click();
+	},
+	//上传完成
+	showupid:function(sna){
+		var os = $('div[upid_'+sna+']'),fvid='';
+		for(var i=0;i<os.length;i++){
+			fvid+=','+$(os[i]).attr('upid_'+sna+'')+'';
+		}
+		if(fvid!='')fvid=fvid.substr(1);
+		form(sna).value=fvid;
+	},
+	
+	//预览文件
+	downshow:function(id, ext,pts){
+		js.yulanfile(id, ext,pts);
+	},
+	
+	//上传文件点击
+	clickupfile:function(o1,sna, xs){
+		this.yuobj = o1;
+		var o = $(o1);
+		var fid = o.attr('upid_'+sna+'');
+		if(isempt(fid))return;
+		var f = this.filearr['f'+fid+''];if(!f)return;
+		if(isedit==0 || xs){
+			js.alertclose();
+			this.loadicons();
+			js.fileopt(fid,0);
+		}else{
+			var fileext = f.fileext,oflx=',doc,docx,ppt,pptx,xls,xlsx,',s1='';
+			if(oflx.indexOf(','+fileext+',')>-1)s1='&nbsp; <a style="color:blue" href="javascript:;" onclick="js.alertclose();js.fileopt('+fid+',2)">在线编辑</a>';
+			js.confirm('确定要<font color=red>删除文件</font>：'+o1.title+'吗？<a style="color:blue" href="javascript:;" onclick="js.alertclose();js.downshow('+fid+',\'abc\')">下载</a>&nbsp; <a style="color:blue" href="javascript:;" onclick="c.clickupfile(c.yuobj,\''+sna+'\', true)">预览</a>'+s1+'',function(jg){
+				if(jg=='yes'){
+					o.remove();
+					c.showupid(sna);
+					$.get(js.getajaxurl('delfile','upload','public',{id:fid}));
+				}
+			});
+		}
+	},
+	
 	showfilestr:function(d){
 		var flx = js.filelxext(d.fileext);
 		var s = '<img src="web/images/fileicons/'+flx+'.gif" align="absmiddle" height=16 width=16> <a href="javascript:;" onclick="js.downshow('+d.id+')">'+d.filename+'</a> ('+d.filesizecn+')';
 		return s;
 	},
-	showviews:function(o1){
-		$.imgview({'url':o1.src,'ismobile':ismobile==1});
+	
+	loadicons:function(){
+		if(!this.loacdis){
+			$('body').append('<link rel="stylesheet" type="text/css" href="web/res/fontawesome/css/font-awesome.min.css">');
+			this.loacdis= true;
+		}
 	},
+	showviews:function(o1){
+		this.loadicons();
+		var url = (typeof(o1)=='string')? o1 : o1.src;
+		$.imgview({'url':url,'ismobile':ismobile==1});
+	},
+	
 	initdatelx:function(){
 		
 	},
@@ -405,10 +634,10 @@ var c={
 				this.formdisabled();
 				js.setmsg('无权编辑，查看<a href="http://www.rockoa.com/view_wqbj.html" target="_blank" class="blue">[帮助]</a>');
 			}else{
-				$('#AltS').show();
+				$('#AltSspan').show();
 				c.initdatelx();
 			}
-			if(da.isflow==1){
+			if(da.isflow>0){
 				$('.status').css({'color':da.statuscolor,'border-color':da.statuscolor}).show().html(da.statustext);
 			}
 		}else{
@@ -438,8 +667,22 @@ var c={
 		js.changeclear(na);
 	},
 	editorobj:{},
+	htmlediteritems:function(){},
 	htmlediter:function(fid){
 		if(ismobile==1)return;
+		var items = [
+			'forecolor', 'hilitecolor', 'bold', 'italic', 'underline','removeformat','|',
+			'fontname', 'fontsize','quickformat', '|', 
+			'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist','insertunorderedlist', '|',
+			'image', 'link','unlink','|',
+			'undo','source','clearhtml','fullscreen'
+		];
+		var oethed  = this.htmlediteritems(fid);
+		if(oethed){
+			var kx = 0,i;
+			if(oethed[0]=='clear'){items=[];kx=1;oethed.push('fullscreen')}
+			for(i=kx;i<oethed.length;i++)items.push(oethed[i]);
+		}
 		var cans  = {
 			resizeType : 0,
 			allowPreviewEmoticons : false,
@@ -448,18 +691,8 @@ var c={
 			allowFileManager:true,
 			uploadJson:'?m=upload&a=upimg&d=public',
 			minWidth:'300px',height:'250',
-			items : [
-				'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
-				'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
-				'insertunorderedlist', '|','image','crop', 'link','unlink','|','source','clearhtml','fullscreen'
-			]	
+			items : items
 		};
-		KindEditor.plugin('crop', function(K){
-			this.clickToolbar('crop', function() {
-				js.cliendsend('crop');
-			});
-		});
-		KindEditor.lang({crop : '截屏'});
 		this.editorobj[fid] = KindEditor.create("[name='"+fid+"']", cans);
 	},
 	subtablefields:[],
@@ -485,6 +718,14 @@ var c={
 				}
 				this.subtablefields[i]=fname;
 			}
+		}
+		
+		//引入公式相关的js文件
+		var gongsistr='';
+		for(i=0;i<gongsiarr.length;i++)gongsistr+=','+gongsiarr[i].gongsi+'';
+		if(gongsistr!=''){
+			if(gongsistr.indexOf('AmountInWords')>-1)js.importjs('js/rmb.js');
+			if(gongsistr.indexOf('js.')>-1)js.importjs('js/jsrock.js');
 		}
 	},
 	getsubdata:function(i){
@@ -517,12 +758,15 @@ var c={
 		}
 		$(o).parent().parent().remove();
 		this.repaixuhao(xu);
+		this.rungongsi();
+		eventdelsubrows(xu);
+	},
+	rungongsi:function(){
 		var i,len=gongsiarr.length,d;
 		for(i=0;i<len;i++){
 			d = gongsiarr[i];
 			if(d.iszb==0&&form(d.fields))this.inputblur(form(d.fields),0);
 		}
-		eventdelsubrows(xu);
 	},
 	repaixuhao:function(xu){
 		var o=$('#tablesub'+xu+'').find("input[temp='xuhao']");
@@ -562,7 +806,9 @@ var c={
 		}
 		this.repaixuhao(xu);
 		this.initdatelx();
-		if(!isad)eventaddsubrows(xu);
+		var nusa = [""+xu+"",""+oj+"",wux,nass,nna];
+		if(!isad)eventaddsubrows(xu, oj);
+		return nusa;
 	},
 	adddatarow:function(xu, oj, d){
 		d=js.apply({sid:'0'},d);
@@ -595,6 +841,11 @@ var c={
 			return;
 		}
 		this.insertrow(xu);
+	},
+	//子表表单对象,na名称,zb第几个子表,hs第几行
+	getforms:function(na,zb,hs){
+		var fid = ''+na+''+zb+'_'+hs+'';
+		return form(fid);
 	},
 	getsubtabledata:function(){
 		
@@ -658,13 +909,17 @@ var c={
 		o.show();
 		o.prev().show();
 	},
+	uploadimgclear:function(fid){
+		get('imgview_'+fid+'').src='images/noimg.jpg';
+		form(fid).value='';
+	},
 	
 	//----强大公式计算函数处理start-----
 	inputblur:function(o1,zb){
 		if(isedit==0)return;
 		var ans=[],nae,nae2,i,len=gongsiarr.length,d,iszb,iszbs,diszb,gongsi,gs1,gs2,bgsa,lens,blarr,j,val,nams;
 		
-		if(zb==1){
+		if(zb>0){
 			ans = this.getxuandoi(o1.name);
 			nae = ans[3]; //表单name名称
 			nae2= ans[2]; //格式0_0
@@ -694,7 +949,7 @@ var c={
 				gongsi = gongsi.replace(/\]/g,'');
 				this.gongsv(d.fields, gongsi,d.gongsi);
 				
-			}else if(diszb==iszbs && zb==1){
+			}else if(diszb==iszbs && zb>0){
 				this.zhujisuags(gongsi, d.fields, nae2, false);//子表行内计算
 			}
 		}
@@ -718,6 +973,7 @@ var c={
 		for(j=0;j<blarr.length;j++){
 			nams	= ''+blarr[j]+''+nae2+'';
 			val 	= form(nams) ? form(nams).value : '0';
+			if(val==='')val='0';
 			ogs = ogs.replace('{'+blarr[j]+'}', val);
 		}
 		if(blx)return '('+ogs+')';

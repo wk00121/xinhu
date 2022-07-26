@@ -3,7 +3,7 @@
 $(document).ready(function(){
 	var a = $('#admin_{rand}').bootstable({
 		tablename:'admin',modenum:'user',celleditor:true,sort:'sort',dir:'asc',fanye:true,
-		storebeforeaction:'coguserbeforeshow',modedir:'{mode}:{dir}',params:{atype:'all'},
+		storebeforeaction:'coguserbeforeshow',storeafteraction:'coguseraftershow',modedir:'{mode}:{dir}',params:{atype:'all'},
 		columns:[{
 			text:'头像',dataIndex:'face',renderer:function(v,d){
 				if(isempt(v))v='images/noface.png';

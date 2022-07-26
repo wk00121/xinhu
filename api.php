@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
 *	api的入口地址请求访问，访问方法：http://我的域名/api.php?m=index&a=方法
 *	主页：http://www.rockoa.com/

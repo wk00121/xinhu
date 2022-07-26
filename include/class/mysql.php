@@ -26,6 +26,7 @@ abstract class mysql{
 	public 	$perfix		= PREFIX;
 	public  $errorbool	= false;
 	public  $errormsg	= '';
+	public  $errorlast	= '';
 	public  $nowerror	= false;
 	public  $basename;
 	
@@ -71,7 +72,7 @@ abstract class mysql{
 		//记录访问sql日志
 		if(getconfig('sqllog')){
 			$sql = '';
-			$filstr = 'sqllog_'.date('Y.m.d.H.i.s').'_'.$this->rock->adminid.'_'.str_shuffle('abcdefg').'.log';
+			$filstr = 'sqllog_'.date('Y.m.d.H.i.s').'_'.$this->rock->adminid.'_'.str_shuffle('abcdefghijklmn').'.log';
 			foreach($this->sqlarr as $sql1)$sql.="\n\n$sql1;";
 			if($sql!='')$this->rock->createtxt(''.UPDIR.'/sqllog/'.date('Y-m-d').'/'.$filstr.'', "时间[".$this->rock->now."],用户[".$this->rock->adminid.".".$this->rock->adminname."],IP[".$this->rock->ip."],WEB[".$this->rock->web."],URL[".$this->rock->nowurl()."]".$sql);
 		}
@@ -113,9 +114,9 @@ abstract class mysql{
 	public function query($sql, $ebo=true)
 	{
 		if($this->conn == null)$this->connect();
-		if($this->conn == null)exit('数据库的帐号/密码有错误!');
+		if($this->conn == null)exit('数据库的帐号/密码有错误!'.$this->errormsg.'');
 		$sql	= trim($sql);
-		$sql	= str_replace(array('[Q]','[q]'), array($this->perfix, $this->perfix), $sql);
+		$sql	= str_replace(array('[Q]','[q]','{asqom}'), array($this->perfix, $this->perfix,''), $sql);
 		$this->countsql++;
 		$this->sqlarr[]	= $sql;
 		$this->nowsql	= $sql;
@@ -126,13 +127,35 @@ abstract class mysql{
 			$rsbool		= false;
 			$this->errormsg = $e->getMessage();
 		}
+		
 		$this->nowerror	= false;
 		if(!$rsbool)$this->nowerror = true;
-		if(!$rsbool && DEBUG && $ebo){
-			$txt	= ''.D.'/'.M.'/'.A.',[错误SQL]：《'.$sql.'》----------原因：'.$this->error().'';
-			$this->rock->debug($txt,'mysql');
+		
+		$stabs  = ''.$this->perfix.'log';
+		if(!contain($sql, $stabs) && !$rsbool)$this->errorlast = $this->error(); //最后错误信息
+		
+		//记录错误sql
+		if(!$rsbool && $ebo){
+			$txt	= '[ERROR SQL]'.chr(10).''.$sql.''.chr(10).''.chr(10).'[Reason]'.chr(10).''.$this->error().''.chr(10).'';
+			$efile 	= $this->rock->debug($txt,'mysql_sqlerr', true);
+			$errmsg = str_replace("'",'&#39;', $this->error());
+			if(!contain($sql, $stabs)){
+				m('log')->addlogs('错误SQL',''.$errmsg.'', 2, array(
+					'url' => $efile
+				)); //写入日志中方便查看
+			}
 		}
 		return $rsbool;
+	}
+	
+	/**
+	*	返回最后错误信息
+	*/
+	public function lasterror()
+	{
+		$err = $this->errorlast;
+		if($err=='')$err = $this->error();
+		return $err;
 	}
 	
 	public function execsql($sql)
@@ -334,6 +357,9 @@ abstract class mysql{
 		return $where;
 	}
 
+	/**
+	*	以$kfied作为主键返回数组
+	*/
 	public function getarr($table, $where='', $fields='*', $kfied='id')
 	{
 		$sql	= $this->getsql(array(
@@ -408,15 +434,36 @@ abstract class mysql{
 		$res=$this->query($sql);
 		if($res){
 			$row = $this->fetch_array($res, 1);
-			$this->count = 1;
-			return $row[0];
-		}else{
-			return false;
+			if($row){
+				$this->count = 1;
+				return $row[0];
+			}
 		}
-	}	
+		return false;
+	}
+	
+	/**
+	*	开启事务
+	*/
+	public function routinestart()
+	{
+		$this->starttran();
+	}
+	
+	/**
+	*	提交/回滚事务
+	*	$bo=null 自动 true 提交,false 回滚
+	*/
+	public function routineend($bo=null)
+	{
+		if(!is_bool($bo))$bo = $this->backsql();
+		$this->endtran($bo);
+		return $bo;
+	}
+	
 
 	/**
-	*	启用事务
+	*	启用事务，没有事务
 	*/	
 	private function tranbegin($sql)
 	{
@@ -424,8 +471,8 @@ abstract class mysql{
 		if($this->conn == null)$this->connect();
 		$this->iudcount++;
 		if(!$this->tran){
-			$this->starttran();
-			$this->tran=true;
+			//$this->starttran();
+			//$this->tran=true;
 		}
 		$rsa	= $this->query($sql);
 		$this->iudarr[]=$rsa;
@@ -439,7 +486,7 @@ abstract class mysql{
 	private function tranend()
 	{
 		if($this->tran){
-			$this->endtran($this->backsql());
+			//$this->endtran($this->backsql());
 		}
 		$this->tran=false;
 	}

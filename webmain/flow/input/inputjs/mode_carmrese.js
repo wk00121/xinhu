@@ -7,6 +7,9 @@ function initbodys(){
 		}
 		if(form('carnum'))form('carnum').value=txt;
 	});
+	c.onselectdata['carnum'] = function(d){
+		if(form('kmstart'))form('kmstart').value = d.kmstart;
+	}
 }
 
 

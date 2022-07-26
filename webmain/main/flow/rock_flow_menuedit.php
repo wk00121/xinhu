@@ -60,7 +60,7 @@ $(document).ready(function(){
 		<tr>
 			
 			<td  align="right" >类型：</td>
-			<td class="tdinput"><select name="type" class="form-control"><option value="1">弹出填写说明</option><option value="0">直接操作</option><option value="2">人员选择(单人)</option><option value="3">人员选择(多人)</option><option value="4">更新字段</option></select></td>
+			<td class="tdinput"><select name="type" class="form-control"><option value="1">弹出填写说明</option><option value="0">直接操作</option><option value="2">人员选择(单人)</option><option value="3">人员选择(多人)</option><option value="6">人员选择(多选部门人员组)</option><option value="4">更新字段</option><option value="5">打开新窗口</option></select></td>
 			<td  align="right" >字段名称：</td>
 			<td class="tdinput"><input name="fields" class="form-control"></td>
 		</tr>
@@ -112,8 +112,8 @@ $(document).ready(function(){
 		</tr>
 		
 		<tr>
-			<td align="right">更新内容：</td>
-			<td class="tdinput" colspan="3"><textarea  name="upgcont" style="height:60px" class="form-control"></textarea><font color=#888888>当触发时同时更新对应记录为这个内容</font></td>
+			<td align="right" id="upcont_{rand}">更新内容：</td>
+			<td class="tdinput" colspan="3"><textarea  name="upgcont" style="height:60px" class="form-control"></textarea><font color=#888888>当触发时同时更新对应记录为这个内容,{cname}选择的人,{cnameid}选择人id,{uid}当前用户id，当类型是[打开新窗口]时，这里填写Url地址，如:add|work|def_projectid={id},也就是:新增|模块编号|默认参数</font></td>
 		</tr>
 	
 		<tr>

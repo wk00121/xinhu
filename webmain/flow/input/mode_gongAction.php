@@ -8,9 +8,10 @@ class mode_gongClassAction extends inputAction{
 	
 	protected function savebefore($table, $arr, $id, $addbo){
 		//$uarr['receid'] = $this->flow->getreceids($arr['receid']);
-		
+		$uarr = array();
+		if(!isset($arr['issms']))$uarr['issms']=0;
 		return array(
-			//'rows' => $uarr
+			'rows' => $uarr
 		);
 	}
 	
@@ -25,10 +26,16 @@ class mode_gongClassAction extends inputAction{
 		$mid 		= $this->get('mid');
 		$sid 		= $this->get('sid');
 		$modenum 	= $this->get('modenum');
+		
 		$this->flow	= m('flow')->initflow($modenum);
+		
+		$towheer	= "`table`='infor' and `mid`='$mid' and `name`='投票' and `checkid`='$this->adminid'";
+		if($this->flow->flogmodel->rows($towheer)>0)return '你已投票了';
+		
 		$this->flow->addlog(array(
 			'name' => '投票',
 			'mid'  => $mid,
+			'explain' => '投票项ID('.$sid.')' 
 		));
 		m('infors')->update('`touci`=`touci`+1','`mid`='.$mid.' and `id` in('.$sid.')');
 		

@@ -45,7 +45,14 @@ class agent_flowClassModel extends agentModel
 		}
 		
 		$arr 	= m('flowbill')->getrecord($uid, $this->agentnum.'_'.$lx, $this->page, $this->limit);
-		return $arr;
+		$modearr= array();
+		if($this->loadci==1){
+			$modearr = m('mode')->getmodemyarr($uid);
+		}
+		return array(
+			'rows' => $arr,
+			'modearr' => $modearr,
+		);
 	}
 	
 	protected function agenttotals($uid)

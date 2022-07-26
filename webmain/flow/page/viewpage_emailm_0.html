@@ -21,7 +21,8 @@ if($da['arr']['ishuifu']==1){
 			<td>
 				<div align="left" style="padding:10px">
 				<a id="spage_btn" class="webbtn" onclick="submittijiao(this)" href="javascript:;">回复</a>&nbsp; &nbsp;
-				<a class="webbtn" onclick="zhuangfa(this)" href="javascript:;">转发</a>
+				<a class="webbtn" onclick="zhuangfa(0)" href="javascript:;">转发</a>&nbsp; &nbsp;
+				<a class="webbtn" onclick="zhuangfa(1)" href="javascript:;">完整回复</a>
 				</div>
 			</td>
 		</tr>
@@ -44,8 +45,8 @@ function submittijiao(o1){
 		}
 	}, 'post');
 }
-function zhuangfa(){
-	var url = 'index.php?a=lu&m=input&d=flow&num=emailm&mid=0&zfid='+mid+'';
+function zhuangfa(zflx){
+	var url = 'index.php?a=lu&m=input&d=flow&num=emailm&mid=0&zfid='+mid+'&zflx='+zflx+'';
 	js.location(url);
 }
 </script>

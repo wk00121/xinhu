@@ -3,29 +3,41 @@
 $(document).ready(function(){
 	var a = $('#menu_{rand}').bootstable({
 		tablename:'menu',url:js.getajaxurl('data','{mode}','{dir}'),
-		tree:true,celleditor:true,bodyStyle:'height:'+(viewheight-70)+'px;overflow:auto',
+		tree:true,celleditor:!ISDEMO,bodyStyle:'height:'+(viewheight-70)+'px;overflow:auto',
 		columns:[{
-			text:'菜单名称',dataIndex:'name',align:'left',editor:true
+			text:'菜单名称',dataIndex:'name',align:'left',editor:true,renderstyle:function(v,d){
+				return 'min-width:220px';
+			}
 		},{
-			text:'编号',dataIndex:'num'	,editor:true
+			text:'编号',dataIndex:'num'	,editor:true,renderstyle:function(v,d){
+				return 'width:70px';
+			}
 		},{
-			text:'URL',dataIndex:'url',editor:true,renderstyle:function(v,d){
-				return 'word-wrap:break-word;word-break:break-all;white-space:normal;width:200px';
+			text:'URL',dataIndex:'url',editor:true,repEmpty:true,renderstyle:function(v,d){
+				return 'word-wrap:break-word;word-break:break-all;white-space:normal;width:180px';
 			}
 		},{
 			text:'PID',dataIndex:'pid',editor:true
 		},{
-			text:'图标',dataIndex:'icons',editor:true
+			text:'图标',dataIndex:'icons',editor:true,renderstyle:function(v,d){
+				return 'width:70px';
+			}
 		},{
 			text:'启用',dataIndex:'status',type:'checkbox',editor:true
 		},{
 			text:'验证',dataIndex:'ispir',type:'checkbox',editor:true
 		},{
-			text:'显示首页',dataIndex:'ishs',type:'checkbox',editor:true
+			text:'显首',dataIndex:'ishs',type:'checkbox',editor:true
 		},{
-			text:'排序号',dataIndex:'sort'	,editor:true
+			text:'排序',dataIndex:'sort'	,editor:true
 		},{
 			text:'颜色',dataIndex:'color',editor:true
+		},{
+			text:'级别',dataIndex:'type',editor:true,renderer:function(v){
+				var s='&nbsp;';
+				if(v==1)s='系统';
+				return s;
+			},type:'select',store:[['0','普通'],['1','系统']]
 		},{
 			text:'ID',dataIndex:'id'	
 		}],
@@ -58,13 +70,13 @@ $(document).ready(function(){
 				params:{int_filestype:'ispir,status,sort,pid,ishs'},
 				submitfields:'num,name,url,icons,ispir,status,sort,pid,ishs,color',
 				items:[{
-					labelText:'编号',name:'num'
+					labelText:'编号',name:'num',repEmpty:true
 				},{
 					labelText:'菜单名称',name:'name',required:true
 				},{
-					labelText:'URL地址',name:'url'
+					labelText:'URL地址',name:'url',repEmpty:true
 				},{
-					labelText:'图标',name:'icons'
+					labelText:'图标',name:'icons',repEmpty:true
 				},{
 					labelText:'上级ＩＤ',name:'pid',required:true,value:'0',type:'number'
 				},{
@@ -74,7 +86,7 @@ $(document).ready(function(){
 				},{
 					name:'ishs',labelBox:'显示在首页',type:'checkbox'
 				},{
-					labelText:'颜色',name:'color'
+					labelText:'颜色',name:'color',repEmpty:true
 				},{
 					labelText:'序号',name:'sort',type:'number',value:'0'
 				}],

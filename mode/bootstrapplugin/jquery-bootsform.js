@@ -1,6 +1,11 @@
 /**
-	bootsform
+*	bootstable 表单录入插件
+*	caratename：雨中磐石(rainrock)
+*	caratetime：2014-04-06 21:40:00
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
+
 
 (function ($) {
 	
@@ -105,7 +110,8 @@
 				var bl=a[i].blankText,bt='',attr = a[i].attr;
 				if(!bl)bl='';if(!attr)attr='';
 				if(a[i].required)bt='<font color="red">*</font>';
-				if(a[i].readOnly)attr+=' readonly ';
+				if(a[i].readOnly)attr+=' readonly';
+				if(a[i].repEmpty)attr+=' onblur="this.value=strreplace(this.value)"';
 				if(a[i].type=='number')attr+=' onfocus="js.focusval=this.value" onblur="js.number(this)"';
 				var inp = '<input placeholder="'+bl+'" '+attr+' type="'+a[i].type+'" value="'+a[i].value+'" name="'+a[i].name+'" class="form-control">';
 				if(a[i].type=='checkbox'){
@@ -121,7 +127,7 @@
 					}
 					inp += '</select>';
 				}else if(a[i].type=='changeuser'){
-					inp	= '<div class="input-group"><input readonly class="form-control" name="'+a[i].name+'" >';
+					inp	= '<div class="input-group"><input placeholder="'+bl+'" readonly class="form-control" name="'+a[i].name+'" >';
 					inp+= '<span class="input-group-btn">';
 					if(a[i].clearbool)inp+= '<button class="btn btn-default" changeclear="'+a[i].name+'" type="button"><i class="icon-remove"></i></button>';
 					inp+= '<button class="btn btn-default" changeuser="'+a[i].name+'" type="button"><i class="icon-search"></i></button>';
@@ -196,7 +202,15 @@
 		};
 		this.save = function(o1){
 			this._save(o1, 1);
-		},
+		};
+		this.signature= function(da, url){
+			var time = parseInt(js.now('time')*0.001);
+			var siaa = ''+NOWURL+''+url+''+da.tablename_postabc+''+time+'_'+adminid+'';
+			var sign = md5(siaa);
+			da.sys_signature= sign;
+			da.sys_timeature= time;
+			return da;
+		};
 		this._save	= function(o1, lx){
 			if(this.isValid()){
 				this.setmsg(this.isValidText);
@@ -225,8 +239,8 @@
 			if(typeof(s)=='object'){
 				for(ac in s)data[ac]=s[ac];
 			}
-			data.tablename_postabc 		= can.tablename;
-			data.submitfields_postabc 	= can.submitfields;
+			data.tablename_postabc 		= jm.encrypt(can.tablename);
+			data.submitfields_postabc 	= jm.base64encode(can.submitfields);
 			data.aftersaveaction 	= can.aftersaveaction;
 			data.beforesaveaction 	= can.beforesaveaction;
 			data.editrecord_postabc = can.editrecord;
@@ -235,7 +249,7 @@
 			$.ajax({
 				type:'post',
 				url:can.url,
-				data:data,
+				data:this.signature(data, can.url),
 				success:function(da){
 					var a = js.decode(da);
 					if(a.success){

@@ -7,6 +7,7 @@ class viewClassAction extends Action
 		$setid	= (int)$this->get('mid');
 		$arr['data'] 		= m('flow_extent')->getone($id);
 		$arr['wherelist'] 	= m('flow_where')->getall('setid='.$setid.'','id,name','sort');
+		$arr['fieldsarr'] 	= m('flow_element')->getrows('mid='.$setid.'','name,fields','`sort`');
 		echo json_encode($arr);
 	}
 	
@@ -18,7 +19,7 @@ class viewClassAction extends Action
 		}
 		return array(
 			'rows'=>$rows,
-			'modearr' => m('mode')->getmodearr()
+			'modearr' => m('mode')->getmodearr(),
 		);
 	}
 }

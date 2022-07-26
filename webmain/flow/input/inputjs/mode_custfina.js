@@ -8,10 +8,17 @@ function initbodys(){
 		form('htid').value = '';
 	});
 	
+	c.onselectdata['custname']=function(){
+		form('htid').value = '';
+	}
+	
 	$(form('htid')).change(function(){
 		var val = this.value,txt='';
 		salechange(val);
 	});
+	
+	var defe = js.request('def_htid');
+	if(defe && defe<0)salechange(defe);
 }
 function salechange(v){
 	if(v==''){

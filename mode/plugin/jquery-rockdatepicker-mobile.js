@@ -1,5 +1,5 @@
 /**
-*	rockdatepicker 时间选择插件-移动
+*	rockdatepicker 时间选择插件-手机版本使用
 *	caratename：雨中磐石(rainrock)
 *	caratetime：2017-06-19 21:40:00
 *	email:admin@rockoa.com
@@ -7,7 +7,7 @@
 */
 
 (function ($) {
-	
+	js.onchangedate = function(){}; //选择时间回调
 	function rockdatepicker_mobile(options){
 		
 		var me = this;
@@ -86,7 +86,7 @@
 				
 				s+='	<td style="padding:5px" align="center">';
 				s+='		<div><input type="button" value="＋"  pickermobile="d1" style="'+inst+'"></div>';
-				s+='		<div><select id="pickermobile_input_day" style="width:100%;height:30px">'+this.selectoption(1,28,this.now.d)+'</select></div>';
+				s+='		<div><select id="pickermobile_input_day" style="width:100%;height:30px">'+this.selectoption(1,31,this.now.d)+'</select></div>';
 				s+='		<div><input type="button" value="－"  pickermobile="d2" style="'+inst+'"></div>';
 				s+='	</td>';
 				s+='	<td>日</td>';
@@ -198,25 +198,32 @@
 			val = val.replace('H', this.sa(H));
 			val = val.replace('i', this.sa(i));
 			val = val.replace('s', this.sa(s));
+			var nobj = false;
 			if(this.inputid&&get(this.inputid)){
-				get(this.inputid).value=val;
-				get(this.inputid).focus();
+				nobj = get(this.inputid);
 			}
 			if(this.inputobj){
-				this.inputobj.value=val;
-				this.inputobj.focus();
+				nobj = this.inputobj;
+			}
+			if(nobj){
+				nobj.value=val;
+				nobj.focus();
+				js.onchangedate(nobj.name, nobj, val, this);
 			}
 			this.cancal();
 		};
 		this.clearo=function(){
-			var val='';
+			var val='',nobj = false;
 			if(this.inputid&&get(this.inputid)){
-				get(this.inputid).value=val;
-				get(this.inputid).focus();
+				nobj = get(this.inputid);
 			}
 			if(this.inputobj){
-				this.inputobj.value=val;
-				this.inputobj.focus();
+				nobj = this.inputobj;
+			}
+			if(nobj){
+				nobj.value=val;
+				nobj.focus();
+				js.onchangedate(nobj.name, nobj, val, this);
 			}
 			this.cancal();
 		};

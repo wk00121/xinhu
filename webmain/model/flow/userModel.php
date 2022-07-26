@@ -1,12 +1,24 @@
 <?php
 class flow_userClassModel extends flowModel
 {
+	
+	protected $flowviewufieds	= 'id';
+	protected $flowcompanyidfieds	= 'companyid';
+	
 	public function getstatusarr()
 	{
 		$barr[1] = array('启用','green');
 		$barr[0] = array('停用','#888888');
 		return $barr;
 	}
+	
+
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'部门/用户...','fields'=>'id');
+		return $arr;
+	}
+	
 	
 	
 	/**
@@ -25,17 +37,24 @@ class flow_userClassModel extends flowModel
 			$where.= " and instr(`deptpath`,'[$detpid]')>0";
 		}
 		return array(
-			'fields'=> '`name`,`id`,`id` as uid,`face`,`sort`,`deptallname`,deptpath,`ranking`,`tel`,`mobile`,`email`,`user`,num,workdate,sex,deptname,superman,status,type,online,lastonline',
+			'fields'=> '`name`,`id`,`id` as uid,`face`,`sort`,`deptallname`,deptpath,`ranking`,`tel`,`mobile`,`email`,`user`,num,workdate,sex,deptname,deptnames,superman,status,type,online,lastonline,isvcard',
 			'order' => 'sort',
 			'where' => $where
 		);
 	}
 	
+	
 	//替换
 	public function flowrsreplace($rs, $lx=0)
 	{
+		
+		if(isset($rs['mobile'])){
+			$sjhao = $rs['mobile'];
+		}
+		if(getconfig('systype')=='demo')$rs['mobile']='';
+		
 		if($this->rock->ismobile()){
-			if(isset($rs['mobile']) && !isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
+			if(isset($rs['mobile']) && !isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(\''.$sjhao.'\')" href="tel:'.$sjhao.'">'.$rs['mobile'].'</a>';
 			if(isset($rs['tel']) && !isempt($rs['tel']))$rs['tel']='<a onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
 		}
 		$type = arrvalue($rs,'type');
@@ -54,7 +73,9 @@ class flow_userClassModel extends flowModel
 			}
 		}
 		$rs['online'] = $online;
-		
+		if($lx==1){
+			$rs['temp_dwid'] = $this->getdwname($rs);
+		}
 		return $rs;
 	}
 	
@@ -64,7 +85,22 @@ class flow_userClassModel extends flowModel
 		$rs['groupname'] = m('sjoin')->getgroupid($rs['id']);
 		$rs['pass']		 = '';
 		unset($rs['deptallname']);
+		
+		$rs['temp_dwid'] = $this->getdwname($rs);
+		if(getconfig('systype')=='demo')$rs['mobile']	 = '';
 		return $rs;
+	}
+	
+	private function getdwname($rs)
+	{
+		$dwid = arrvalue($rs,'dwid');
+		$temp_dwid = '';
+		if(!isempt($dwid)){
+			$dwarr = m('company')->getall('`id` in('.$dwid.')');
+			foreach($dwarr as $k1=>$rs1)$temp_dwid.=','.$rs1['name'].'';
+			if($temp_dwid!='')$temp_dwid = substr($temp_dwid, 1);
+		}
+		return $temp_dwid;
 	}
 	
 	//删除用户时
@@ -74,6 +110,17 @@ class flow_userClassModel extends flowModel
 		$name 	= $this->rs['name'];
 		m('im_messzt')->delete('`uid`='.$id.'');
 		m('im_history')->delete('`uid`='.$id.'');
+		
+		
+		$dbs = m('userinfo');
+		$urs = $dbs->getone($id);
+		if(!$urs)return;
+		$quitdt = $urs['quitdt'];
+		$state  = $urs['state'];
+		$uarr	= array();
+		if(isempt($quitdt))$uarr['quitdt'] = date('Y-m-d'); //设置离职日期
+		if($state != '5')$uarr['state']		= 5;//离职状态为5
+		if($uarr)$dbs->update($uarr, $id);
 	}
 	
 	//导入数据的测试显示
@@ -89,28 +136,42 @@ class flow_userClassModel extends flowModel
 			'deptname' 	=> '信呼开发团队/开发部',
 			'tel' 		=> '0592-1234567-005',
 			'email' 	=> 'zhangsan@rockoa.com',
+			'workdate' 	=> '2017-01-17',
 		);
 	}
 	
 	//导入之后
 	public function flowdaoruafter()
 	{
+		//更新设置上级主管
+		foreach($this->superarrar as $superman=>$suparr){
+			$superid			= (int)$this->getmou('id', "`name`='$superman'");
+			$userld				= "'".join("','", $suparr)."'";
+			if($superid>0){
+				$this->update(array(
+					'superman' 	=> $superman,
+					'superid' 	=> $superid,
+				),"`user` in($userld)");
+			}
+		}
 		m('admin')->updateinfo();
 	}
 	
 	//导入之前判断
+	private $superarrar = array();
 	public function flowdaorubefore($rows)
 	{
 		$inarr	= array();
-		
 		$sort 	= (int)$this->getmou('max(`sort`)', '`id`>0');
 		$dbs	= m('dept');
 		$py 	= c('pingyin');
+		$dname	= $dbs->getmou('name', 1);if(isempt($dname))$dname = '信呼开发团队';
 		
 		foreach($rows as $k=>$rs){
 			$user = $rs['user'];
 			$name = $rs['name'];
-			$arr	= array();
+			$mobile = $rs['mobile'];
+			$arr	= $rs;
 			
 			$arr['pingyin'] 	= $py->get($name,1);
 			if($this->rows("`name`='$name'")>0)$name = $name.'1';
@@ -118,31 +179,30 @@ class flow_userClassModel extends flowModel
 			
 			if($this->rows("`user`='$user'")>0)$user = $user.'1'; //相同用户名?
 
+
 			$arr['user'] = strtolower($user);
 			$arr['name'] = $name;
 			
-			$arr['sex']  		= $rs['sex'];
-			$arr['ranking']  	= $rs['ranking'];
-			$arr['deptname']  	= $rs['deptname'];
-			$arr['mobile']  	= $rs['mobile'];
-			$arr['email']  		= $rs['email'];
-			$arr['tel']  		= $rs['tel'];
-			$arr['superman']  	= $rs['superman'];
 			$arr['pass']  		= md5('123456');
 			$arr['sort']  		= $sort+$k+1;
-			$arr['workdate']  	= $this->rock->date;
+			$arr['workdate']  	= arrvalue($rs,'workdate', $this->rock->date);
 			$arr['adddt']  		= $this->rock->now;
-			$arr['companyid']  	= 1; //默认公司Id为1
+			$arr['companyid']  	= $this->companyid; //默认单位
 			
 			//读取上级主管Id
-			$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
-			if($superid==0)$arr['superman'] = '';
-			$arr['superid'] = $superid;
+			if(isset($arr['superman'])){
+				//$superid			= (int)$this->getmou('id', "`name`='".$arr['superman']."'");
+				//if($superid==0)$arr['superman'] = '';
+				//$arr['superid'] = $superid;
+				$this->superarrar[$arr['superman']][] = $arr['user'];
+			}
+			$arr['superman'] = '';
+			$arr['superid']  = '';
 			
 			//读取部门Id
 			$deptarr 	= $this->getdeptid($rs['deptname'], $dbs);
 			
-			if($deptarr['deptid']==0)return '行'.($k+1).'找不到对应顶级部门['.$rs['deptname'].']';
+			if($deptarr['deptid']==0)return '行'.($k+1).'找不到顶级部门['.$rs['deptname'].'],请写完整部门路径如：'.$dname.'/'.$rs['deptname'].'';
 			
 			foreach($deptarr as $k1=>$v1)$arr[$k1]=$v1;
 			

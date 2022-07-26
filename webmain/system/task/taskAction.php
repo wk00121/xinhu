@@ -1,4 +1,5 @@
 <?php
+//计划任务列表控制器
 class taskClassAction extends Action
 {
 	
@@ -9,15 +10,28 @@ class taskClassAction extends Action
 	}
 	public function starttaskAjax()
 	{
-		$url 	= getconfig('localurl');
-		if($url=='')exit('请先设置系统本地地址');
-		$mtask = m('task');
-		$mtask->createjson();
-		$bo 	= $mtask->starttask();
-		if($bo){
-			echo 'ok';
+		$lx		= (int)$this->get('lx','0');
+		$tobj 	= m('task');
+		$tobj->cleartask();
+		if($lx==0){
+			$carr 	= $tobj->pdlocal();
+			if(!$carr['success'])return $carr;
+			$barr 	= $tobj->starttask();
+			if($barr['success']){
+				return returnsuccess('启动成功');
+			}else{
+				return returnsuccess('无法启动可能未开启服务端:'.$barr['msg'].'');
+			}
 		}else{
-			echo '无法启动可能未开启服务端';
+			if($lx==1){
+				$barr = c('xinhuapi')->starttask();
+				if($barr['success'])$barr['data'] = '已通过官网服务开启计划任务';
+			}
+			if($lx==2){
+				$barr = c('xinhuapi')->stoptask();
+				if($barr['success'])$barr['data'] = '已停止使用官网计划任务';
+			}
+			return $barr;
 		}
 	}
 	
@@ -40,15 +54,20 @@ class taskClassAction extends Action
 		echo '一、<b>Windows服务器</b>，可根据以下设置定时任务<br>';
 		$str1 = '@echo off
 cd '.$ljth.'	
-'.getconfig('phppath','php.exe').' task.php runt,task';
-		$this->rock->createtxt(''.UPDIR.'/xinhutaskrun.bat', $str1);
-		echo '1、打开文件：'.UPDIR.'/xinhutaskrun.bat将php.exe换成你当前php环境的目录如：F:\php\php-5.6.22\php.exe<br>2、在您的win服务器上，开始菜单→运行 输入 cmd 回车(管理员身份运行)，输入以下命令(每5分钟运行一次)：<br><br>';
-		echo 'schtasks /create /sc DAILY /mo 1 /du "24:00" /ri 5 /sd "2017/04/01" /st "00:00:00"  /tn "信呼计划任务" /tr '.$ljth.'\\'.UPDIR.'\xinhutaskrun.bat<br>';
+'.getconfig('phppath','php').' '.$ljth.'\task.php runt,task';
+		$this->rock->createtxt(''.UPDIR.'/cli/xinhutaskrun.bat', $str1);
+		echo '1、打开系统配置文件webmainConfig.php加上一个配置phppath设置php环境的目录地址如：F:\php\php-5.6.22\php.exe，设置好了，刷新本页面。<br>';
+		echo '<div style="background:#caeccb;padding:5px;border:1px #888888 solid;border-radius:5px;">';
+		echo "return array(<br>'title'	=>'信呼OA',<br>'phppath' => 'F:\php\php-5.6.22\php.exe' <font color=#aaaaaa>//加上这个，路径如果有空格请加入环境变量，这个设置为php即可</font><br>)";
+		echo '</div>';
+		echo '2、在您的win服务器上，开始菜单→运行 输入 cmd 回车(管理员身份运行)，输入以下命令(每5分钟运行一次)：<br>';
+		echo '<div style="background:#caeccb;padding:5px;border:1px #888888 solid;border-radius:5px;">';
+		echo 'schtasks /create /sc DAILY /mo 1 /du "24:00" /ri 5 /sd "2017/04/01" /st "00:00:05"  /tn "信呼计划任务" /ru System /tr '.$ljth.'\\'.UPDIR.'\cli\xinhutaskrun.bat';
+		echo '</div>';
 		
 
-		$str1 = 'cd '.ROOT_PATH.'/
-php task.php runt,task';
-		$spath= ''.UPDIR.'/xinhutaskrun.sh';
+		$str1 = 'cd '.ROOT_PATH.''.chr(10).'php '.ROOT_PATH.'/task.php runt,task';
+		$spath= ''.UPDIR.'/cli/xinhutaskrun.sh';
 		$this->rock->createtxt($spath, $str1);	
 		echo '<br>二、<b>Linux服务器</b>，可用根据以下设置定时任务<br>';
 		echo '根据以下命令设置运行：<br>';
@@ -57,7 +76,7 @@ php task.php runt,task';
 		echo '#信呼计划任务每5分钟运行一次<br>';
 		echo '*/5 * * * * '.ROOT_PATH.'/'.$spath.'</div>';
 		
-		echo '<br><br>三、<b>浏览器窗口运行</b><br>';
+		echo '<br><br>三、<b>浏览器窗口运行</b>，用于你的是虚拟主机没办法管理服务器时<br>';
 		echo '打开<a href="?m=task&a=queue&d=system" style="color:blue">[计划任务队列]</a> 来启用计划任务。<br>';
 	}
 	

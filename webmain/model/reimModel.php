@@ -9,16 +9,20 @@ class reimClassModel extends Model
 	public $wxchattb		= 0;//聊天是否同步到微信
 	public $wxcorpid		= '';//聊天是否同步到微信
 	
+	
+	
 	public function initModel()
 	{
 		$this->settable('im_mess');
+		$this->hisobj = m('im_history');
+		$this->option = m('option');
 		$this->inithost();
 	}
 	
 	private function inithost()
 	{
 		if($this->serverpushurl!='')return;
-		$dbs = m('option');
+		$dbs = $this->option;
 		$this->optiondb 		= $dbs;
 		$this->serverrecid		= $dbs->getval('reimrecidsystem','rockxinhu');
 		$this->serverpushurl	= $dbs->getval('reimpushurlsystem');
@@ -39,19 +43,26 @@ class reimClassModel extends Model
 	}
 	
 	/**
-	*	返回判断是否有安装微信企业号/企业微信 $lx=0企业号,1企业微信,2钉钉
+	*	返回判断是否有安装微信企业号/企业微信 $lx=0企业号,1企业微信,2钉钉,3微信公众号号,4是否微信模版消息
 	*/
 	public function installwx($lx=0)
 	{
 		if($lx==0)return $this->isanwx();
+		$bo = false;
 		if($lx==1){
-			$bo = false;
 			if(!isempt($this->optiondb->getval('weixinqy_corpid')))$bo=true;
 			return $bo;
 		}
 		if($lx==2){
-			$bo = false;
 			if(!isempt($this->optiondb->getval('dingding_token0')))$bo=true;
+			return $bo;
+		}
+		if($lx==3){
+			if(!isempt($this->optiondb->getval('wxgzh_appid')))$bo=true;
+			return $bo;
+		}
+		if($lx==4){
+			if($this->optiondb->getval('wxgzh_tplmess')=='1')$bo=true;
 			return $bo;
 		}
 		return false;
@@ -138,33 +149,49 @@ class reimClassModel extends Model
 	/**
 	*	应用信息推送
 	*	$slx 0,1发送给pc，0,2发送给移动端,3不发送
+	*	$xgurl 相关地址，一般是单据详情：模块编号|id
 	*/
-	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0)
+	public function pushagent($receid, $gname, $cont, $title='', $url='', $wxurl='', $slx=0, $xgurl='')
 	{
-		if($slx==3)return false;
+		if($slx==3 || isempt($receid))return false;
+		$cont	= str_replace(array("\n",'\n','<br>'),' ', $cont);
 		$gid	= $this->getgroupid($gname);
+		$grs 	= $this->getgroupxinxi($gid);
 		$gname	= $this->groupname;
+		$admdb  = m('admin');
 		$sarr	= array(
 			'gname'		=> $gname,
 			'optdt'		=> $this->rock->now,
 			'type'		=> 'agent',
 			'pushtype'	=> 'agent',
 			'title'		=> $title,
+			'gface'		=> arrvalue($grs,'face'),
 			'gid'		=> $gid,
 			'cont'		=> $this->rock->jm->base64encode($cont),
 			'url'		=> $url
 		);
-		$resid = $receid;
+		
+		if($title=='')$title = $gname;
+		
+		//保存到推送会话列表上历史记录上
+		if($gid>0){
+			$receids = $admdb->gjoins($receid);
+			if($receids!='all' &&
+				!isempt($receids)
+			)$this->addhistory($sarr['type'], $gid, $receids, $sarr['optdt'], $sarr['cont'], $this->adminid, $title, $xgurl);
+		}
+		
+		$resid  = $receid;
 		if($slx == 0 || $slx==1){
-			if($resid != 'all')$resid = m('admin')->getonline($resid);
+			if($resid != 'all')$resid = $admdb->getonline($resid);
 			if($resid != '')$this->sendpush($this->adminid, $resid, $sarr);//PC端
 		}
 		//推送到APP上
 		if($slx == 0 || $slx==2){
-			if($title=='')$title = $gname;
 			if($wxurl!='')$sarr['url'] = $wxurl;
 			$this->pushapp($receid, $title, $sarr, $slx);
 		}
+		
 	}
 	
 	
@@ -269,7 +296,7 @@ class reimClassModel extends Model
 		$ugarr	= array();
 		foreach($urows as $k=>$rs)$ugarr[$rs['gid']] = $rs['utotal'];
 		
-		$rows 	= m('im_group')->getall("`id`>0 and ((`type` in(0,1) and `id` in($ids) ) ) order by `type`,`sort` ",'`id`,`type`,`name`,`face`,`sort`');
+		$rows 	= m('im_group')->getall("`id`>0 and ((`type` in(0,1) and `id` in($ids) ) ) order by `type`,`sort` ",'`id`,`type`,`name`,`face`,`sort`,`deptid`');
 		$facarr = array('images/group.png','images/group.png','images/system.png');
 		foreach($rows as $k=>$rs){
 			$rows[$k]['face'] 	= $this->getface($rs['face'], $facarr[$rs['type']]);
@@ -297,8 +324,16 @@ class reimClassModel extends Model
 	
 	public function getgroupxinxi($gid)
 	{
-		$rs = m('im_group')->getone($gid,'`id`,`type`,`name`,`face`,`deptid`');
-		$facarr = array('images/group.png','images/group.png','images/system.png');
+		$rs 	= m('im_group')->getone($gid,'`id`,`type`,`name`,`face`,`deptid`');
+		$facarr = array('images/group.png','images/group.png','images/todo.png');
+		if(!$rs){
+			$rs = array(
+				'face'  => '',
+				'type'  => 2,
+				'name'  => '',
+				'id' 	=> $gid,
+			);
+		}
 		$rs['face'] 	= $this->getface($rs['face'], $facarr[$rs['type']]);
 		$rs['utotal'] 	= $this->db->rows('[Q]im_groupuser','gid='.$gid.'');
 		$rs['innei'] 	= $this->db->rows('[Q]im_groupuser','gid='.$gid.' and uid='.$this->adminid.''); //是否在会话中
@@ -329,7 +364,7 @@ class reimClassModel extends Model
 		}else{
 			m('im_messzt')->delete("uid='$uid' and `gid`=$gid");
 		}
-		m('im_history')->update('stotal=0', "`type`='$type' and `uid`='$uid' and `receid`='$gid'");
+		$this->hisobj->update('stotal=0', "`type`='$type' and `uid`='$uid' and `receid`='$gid'");
 	}
 	
 	
@@ -341,15 +376,28 @@ class reimClassModel extends Model
 		if($uid==0)$uid = $this->adminid;
 		$yylx	= '2';
 		if($this->rock->get('cfrom')=='reim')$yylx='1';
-		$where	= m('admin')->getjoinstr('receid', $this->adminid);
+		$dboaj	= m('admin');
+		$where	= $dboaj->getjoinstr('receid', $this->adminid);
 		$rows 	= $this->db->getrows('[Q]im_group',"`valid`=1 and `type`=2 and `yylx` in(0,".$yylx.") $where $whe",'`id`,`name`,`url`,`face`,`num`,`pid`,`iconfont`,`iconcolor`,`types`,`urlpc`,`urlm`','`sort`');
 		$dbs 	= m('im_menu');
 		$mdbs 	= m('menu');
 		$barr	= $carr = array();
+		$mids 	= '0';
+		foreach($rows as $k=>$rs)$mids.=','.$rs['id'].'';
+		$allmenu  = $cmenu	 = array();
+		$allmenua = $dbs->getall("`mid` in($mids)",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`,`receid`','`sort`');
+	
+		foreach($allmenua as $k1=>$rs1){
+			if(isempt($rs1['receid'])){
+				$allmenu[] = $rs1;
+			}else{
+				$bo = $dboaj->containjoin($rs1['receid'], $uid);
+				if($bo)$allmenu[] = $rs1;
+			}
+		}
 		
-		$allmenu = $dbs->getall("1=1",'`pid`,`mid`,`id`,`name`,`type`,`url`,`num`,`color`','`sort`');
-		$cmenu	 = array();
 		foreach($allmenu as $k=>$rs){
+			
 			if($rs['pid']=='0'){
 				$submenu	= array();
 				foreach($allmenu as $k1=>$rs1){
@@ -381,7 +429,7 @@ class reimClassModel extends Model
 			if($rs['url']=='link' || $rs['url']=='linko'){
 				$urlpc = $rs['urlpc'];
 				if(!isempt($urlpc) && $mrs = $mdbs->getone("`num`='$urlpc'")){
-					$urlpc = 'index.php?m=index&homeurl='.$this->rock->jm->base64encode($mrs['url']).'&homename='.$this->rock->jm->base64encode($mrs['name']).'';
+					$urlpc = 'index.php?m=index&homeurl='.$this->rock->jm->base64encode($mrs['url']).'&homename='.$this->rock->jm->base64encode($mrs['name']).'&menuid='.$this->rock->jm->base64encode($mrs['id']).'';
 					$rs['urlpc'] = $urlpc;
 				}
 			}
@@ -395,8 +443,17 @@ class reimClassModel extends Model
 			$rs['types']	= $types;
 			$carr[$types][] = $rs;
 		}
+		
+		//应用统计
+		$gcarr = array();
+		foreach($carr as $types=>$rows){
+			$ntypes = $types.'('.count($rows).')';
+			foreach($rows as $k=>$rs)$rows[$k]['types'] = $ntypes;
+			$gcarr[$ntypes] = $rows;
+		}
+		
 		$barr = array();
-		foreach($carr as $types=>$rs){
+		foreach($gcarr as $types=>$rs){
 			$barr = array_merge($barr, $rs);
 		}
 		return $barr;
@@ -432,8 +489,17 @@ class reimClassModel extends Model
 			$rs['types']	= $types;
 			$carr[$types][] = $rs;
 		}
+		
+		//应用统计
+		$gcarr = array();
+		foreach($carr as $types=>$rows){
+			$ntypes = $types.'('.count($rows).')';
+			foreach($rows as $k=>$rs)$rows[$k]['types'] = $ntypes;
+			$gcarr[$ntypes] = $rows;
+		}
+		
 		$barr = array();
-		foreach($carr as $types=>$rs){
+		foreach($gcarr as $types=>$rs){
 			$barr = array_merge($barr, $rs);
 		}
 		return array(
@@ -465,11 +531,13 @@ class reimClassModel extends Model
 			}else{
 				$face	= 'images/group.png';
 				$rows[$k]['gid'] = $rs['receid'];
-				$rson  	= $this->db->getone('[Q]im_group', $rs['receid'], 'name,face');
+				$rson  	= $this->db->getone('[Q]im_group', $rs['receid'], 'name,face,deptid');
+				if(!isempt($rs['title']) && $rson)$rson['name'] = $rs['title'];
 			}
 			if($rson){
 				$name = $rson['name'];
 				$face = $this->getface($rson['face'], $face);
+				if($rs['type']=='group')$rows[$k]['deptid'] = $rson['deptid'];
 			}
 			$rows[$k]['face'] = $face;
 			$rows[$k]['name'] = $name;
@@ -495,17 +563,20 @@ class reimClassModel extends Model
 	/**
 	*	添加到历史记录,用户不显示历史记录让从新显示
 	*/
-	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0)
+	public function addhistory($type, $receid, $uids,$optdt, $cont,$sendid=0, $title='', $xgurl='',$messid=0)
 	{
 		$uidsas = explode(',', $uids);
-		$db 	= m('im_history');
+		$db 	= $this->hisobj;
 		foreach($uidsas as $uid){
 			$where 	= "`type`='$type' and `receid`='$receid' and `uid`='$uid'";
 			$one 	= $db->getone($where);
 			$arr 	= array();
 			$arr['optdt'] 	= $optdt;
-			$arr['cont'] 	= $cont;
+			$arr['cont'] 	= substr($cont, 0, 190);
 			$arr['sendid'] 	= $sendid;
+			$arr['title'] 	= $title;
+			$arr['xgurl'] 	= $xgurl;
+			$arr['messid'] 	= $messid;
 			if(!$one){
 				$arr['type'] 	= $type;
 				$arr['receid'] 	= $receid;
@@ -527,7 +598,7 @@ class reimClassModel extends Model
 		if($type=='all'){
 			$where  = "`uid`='$uid'"; 
 		}
-		m('im_history')->delete($where);
+		$this->hisobj->delete($where);
 	}
 	
 	/**
@@ -537,6 +608,7 @@ class reimClassModel extends Model
 	{
 		$arr = array();
 		$rows= array();
+		$loadci  = (int)$this->rock->get('loadci','0');
 		if($type == 'user'){
 			$arr 	= $this->getuserinfor($uid, $gid, $minid, $lastdt);
 		}
@@ -545,8 +617,12 @@ class reimClassModel extends Model
 		}
 		$arr['receinfor'] = $this->getreceinfor($type, $gid);
 		$arr['nowdt'] 	  = time();
+		$arr['servernow'] = $this->rock->now;
+		if($loadci==0){
+			$arr['sendinfo']  = m('admin')->getinfor($uid);
+		}
 		if(isset($arr['rows']))$arr['rows'] = $this->replacefileid($arr['rows']);
-		m('im_history')->update('stotal=0',"`type`='$type' and `receid`='$gid' and `uid`='$uid'");
+		$this->hisobj->update('stotal=0',"`type`='$type' and `receid`='$gid' and `uid`='$uid'");
 		return $arr;
 	}
 	public function getreceinfor($type, $gid)
@@ -573,9 +649,10 @@ class reimClassModel extends Model
 			if($rs['fileid'])$fileids.=','.$rs['fileid'].'';
 		}
 		$imgext = ',gif,png,jpg,jpeg,bmp,';
+		$fobj	= m('file');
 		if($fileids!='0'){
 			$farr  = array();
-			$frows = m('file')->getrows("id in ($fileids)", 'id,fileext,filepath,filename,thumbpath,filetype,filesizecn,optid,optname,adddt,filesize');
+			$frows = $fobj->getrows("id in ($fileids)", 'id,fileext,filenum,filepath,filename,thumbpath,filetype,filesizecn,optid,optname,adddt,filesize,thumbplat');
 			foreach($frows as $k=>$rs)$farr[$rs['id']]=$rs;
 			if($farr)foreach($rows as $k=>$rs){
 				$frs  = array();
@@ -584,10 +661,16 @@ class reimClassModel extends Model
 				if($frs){
 					$type = $frs['fileext'];
 					$path = $frs['filepath'];
-					if(!$this->isempt($path)&&file_exists($path)){
+					$boc  = false;
+					if(substr($path,0,4)=='http' || !isempt($frs['filenum'])){
+						$boc = true;
+					}else{
+						if(file_exists($path))$boc = true;
+					}
+					if($boc){
 						if($this->contain($imgext, ','.$type.',')){
-							$cont = '<img fid="'.$fid.'" src="{url}'.$frs['thumbpath'].'">';
-							if(isempt($frs['thumbpath']))list($frs['width'], $frs['height']) = getimagesize($path);
+							$frs['thumbpath'] = $fobj->getthumbpath($frs);
+							$cont = '<img fid="'.$fid.'" src="'.$frs['thumbpath'].'">';
 							$rows[$k]['cont'] = $this->rock->jm->base64encode($cont);
 						}else{
 							
@@ -756,7 +839,7 @@ class reimClassModel extends Model
 			$farr = m('file')->getone($fileid,'filesizecn,fileext,thumbpath,filename');
 			if($farr)foreach($farr as $fk=>$fv)$arr[$fk]		= $fv;
 		}
-		//给客户端发送0
+		//给服务端发送0
 		if($lx==0){
 			$receids = m('admin')->getonline($arr['receid']);
 			if($receids != ''){
@@ -771,9 +854,11 @@ class reimClassModel extends Model
 				$this->sendpush($arr['sendid'], $receids , $pusharr);
 			}
 		}
+		//告诉app端也有推送，因为app也用到websocket连接服务端
 		
-		$this->addhistory('user', $receid, $sendid, $optdt, $cont, $sendid);
-		if($sendid!=$receid)$this->addhistory('user', $sendid, $receid, $optdt, $cont, $sendid);
+		
+		$this->addhistory('user', $receid, $sendid, $optdt, $cont, $sendid,'','', $arr['id']);
+		if($sendid!=$receid)$this->addhistory('user', $sendid, $receid, $optdt, $cont, $sendid,'','', $arr['id']);
 		
 		//推送的原生App上(使用异步推送哦)
 		$tuicont['sendid'] 		= $arr['sendid'];
@@ -810,7 +895,8 @@ class reimClassModel extends Model
 		$cont		= '';
 		if(isset($cans['cont']))$cont=$cans['cont'];
 		$receid		= $gid;
-		$gname		= m('im_group')->getmou('name', $gid);
+		$grs 		= $this->getgroupxinxi($gid);
+		$gname		= $grs['name'];
 		$type		= 'group';
 		$fileid		= 0;
 		$msgid		= '';
@@ -866,6 +952,7 @@ class reimClassModel extends Model
 					'gid'	=> $gid,
 					'gname'	=> $gname,
 					'optdt' => $optdt,
+					'gface' => arrvalue($grs,'face'),
 					'messid' => $arr['id'],
 					'fileid' => $fileid
 				);
@@ -874,7 +961,7 @@ class reimClassModel extends Model
 			}
 		}
 		$cont1 = $this->rock->jm->base64encode(''.$this->adminname.':'.$this->rock->jm->base64decode($cont).'');
-		$this->addhistory('group', $gid, $arr['receuid'], $optdt, $cont1,$sendid);
+		$this->addhistory('group', $gid, $arr['receuid'], $optdt, $cont1,$sendid,'','', $arr['id']);
 		
 		//推送的原生App上(使用异步推送哦)
 		if($asid != ''){
@@ -949,22 +1036,33 @@ class reimClassModel extends Model
 				$where 	= "id in($uid) and ";
 			}
 		}
-		$uwhere = "$where `status`=1 and `apptx`=1";
-		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','appios') and `online`=1",'`token`,`uid`,`web`','id desc');
-		$alias 	= $uida = $xmalias = array();
+		$uwhere = "$where `status`=1";
+		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','nppandroid','nppios') and `online`=1",'`token`,`uid`,`web`,`ip`,`cfrom`,`moddt`','id desc');
+		$alias 	= $uida = $xmalias = $oldalias = $newalias = $alias2019 = $uid2019  =array();
 		$uids	= '0';
+		$times  = date('Y-m-d H:i:s', time()-5*60);//5分钟
 		foreach($rows as $k=>$rs){
 			$_uid 	 = $rs['uid'];
+			$_web 	 = $rs['web'];
 			if(in_array($_uid, $uida))continue;
 			$uida[]  = $_uid;
 			$uids	.= ','.$_uid.'';
-			if($rs['web']=='xiaomi'){
+			if($_web=='xiaomi'){
 				$xmalias[] = $rs['token'];
+			}else if(in_array($rs['cfrom'], array('nppandroid','nppios'))){//2019-11-25最新新app
+				$nestr = ''.$rs['token'].'|'.substr($rs['web'],0,8).'|'.$_uid.'|';
+				if(contain($rs['web'],'huawei') && !contain($rs['ip'],'.'))$nestr.=''.$rs['ip'].'';
+				$alias2019[] = $nestr;
+				$uid2019[]   = $_uid;
+			}else if(substr($_web,0,4)=='app_'){
+				$newalias[] = $rs['token'];	
+			}else if(substr($_web,0,4)=='apk_'){
+				$oldalias[] = $rs['token'];	
 			}else{
-				$alias[] = $rs['token'];
+				$alias[] 	= $rs['token'];
 			}
 		}
-		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias);
+		return array('alias' => $alias, 'uids'=>$uids, 'xmalias'=>$xmalias, 'oldalias'=>$oldalias, 'newalias'=>$newalias,'alias2019'=>$alias2019,'uid2019'=>$uid2019);
 	}
 	
 	/**
@@ -982,15 +1080,37 @@ class reimClassModel extends Model
 		foreach($conta as $k=>$v)$contjson.=',"'.$k.'":"'.$v.'"';
 		$contjson 	= '{'.substr($contjson,1).'}';
 		
+		//最新webapp也用服务端推送
+		$uid2019	= $alias['uid2019'];
+		$alias2019	= $alias['alias2019'];
+		if($uid2019){
+			$reimtype = $this->option->getval('reimservertype');
+			$reimappwx= $this->option->getval('reimappwxsystem');
+			if($reimtype=='1' && $reimappwx=='1'){
+				$gbarr = $this->pushserver('sendapp', array(
+					'receid' => join(',', $uid2019)
+				));
+				//服务端返回{"zshu":2,"yfuid":"1,8","wfuid":""}
+				if($gbarr && $gbarr['success'] && $bstr = arrvalue($gbarr, 'data')){
+					$data = json_decode($bstr, true);
+					$yfuid= explode(',', arrvalue($data, 'yfuid'));
+					if($yfuid){
+						$nealas = array();
+						foreach($alias2019 as $alis){
+							$bo = false;
+							foreach($yfuid as $yfid){if(contain($alis,'|'.$yfid.'|'))$bo=true;break;};
+							if(!$bo)$nealas[] = $alis;
+						}
+						$alias['alias2019'] = $nealas;
+					}
+				}
+			}
+		}
 		return c('JPush')->push($title, arrvalue($conta,'cont'), $contjson, $alias);
-		//return $this->pushserver('runurl', array(
-		//	'url' => $runurl,
-		//	'runtime' => 0
-		//));
 	}
 	
 	/**
-	*	推送到PC提醒
+	*	推送到服务端运行
 	*/
 	public function sendpush($sendid, $receid, $conarr=array())
 	{
@@ -1003,7 +1123,7 @@ class reimClassModel extends Model
 		$carr['adminid'] 	= $sendid;
 		$carr['optdt'] 		= $this->rock->now;
 		$carr['sendname'] 	= $sers['name'];
-		$carr['face'] 		= $this->getface($face);
+		$carr['face'] 		= $this->getface($face); //发送人头像
 		$carr['receid'] 	= $receid;
 		foreach($conarr as $k=>$v)$carr[$k]=$v;
 		return $this->pushserver('send', $carr);
@@ -1024,11 +1144,36 @@ class reimClassModel extends Model
 	*/
 	public function asynurl($m, $a,$can=array(), $runtime=0)
 	{
+		$asyn   = (int)getconfig('asynsend','0');
 		$runurl	= m('base')->getasynurl($m, $a,$can);
-		return $this->pushserver('runurl', array(
+
+		//用官网VIP异步
+		if($asyn==2){
+			$barr = c('xinhuapi')->sendanay($m, $a,$can, $runtime);
+			if($barr['success'])return true;
+		}
+		
+		$barr =  $this->pushserver('runurl', array(
 			'url' => $runurl,
 			'runtime' => $runtime
 		));
+		
+		return $barr['success'];
+	}
+	
+	/**
+	*	获取得到推送的端口号
+	*/
+	public function getpushhostport($str)
+	{
+		$host = ''; $port = 0;
+		$stra = explode('//', $str);
+		if(isset($stra[1])){
+			$strb 	= explode(':', str_replace('/','', $stra[1]));
+			$host	= $strb[0];
+			$port	= (int)arrvalue($strb, 1, '0');
+		}
+		return array('host'=>$host,'port'=>$port);
 	}
 
 	/**
@@ -1036,30 +1181,23 @@ class reimClassModel extends Model
 	*/
 	public function pushserver($atype, $cans=array())
 	{
-		$bsarr 	= array('msg'=>'notpushurl','code'=>2);
-		$bstt	= json_encode($bsarr);
 		if(isempt($this->serverpushurl))return false;
-		$ishttp	= substr($this->serverpushurl,0, 4)=='http';
-		
-		if($ishttp)$url 	= $this->serverpushurl.'?reimrecid='.$this->serverrecid.'';
-		
+
 		$carr['from'] 	= $this->serverrecid;
 		$carr['adminid']= $this->adminid;
 		$carr['atype'] 	= $atype;
+		$carr['qtype'] 	= 'reim';
 		foreach($cans as $k=>$v)$carr[$k]=$v;
-		$str 			= json_encode($carr);
 		
-		//http的
-		if($ishttp){
-			$sustr	= c('curl')->postcurl($url, $str);
-			return contain($sustr, '"msg":"ok"');
-		}else{
-			$spath 	= $this->serverpushurl;
-			$spath	= str_replace('\\','/', $spath);
-			$spath 	= $spath.'/Rock/push/'.$this->serverrecid.'_'.time().'_'.rand(100,999).'.txt';
-			$bo 	= @file_put_contents($spath, $str);
-			return $bo;
-		}
+		$reimtype = $this->option->getval('reimservertype');
+		if($reimtype=='1')return c('rockqueue')->pushdata($carr);
+		
+		$str 			= json_encode($carr);
+		//echo 'abc ';return array('code'=>0);
+		$posts			= $this->getpushhostport($this->serverpushurl);
+		$barr 			= c('socket')->udppush($str, $posts['host'], $posts['port']);
+
+		return $barr;
 	}
 	
 	/**
@@ -1194,6 +1332,7 @@ class reimClassModel extends Model
 					$this->update("`receuid`='$ssid'", $sid);
 				}
 			}
+			$this->hisobj->update("`cont`=''", "`type`='$type' and `uid`='$uid' and `messid`='$sid'");
 		}
 		if($xids!='0')$this->delete("`id` in($xids)");
 		if($ids=='' && $day==0)$this->delhistory($type,$gid, $uid);
@@ -1245,6 +1384,7 @@ class reimClassModel extends Model
 		$this->adduserchat($gid, $uids, false);
 		return $gid;
 	}
+	//邀请
 	public function adduserchat($gid, $uids, $isadd=false)
 	{
 		if(isempt($uids))return '';
@@ -1257,8 +1397,15 @@ class reimClassModel extends Model
 				$ids .= ','.$aid.'';
 			}
 		}
-		if($ids!='')$ids = substr($ids,1);
-		if($isadd && $this->isanwx())m('weixin:chat')->chatupdate($gid);
+		if($ids!=''){
+			$ids = substr($ids,1);
+			$unaem = '';
+			$urows = m('admin')->getall('`id` in('.$ids.')');
+			foreach($urows as $k=>$rs)$unaem.=','.$rs['name'].'';
+			if($unaem!=''){
+				$this->addxitong($gid, ''.$this->adminname.'邀请“'.substr($unaem,1).'”加入本会话');
+			}
+		}
 		return $ids;
 	}
 	public function deluserchat($gid, $uids)
@@ -1275,16 +1422,39 @@ class reimClassModel extends Model
 	}
 	public function exitchat($gid, $aid)
 	{
+		$this->addxitong($gid, ''.$this->adminname.'退出本会话');
 		$dbs = m('im_groupuser');
 		$dbs->delete("`gid`='$gid' and `uid`='$aid'");
 		m('im_messzt')->delete("`gid`='$gid' and `uid`='$aid'");
-		if($this->isanwx())m('weixin:chat')->chatquit($gid, $aid);
 		if($dbs->rows('gid='.$gid.'')==0)m('im_group')->delete($gid);
 		$this->delhistory('group',$gid, $aid);
 	}
+	public function addxitong($gid, $cont, $fid=0)
+	{
+		$this->sendinfor('group', $this->adminid, $gid, array(
+			'optdt' => $this->rock->now,
+			'cont'  => $this->rock->jm->base64encode($cont),
+			'fileid'=> $fid
+		));
+	}
 	
+	//修改会话名称
+	public function editname($gid, $name)
+	{
+		m('im_group')->update("`name`='$name'",$gid);
+		$this->addxitong($gid, ''.$this->adminname.'将会话名称修改为“'.$name.'”');
+	}
 	
-	
+	//修改头像
+	public function editface($gid, $fileid)
+	{
+		$face= '';
+		if($fileid>0){
+			$frs = m('file')->getone($fileid);
+			if($frs)$face= $frs['thumbpath'];
+		}
+		m('im_group')->update("`face`='$face'",$gid);
+	}
 	
 	
 	
@@ -1392,7 +1562,7 @@ class reimClassModel extends Model
 		$bowxqy	= $this->installwx(1);
 		if(!$bowx && !$bowxqy)return;
 		
-		$rows 	= $this->db->getall("select * from `[Q]im_history` where `optdt`>='$dt' and `stotal`>0 order by `uid`,`optdt` asc");
+		$rows 	= $this->db->getall("select * from `[Q]im_history` where `optdt`>='$dt' and `stotal`>0 and `type` in('user','group') order by `uid`,`optdt` asc");
 		
 		$uarrs 	= array();
 		$gusrra = array();
@@ -1448,6 +1618,8 @@ class reimClassModel extends Model
 			$sendarr[$contkey][] = $wxarr;
 		}
 		
+		$devagent  = $this->optiondb->getval('weixinqy_devagent');
+		if(isempt($devagent))$devagent = '办公助手';
 		
 		foreach($sendarr as $key=>$rowss){
 			$uids = '';
@@ -1463,10 +1635,41 @@ class reimClassModel extends Model
 					m('weixin:index')->sendnews($uids, 'REIM,0', $wxarr);
 				}
 				if($bowxqy){
-					$barr = m('weixinqy:index')->sendxiao($uids, 'REIM,办公助手', $wxarr);
+					$barr = m('weixinqy:index')->sendxiao($uids, 'REIM,REIM助手,'.$devagent.'', $wxarr);
 					m('log')->todolog('企业微信提醒', $barr);
 				}
 			}
 		}
+	}
+	
+	/**
+	*	撤回消息功能
+	*/
+	public function chehuimess($type, $gid, $id)
+	{
+		$chehui = (int)$this->optiondb->getval('reimchehuisystem',0);
+		if($chehui<=0)return '没有开启此功能';
+		$rs = $this->getone('`id`='.$id.'');
+		if(!$rs)return '记录不存在了';
+		$t3 = time()-strtotime($rs['optdt']);
+		if($t3>$chehui*60)return '已经超过'.$chehui.'分钟无法撤回';
+		
+		$msg1= '已撤回';
+		$msg = $this->rock->jm->base64encode($msg1);
+		$this->update("`cont`='$msg',`fileid`=0", $id);
+		$this->hisobj->update("`cont`='$msg'", "`messid`='$id'");
+		
+		$pusharr 	= array(
+			'cont' 	=> $msg,
+			'type' 	=> 'chehui',
+			'messid' => $id,
+		);
+		$this->sendpush($this->adminid, $rs['receuid'], $pusharr);
+		return array(
+			'receid' => $rs['receuid'],
+			'id'	=> $id,
+			'msg'	=> $msg,
+			'msg1'	=> $msg1,
+		);
 	}
 }

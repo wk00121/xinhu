@@ -16,7 +16,7 @@ class logClassModel extends Model
 	}
 	
 	/**
-	*	添加日志的
+	*	添加日志的 $level=2错误
 	*/
 	public function addlogs($type='', $remark='', $level=0, $sarr=array())
 	{
@@ -54,6 +54,9 @@ class logClassModel extends Model
 		$dbs->record($arr, $where);
 	}
 	
+	/**
+	*	获取已读人员
+	*/
 	public function getreadarr($table, $mid)
 	{
 		$rows = $this->db->getrows('[Q]reads',"`table`='$table' and `mid`='$mid' ",'optid,optdt,stotal','`id` desc');
@@ -86,11 +89,17 @@ class logClassModel extends Model
 		return $usarr;
 	}
 	
+
+	
 	public function getread($table, $uid=0)
 	{
 		if($uid==0)$uid=$this->adminid;
 		$sid = $this->db->getjoinval('[Q]reads','mid',"`table`='$table' and `optid`=$uid group by `mid`");
-		if($sid=='')$sid = '0';
+		if($sid==''){
+			$sid = '0';
+		}else{
+			$sid = '0,'.$sid.'';
+		}
 		return $sid;
 	}
 	
@@ -105,7 +114,7 @@ class logClassModel extends Model
 	//获取已读未读数
 	public function getreadshu($table, $mid, $receid, $optdt='', $dbs=null)
 	{
-		$ydshu	= $wdshu = 0;
+		$ydshu	= $wdshu = $zzshu = 0;
 		$ydname = $wdname= '';
 		if($dbs==null)$dbs = m('admin');
 		$where	= $dbs->gjoin($receid,'ud','where');
@@ -115,32 +124,38 @@ class logClassModel extends Model
 			$dt = substr($optdt,0,10);
 			$where.=" and `workdate`<='$dt'";
 		}
-		$uarr 	= $dbs->getall('`status`=1'.$where.'','`id`,`name`');
+		$where .= $dbs->getcompanywhere();
+		$uarr 	= $dbs->getall('`status`=1'.$where.'','`id`,`name`,`face`','`sort`');
 		
 		$receas	= explode(',', str_replace('u','', $receid));
 		$rows 	= $this->db->getall("SELECT `optid` FROM `[Q]reads` where `table`='$table' and `mid`='$mid' GROUP BY `optid`");
 		$ydarr	= array();
 		foreach($rows as $k=>$rs)$ydarr[] = $rs['optid'];
-		
+		$wduarr	= array(); //未读人员数组
 		foreach($uarr as $k=>$rs){
 			$uid 	= $rs['id'];
 			$name 	= $rs['name'];
+			$rs['face'] = $this->rock->repempt($rs['face'], 'images/noface.png');
 			if(in_array($uid, $ydarr)){
 				$ydshu++;
 				$ydname.=','.$name.'';
 			}else{
 				$wdshu++;
 				$wdname.=','.$name.'';
+				$wduarr[] = $rs;
 			}
+			$zzshu++;
 		}
 		if($ydname!='')$ydname = substr($ydname, 1);
 		if($wdname!='')$wdname = substr($wdname, 1);
 		
 		return array(
+			'zzshu'  => $zzshu,
 			'ydshu'  => $ydshu,
 			'wdshu'  => $wdshu,
 			'ydname' => $ydname,
 			'wdname' => $wdname,
+			'wduarr' => $wduarr
 		);
 	}
 }

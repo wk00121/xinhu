@@ -18,7 +18,7 @@ homeobject.showicons=function(a){
 		if(oi%2!=0)s1t='style="border-right:1px #dddddd solid"';
 		s+='<td width="50%" '+s1t+'>';
 		if(a1.name!='none'){
-			s+='	<a style="border-radius:0px;border:none;" onclick="opentabsshowshwo('+i+',this)" class="list-group-item"><font color="'+a1.color+'"><i class="icon-'+a1.icons+'"></i></font> &nbsp;'+a1.name+'<span id="'+a1.num+'_{rand}" style="display:none" class="badge red"></span></a>';
+			s+='	<a style="border-radius:0px;border:none;TEXT-DECORATION:none" onclick="opentabsshowshwo('+i+',this)" class="list-group-item"><font color="'+a1.color+'"><i class="icon-'+a1.icons+'"></i></font> &nbsp;'+a1.name+'<span badge="'+a[i].num+'" style="display:none;background:red" class="badge red"></span></a>';
 		}else{
 			s+='	<a style="border-radius:0px;border:none;" class="list-group-item">&nbsp;</a>';
 		}
@@ -31,9 +31,8 @@ homeobject.showicons=function(a){
 opentabsshowshwo=function(oi,o1){
 	var a = homeobject.menuarr[oi];
 	if(a.num=='refresh'){
-		//c.refresh();
+		homeobject.refresh();
 	}else{
-		$(o1).find('span').hide();
 		var anum = {num:a.num,url:a.url,name:a.name,icons:a.icons,id:a.id};
 		addtabs(anum);
 	}
@@ -42,8 +41,8 @@ opentabsshowshwo=function(oi,o1){
 </script>
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<div style="font-size:14px"><i class="icon-refresh"></i> 快捷入口
-		<a style="float:right" click="refresh" id="refresh_text">刷新</a>
+		<div style="font-size:14px"><i class="icon-refresh"></i> <?=$itemnowname?>
+		<a style="float:right;TEXT-DECORATION:none" click="refresh" id="refresh_text">刷新</a>
 		</div>
 	</div>
 	<div id="kuailistdonw"></div>

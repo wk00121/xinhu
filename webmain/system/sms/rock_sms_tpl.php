@@ -24,6 +24,13 @@ $(document).ready(function(){
 		itemclick:function(d){
 			var bo = (d.isedit==1)?false:true;
 			btn(bo);
+		},
+		load:function(d){
+			if(!isempt(d.dirtype)){
+				btn(true);
+				get('btn1_{rand}').disabled=true;
+				get('btn2_{rand}').disabled=true;
+			}
 		}
 	});
 	
@@ -84,6 +91,9 @@ $(document).ready(function(){
 					js.msg('msg',ret.msg);
 				}
 			},'get,json');
+		},
+		reloadszt:function(){
+			this.getztss('');
 		}
 	};
 
@@ -97,12 +107,12 @@ $(document).ready(function(){
 <div>
 	<table width="100%"><tr>
 	<td nowrap>
-		<button class="btn btn-primary" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
+		<button class="btn btn-primary" id="btn1_{rand}" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
 		 &nbsp; 
 		<button class="btn btn-default" click="reloads"  type="button"><i class="icon-refresh"></i> 刷新</button>
 	</td>
 	<td align="right">
-		
+		<button class="btn btn-default" click="reloadszt" id="btn2_{rand}" type="button"><i class="icon-refresh"></i> 刷新状态/获取模版</button>&nbsp;
 		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
 	</td>
@@ -111,4 +121,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">如公开说明使用信呼系统的用户都可以使用这个模版，为了防止资源浪费，所有的模版都是公开的。普通用户不能添加模版，VIP用户可添加10个模版，合作商没限制，添加编辑模版是需要审核的，可[刷新状态]查看审核状态。</div>
+<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和使用规则?</a></div>

@@ -11,11 +11,11 @@ $(document).ready(function(){
 		},{
 			text:'职位',dataIndex:'ranking'
 		},{
-			text:'是否启用',dataIndex:'status',type:'checkbox'
-		},{
 			text:'在线打卡IP',dataIndex:'dkip',editor:true
 		},{
 			text:'在线打卡MAC地址',dataIndex:'dkmac',editor:true
+		},{
+			text:'关联中控考勤机工号',dataIndex:'finger',editor:true
 		},{
 			text:'需要考勤',dataIndex:'iskq',type:'checkbox',editor:true
 		},{
@@ -50,4 +50,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">人员必须设置打卡IP，IP一般是内网Ip196.168的，或者电脑的物理MAC地址，才可以在线打卡，多个用,分开。</div>
+<div class="tishi">人员必须设置打卡IP，IP一般是内网Ip196.168的，或者电脑的物理MAC地址，才可以在线打卡，多个用,分开，不限制IP就写*。</div>

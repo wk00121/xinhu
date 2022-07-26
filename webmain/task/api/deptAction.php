@@ -3,7 +3,7 @@ class deptClassAction extends apiAction
 {
 	public function dataAction()
 	{
-		$udarr 		= m('dept')->getdeptuserdata();
+		$udarr 		= m('dept')->getdeptuserdata(0);
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
 		
@@ -20,7 +20,7 @@ class deptClassAction extends apiAction
 	*/
 	public function dataappAction()
 	{
-		$udarr 		= m('dept')->getdeptuserdata();
+		$udarr 		= m('dept')->getdeptuserdata(0);
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
 		$grouparr 	= m('reim')->getgroup($this->adminid);

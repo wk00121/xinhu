@@ -4,15 +4,17 @@ class sjoinClassModel extends Model
 	private $getgroupidarr=array();
 	
 	//获取用户所在组Id
-	public function getgroupid($uid)
+	public function getgroupid($uid, $fid='')
 	{
-		if(isset($this->getgroupidarr[$uid]))return $this->getgroupidarr[$uid];
+		if($fid=='')$fid = 'id';
+		$keys   = ''.$fid.''.$uid.'';
+		if(isset($this->getgroupidarr[$keys]))return $this->getgroupidarr[$keys];
 		$gasql	= " ( id in( select `sid` from `[Q]sjoin` where `type`='ug' and `mid`='$uid') or id in( select `mid` from `[Q]sjoin` where `type`='gu' and `sid`='$uid') )";
 		$gsql	= "select `id` from `[Q]group` where $gasql ";
 		$rows 	= $this->db->getall($gsql);
 		$ids 	= '0';
-		foreach($rows as $k=>$rs)$ids.=','.$rs['id'].'';
-		$this->getgroupidarr[$uid] = $ids;
+		foreach($rows as $k=>$rs)$ids.=','.$rs[$fid].'';
+		$this->getgroupidarr[$keys] = $ids;
 		return $ids;
 	}
 	
@@ -78,13 +80,21 @@ class sjoinClassModel extends Model
 	*/
 	public function getgrouparr()
 	{
-		return $this->db->getall("select `id`,`name` from `[Q]group` order by `sort`");
+		$where = '';
+		if(ISMORECOM){
+			$where='where `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $this->db->getall("select `id`,`name` from `[Q]group` $where order by `sort`");
 	}
 	/**
 	*	获取组列表
 	*/
 	public function getgrouparrs()
 	{
-		return $this->db->getall("select `id` as value,`name` from `[Q]group` order by `sort`");
+		$where = '';
+		if(ISMORECOM){
+			$where='where `companyid` in(0,'.m('admin')->getcompanyid().')';
+		}
+		return $this->db->getall("select `id` as value,`name` from `[Q]group` $where order by `sort`");
 	}
 }

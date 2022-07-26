@@ -7,7 +7,13 @@ class flow_customerClassModel extends flowModel
 		$this->statarr		 = c('array')->strtoarray('否|#888888,是|#ff6600');
 	}
 	
-
+	//高级搜索下
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'所属人...','fields'=>'uid');
+		$arr[] = array('name'=>'创建人...','fields'=>'createid');
+		return $arr;
+	}
 	
 	public function flowrsreplace($rs, $lx=0)
 	{
@@ -33,6 +39,13 @@ class flow_customerClassModel extends flowModel
 		
 		if($lx==1){
 			$rs['suoname'] = $this->adminmodel->getmou('name','id='.$rs['uid'].'');
+			
+		}
+		
+		//详情时，移动端
+		if($lx==1 && $this->rock->ismobile()){
+			if(!isempt($rs['mobile']))$rs['mobile']='<a onclick="return callPhone(this)" href="tel:'.$rs['mobile'].'">'.$rs['mobile'].'</a>';
+			if(!isempt($rs['tel']))$rs['tel']='<a onclick="return callPhone(this)" href="tel:'.$rs['tel'].'">'.$rs['tel'].'</a>';
 		}
 		
 		return $rs;
@@ -87,7 +100,15 @@ class flow_customerClassModel extends flowModel
 				'shateid' 	=> '',
 				'shate' 	=> '',
 			), $this->id);
-		}	
+		}
+		
+		//放入公海
+		if($num=='ghnoup'){
+			$this->update(array(
+				'isgh' 	=> '1',
+				'uid' 	=> 0,
+			), $this->id);
+		}
 	}
 	
 	protected function flowbillwhere($uid, $lx)
@@ -114,6 +135,7 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> 'admin@rockoa.com',
 			'address' 		=> '福建厦门思明区软件园',
 			'linkname' 		=> '磐石',
+			'isgh' 		=> '是',
 		);
 		$barr1 = array(
 			'name' 		=> '百度',
@@ -125,6 +147,7 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> 'admin@baidu.com',
 			'address' 		=> '北京软件园百度大厦',
 			'linkname' 		=> '李彦宏',
+			'isgh' 		=> '否',
 		);
 		$barr2 = array(
 			'name' 		=> '陈先生',
@@ -136,8 +159,71 @@ class flow_customerClassModel extends flowModel
 			'email' 		=> '1111@qq.com',
 			'address' 		=> '福建厦门火车站',
 			'linkname' 		=> '',
+			'isgh' 			=> '否',
 		);
 		return array($barr,$barr1,$barr2);
 	}
 
+	public function flowdaorubefore($data)
+	{
+		foreach($data as $k=>$rs){
+			$isgh 	= (arrvalue($rs,'isgh')=='是') ? 1: 0 ;
+			$isstat = (arrvalue($rs,'isstat')=='是') ? 1: 0 ;
+			
+			$data[$k]['isgh'] 	= $isgh;
+			$data[$k]['isstat'] = $isstat;
+			if($isgh==1)$data[$k]['uid'] = 0; 
+		}
+		return $data;
+	}
+	
+	
+	/**
+	*	自动放入公海
+	*/
+	public function addgonghai()
+	{
+		$tshu	= (int)$this->option->getval('crmaddghai','0');
+		if($tshu<=0)return;
+		$sneuar	= array();
+		
+		$rows 	= $this->getall('`uid`>0 and `htshu`=0 and `isgys`=0 and `id` not in(select `custid` from `[Q]custsale` where `state` in(1)) and `id` not in(select `custid` from `[Q]goodm` where `type`=2 and `status` in(0,1))','lastdt,optdt,id,name,uid,unitname');
+		$dtobj 	= c('date');
+		$addghs = array();
+		foreach($rows as $k=>$rs){
+			$lastdt = $rs['lastdt'];
+			if(isempt($lastdt))$lastdt = $rs['optdt'];
+			$jg   = $dtobj->datediff('d', $lastdt, $this->rock->now);
+			
+			if($jg > $tshu){
+				$sneuar[$rs['uid']][] = '['.$rs['name'].']超'.$jg.'天未跟进已放入公海库';
+				$addghs[] = $rs['id'];
+			}else{
+				//要放入之前2天提醒
+				$ts = $tshu - $jg;
+				if($ts<3)$sneuar[$rs['uid']][] = '['.$rs['name'].']将'.$ts.'天后放入公海库';
+			}
+		}
+		
+		//通知给对应人
+		$maxlen = 5;
+		foreach($sneuar as $uid=>$ursa){
+			$str = '';
+			foreach($ursa as $k1=>$s1){
+				if($str!='')$str.="\n";
+				if($k1>=$maxlen){
+					$str.='还有'.(count($ursa)-$maxlen).'条，点击查看更多';
+					break;
+				}
+				$str.="".$s1."";
+			}
+			$this->pushs($uid, $str, '客户未跟进提醒', array(
+				'wxurl' => $this->getwxurl()
+			));
+		}
+		if($addghs){
+			$sid = join(',', $addghs);
+			$this->update("`uid`=0,`isgh`=1", "`id` in($sid)");
+		}
+	}
 }

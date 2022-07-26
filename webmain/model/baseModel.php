@@ -7,18 +7,25 @@ class baseClassModel extends Model
 	/**
 	*	获取异步地址
 	*/
-	public function getasynurl($m, $a,$can=array())
+	public function getasynurl($m, $a,$can=array(), $lx=0)
 	{
-		$runurl		= getconfig('localurl', URL);
+		if($lx==0)$runurl		= getconfig('localurl', URL);
+		if($lx==1)$runurl		= getconfig('anayurl', URL); //使用异步通信地址
+		if($lx==2)$runurl		= getconfig('waiurl', URL);	//使用外网地址
+		if($lx==3)$runurl = '';
 		$key 	 	= getconfig('asynkey');
 		if($key!='')$key = md5(md5($key));
-		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$this->adminid.'&asynkey='.$key.'';
+		$uid 		 = $this->adminid;
+		if($uid==0)$uid = (int)arrvalue($GLOBALS,'adminid','0');
+		if($uid==0)$uid = 1;//必须要有个值
+		$runurl 	.= 'api.php?m='.$m.'&a='.$a.'&adminid='.$uid.'&asynkey='.$key.'';
 		if(is_array($can))foreach($can as $k=>$v)$runurl.='&'.$k.'='.$v.'';
 		return $runurl;
 	}
 	
 	/**
 	*	系统上变量替换
+	*	$lx = 0 加''，$lx=1不加
 	*/
 	public function strreplace($str, $uid=0, $lx=0)
 	{
@@ -34,21 +41,32 @@ class baseClassModel extends Model
 		if(isset($this->usrr[$ckey])){
 			$urs	= $this->usrr[$ckey];
 		}else{
-			$urs 	= $this->db->getone('[Q]admin','`id`='.$uid.'', '`name`,`deptname`,`ranking`,`deptid`,`num`,`deptallname`,`tel`,`mobile`,`email`,`id`,`superman`,`workdate`,`user`,`pingyin`');
-			$this->usrr[$ckey] = $urs;
+			$urs 	= $this->db->getone('`[Q]admin`','`id`='.$uid.'');
+			$companyid = arrvalue($urs,'companyid');
+			if(ISMORECOM){
+				$comid	= arrvalue($urs, 'comid','0');
+				if($comid>'0')$companyid = $comid;
+			}
+			$comrs 	= $this->db->getone('`[Q]company`','`id`='.$companyid.'');
+			$urs['companyid']  	= $companyid;
+			$urs['companyname']	= arrvalue($comrs,'name');
+			$urs['companynum']	= arrvalue($comrs,'num');
+			$this->usrr[$ckey] 	= $urs;
 		}
 		if(!$urs)$urs= array();
 		$urs['uid']  		= $uid;
 		$urs['date'] 		= $date;
 		$urs['month']		= $month;
+		$urs['time']		= date('H:i:s');
 		$urs['now']  		= $this->rock->now;
 		$urs['admin']		= arrvalue($urs,'name', $this->adminname);
 		$urs['adminname']	= $urs['admin'];
 		$urs['adminid']	 	= $uid;
 		$urs['deptname']	= arrvalue($urs,'deptname');
+		$urs['workdate']	= arrvalue($urs,'workdate');
 		$urs['ranking']		= arrvalue($urs,'ranking');
+		$urs['ismobile']	= $this->rock->ismobile() ? '1' : '0';
 		$barr = $this->rock->matcharr($str);
-		
 		foreach($barr as $match){
 			$key 	= $match;
 			if(substr($key,0,4)=='urs.')$key  = substr($key,4);
@@ -57,7 +75,7 @@ class baseClassModel extends Model
 				if($lx==0)$val = "'$val'";
 				$str = str_replace('{'.$match.'}', $val, $str);
 			}
-			//是否日期加减
+			//是否日期加减{date+1},{second-20}
 			if(contain($match,'+') || contain($match,'-')){
 				$add = 1;
 				if(contain($match,'-'))$add=-1;

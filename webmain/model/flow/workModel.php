@@ -22,8 +22,8 @@ class flow_workClassModel extends flowModel
 	protected function flowcheckbefore(){
 		$up = array();
 		if($this->checkiszhuanyi==1){
-			$up['dist'] 	= $this->rs['zb_name'];
-			$up['distid'] 	= $this->rs['zb_nameid'];
+			$up['dist'] 	= $this->rs['syszb_name'];
+			$up['distid'] 	= $this->rs['syszb_nameid'];
 			$up['status'] 	= 3; //待执行状态
 		}
 		if($up)$up['update'] = $up;
@@ -44,10 +44,10 @@ class flow_workClassModel extends flowModel
 				}
 			}
 		}
-		if(!isempt($rs['enddt']) && $zts!=1){
-			if(strtotime($rs['enddt'])<time())$str.='<font color=red>(已超期)</font>';
+		if(!isempt($rs['enddt']) && !in_array($zts,array(1,2,5))){
+			if(strtotime($rs['enddt'])<time())$rs['explain'].='<font color=red>(已超期)</font>';
 		}
-		$rs['status']= $str;
+		//$rs['status']= $str;
 		if($rs['score']==0)$rs['score']='';
 		if($rs['mark']==0)$rs['mark']='';
 		return $rs;
@@ -107,7 +107,7 @@ class flow_workClassModel extends flowModel
 			$this->push($toid, '任务', $cont);
 			$this->update($arr, $this->id);
 		}
-		if($a['name']=='指派给'){
+		if($a['name']=='指派给' || $a['name']=='转发'){
 			$cname 	 = $this->rock->post('changename');
 			$cnameid = $this->rock->post('changenameid');
 			$state = '0';
@@ -178,4 +178,17 @@ class flow_workClassModel extends flowModel
 			if($str != '')$this->push($uid, '', $str, '任务到期提醒');
 		}
 	}
+	
+	//任务待办格式推送
+	protected function flownexttodo($type)
+	{
+		if($type=='daiban'){
+			return array(
+				'cont' => '标题：{title}\n创建人：{optname}\n任务类型：{type}\n等级：{grade}',
+				'title'=> '任务待处理'
+			);
+		}
+		
+	}
+	
 }

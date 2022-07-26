@@ -21,6 +21,13 @@ $(document).ready(function(){
 		itemclick:function(d){
 			var bo = (d.isedit==1)?false:true;
 			btn(bo);
+		},
+		load:function(d){
+			if(!isempt(d.dirtype)){
+				btn(true);
+				get('btn1_{rand}').disabled=true;
+				get('btn2_{rand}').disabled=true;
+			}
 		}
 	});
 	
@@ -37,11 +44,13 @@ $(document).ready(function(){
 				title:'短信签名',height:400,width:400,
 				tablename:'sms',isedit:lx,
 				url:js.getajaxurl('saveqian','{mode}','{dir}'),
-				submitfields:'cont,isgk,num',
+				submitfields:'cont,isgk,num,explain',
 				items:[{
-					labelText:'签名名称',name:'cont',required:true,blankText:'3-8个字符'
+					labelText:'签名名称',name:'cont',required:true,blankText:'3-8个字符,需要与自己单位相关'
 				},{
 					labelText:'',name:'num',type:'hidden'
+				},{
+					labelText:'申请说明',name:'explain',required:true,blankText:'如提供单位名/产品官网网址等',type:'textarea'
 				},{
 					name:'isgk',labelBox:'公开(让其他用户也可以使用)',type:'checkbox',checked:false
 				}],
@@ -81,12 +90,12 @@ $(document).ready(function(){
 <div>
 	<table width="100%"><tr>
 	<td nowrap>
-		<button class="btn btn-primary" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
+		<button class="btn btn-primary" id="btn1_{rand}" click="clickwin,0"  type="button"><i class="icon-plus"></i> 新增</button>
 		 &nbsp; 
-		<button class="btn btn-default" click="reloads"  type="button"><i class="icon-refresh"></i> 刷新</button>
+		<button class="btn btn-default"  click="reloads"  type="button"><i class="icon-refresh"></i> 刷新</button>
 	</td>
 	<td align="right">
-	<button class="btn btn-default" click="reloadszt"  type="button"><i class="icon-refresh"></i> 刷新状态</button>&nbsp;
+	<button class="btn btn-default" click="reloadszt" id="btn2_{rand}" type="button"><i class="icon-refresh"></i> 刷新状态/获取签名</button>&nbsp;
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
 	</td>
 	</tr>
@@ -94,4 +103,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">如公开说明使用信呼系统的用户都可以使用这个签名，审核通过签名不能修改。普通用户不能添加签名，VIP用户可添加1个签名，合作商没限制，添加签名是需要审核的，可[刷新状态]查看审核状态。</div>
+<div class="tishi">短信签名模版使用帮助，<a href="<?=URLY?>view_smsqian.html" target="_blank">查看帮助和规则限制?</a>，如果您超3个月未使用短信，我们将会删除自定义的签名。</div>

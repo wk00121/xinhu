@@ -24,6 +24,8 @@ class xinhuChajian extends Chajian{
 		$url = $this->updatekey;
 		$url.= 'api.php?a='.$act.'';
 		$url.= '&host='.$this->rock->jm->base64encode(HOST).'&version='.VERSION.'&time='.time().'&web='.$this->rock->web.'&ip='.$this->rock->ip.'&randkey='.getconfig('randkey').'&xinhukey='.getconfig('xinhukey').'';
+		$url.= '&authorkey='.getconfig('authorkey').'';
+		if($act!='xinhuinstall')$url.= '&aukey='.m('option')->getval('auther_aukey').'';
 		foreach($can as $k=>$v)$url.='&'.$k.'='.$v.'';
 		return $url;
 	}
@@ -31,32 +33,18 @@ class xinhuChajian extends Chajian{
 	public function getdata($act, $can=array())
 	{
 		$url 	= $this->geturlstr($act, $can);
-		$cont 	= c('curl')->getfilecont($url);
-		$data  	= array('code'=>199,'msg'=>'你的服务器访问不到信呼官网'.URLY.'');
-		if($cont!=''){
+		$cont 	= c('curl')->getcurl($url);
+		$data  	= array('code'=>199,'msg'=>'出错'.URLY.',返回:'.htmlspecialchars($cont).'');
+		if($cont!='' && substr($cont,0,1)=='{'){
 			$data  	= json_decode($cont, true);
 		}
 		return $data;
 	}
 	
-	public function helpstr($num)
+	public function helpstr($num, $na='')
 	{
-		return '<a style="color:blue" href="'.$this->updatekey.'view_'.$num.'.html" target="_blank">[帮助]</a>';
+		if($na=='')$na='帮助';
+		return '<a style="color:blue" href="'.$this->updatekey.'view_'.$num.'.html" target="_blank">['.$na.']</a>';
 	}
 	
-	/**
-	*	生成短域名服务，一般用于短息上的
-	*/
-	public function urlsmall($url)
-	{
-		
-	}
-	
-	/**
-	*	使用官网异步功能发送
-	*/
-	public function sendanay($url)
-	{
-		
-	}
 }

@@ -73,8 +73,14 @@ function notifyClass(opts){
 			if(!salx)nwjs.winshow();
 			this.close();
 		};
-		
+		this.notification = notification;
 		if(can.soundbo)this.playsound(can.sound);
+	};
+	this.close = function(){
+		try{
+		if(this.notification)this.notification.close();
+		}catch(e){}
+		this.notification = false;
 	};
 	this.playsound=function(src){
 		if(!src)src=this.sound;
@@ -150,13 +156,13 @@ function notifyClass(opts){
 			'info':['#31708f', '#d9edf7','#bce8f1'],
 			'success':['#3c763d', '#dff0d8','#d6e9c6'],
 			'error':['#a94442', '#f2dede','#ebccd1'],
-			'wait':['#8a6d3b', '#fcf8e3','#faebcc'],
+			'wait':['#8a6d3b', '#fcf8e3','#faebcc']
 		};
 		var cos = coarr[can.type],id = 'notify_show_'+can.rand+'';
 		$('#'+id+'').remove();
 		var wz  = this.showwei(can.right,can.top),mess=can.body
 		mess	= mess.replace(/\n/gi, '<br>');
-		var s = '<div id="'+id+'" temp="notifyshow" class="animate slideInRight boxs" style="position:absolute;z-index:70;right:'+wz[0]+';top:'+wz[1]+';border:1px '+cos[2]+' solid; background:'+cos[1]+';color:'+cos[0]+';border-radius:5px">';
+		var s = '<div id="'+id+'" temp="notifyshow" class="boxs" style="position:absolute;z-index:70;right:'+wz[0]+';top:'+wz[1]+';border:1px '+cos[2]+' solid; background:'+cos[1]+';color:'+cos[0]+';border-radius:5px">';
 		if(can.closetime==0)s+='<div onclick="$(this).parent().fadeOut(function(){$(this).remove()})" style="position:absolute;right:3px;top:0px;cursor:pointer">×</div>';
 		s+='<table style="margin:15px"><tr valign="top">';
 		s+='	<td width="53px" align="left"><img style="width:40px;height:40px" src="'+can.icon+'"></td>';

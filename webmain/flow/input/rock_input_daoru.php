@@ -13,7 +13,7 @@ $(document).ready(function(){
 			for(i=0;i<a.length;i++){
 				if(a[i]){
 					oi++;
-					a1 = a[i].replace(/[ ]/g,'').split('	');
+					a1 = a[i].split('	');
 					s+='<tr>';
 					s+='<td>'+oi+'</td>';
 					for(j=0;j<a1.length;j++)s+='<td>'+a1[j]+'</td>';
@@ -26,7 +26,7 @@ $(document).ready(function(){
 		init:function(){
 			var vis = 'msgview_{rand}';
 			js.setmsg('初始化中...','', vis);
-			js.ajax(js.getajaxurl('initdaoru','{mode}','{dir}'),{'modenum':modenum},function(ret){
+			js.ajax(publicmodeurl(modenum,'initdaoru'),{'modenum':modenum},function(ret){
 				js.setmsg('','', vis);
 				c.initshow(ret);
 			},'get,json');
@@ -76,6 +76,29 @@ $(document).ready(function(){
 		downxz:function(){
 			var url = '?m=input&a=daoruexcel&d=flow&modenum='+modenum+'';
 			js.open(url);
+		},
+		addfile:function(){
+			js.upload('_daorufile{rand}',{maxup:'1','title':'选择Excel文件',uptype:'xls,xlsx','urlparams':'noasyn:yes'});
+		},
+		backup:function(fid){
+			var o1 = get('upbtn{rand}');
+			o1.disabled=true;
+			o1.value='文件读取中...';
+			js.ajax(js.getajaxurl('readxls','{mode}','{dir}'),{fileid:fid,'modenum':modenum},function(ret){
+				if(ret.success){
+					o1.value='读取成功';
+					mobjs.val(ret.data);
+					c.yulan();
+				}else{
+					js.msg('msg', ret.msg);
+					o1.value='读取失败';
+				}
+				o1.disabled=false;
+			},'get,json',function(s){
+				js.msg('msg', s);
+				o1.value=s;
+				o1.disabled=false;
+			});
 		}
 	}
 	var mobjs = $('#maincont_{rand}');
@@ -86,13 +109,21 @@ $(document).ready(function(){
 	
 	js.initbtn(c);
 	c.init();
+	
+	_daorufile{rand}=function(a,xid){
+		var f = a[0];
+		c.backup(f.id);
+	}
+	
 });
 </script>
 
 <div align="left">
 <div>请下面表格格式在Excel中添加数据，并复制到下面文本框中，也可以手动输入，<a click="downxz" href="javascript:;">[下载Excel模版]</a>。<br>多行代表多记录，整行字段用	分开，<a click="insrtss" href="javascript:;">插入间隔符</a></div>
+<div style="padding:5px 0px"><input type="button" id="upbtn{rand}" click="addfile" class="btn btn-primary" value="选择Excel文件..."></div>
 <div><textarea style="height:250px;" id="maincont_{rand}" class="form-control"></textarea></div>
+
 <div id="showview_{rand}"></div>
 <div style="padding:10px 0px"><a click="yulan" href="javascript:;">[预览]</a>&nbsp; &nbsp; <button class="btn btn-success" click="saveadd" type="button">确定导入</button>&nbsp; <span id="msgview_{rand}"></span></div>
-<div class="tishi">请严格按照规定格式添加，否则数据将错乱哦。</div>
+<div class="tishi">请严格按照规定格式添加，否则数据将错乱哦，导入的字段可到[流程模块→表单元素管理]下设置，更多可查看<a href="<?=URLY?>view_daoru.html" target="_blank">[帮助]</a>。</div>
 </div>

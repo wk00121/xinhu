@@ -9,28 +9,45 @@ class fileClassModel extends Model
 		$this->mimitype =  c('file')->getAllMime();
 	}
 	
+	/***
+	*	添加预览和下载记录
+	*/
+	public function addlogs($fileid, $type)
+	{
+		$uarr = array();
+		$uarr['fileid'] = $fileid;
+		$uarr['type'] = $type;
+		$uarr['optname'] = $this->adminname;
+		$uarr['optid'] = $this->adminid;
+		$uarr['ip'] 	= $this->rock->ip;
+		$uarr['web'] 	= $this->rock->web;
+		$uarr['optdt'] 	= $this->rock->now;
+		return m('files')->insert($uarr);
+	}
+	
 	public function getmime($lx)
 	{
 		if(!isset($this->mimitype[$lx]))$lx = 'unkown';
 		return $this->mimitype[$lx];
 	}
 	
-	public function getfile($mtype, $mid)
+	public function getfile($mtype, $mid, $where='')
 	{
-		$rows	= $this->getall("`mtype`='$mtype' and `mid` in($mid) order by `id`",'id,`mid`,filename,filepath,filesizecn,filesize,fileext,optname');
+		if($where=='')$where = "`mtype`='$mtype' and `mid` in($mid)";
+		$rows	= $this->getall("$where order by `id`",'id,`mid`,filename,filenum,filepath,filesizecn,filesize,fileext,optname,thumbpath,thumbplat');
 		return $rows;
 	}
 	
-	public function addfile($fileid, $mtype, $mid)
+	public function addfile($fileid, $mtype, $mid, $mknum='')
 	{
 		if(!$this->isempt($fileid)){
-			$this->update("`mtype`='$mtype',`mid`='$mid'", "`id` in($fileid) and `mid`=0");
+			$this->update("`mtype`='$mtype',`mid`='$mid',`mknum`='$mknum'", "`id` in($fileid) and `mid`=0");
 		}
 	}
 	
-	public function getstr($mtype, $mid, $lx=0)
+	public function getstr($mtype, $mid, $lx=0, $where='')
 	{
-		$filearr 	= $this->getfile($mtype, $mid);
+		$filearr 	= $this->getfile($mtype, $mid, $where);
 		$fstr		= $this->getstrstr($filearr, $lx);
 		return $fstr;
 	}
@@ -60,28 +77,102 @@ class fileClassModel extends Model
 		return $this->contain('|jpg|png|gif|bmp|jpeg|', '|'.$ext.'|');
 	}
 	
+	public function isoffice($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|pdf|', '|'.$ext.'|');
+	}
+	
+	public function isbianju($ext)
+	{
+		return contain('|doc|docx|xls|xlsx|ppt|pptx|', '|'.$ext.'|');
+	}
+	
+	public function isyulan($ext)
+	{
+		return contain(',txt,log,html,htm,js,php,php3,mp4,md,cs,sql,java,json,css,asp,aspx,shtml,cpp,c,vbs,jsp,xml,bat,sh,', ','.$ext.',');
+	}
+	
+	//判断是否可预览
+	public function isview($ext)
+	{
+		if($this->isimg($ext))return true;
+		if($this->isoffice($ext))return true;
+		if($this->isyulan($ext))return true;
+		return contain(',mp3,ogg,mp4,', ','.$ext.',');
+	}
+	
+	//获取缩略图的路径
+	public function getthumbpath($rs)
+	{
+		$thumbpath = $this->rock->repempt(arrvalue($rs, 'thumbpath'));
+		if(!isempt($thumbpath)){
+			if(substr($thumbpath,0,4)=='http')return $thumbpath;
+			if(!file_exists($thumbpath))$thumbpath='';
+		}
+		
+		if(isempt($thumbpath))$thumbpath = arrvalue($rs, 'thumbplat');
+		if(!isempt($thumbpath)){
+			$thumbpath = $this->rock->gethttppath($thumbpath);
+		}
+		return $thumbpath;
+	}
+	
+	
+	//$lx=2详情,$lx=3是flow.php getdatalog下读取的
 	public function getfilestr($rs, $lx=0)
 	{
 		$fstr= '';
 		if(!$rs)return $fstr;
 		$str = $this->rock->jm->strrocktoken(array('a'=>'down','id'=>$rs['id']));
 		$url = ''.URL.'index.php?rocktoken='.$str.'';
-		$str = 'href="'.$url.'" target="_blank"';
+		$str = 'href="'.$url.'"';
+		$ext   = $rs['fileext'];
+		$id    = $rs['id'];
+		$isimg= $this->isimg($ext);
 		$strd= $str;
 		if($lx==1)$str='href="javascript:;" onclick="return js.downshow('.$rs['id'].')"';
-		if($lx==2){
+		if($lx>=2){
 			$paths = $rs['filepath'];
-			if(!$this->isimg($rs['fileext']))$paths='';
-			$str='href="javascript:;" onclick="return c.downshow('.$rs['id'].',\''.$rs['fileext'].'\',\''.$paths.'\')"';//详情上预览
+			if(!$isimg)$paths='';
+			$str='href="javascript:;" onclick="return c.downshow('.$rs['id'].',\''.$ext.'\',\''.$paths.'\',\''.$rs['filenum'].'\')"';//详情上预览
 		}
+		
 		$flx   = $rs['fileext'];
 		if(!$this->contain($this->fileall,','.$flx.','))$flx='wz';
 		$str1  = '';
-		$fstr .='<img src="'.URL.'web/images/fileicons/'.$flx.'.gif" align="absmiddle" height=16 width=16> <a '.$str.' style="color:blue">'.$rs['filename'].'</a>';
-		if($lx==2 && !$this->rock->ismobile()){
-			$fstr .= ' <a '.$strd.' class="zhu">[下载]</a>';
+		$imurl = ''.URL.'web/images/fileicons/'.$flx.'.gif';
+		$thumbpath = $this->getthumbpath($rs);
+		if($isimg && !isempt($thumbpath))$imurl = $thumbpath;
+		
+		$isdel = file_exists($rs['filepath']);
+		if(substr($rs['filepath'],0,4)=='http')$isdel=true;
+		if(!isempt($rs['filenum']))$isdel=true;
+		
+		$fstr .='<img src="'.$imurl.'" align="absmiddle" height=20 width=20>';
+		if($isdel){
+			$fstr .=' '.$rs['filename'].'';
+		}else{
+			$fstr .=' <s>'.$rs['filename'].'</s>';
 		}
-		$fstr .= ' ('.$rs['filesizecn'].''.$str1.')';
+		
+		$fstr .=' <span style="color:#aaaaaa;font-size:12px">('.$rs['filesizecn'].')</span>';
+		
+		$filenum = arrvalue($rs,'filenum');
+		//if(!isempt($filenum)){
+			$strd = 'href="javascript:;" onclick="js.fileopt('.$id.', 1)"';//下载的链接
+		//}
+		
+		if($lx>=2){
+			if($isdel){
+				$fstr .= ' <a temp="clo" '.$strd.' class="blue">下载</a>';
+				if($isimg || $this->isoffice($ext) || $this->isyulan($ext))
+					$fstr .= '&nbsp; <a temp="clo" '.$str.' class="blue">预览</a>';
+				if($this->isbianju($ext) && $lx==3)$fstr .='`'.$rs['id'].'`'; //用于编辑
+			}else{
+				$fstr .= ' <span style="color:#aaaaaa;font-size:12px">已删除</span>';
+			}
+		}
+
 		return $fstr;
 	}
 	
@@ -101,7 +192,7 @@ class fileClassModel extends Model
 		$nas 		= '';
 		foreach($rows as $k=>$rs){
 			$path = $rs['filepath'];
-			if(!isempt($path) && file_exists($path)){
+			if(!isempt($path) && (file_exists($path) || substr($path,0,4)=='http') ){
 				$str .= ','.$path.'';
 				$nas .= ','.$rs['filename'].'';
 			}
@@ -119,7 +210,7 @@ class fileClassModel extends Model
 		$arr 	= array();
 		foreach($rows as $k=>$rs){
 			$inuar  = $rs;
-			if(isempt($rs['filepath']) || !file_exists($rs['filepath']))continue;
+			if(isempt($rs['filepath']) || (substr($rs['filepath'],0,4)!='http' && !file_exists($rs['filepath'])))continue;
 			unset($inuar['id']);
 			$oid	= $rs['id'];
 			$inuar['adddt'] 	= $this->rock->now;
@@ -153,19 +244,21 @@ class fileClassModel extends Model
 	{
 		if($sid!='')$where = "`id` in ($sid)";
 		if($where=='')return;
-		$rows 	= $this->getall($where, 'filepath,thumbpath,pdfpath');
+		$rows 	= $this->getall($where, 'id,filepath,thumbpath,pdfpath,filenum');
 		foreach($rows as $k=>$rs){
 			$path = $rs['filepath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
 			$path = $rs['thumbpath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
 			$path = $rs['pdfpath'];
-			if(!$this->isempt($path) && file_exists($path))unlink($path);
+			if(!$this->isempt($path) && substr($path,0,4)!='http' && file_exists($path))unlink($path);
+			
+			if(!isempt($rs['filenum']))c('rockqueue')->delfile($rs['filenum']);//发送队列删除对应平台上文件
 		}
 		$this->delete($where);
 	}
 	
-	public function fileheader($filename,$ext='xls')
+	public function fileheader($filename,$ext='xls', $size=0)
 	{
 		$mime 		= $this->getmime($ext);
 		$filename 	= $this->iconvutf8(str_replace(' ','',$filename));
@@ -173,6 +266,7 @@ class fileClassModel extends Model
 		header('Accept-Ranges: bytes');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		header('Pragma: no-cache');
+		if($size>0)header('Content-Length:'.$size.'');
 		header('Expires: 0');
 		header('Content-disposition:attachment;filename='.$filename.'');
 		header('Content-Transfer-Encoding: binary');
@@ -192,7 +286,9 @@ class fileClassModel extends Model
 		if($id==0)exit('Sorry!');
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
+		if(!$this->isdownfile($rs))exit('404 No permission download');
 		$this->update("`downci`=`downci`+1", $id);
+		$this->addlogs($id, 1);
 		$filepath	= $rs['filepath'];
 		$filename	= $rs['filename'];
 		$filesize 	= $rs['filesize'];
@@ -200,13 +296,23 @@ class fileClassModel extends Model
 		if($this->rock->contain($filepath,'http')){
 			header('location:'.$filepath.'');
 		}else{
+			//2018-07-18只能下载upload/images下的文件
+			$ielx  = substr($filepath,0,strlen(UPDIR));
+			$ielx1 = substr($filepath,0,6);
+			if($ielx!=UPDIR && $ielx1!='upload' && $ielx1!='images')exit('无效操作1');
+			
 			if(!file_exists($filepath))exit('404 Not find files');
 			if(!contain($filename,'.'.$fileext.''))$filename .= '.'.$fileext.'';
-			$this->fileheader($filename, $fileext);
+			$this->fileheader($filename, $fileext, $rs['filesize']);
 			if(substr($filepath,-4)=='temp'){
 				$content	= file_get_contents($filepath);
 				echo base64_decode($content);
 			}else{
+				if($this->rock->iswebbro(0) && $this->rock->iswebbro(5)){
+					header('location:'.$filepath.'');
+					return;
+				}
+				ob_clean();flush();readfile($filepath);return;
 				if($rs['filesize'] > 5*1024*1024){
 					header('location:'.$filepath.'');
 				}else{
@@ -216,25 +322,78 @@ class fileClassModel extends Model
 		}
 	}
 	
+	//这个是下载temp文件的
 	public function download($id)
 	{
 		if($id==0)exit('Sorry!');
 		$rs	= $this->getone($id);
 		if(!$rs)exit('504 Not find files');
-		$this->update("`downci`=`downci`+1", $id);
+		if(!$this->isdownfile($rs))exit('No permission download');
 		$filepath	= $rs['filepath'];
+		$ielx  = substr($filepath,0,strlen(UPDIR));
+		$ielx1 = substr($filepath,0,6);
+		if($ielx!=UPDIR && $ielx1!='upload' && $ielx1!='images')exit('无效操作2');
+		
 		if(!file_exists($filepath))exit('404 Not find files');
+		
+		$this->update("`downci`=`downci`+1", $id);
+		$this->addlogs($id, 1);
+		
 		$filename	= $rs['filename'];
 		$filesize 	= $rs['filesize'];
 		if(substr($filepath,-4)=='temp'){
 			Header("Content-type: application/octet-stream");
 			header('Accept-Ranges: bytes');
 			Header("Accept-Length: ".$filesize);
+			Header("Content-Length: ".$filesize);
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 			header('Pragma: no-cache');
 			header('Expires: 0');
 			$content	= file_get_contents($filepath);
 			echo base64_decode($content);
+		}else{
+			
 		}
+	}
+	
+	//判断是否有下载文件的权限
+	private function isdownfile($rs)
+	{
+		$uid = $this->adminid;
+		if(arrvalue($rs,'optid')==$uid)return true;
+		$table 	= arrvalue($rs,'mtype');
+		$mid 	= (int)arrvalue($rs,'mid','0');
+		if(!isempt($table) && $mid>0){
+			$to = m('reads')->rows("`table`='$table' and `mid`='$mid' and `optid`='$uid'");
+			if($to>0)return true;
+		}
+		$mknum = arrvalue($rs,'mknum');
+		if(!isempt($mknum)){
+			$mknuma = explode('|', $mknum);
+			$num 	= $mknuma[0];
+			$mid 	= (int)arrvalue($mknuma, 1, $mid);
+			if($mid>0){
+				$flow = m('flow')->initflow($num, $mid, false);
+				if($flow->isreadqx(1))return true;
+			}
+		}
+		if($table=='im_mess'){
+			$ors = m($table)->getone($mid);
+			if($ors){
+				$receuid = $ors['receuid'];
+				if(contain(','.$receuid.',',','.$uid.','))return true;
+			}
+		}
+		if($table=='word'){
+			$ors = m('word')->getone("`fileid`='".$rs['id']."'");
+			if($ors){
+				$cid = $ors['cid'];
+				$flow = m('flow')->initflow('worc', $cid, false);
+				if($flow->isreadqx(1))return true;
+				$flow = m('flow')->initflow('word', $ors['id'], false);
+				if($flow->isreadqx(1))return true;
+			}
+		}
+		return false;
 	}
 }

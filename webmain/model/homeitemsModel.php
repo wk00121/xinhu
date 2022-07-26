@@ -19,13 +19,19 @@ class homeitemsClassModel extends Model
 		if(isempt($nums))$nums = 'apply,gong,meet';
 		$numarr	= explode(',', $nums);
 		$barr 	= array();
+		$xhtype = getconfig('xinhutype');
+		$obj 	= false;
+		if(!isempt($xhtype))$obj = m($xhtype);
 		foreach($numarr as $num){
 			$act = 'get_'.$num.'_arr';
 			if(method_exists($this, $act)){
 				$barr[''.$num.'arr'] = $this->$act();
+			}else if($obj){
+				if(method_exists($obj, $act))
+					$barr[''.$num.'arr'] = $obj->$act();
 			}
 		}
-		if(in_array('kjrk', $numarr))$barr['total'] = $this->gettotals($this->adminid); //有快捷方式才显示
+		$barr['total'] = $this->gettotals($this->adminid);//统计角标
 		return $barr;
 	}
 	
@@ -38,14 +44,32 @@ class homeitemsClassModel extends Model
 		
 		$todo			= m('todo')->rows("uid='$uid' and `status`=0 and `tododt`<='$optdt'");
 		$arr['todo']	= $todo;
-		$arr['daiban']	= $bidb->daibanshu($uid);
-		$arr['applywtg']= $bidb->applymywgt($uid);
-		$arr['danerror']= $bidb->errortotal();
-		$arr['workwwc']	= m('work')->getwwctotals($uid);
-		$arr['email']	= m('emailm')->wdtotal($uid);
-		$arr['flowtodo']= m('flowtodo')->getwdtotals($uid);
+		
+		$obj 	= false;
+		$cbarr	= array();
+		$xhtype = getconfig('xinhutype');
+		if(!isempt($xhtype))$obj = m($xhtype);
+		if($obj){
+			if(method_exists($obj, 'menutotals')){
+				$cbarr = $obj->menutotals();
+				if(is_array($cbarr))foreach($cbarr as $k=>$v)$arr[$k]=$v;
+			}
+		}
+		
+		if(!isset($arr['daiban']))$arr['daiban']		= $bidb->daibanshu($uid);
+		if(!isset($arr['applywtg']))$arr['applywtg']	= $bidb->applymywgt($uid);
+		if(!isset($arr['daiturn']))$arr['daiturn'] 		= $bidb->daiturntotal($uid);
+		if(!isset($arr['danerror']))$arr['danerror']	= $bidb->errortotal();
+		if(!isset($arr['workwwc']))$arr['workwwc']		= m('work')->getwwctotals($uid);
+		if(!isset($arr['email']))$arr['email']			= m('emailm')->wdtotal($uid);
+		if(!isset($arr['flowtodo']))$arr['flowtodo']	= m('flowtodo')->getwdtotals($uid);
+		if(!isset($arr['cropt']))$arr['cropt']			= m('goods')->getdaishu(); //出入库操作数
+		if(!isset($arr['receiptmy']))$arr['receiptmy']	= m('flow:receipt')->getweitotal($uid);
+		if(!isset($arr['myhong']))$arr['myhong'] 		= m('official')->rows('`uid`='.$uid.' and `type`=0 and `status`=1 and `thid`=0');//统计未套红的
+
 		return $arr;
 	}
+	
 	
 	//我的申请
 	public function get_apply_arr()
@@ -53,10 +77,10 @@ class homeitemsClassModel extends Model
 		return m('flowbill')->homelistshow();
 	}
 	
-	//通知公告读取
+	//通知公告读取，5是读取的条数
 	public function get_gong_arr()
 	{
-		return m('flow')->initflow('gong')->getflowrows($this->adminid,'my');
+		return m('flow')->initflow('gong')->getflowrows($this->adminid,'my', 5);
 	}
 	
 	//会议
@@ -84,5 +108,35 @@ class homeitemsClassModel extends Model
 			'sbarr' => $sbarr,
 			'dkarr' => $dkarr,
 		);
+	}
+	
+	//读取我查阅公文,5是读取条数
+	public function get_officic_arr()
+	{
+		return m('flow')->initflow('officic')->getflowrows($this->adminid,'my',5);
+	}
+	
+	//读取新闻的
+	public function get_news_arr()
+	{
+		$typearr = m('option')->getdata('newstype',"and `value` like 'home%'");
+		$rows 	 = m('flow')->initflow('news')->getflowrows($this->adminid,'my');
+		
+		return array(
+			'typearr' => $typearr,
+			'rows' 	  => $rows,
+		);
+	}
+	
+	//考勤情况统计
+	public function get_kqtotal_arr()
+	{
+		return m('flow')->initflow('kqdkjl')->homekqtotal();
+	}
+	
+	//登录统计
+	public function get_tjlogin_arr()
+	{
+		return m('login')->homejtLogin();
 	}
 }

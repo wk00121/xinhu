@@ -9,10 +9,11 @@ class userinfoClassAction extends Action
 		if($key!=''){
 			$s = " and (a.`name` like '%$key%' or a.`user` like '%$key%' or a.`ranking` like '%$key%' or a.`deptname` like '%$key%') ";
 		}
+		if(ISMORECOM)$s.= ' and a.`companyid`='.m('admin')->getcompanyid().'';
 		return array(
 			'table' => $table,
 			'where'	=> $s,
-			'fields'=> 'a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,b.dkip,b.dkmac,b.iskq,b.isdwdk,b.isdaily'
+			'fields'=> 'a.name,a.deptname,a.id,a.status,a.ranking,b.id as ids,b.dkip,b.dkmac,b.iskq,b.isdwdk,b.isdaily,b.finger'
 		);
 	}
 	
@@ -68,6 +69,7 @@ class userinfoClassAction extends Action
 		if($dt !=''){
 			$where = "and ((state<>5 and workdate<='$dt') or (state=5 and workdate<='$dt' and  quitdt>'$dt'))";
 		}
+		$where .= m('admin')->getcompanywhere();
 		
 		$rows	= $db->getall("id>0 $where",'deptname,sex,xueli,state,birthday,workdate,quitdt,ranking');
 		

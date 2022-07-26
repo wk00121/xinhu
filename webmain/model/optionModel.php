@@ -83,6 +83,7 @@ class optionClassModel extends Model
 			'num'	=> $num,
 			'value'	=> $val,
 			'optid'	=> $this->adminid,
+			'comid'	=> m('admin')->getcompanyid(),
 			'optdt'	=> $this->rock->now
 		);
 		if(isset($numa[1]))$arr['pid'] 	= $numa[1];
@@ -182,5 +183,44 @@ class optionClassModel extends Model
 		if($djid != $dsja)$sid 	= $djid;
 		$this->getypsarr[$s] 	= $sid;
 		return $sid;
+	}
+	
+	
+	public function getcnumdata($num)
+	{
+		if(ISMORECOM && $cnum=m('admin')->getcompanynum())$num.='_'.$cnum.'';
+		$rows = $this->getselectdata($num, true);
+		$arr  = array();
+		foreach($rows as $k=>$rs){
+			$arr[] = array(
+				'value' => $rs['id'],
+				'name' => $rs['name'],
+				'padding' => $rs['padding'],
+			);
+		}
+		return $arr;
+	}
+	
+	public function authercheck($mym='')
+	{
+		$rows	 = $this->getall('pid=-101','`num`,`value`');
+		$authkey = $yuming = $enddt = '';
+		foreach($rows as $k1=>$rs1){
+			if($rs1['num']=='auther_authkey')$authkey = $rs1['value'];
+			if($rs1['num']=='auther_yuming')$yuming = $rs1['value'];
+			if($rs1['num']=='auther_enddt')$enddt = $rs1['value'];
+		}
+		if(isempt($yuming) || isempt($enddt) || isempt($authkey))return $this->rock->jm->base64decode('57O757uf5pyq562!5o6I5LiN6IO95L2.55So');
+		if($this->rock->jm->uncrypt($enddt)<$this->rock->date)return $this->rock->jm->base64decode('57O757uf562!5o6I5bey5Yiw5pyf');
+		$ym 	= $this->rock->jm->uncrypt($yuming);
+		$ho		= $this->rock->jm->base64decode('LDEyNy4wLjAuMSxsb2NhbGhvc3Qs');
+		if($mym=='')$mym = HOST;
+		$ho1 	= ','.$mym.',';
+		if(!contain($ho, $ho1) && !contain(','.$ym.',',$ho1))return str_replace('1', $mym, $this->rock->jm->base64decode('MeWfn!WQjeacquetvuaOiOS4jeiDveS9v!eUqA::'));
+		return array(
+			'star'	=> 'rock',
+			'authkey'	=> $authkey,
+			'yuming' 	=> $ym
+		);
 	}
 }

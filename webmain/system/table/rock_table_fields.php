@@ -42,7 +42,7 @@ $(document).ready(function(){
 				items:[{
 					labelText:'字段名',name:'name',required:true
 				},{
-					labelText:'类型',name:'type',type:'select',required:true,store:[['varchar','varchar(字符串)'],['int','int(长整数)'],['smallint','smallint(中整数)'],['tinyint','tinyint(短整数)'],['date','date(日期)'],['datetime','datetime(日期时间)'],['decimal','decimal(浮点数)'],['mediumint','mediumint(超长整数)'],['text','text(长文本域)']],valuefields:0,displayfields:1
+					labelText:'类型',name:'type',type:'select',required:true,store:[['varchar','varchar(字符串)'],['int','int(长整数)'],['smallint','smallint(中整数)'],['tinyint','tinyint(短整数)'],['bigint','bigint(超长整数)'],['date','date(日期)'],['datetime','datetime(日期时间)'],['decimal','decimal(浮点数)'],['mediumint','mediumint(中等整数)'],['text','text(长文本域)']],valuefields:0,displayfields:1
 				},{
 					labelText:'长度',name:'lens',value:'0'
 				},{

@@ -30,11 +30,16 @@ $(document).ready(function(){
 	
 	function btn(bo){
 		get('edit_{rand}').disabled = bo;
+		get('kanbtn_{rand}').disabled = bo;
 	}
 	var  c={
 		clickwin:function(){
 			var name=a.changeid;
 			addtabs({num:'tablefields'+name+'',url:'system,table,fields,table='+name+'',name:'['+name+']字段管理'});
+		},
+		kanjili:function(){
+			var name=a.changeid;
+			addtabs({num:'tablerecord'+name+'',url:'system,table,record,table='+name+'',name:'['+name+']记录'});
 		},
 		search:function(){
 			a.setparams({
@@ -65,7 +70,8 @@ $(document).ready(function(){
 	
 	
 	<td align="right" nowrap>
-		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
+		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp;
+		<button class="btn btn-default" id="kanbtn_{rand}" click="kanjili" disabled type="button">查看记录</button>
 	</td>
 	</tr>
 	</table>

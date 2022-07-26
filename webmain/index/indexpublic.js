@@ -1,5 +1,55 @@
-﻿var objcont,tabs_title,tabsarr={},nowtabs,opentabs=[],menutabs,menuarr,admintype='0';
+var objcont,tabs_title,tabsarr={},nowtabs,opentabs=[],menutabs,menuarr,admintype='0';
 var viewwidth,viewheight,optmenudatas=[];
+
+js.initbtn = function(obj){
+	var o = $("[click]"),i,o1,cl;
+	for(i=0; i<o.length; i++){
+		o1	= $(o[i]);
+		cl	= o1.attr('clickadd');
+		if(cl!='true'){
+			o1.click(function(eo){
+				var cls = $(this).attr('click');
+				if(typeof(cls)=='string'){
+					cls=cls.split(',');
+					obj[cls[0]](this, cls[1], cls[2], eo);
+				}
+				return false;
+			});
+		}
+	}
+	o.attr('clickadd','true');
+}
+
+js.initedit = function(id,can){
+	var cans = js.apply({
+		resizeType : 0,
+		allowPreviewEmoticons : false,
+		allowImageUpload : true,
+		formatUploadUrl:false,
+		uploadJson:'mode/kindeditor/kindeditor_upload.php',
+		allowFileManager:true,
+		items : ['fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+			'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+			'insertunorderedlist', '|','image', 'link','unlink','|','source','clearhtml','fullscreen'],
+		blur:function(){
+			
+		}
+	},can);
+	
+	var editorobj = KindEditor.create('#'+id+'', cans);	
+	return editorobj;
+}
+
+js.setwhere	= function(mid,call){
+	if(!call)call='';
+	var url =js.getajaxurl('@setwhere','where','flow',{modeid:mid,callback:call});
+	js.tanbody('setwherewin','设置条件',500,330,{
+		html:'<div style="height:320px;overflow:hidden"><iframe src="" name="winiframese" width="100%" height="100%" frameborder="0"></iframe></div>',
+		bbar:'none'
+	});
+	winiframese.location.href=url;
+}
+
 function publicstore(mo,dos,oans){
 	if(!mo)mo='index';
 	if(!dos)dos='';
@@ -16,7 +66,7 @@ function publicsave(mo, dos,oans){
 }
 
 function editfacechang(xid,nems){
-	js.upload('_editfacechangback',{maxup:'1',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid});	
+	js.upload('_editfacechangback',{maxup:'1',thumbnail:'150x150','title':'修改['+nems+']的头像',uptype:'image','params1':xid,'urlparams':'noasyn:yes'});	
 }
 function _editfacechangback(a,xid){
 	var f = a[0];
@@ -62,7 +112,8 @@ function openxiangs(name,num,id,cbal){
 	if(!id)id=0;
 	if(!cbal)cbal='';
 	var url = 'task.php?a=p&num='+num+'&mid='+id+'';
-	if(num.indexOf('?')>-1){url=num+'&callback='+cbal+'';}else{url+='&callback='+cbal+'';}
+	var jg  = num.indexOf('?')>-1 ? '&' : '?';
+	if(num.indexOf('?')>-1 || num.substr(0,4)=='http'){url=num+''+jg+'callback='+cbal+'';}else{url+='&callback='+cbal+'';}
 	js.winiframe(name,url);
 	return false;
 }
@@ -92,6 +143,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.oi 	= oi;
 	this.obj 	= o1;
 	this.columns= cola;
+	this.optmenudatas= {};
 	var me 		= this;
 	this._init=function(){
 		if(typeof(optmenuobj)=='object')optmenuobj.remove();
@@ -104,7 +156,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		});
 		var da = [{name:'详情',lx:998,nbo:false},{name:'详情(新窗口)',lx:998,nbo:true}];
 		var off=$(this.obj).offset();
-		var subdata = optmenudatas[''+this.modenum+'_'+this.id+''];
+		var subdata = this.optmenudatas[''+this.modenum+'_'+this.id+''];
 		if(!subdata){
 			da.push({name:'<img src="images/loadings.gif" align="absmiddle"> 加载菜单中...',lx:999});
 			this.loadoptnum();
@@ -126,6 +178,15 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.openedit=function(){
 		openinput(this.modename,this.modenum,this.mid, this.callbackstr);
 	};
+	this.getupgurl=function(str){
+		if(str.substr(0,4)=='http' || str.indexOf('|')==-1)return str;
+		var a1 = str.split('|'),lx = a1[0],mk = a1[1],cs=a1[2];
+		var url= '';
+		if(lx=='add')url='?a=lu&m=input&d=flow&num='+mk+'';
+		if(lx=='xiang')url='task.php?a=p&num='+mk+'';
+		if(cs)url+='&'+cs;
+		return url;
+	};
 	this.showmenuclick=function(d){
 		d.num=this.modenum;d.mid=this.id;
 		d.modenum = this.modenum;
@@ -136,14 +197,27 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		if(lx==996){this.xiang(d.oi, d.nbo);return;}
 		if(lx==11){this.openedit();return;}
 		this.changdatsss = d;
-		if(lx==2 || lx==3){
+		if(lx==2 || lx==3 || lx==6){
 			var clx='user';if(lx==3)clx='usercheck';
+			if(lx==6)clx='deptusercheck';
 			js.getuser({type:clx,title:d.name,callback:function(na,nid){me.changeuser(na,nid);}});
+			return;
+		}
+		//打开新窗口
+		if(lx==5){
+			var upg = d.upgcont;
+			if(isempt(upg)){
+				js.msg('msg','没有设置打开的操作地址');
+			}else{
+				var url = this.getupgurl(upg);
+				openxiangs(d.name, url,'', this.callbackstr);
+			}
 			return;
 		}
 		var nwsh = 'showfielsv_'+js.getrand()+'';
 		var uostr= '<div align="left" style="padding:10px"><div id="'+nwsh+'" style="height:60px;overflow:auto" class="input"></div><input style="width:180px" id="'+nwsh+'_input" type="file"></div>';
 		var bts = (d.issm==1)?'必填':'选填';
+		if(d.optnum!=null && d.optnum.indexOf('noup')>-1)uostr='';
 		if(!d.smcont)d.smcont='';
 		if(lx==1 || lx==9 || lx==10 || lx==13 || lx==15 || lx==16 || lx==17){
 			if(d.nup==1)uostr=''; //不需要上传文件
@@ -163,6 +237,11 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		//提醒
 		if(lx==14){
 			openinput('提醒设置','remind',''+d.djmid+'&def_modenum='+this.modenum+'&def_mid='+this.mid+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'', this.callbackstr);
+			return;
+		}
+		//回执
+		if(lx==18){
+			openinput(d.name,'receipt',''+d.djmid+'&def_modenum='+this.modenum+'&def_mid='+this.mid+'&def_modename=basejm_'+jm.base64encode(d.modename)+'&def_explain=basejm_'+jm.base64encode(d.smcont)+'', this.callbackstr);
 			return;
 		}
 		if(lx==4){
@@ -222,7 +301,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 		js.msg('wait','处理中...');
 		js.ajax(js.getajaxurl('yyoptmenu','flowopt','flow'),d,function(ret){
 			if(ret.code==200){
-				optmenudatas[''+d.modenum+'_'+d.mid+'']=false;
+				me.optmenudatas[''+d.modenum+'_'+d.mid+'']=false;
 				me.tableobj.reload();
 				js.msg('success','处理成功');
 			}else{
@@ -233,7 +312,7 @@ function optmenuclass(o1,num,id,obj,mname,oi, cola){
 	this.loadoptnum=function(){
 		js.ajax(js.getajaxurl('getoptnum','flowopt','flow'),{num:this.modenum,mid:this.id,bfrom:'hou'},function(ret){
 			if(ret.code == 200){
-				optmenudatas[''+me.modenum+'_'+me.id+''] = ret.data;
+				me.optmenudatas[''+me.modenum+'_'+me.id+''] = ret.data;
 				me._init();
 			}else{
 				js.msg('msg',ret.msg);
@@ -283,7 +362,7 @@ function highsearchclass(options){
 	this.initfields=function(){
 		if(this.type==1){
 			var i,a=this.fieldsarr,b=this.fieldsselarr,len=a.length,str='',fid='columns_'+this.modenum+'_'+this.pnum+'',selstr='caozuo';
-			if(this.isflow==1)selstr+=',base_name,base_deptname';
+			if(this.isflow>0)selstr+=',base_name,base_deptname';
 			for(i=0;i<len;i++){
 				str+='<div class="div01"><label><input name="selfields" type="checkbox" value="'+a[i].fields+'">&nbsp;'+a[i].name+'('+a[i].fields+')</label></div>';
 				if(a[i].islb==1)selstr+=','+a[i].fields+'';
@@ -349,8 +428,8 @@ function highsearchclass(options){
 	this.searchhighshowinput=function(b){
 		var type = b.fieldstype,name = 'soufields_'+b.fields+'';
 		var s = '<input placeholder="关键词包含" type="text" class="inputs" name="'+name+'">';
-		if(type=='date' || type=='datetime' || type=='month'){
-			s='<input style="width:150px" onclick="js.datechange(this,\'date\')" class="inputs datesss" readonly  name="'+name+'_start"> 至 <input onclick="js.datechange(this,\'date\')" style="width:150px" class="inputs datesss" readonly name="'+name+'_end"> ';
+		if(type=='date' || type=='datetime'){
+			s='<input style="width:150px" onclick="js.datechange(this,\''+type+'\')" class="inputs datesss" readonly  name="'+name+'_start"> 至 <input onclick="js.datechange(this,\''+type+'\')" style="width:150px" class="inputs datesss" readonly name="'+name+'_end"> ';
 		}
 		if(type=='month'){
 			s='<input style="width:150px" onclick="js.datechange(this,\''+type+'\')" class="inputs datesss" readonly name="'+name+'">';
@@ -402,4 +481,275 @@ function highsearchclass(options){
 		return d;
 	};
 	this.init();
+}
+
+/**
+*	订阅
+*/
+function classubscribe(options){
+	var me 		= this;
+	var cans 	= js.apply({'oncallback':function(){},title:'','params':{},objtable:false}, options);
+	for(var a in cans)this[a]=cans[a];
+	this._init 	= function(){
+		if(!this.objtable){
+			js.msg('msg','没指定一个表格无法设置订阅');
+			return;
+		}
+		var cyrl = this.objtable.geturlparams(),cstr='',i,vsts,ostrs='';
+		var cyrls = cyrl[1];
+		cyrls.loadci=1;
+		for(i in cyrls){
+			vsts = cyrls[i];
+			if(vsts || vsts=='0')cstr+='&'+i+'='+vsts+'';
+		}
+		cstr  = cstr.substr(1);
+		
+		for(i in this.params){
+			vsts = this.params[i];
+			if(vsts || vsts=='0')ostrs+='&'+i+'='+vsts+'';
+		}
+		if(ostrs!='')ostrs=ostrs.substr(1);
+		var h = $.bootsform({
+			title:'订阅',height:500,width:500,tablename:'subscribe',isedit:0,
+			params:{int_filestype:'status',otherfields:'optid={adminid},optname={admin},optdt={now}'},
+			submitfields:'title,cont,explain,suburl,suburlpost',
+			url:publicmodeurl('subscribe','publicsave'),beforesaveaction:'savebefore',
+			items:[{
+				labelText:'订阅名称',name:'title',required:true,value:this.title
+			},{
+				labelText:'订阅提醒内容',name:'cont',value:this.cont,type:'textarea',required:true,height:60
+			},{
+				labelText:'订阅参数',name:'suburlpost',type:'hidden',height:60,value:cstr
+			},{
+				labelText:'订阅地址',name:'suburl',type:'hidden',height:50,value:jm.base64encode(cyrl[0])
+			},{
+				labelText:'订阅参数',blankText:'根据参数获取数据如：key=关键词&month={month}，乱写会导致预想不到的后果。',name:'suburlposts',type:'textarea',height:60,value:ostrs
+			},{
+				labelText:'说明',name:'explain',type:'textarea',height:50,value:this.explain
+			},{
+				name:'status',labelBox:'启用',type:'checkbox',checked:true
+			}],
+			success:function(){
+				js.confirm('订阅成功，是否直接到我的订阅管理下添加订阅运行时间？',function(jg){
+					if(jg=='yes')addtabs({url:'flow,page,subscribe,atype=my',name:'我订阅管理',num:'rssglmy','icons':'cog'});
+				});
+				me.oncallback();
+			},
+			submitcheck:function(d){
+				var str = d.suburlpost;
+				if(!isempt(d.suburlposts))str+='&'+d.suburlposts+'';
+				str 	= jm.base64encode(str);
+				return {'suburlpost':str};
+			}
+		});
+		
+		h.isValid();
+	};
+	this._init();
+}
+
+
+js.subscribe=function(csns){
+	return new classubscribe(csns);
+}
+
+//自定义导出
+publicdaochuobjfarr = {};
+function publicdaochuobj(options){
+	var me 		= this;
+	var cans 	= js.apply({'oncallback':function(){},'modenum':'','modenames':'',modename:'',objtable:false,fieldsarr:[],btnobj:false,notdingyue:false}, options);
+	for(var a in cans)this[a]=cans[a];
+	this._init=function(){
+		if(!this.btnobj || !this.objtable)return;
+		
+		if(!this.daochuobj)this.daochuobj=$.rockmenu({
+			width:120,top:35,donghua:false,data:[],
+			itemsclick:function(d, i){
+				me.daonchuclick(d);
+			}
+		});
+		var d = [{name:'导出全部',lx:0},{name:'导出当前页',lx:1},{name:'自定义列导出',lx:3}];
+		if(!this.notdingyue)d.push({name:'订阅此列表',lx:2});
+		this.daochuobj.setData(d);
+		var lef = $(this.btnobj).offset();
+		this.daochuobj.showAt(lef.left, lef.top+35);
+	};
+	this.daonchuclick=function(d){
+		if(d.lx==0)this.objtable.exceldown();
+		if(d.lx==1)this.objtable.exceldownnow();
+		if(d.lx==2)this.subscribelist();
+		if(d.lx==3)this.excelautoinit();
+	}
+	this.subscribelist=function(){
+		var name = nowtabs.name;
+		if(this.modename!='')name=''+this.modename+'('+name+')';
+		js.subscribe({
+			title:name,
+			cont:''+name+'的列表的',
+			explain:'订阅['+name+']的列表',
+			objtable:this.objtable
+		});
+	}
+	this.excelautoinit=function(){
+		if(this.fieldsarr.length==0){
+			if(this.modenum!=''){
+				if(publicdaochuobjfarr[this.modenum]){
+					this.loadfarrshow(publicdaochuobjfarr[this.modenum]);
+				}else{
+					js.loading('读取字段中...');
+					js.ajax(js.getajaxurl('getfields','flowopt','flow'),{'modenum':this.modenum}, function(ret){
+						js.unloading();
+						me.loadfarrshow(ret);
+					},'get,json', function(st){
+						js.msgerror(st);
+					});
+				}
+			}else{
+				var farr = this.objtable.getcolumns(),i,fars=[];
+				for(i=0;i<farr.length;i++){
+					if(!farr[i].notexcel)fars.push({
+						'fields':farr[i].dataIndex,
+						'name':farr[i].text,
+						'islb':'1'
+					});
+				}
+				this.fieldsarr=fars;
+				this.excelauto();
+			}
+		}else{
+			this.excelauto();
+		}
+	}
+	this.loadfarrshow=function(ret){
+		var farr = ret.fieldsarr;
+		publicdaochuobjfarr[this.modenum]=ret;
+		this.fieldsarr=farr;
+		this.isflow = ret.isflow;
+		this.modenames = ret.modenames;
+		this.excelauto();
+	}
+	this.excelauto=function(){
+		if(this.fieldsarr.length==0){
+			js.msg('msg','没有设置字段数据');
+			return;
+		}
+		var dar=[],i,sdar;
+		for(i in this.fieldsarr)dar.push(this.fieldsarr[i]);
+		if(!isempt(this.modenames)){
+			sdar = this.modenames.split(',');
+			for(i in sdar)dar.push({'fields' : 'sub_table_'+i+'','name' : sdar[i]});
+		}
+		this.nowfieldsarr = dar;
+		var str='<table width="100%"><tr>',len=dar.length,d1,sel,oi=0;
+		for(i=0;i<len;i++){
+			d1 = dar[i];
+			if(this.isflow==0){
+				if(d1.fields=='base_name' || d1.fields=='base_deptname' || d1.fields=='sericnum')continue;
+			}
+			oi++;
+			sel = '';
+			if(d1.islb==1)sel='checked';
+			str+='<td width="25%" align="left"><label><input name="daochufields" value="'+i+'" '+sel+' type="checkbox">'+d1.name+'</label></td>';
+			if(oi%4==0)str+='</tr><tr>';
+		}
+		str+='</tr></table>';
+		str+='<div><label><input type="checkbox" onclick="js.selall(this,\'daochufields\')">全选</label>&nbsp;&nbsp;&nbsp;导出前&nbsp;<input type="number" class="form-control" id="daolimit" style="width:100px" min="1" value="1000">&nbsp;条记录</div>';
+		js.tanbody('autoexceldao',''+this.modename+'自定义列导出',520,410,{
+			html:'<div>'+str+'</div>',
+			bodystyle:'padding:10px',
+			btn:[{text:'确定'}]
+		});
+		$('#autoexceldao_btn0').click(function(){
+			me.okdaochu();
+		});
+	}
+	this.okdaochu=function(){
+		var did = js.getchecked('daochufields');
+		if(did==''){
+			js.msg('msg','至少要选择一个列');
+			return;
+		}
+		var dida = did.split(','),i,d1,str1='',str2='',str3='';
+		for(i=0;i<dida.length;i++){
+			d1 = this.nowfieldsarr[dida[i]];
+			str1+=','+d1.name+'';
+			str2+=','+d1.fields+'';
+			if(d1.fields.indexOf('sub_table_')==0)str3+=','+d1.fields.substr(10)+'';
+		}
+		str1 = str1.substr(1);
+		str2 = str2.substr(1);
+		if(str3!='')str3 = str3.substr(1);
+		this.objtable.exceldown('',2, {
+			'page':1,
+			'limit':get('daolimit').value,
+			'excelfields':str2,
+			'excelheader':str1,
+			'excelsubtab':str3
+		});
+		js.tanclose('autoexceldao');
+	}
+	this._init();
+}
+
+//重写js.tanbody
+js.winiframemax = 120;
+js.tanbody=function(act,title,w,h,can1){
+	this.tanbodyindex++;
+	var can	= js.applyIf(can1,{html:'',msg:'',showfun:function(){},bodystyle:'',guanact:'',titlecls:'',btn:[]});
+	var l=(winWb()-w-50)*0.5,t=(winHb()-h-50)*0.5;
+	var s	= '';
+	var mid	= ''+act+'_main';
+	$('#'+mid+'').remove();
+	var heis='';
+	if(can.bodyheight)heis='height:'+can.bodyheight+';overflow:auto;';	
+	var s = '<div class="modal" id="'+mid+'" tabindex="-1" role="dialog" style="left:3px;top:'+t+'px" aria-labelledby="myModalLabel">';
+	s+='<div id="xpbg_bodydds" xpbody="'+act+'" class="modal-dialog" style="width:'+w+'px;margin:0px auto" role="document">';
+	s+=' 	<div class="modal-content">';
+	s+=' 		<div class="modal-header" >';
+	s+='			<button id="'+act+'_spancancel" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+	s+='			<h4 onmousedown="js.move(\''+mid+'\')" class="modal-title">'+title+'</h4>';
+	s+='		</div>';
+	s+='		<div class="modal-body" style="padding:0px;'+heis+';'+can.bodystyle+'" id="'+act+'_body">'+can.html+'</div>';
+	
+	s+='	<div id="'+act+'_bbar" class="modal-footer" align="right"><span id="msgview_'+act+'">'+can.msg+'</span>&nbsp;';
+	for(var i=0; i<can.btn.length; i++){
+		var a	= can.btn[i];
+		s+='<button class="btn btn-success" id="'+act+'_btn'+i+'" onclick="return false">';
+		if(!isempt(a.icons))s+='<i class="icon-'+a.icons+'"></i>&nbsp; ';
+		s+=''+a.text+'</button>&nbsp; ';
+	}
+	s+='	<button class="btn btn-default" id="'+act+'_cancel" onclick="return js.tanclose(\''+act+'\',\''+can.guanact+'\')">取消</button>';
+	s+='	</div>';
+
+	s+='  </div>';
+	s+=' </div>';
+	s+='</div>';
+	$('body').append(s);
+	
+	if(can.closed=='none'){
+		$('#'+act+'_bbar').remove();
+		$('#'+act+'_spancancel').remove();
+	}
+	if(can.bbar=='none')$('#'+act+'_bbar').remove();
+	this.modalobj = $('#'+mid+'').modal({'keyboard':false,'show':true,'backdrop':'static'});
+	this.modalobj.on('hidden.bs.modal',function(){
+		$('#'+mid+'').remove();
+	});
+	this.tanoffset(act);
+	can.showfun(act);
+}
+
+js.tanclose=function(act, guan){
+	$('#'+act+'_main').remove();
+	$($('.modal-backdrop')[0]).remove();
+	js.xpbody(act,'none');
+	return false;
+}
+
+js.tanoffset=function(act){
+	var mid=''+act+'_main';
+	var lh=$('#'+mid+'').find('div[xpbody]').height(),l,t;
+	t=(winHb()-lh-20)*0.5;
+	if(t<0)t=1;
+	$('#'+mid+'').css({'top':''+t+'px'});
 }

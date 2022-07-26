@@ -9,11 +9,13 @@ $(document).ready(function(){
 		tablename:'admin',sort:'sort',dir:'asc',modedir:'{mode}:{dir}',storebeforeaction:'beforeextentuser',
 		title:'人员',bodyStyle:'height:'+(viewheight-135)+'px;overflow:auto',
 		columns:[{
-			text:'用户名',dataIndex:'user',sortable:true
-		},{
 			text:'姓名',dataIndex:'name',sortable:true
 		},{
 			text:'部门',dataIndex:'deptname',sortable:true
+		},{
+			text:'用户名',dataIndex:'user',sortable:true
+		},{
+			text:'ID',dataIndex:'id',sortable:true
 		}]
 	};
 	
@@ -25,15 +27,19 @@ $(document).ready(function(){
 			text:'菜单名称',dataIndex:'name',align:'left'
 		},{
 			text:'编号',dataIndex:'num'
+		},{
+			text:'ID',dataIndex:'id'
 		}]
 	};
 	
 	var gcans = {
-		tablename:'group',sort:'sort',dir:'asc',title:'组',
+		tablename:'group',sort:'sort',dir:'asc',title:'组',modedir:'{mode}:{dir}',storebeforeaction:'beforeextentgroup',
 		columns:[{
 			text:'组名',dataIndex:'name',sortable:true
 		},{
 			text:'排序号',dataIndex:'sort',sortable:true
+		},{
+			text:'ID',dataIndex:'id',sortable:true
 		}]
 	};
 	
@@ -42,6 +48,8 @@ $(document).ready(function(){
 	if(type=='um' || type=='view'){
 		viewcan1 = ucans;
 		viewcan2 = mcans;
+		viewcan1.fanye=true;
+		viewcan1.bodyStyle='height:'+(viewheight-225)+'px;overflow:auto';
 	}
 	if(type=='mu'){
 		viewcan1 = mcans;
@@ -59,7 +67,7 @@ $(document).ready(function(){
 	
 	
 	if(type=='view'){
-		$('#viessban_{rand}').html('人员菜单权限有如下得来：1、根据[人员→菜单,菜单→人员]；2、如所在的组有权限，组下人员也有权限；3、在[菜单管理]没有开启验证的菜单任何人是都有权限。');
+		$('#viessban_{rand}').html('<button class="btn btn-primary"  click="qingkong" type="button">清空全部菜单权限</button>&nbsp;人员菜单权限有如下得来：1、根据[人员→菜单,菜单→人员]；2、如所在的组有权限，组下人员也有权限；3、在[菜单管理]没有开启验证的菜单任何人是都有权限。');
 	}
 	
 	var bool = false,changeid=0;
@@ -119,9 +127,23 @@ $(document).ready(function(){
 				}
 				bool	= false;
 			});
+		},
+		search:function(){
+			a.setparams({key:$('#key_{rand}').val()}, true);
+		},
+		qingkong:function(){
+			var url	= js.getajaxurl('qingkong','extent','system');
+			$.get(url, function(){
+				js.confirm('菜单权限已全部清空，刷新系统重新进入',function(jg){
+					location.reload();
+				});
+			});
+
 		}
 	}
 	js.initbtn(c);
+	
+	if(type=='um' || type=='view')$('#soukey_{rand}').show();
 });
 </script>
 
@@ -131,6 +153,13 @@ $(document).ready(function(){
 <table width="100%">
 <tr valign="top">
 	<td width="50%">
+		<div class="input-group" style="width:250px;margin-bottom:10px;display:none" id="soukey_{rand}">
+			<input class="form-control" id="key_{rand}"   placeholder="人员关键词搜索">
+			<span class="input-group-btn">
+				<button class="btn btn-default" click="search" type="button"><i class="icon-search"></i></button>
+			</span>
+		</div>
+		
 		<div class="panel panel-info">
 			<div class="panel-heading"><h3 class="panel-title" id="title1_{rand}">人员</h3></div>
 			<div id="view1_{rand}"></div>

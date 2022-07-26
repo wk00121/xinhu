@@ -7,11 +7,12 @@
 <script language="javascript">
 var callback= '<?=$params['callback']?>',
 	maxup	= <?=$params['maxup']?>,
-	uptype	= '<?=$params['uptype']?>',
+	uptype	= '<?=str_replace(',','|',$params['uptype'])?>',
 	thumbnail = '<?=$params['thumbnail']?>',
 	maxwidth  = '<?=$params['maxwidth']?>',
 	showid  	= '<?=$params['showid']?>',
 	upkey  	= '<?=$params['upkey']?>',
+	urlparams  	= <?=$params['urlparams']?>,
 	thumbtype  = '<?=$params['thumbtype']?>';//缩略图类型0可能去掉看不到的默认， 1整图缩略可以看到白
 var up={
 	filearr:[],
@@ -46,6 +47,11 @@ var up={
 		if(uptype!='*')fmsg+=',限制'+uptype+'类型';
 		if(fmsg!='')fmsg=fmsg.substr(1);
 		$('#footmsg').html(fmsg);
+		
+		window.addEventListener('drop', function(e) {
+			var files = e.dataTransfer;
+			up.change(files);
+		}, false);
 	},
 	add:function()
 	{
@@ -65,23 +71,31 @@ var up={
 		return rand;
 	},
 	change:function(o){
+		this.objfile = o.files;
 		this.change1(0);
 	},
 	change1:function(oi)
 	{
-		var obja	= get('inputfileid').files;
+		var obja	= this.objfile;
 		if(maxup!=0){
 			if(this.gsize()>=maxup){
 				this.rexushow();
 				return false;
 			}
 		}
+
 		if(oi>=obja.length){
 			setTimeout('document.myform.reset()',500);
 			this.rexushow();
 			return false;
 		}
 		var file	= obja[oi];
+		
+		if(!file || file.name=='/'){
+			up.change1(oi+1);
+			return false;
+		}
+		
 		var olen	= this.filearr.length;
 		var filesize	= file.size;
 		var filesizecn	= js.formatsize(filesize);
@@ -109,6 +123,19 @@ var up={
 			up.change1(oi+1);
 			return false;
 		}
+		
+		//回调的验证
+		<?php if($params['changeback']!=''){?>
+		try{
+			var tisr = parent.<?=$params['changeback']?>(file);
+			if(tisr && typeof(tisr)=='string'){
+				js.msg('msg',tisr);
+				up.change1(oi+1);
+				return false;
+			}
+		}catch(e){}
+		<?php }?>
+		
 		this.moi++;
 		for(var i=0;i<olen;i++){
 			if(this.filearr[i].filename==filename && this.filearr[i].filesize==filesize){
@@ -117,16 +144,34 @@ var up={
 				return false;
 			}
 		}
+		
+		var arr={filename:filename,filesize:filesize,filesizecn:filesizecn,filetype:filetype,fileext:fileext,xu:this.moi,fileobj:file};
+		var noi = this.filearr.push(arr);
+		var fis= 'web/images/fileicons/'+js.filelxext(fileext)+'.gif';
 		var s='<div class="mdiv" upload="true">'+
-		'<div class="div01"><span></span>'+fileext+'：'+filename+'</div>'+
+		'<div class="div01"><span>1. </span><img src="'+fis+'" width="16" height="16" align="absmiddle"> <font>'+filename+'</font>，<a onclick="up.editname('+(noi-1)+', this)" href="javascript:;">改名</a></div>'+
 		'<div class="div02">'+filesizecn+'</div>'+
 		'<div class="div03" id="updeng'+this.moi+'">初始化文件...</div>'+
 		'</div>';
+		if(get('upfilemsg'))$('#upfilemsg').remove();
 		this.obj.append(s);
-		var arr={filename:filename,filesize:filesize,filesizecn:filesizecn,filetype:filetype,fileext:fileext,xu:this.moi,fileobj:file};
-		this.filearr.push(arr);
 		$('#updeng'+up.moi+'').html('等待上传...<a href="javascript:" temp="del" onclick="return up.del(this,'+olen+')">×</a>');
 		setTimeout('up.change1('+(oi+1)+');',5);
+	},
+	editname:function(oi,o1){
+		var arr = this.filearr[oi];
+		if(!arr){
+			$(o1).remove();
+			return;
+		}
+		var nae = arr.filename.replace('.'+arr.fileext+'','');
+		js.prompt('改名','输入新的文件名称',function(jg,txt){
+			if(jg=='yes' && txt){
+				var nname = txt+'.'+arr.fileext+'';
+				up.filearr[oi].filename = nname;
+				$(o1).parent().find('font').html(nname);
+			}
+		}, nae);
 	},
 	del:function(o,oi)
 	{
@@ -191,7 +236,10 @@ var up={
 		$('#nowupspan').html(oi+1);
 		this.jdt(0);
 		var xhr = new XMLHttpRequest();
-		var url = js.getajaxurl('upfile','upload','public', {'maxsize':up.maxsize,'uptype':uptype,'thumbnail':thumbnail});
+		urlparams.maxsize=up.maxsize;
+		if(uptype && uptype!='*')urlparams.uptype=uptype;
+		if(thumbnail)urlparams.thumbnail=thumbnail;
+		var url = js.getajaxurl('upfile','upload','public', urlparams);
 		xhr.open('POST', url, true); 
 		xhr.onreadystatechange = function(){
 		};
@@ -203,24 +251,30 @@ var up={
 			$('#bilishow').html(per);
 		}, false);  
 		xhr.addEventListener("load", function(){
-			up.upsuccess(this.response);
+			up.upsuccess(this.response, this.status);
 		}, false);  
 		xhr.addEventListener("error", function(){
 			$('#'+up.updengid+'').html('<font color=red>上传失败0</font>');
 		}, false); 
 		var fd = new FormData();  
-		fd.append('file', this.suarr.fileobj); 
+		fd.append('file', this.suarr.fileobj, this.suarr.filename); 
 		xhr.send(fd);
 	},
-	upsuccess:function(bstr){
-		$('#'+up.updengid+'').html('<font color=green>上传成功</font>');
-		var result	= js.decode(bstr);
+	upsuccess:function(bstr, code){
 		var arr 	= this.suarr;
-		if(result.id){
-			up.wcarr.push({id:result.id,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,filepath:result.filepath,thumbpath:result.thumbpath,width:result.width,height:result.height});
+		var o1s		= $('#'+up.updengid+'');
+		if(code!=200){
+			o1s.html('<font color=red>失败:'+code+'</font>');
+			js.msg('msg', bstr, 0);
 		}else{
-			$('#'+up.updengid+'').html('<font color=red>上传失败1</font>');
-			js.msg('msg',result.msg);
+			o1s.html('<font color=green>上传成功</font>');
+			var result	= js.decode(bstr);
+			if(result.id){
+				up.wcarr.push({id:result.id,filename:arr.filename,filetype:arr.filetype,fileext:arr.fileext,filesize:arr.filesize,filesizecn:arr.filesizecn,filepath:result.filepath,thumbpath:result.thumbpath,width:result.width,height:result.height});
+			}else{
+				o1s.html('<font color=red>上传失败1,保存失败</font>');
+				js.msg('msg',result.msg, 0);
+			}
 		}
 		setTimeout('up.start('+(arr.xuoi+1)+')',5);
 	},
@@ -256,8 +310,8 @@ var up={
 		var sid = this.getsid(this.wcarr);
 		<?php if($callback!=''){?>try{parent.<?=$callback?>(this.wcarr,js.request('params1'), js.request('params2'), sid)}catch(e){}<?php }?>
 		if(showid!=''){
-			try{parent.js.downupshow(this.wcarr, showid, sid);}catch(e){}
-			try{opener.js.downupshow(this.wcarr, showid, sid);}catch(e){}
+			try{parent.js.downupshow(this.wcarr, showid);}catch(e){}
+			try{opener.js.downupshow(this.wcarr, showid);}catch(e){}
 		}
 		this.closeaa();
 	},
@@ -269,13 +323,16 @@ var up={
 window.onbeforeunload=function(){
 	if(up.bool)return '文件正在上传，确定要关闭页面吗？';
 }
+
+document.ondragover=function(e){e.preventDefault();};
+document.ondrop=function(e){e.preventDefault();};
+
 </script>
 <style type="text/css">
-button{cursor:pointer}
 .alert{ padding:1px 5px; border:1px #996 solid; background-color:#ffffff; color:#933}
-*{ font-size:14px;font-family:微软雅黑,Verdana, Geneva, sans-serif;}
-.mdiv{ border-bottom:1px #cccccc solid; height:22px; overflow:hidden}
-.mdiv div{ float:left; height:22px; line-height:22px; overflow:hidden; padding:0px 3px}
+*{ font-size:14px;}
+.mdiv{ border-bottom:1px #cccccc solid;display:inline-block;width:100%}
+.mdiv div{ float:left; line-height:22px; overflow:hidden; padding:5px 3px}
 .div01{ width:55%;text-align:left;border-right:1px #cccccc solid;}
 .div02{ width:15%; text-align:center;border-right:1px #cccccc solid;}
 .div03{ width:25%;text-align:left}
@@ -285,14 +342,14 @@ button{cursor:pointer}
 button{ cursor:pointer}
 #footmsg{ text-align:left; padding:3px}
 .quebntha{position:fixed;right:10px;bottom:10px;}
-.webbtn{color:#ffffff;opacity:0.8; background-color:#1389D3; padding:5px 8px; border:none; cursor:pointer;font-size:14px}
+.webbtn{color:#ffffff;opacity:0.8; background-color:#1389D3; padding:5px 8px; border:none; cursor:pointer;font-size:14px;outline:none;border-radius:5px}
 .webbtn:disabled{background-color:#aaaaaa; color:#eeeeee}
 .webbtn:hover{box-shadow:0px 0px 5px rgba(0,0,0,0.3);opacity:1}
 </style>
 </head>
 <body style="padding:1px" onLoad="up.init()">
 <center>
-<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" multiple onChange="up.change(this)"></form>
+<form name="myform" style="display:none"><input type="file" name="inputfile" id="inputfileid" <?php if($params['maxup']!=1)echo 'multiple';?> onChange="up.change(this)"></form>
 <div align="left" style="padding:3px"></div>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -307,7 +364,7 @@ button{ cursor:pointer}
 <div class="div02">大小</div>
 <div class="div03">状态</div>
 </div>
-<div id="upfile"></div>
+<div id="upfile"><div id="upfilemsg" style="padding:10px;font-size:16px;color:#888888">可拖动文件到空白区域</div></div>
 <div id="footmsg"></div>
 
 <div class="quebntha"><button type="button" disabled style="padding:5px 15px" class="webbtn" id="quebtn" onClick="up.okla()">确定</button></div>

@@ -6,9 +6,10 @@ class htmlChajian extends Chajian{
 	
 	public function replace($cont)
 	{
-		if($this->rock->isempt($cont))return '';
+		if(isempt($cont))return '';
 		//$cont	= str_replace(array('<', '>'), array('&lt;', '&gt;'), $cont);
-		$cont	= str_replace(array('[B]','[/B]', '[/A]', "\n"), array('<B>','</B>', '</A>','</p><p>'), $cont);
+		//$cont	= str_replace(array('[B]','[/B]', '[/A]', "\n"), array('<B>','</B>', '</A>','</p><p>'), $cont);
+		$cont	= str_replace(array('[B]','[/B]', '[/A]'), array('<B>','</B>', '</A>'), $cont);
 		
 		preg_match_all('/\[(.*?)\]/', $cont, $list);
 		foreach($list[0] as $k=>$nrs){
@@ -84,6 +85,7 @@ class htmlChajian extends Chajian{
 		}
 		$txt	 = '';
 		$style	 = "padding:3px;border:1px ".$bor." solid";
+		if($lx=='print')$style	 = "border:.5pt #000000 solid";
 		$txt	.= '<table width="100%" class="createrows" border="0" cellspacing="0" cellpadding="0" align="center" style="border-collapse:collapse;" >';
 		$txt	.= '<tr>';
 		for($h=0; $h<$thead; $h++){
@@ -98,6 +100,7 @@ class htmlChajian extends Chajian{
 		$txt	.= '</tr>';
 		foreach($rows as $k=>$rs){
 			$txt	.= '<tr>';
+			$rs['xuhaos'] = $k+1;
 			for($h=0; $h<$thead; $h++){
 				$stls= $style;
 				$stls.='';
@@ -121,7 +124,8 @@ class htmlChajian extends Chajian{
 	public function execltable($title, $headArr, $rows, $lx='')
 	{
 		if($lx=='')$lx='xls';
-		$sty 	= 'style="white-space:nowrap;border:.5pt solid #000000;font-size:12px;"';
+		$borst  = '.5pt';
+		$sty 	= 'style="white-space:nowrap;border:'.$borst.' solid #000000;font-size:12px;"';
 		$s 		= '<html><head><meta charset="utf-8"><title>'.$title.'</title></head><body>';
 		$s 	   .= '<table border="0" style="border-collapse:collapse;">';
 		$hlen 	= 1;
@@ -134,12 +138,14 @@ class htmlChajian extends Chajian{
 		$s.='<tr height="40"><td '.$sty.' colspan="'.$hlen.'">'.$title.'</td></tr>';
 		$s.=$s1;
 		foreach($rows as $k=>$rs){
-			$s.='<tr height="26">';
+			$atr = '';
+			if(isset($rs['trbgcolor']))$atr=' bgcolor="'.$rs['trbgcolor'].'"';
+			$s.='<tr height="26"'.$atr.'>';
 			$s.='<td align="center" '.$sty.'>'.($k+1).'</td>';
 			foreach($headArr as $kf=>$na){
 				$val = '';
 				if(isset($rs[$kf]))$val=$rs[$kf];
-				$s.='<td '.$sty.'>'.$val.'</td>';
+				$s.='<td '.$sty.'>'.$this->execelval($val).'</td>';
 			}
 			$s.='</tr>';
 		}
@@ -147,9 +153,9 @@ class htmlChajian extends Chajian{
 		
 		$s.='</body></html>';
 		
-		$mkdir 	= ''.UPDIR.'/'.date('Y-m').'';
+		$mkdir 	= ''.UPDIR.'/logs/'.date('Y-m').'';
 		
-		if(contain(strtolower(PHP_OS),'linux')){
+		if(!contain(strtolower(PHP_OS),'win')){
 			$title = c('pingyin')->get($title, 1);//linux要用拼音，不然会乱码
 		}
 		
@@ -159,8 +165,14 @@ class htmlChajian extends Chajian{
 		$bo 		= $this->rock->createtxt(iconv('utf-8','gb2312',$url), $s);
 		return $url;
 	}
-	
-	
+	//超过11位的数字就会变型处理
+	private function execelval($str)
+	{
+		if($str!=''){
+			if(is_numeric($str) && strlen($str)>11)$str=''.$str.'&nbsp;';
+		}
+		return $str;
+	}
 	
 	
 	
@@ -220,6 +232,7 @@ class htmlChajian extends Chajian{
 			$barr 	= array();
 			foreach($farr as $k=>$fid){
 				$barr[$fid] = isset($dars[$k]) ?  $dars[$k] : '';
+				$barr[$fid] = str_replace('[XINHUBR]', "\n", $barr[$fid]);
 			}
 			$bos 	= true;
 			foreach($fars as $fids){

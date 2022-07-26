@@ -5,11 +5,9 @@ $(document).ready(function(){
 	var atype=params.atype;
 	var modenum = 'hrsalary';
 	var a = $('#view_{rand}').bootstable({
-		tablename:modenum,params:{'atype':atype},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:true,
+		tablename:modenum,params:{'atype':atype},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:false,storeafteraction:'xinziafter',
 		columns:[{
-			text:'',dataIndex:'caozuo'
-		},{
-			text:'部门',dataIndex:'udeptname',sortable:true
+			text:'部门',dataIndex:'deptallname',sortable:true
 		},{
 			text:'人员',dataIndex:'uname',sortable:true
 		},{
@@ -30,17 +28,25 @@ $(document).ready(function(){
 			text:'发放',dataIndex:'ispay',sortable:true
 		},{
 			text:'状态',dataIndex:'statustext'
+		},{
+			text:'',dataIndex:'caozuo',callback:'callback{rand}'
 		}],
 		itemclick:function(){
 			btn(false);
 		},
 		beforeload:function(){
 			btn(true);
+		},
+		itemdblclick:function(){
+			c.view();
+		},
+		load:function(d){
+			get('daochu{rand}').disabled= (!d.isdaochu);
 		}
 	});
 	
 	function btn(bo){
-		get('xiang_{rand}').disabled = bo;
+		
 	}
 	
 	var c = {
@@ -57,13 +63,18 @@ $(document).ready(function(){
 				dt:get('dt2_{rand}').value
 			},true);
 		},
-		daochu:function(){
-			a.exceldown(nowtabs.name);
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'薪资',
+				'modenum':modenum,
+				'btnobj':o1
+			});
 		},
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
-			openinput('薪资', modenum,id);
+			openinput('薪资', modenum,id,'callback{rand}');
 		},
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
@@ -84,9 +95,16 @@ $(document).ready(function(){
 			$('#state{rand}_'+lx+'').addClass('active');
 			a.setparams({isturn:lx});
 			this.search();
+		},
+		daoru:function(){
+			managelisthrsalary = a;
+			addtabs({num:'daoru'+modenum+'',url:'flow,input,daoru,modenum='+modenum+'',icons:'plus',name:'导入薪资核算'});
 		}
 	};
 	js.initbtn(c);
+	callback{rand}=function(){
+		a.reload();
+	}
 });
 </script>
 
@@ -100,7 +118,7 @@ $(document).ready(function(){
 		<input class="form-control" style="width:180px" id="key_{rand}"  placeholder="部门/姓名/职位">
 	</td>
 	<td  style="padding-left:10px">
-		<div style="width:140px"  class="input-group">
+		<div style="width:120px"  class="input-group">
 			<input placeholder="月份" readonly class="form-control" id="dt2_{rand}" >
 			<span class="input-group-btn">
 				<button class="btn btn-default" click="clickdt,2" type="button"><i class="icon-calendar"></i></button>
@@ -122,8 +140,8 @@ $(document).ready(function(){
 	
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" id="xiang_{rand}" click="view" disabled type="button">详情</button> &nbsp; 
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+		<button class="btn btn-default" click="daoru" type="button">导入</button> &nbsp; 
+		<button class="btn btn-default" click="daochu,1" disabled id="daochu{rand}" type="button">导出 <i class="icon-angle-down"></i></button> 
 	</td>
 	</tr>
 	</table>
@@ -131,4 +149,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">提示：薪资核算前，请先核算考勤状态哦</div>
+<div class="tishi">提示：薪资核算前，请先核算考勤状态哦，需要核算+已审核才能发放哦！</div>

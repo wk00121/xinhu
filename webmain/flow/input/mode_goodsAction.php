@@ -12,5 +12,7 @@ class mode_goodsClassAction extends inputAction{
 		$bo = m('goods')->existsgoods($arr, $id);
 		if($bo)return '改物品已存在了';
 	}
+	
+	
 }	
 			

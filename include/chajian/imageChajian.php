@@ -75,7 +75,7 @@ class imageChajian extends Chajian
 	
 	public function conver($opath, $npath)
 	{
-		if(!file_exists($opath));
+		if(!file_exists($opath))return;
 		$img 	= $this->createimgobj($opath);
 		$this->saveas($npath, $img);
 	}

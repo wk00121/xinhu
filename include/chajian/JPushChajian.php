@@ -1,127 +1,68 @@
 <?php 
 /**
-	极光推送
+* 最新系统推送1.9.7后
 */
-include_once(ROOT_PATH.'/include/JPush/JPush.php');
 class JPushChajian extends Chajian{
+
 	
-	//有自己的推送key填写这里，默认自己是没有啊
-	private $app_key 		= '';
-	private $master_secret 	= '';
-	
-	
-	
-	private $push_url 		= '';
-	private $push_urls 		= 'aHR0cDovLzEyNy4wLjAuMS9hcHAvcm9ja3hpbmh1d2ViLw::';
-	
-	
-	protected function initChajian()
+	//-------------最新原生app推送app是1.2.3版本 和 最新app+---------------
+	public function push($title, $desc, $cont, $palias)
 	{
-		if(getconfig('systype')=='dev'){
-			$this->push_url = $this->rock->jm->base64decode($this->push_urls);
-		}else{
-			$this->push_url = URLY;
-		}
-		$this->push_url.= 'api.php?a=jpush';
-		$this->push_url.= '&version='.VERSION.'&rnd='.time().'';
-	}
-	
-	//获取推送到某个用户
-	private function getalias($uid, $lx=0)
-	{
-		if($uid=='')return false;
-		$where 	= "id in($uid) and ";
-		if($uid=='all'){
-			$where='';
-		}else{
-			if($this->contain($uid,'u') || $this->contain($uid,'d')){
-				$uid = m('admin')->gjoin($uid);
-				if($uid=='')return false;
-				$where 	= "id in($uid) and ";
-			}
-		}
-		$wheres = '';
-		if($lx==1){
-			$stal 	= date('Y-m-d H:i:s', time()-5*60);
-			$wheres = "and ifnull(`lastpush`,'')<'$stal'";
-		}
-		$uwhere = "$where `status`=1 and `apptx`=1 $wheres";
-		$rows 	= m('logintoken')->getrows("`uid` in(select id from `[Q]admin` where $uwhere) and `cfrom` in ('appandroid','appios') and `online`=1",'`token`,`uid`');
-		$alias 	= array();
-		$uids	= '0';
-		foreach($rows as $k=>$rs){
-			$alias[] = $rs['token'];
-			$uids	.= ','.$rs['uid'].'';
-		}
-		return array('alias' => $alias, 'uids'=>$uids);
-	}
-	
-	public function send($uid, $title='', $cont='', $lx=0)
-	{
-		$garr = $this->getalias($uid, $lx);
-		if(!$garr)return false;
-		$alias	= $garr['alias'];
-		$uids	= $garr['uids'];
-		if($uids=='0')return false;
-		if($this->app_key=='' || $this->master_secret==''){
-			$result = c('curl')->postcurl($this->push_url, array(
-				'alias' => join(',', $alias),
-				'uids'  => $uids,
-				'title' => $this->rock->jm->base64encode($title),
-				'cont'  => $this->rock->jm->base64encode($cont)
-			));
-			$result = json_encode($result, true);
-		}else{
-			$client = new JPush($this->app_key, $this->master_secret);
-			$obj 	= $client->push()->setPlatform('all');
-			$obj->addAlias($alias);
-			$result	= $obj
-				->setNotificationAlert($cont)
-				->addAndroidNotification($cont, $title, 1, array())
-				->addIosNotification($cont)
-				->send();
-		}		
-		$this->db->update('[Q]admin',"`lastpush`='".$this->rock->now."'", "id in($uids)");
-		return $result;
-	}
-	
-	
-	
-	//-------------最新原生app推送
-	public function push($title,$desc, $cont, $palias)
-	{
-		//使用官网来推送
+		
 		$alias		= $palias['alias'];
 		$xmalias	= $palias['xmalias']; //小米的
+		$newalias	= $palias['newalias']; //最新使用的
+		$oldalias	= $palias['oldalias']; //一般自己编译
 		$uids		= $palias['uids'];
-		if($this->app_key=='' || $this->master_secret==''){
+		$alias2019	= $palias['alias2019'];
+		$xmpush		= c('xmpush');
+		
+		//没有设置小米推送
+		if(!$xmpush->sendbool()){
 			$arr 	= array(
 				'alias' 	=> join(',', $alias),
 				'xmalias' 	=> join(',', $xmalias),
+				'newalias' 	=> join(',', $newalias),
+				'oldalias' 	=> join(',', $oldalias),
+				'alias2019' => join(',', $alias2019),
 				'uids'  => $uids,
 				'title' => $this->rock->jm->base64encode($title),
 				'cont'  => $this->rock->jm->base64encode($cont),
 				'desc'  => $desc
 			);
 			$runurl = c('xinhu')->geturlstr('jpushplat', $arr);
-			return c('curl')->getcurl($runurl);
+			return  c('curl')->getcurl($runurl);
 		}else{
-			return $this->sendMessage($alias, $title, $cont);
+			$desc = $this->rock->jm->base64decode($desc);
+			$xmarr = array();//小米的人员
+			$othar = array();//其他人用
+			$iosar = array(); //IOS
+			$hwarr = array(); //华为
+			foreach($alias2019 as $ali1){
+				$ali1aa = explode('|', $ali1);
+				$regid  = $ali1aa[0];
+				$sjlxx  = $ali1aa[1];
+				if(contain($sjlxx,'xiaomi')){
+					$xmarr[] = $regid;
+				}else if(contain($sjlxx,'huawei')){
+					if(isset($ali1aa[3]) && $ali1aa[3])$hwarr[] = $ali1aa[3];
+				}else if(contain($sjlxx,'iphone')){	
+					$iosar[] = $regid;
+				}else{
+					$othar[] = $regid;
+				}
+			}
+			$msg = $msg1 = $msg2 = '';
+			if($oldalias)$msg = $xmpush->androidsend($oldalias, $title, $desc, $cont);
+			if($xmarr)$msg = $xmpush->androidsend($xmarr, $title, $desc);
+			if($iosar)$msg1= $xmpush->iossend($iosar, $title, $desc);
+			if($hwarr)$msg2= c('hwpush')->androidsend($hwarr, $title, $desc);
+			$msg5 = $msg.$msg1.$msg2;
+			return $msg5;
 		}	
 	}
 	
-	//发送消息的推送
-	public function sendMessage($alias, $title='', $cont='')
-	{
-		if(!$alias)return false;
-		$client = new JPush($this->app_key, $this->master_secret);
-		$obj 	= $client->push()->setPlatform('all');
-		$obj->addAlias($alias);
-		$result	= $obj
-			->setMessage($cont, $title) //发信息
-			->setOptions(null, 0)		//不保存离线消息
-			->send();
-		$msg = json_encode($result);	
-		return $result;
-	}
+	
+	
+	
 }

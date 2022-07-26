@@ -8,7 +8,7 @@ class beifenClassModel extends Model
 	public function start()
 	{
 		$alltabls 	= $this->db->getalltable();
-		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads'); //不备份的表;
+		$nobeifne	= array(''.PREFIX.'log',''.PREFIX.'logintoken',''.PREFIX.'kqanay',''.PREFIX.'email_cont',''.PREFIX.'reads',''.PREFIX.'dailyfx',''.PREFIX.'todo'); //不备份的表;
 		
 		$beidir 	= ''.UPDIR.'/data/'.date('Y.m.d.H.i.s').'';
 		foreach($alltabls as $tabs){
@@ -21,7 +21,8 @@ class beifenClassModel extends Model
 				'data'		=> $rows
 			);
 			$file	= ''.$tabs.'_'.count($fields).'_'.count($rows).'.json';
-			$str  	= $this->rock->jm->mcrypt_encrypt(json_encode($data));
+			//$str  	= $this->rock->jm->mcrypt_encrypt(json_encode($data));
+			$str  	= json_encode($data);
 			$this->rock->createtxt(''.$beidir.'/'.$file.'', $str);
 		}
 		/*
@@ -54,7 +55,7 @@ class beifenClassModel extends Model
 	public function updatefabric($cont)
 	{
 		$bos 	= $this->updatefabricfile($cont);
-		if(!$bos)return 'err:'.$this->db->error();
+		if(!$bos)return 'dberr:'.$this->db->lasterror();
 		return 'ok';
 	}
 	
@@ -77,6 +78,10 @@ class beifenClassModel extends Model
 				}
 				$str .=',PRIMARY KEY (`id`)';
 				$sql  = "CREATE TABLE `$table`($str)ENGINE=".getconfig('db_engine','MyISAM')." DEFAULT CHARSET=utf8";
+				if(isset($da['createsql'])){
+					$sql = $da['createsql'];
+					$sql = str_replace('`xinhu_','`'.PREFIX.'', $sql);
+				}
 			}else{
 				foreach($fields as $k=>$frs){
 					$fname = $frs['name'];
@@ -85,8 +90,14 @@ class beifenClassModel extends Model
 					if(!isset($nowfiel[$fname])){
 						$str.=',add '.$nstr.'';
 					}else{
-						$ostr = $this->getfielstr($nowfiel[$fname]);
-						if($nstr != $ostr){
+						$ofrs = $nowfiel[$fname]; //系统上字段类型
+						$ostr = $this->getfielstr($ofrs);
+						$lxarr= array('text','mediumtext','bigint');
+						
+						//如果自己字段长度大于官网就不更新
+						if($frs['type']==$ofrs['type']  && !isempt($ofrs['lens']) && $ofrs['lens']>$frs['lens']){
+							
+						}else if($nstr != $ostr && !in_array($ofrs['type'], $lxarr) ){
 							$str.=',MODIFY '.$nstr.'';
 						}
 					}

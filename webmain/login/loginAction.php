@@ -7,6 +7,7 @@ class loginClassAction extends ActionNot{
 		$this->smartydata['ca_adminuser']	= $this->getcookie('ca_adminuser');
 		$this->smartydata['ca_rempass']		= $this->getcookie('ca_rempass');
 		$this->smartydata['ca_adminpass']	= $this->getcookie('ca_adminpass');
+		$this->smartydata['loginyzm']		= (int)getconfig('loginyzm','0'); //登录类型
 	}
 	
 	public function checkAjax()
@@ -22,6 +23,13 @@ class loginClassAction extends ActionNot{
 		$arr 	= m('login')->start($user, $pass, $cfrom);
 		$barr 	= array();
 		if(is_array($arr)){
+			
+			if(isset($arr['mobile'])){
+				$barr = $arr;
+				$barr['success'] = false;
+				return $barr;
+			}
+			
 			$uid 	= $arr['uid'];
 			$name 	= $arr['name'];
 			$user 	= $arr['user'];

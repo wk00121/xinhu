@@ -1,7 +1,7 @@
 <?php
 /**
-*	模块：customer.客户管理，
-*	说明：自定义区域内可写您想要的代码，模块列表页面，生成分为2块
+*	模块：customer.客户管理
+*	说明：自定义区域内可写你想要的代码
 *	来源：流程模块→表单元素管理→[模块.客户管理]→生成列表页
 */
 defined('HOST') or die ('not access');
@@ -9,15 +9,14 @@ defined('HOST') or die ('not access');
 <script>
 $(document).ready(function(){
 	{params}
-	var modenum = 'customer',modename='客户管理',isflow=0,modeid='7',atype = params.atype,pnum=params.pnum;
+	var modenum = 'customer',modename='客户管理',isflow=0,modeid='7',atype = params.atype,pnum=params.pnum,modenames='';
 	if(!atype)atype='';if(!pnum)pnum='';
-	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suoname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"1","isalign":"0","islb":"1"},{"fields":"type","name":"\u5ba2\u6237\u7c7b\u578b","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"laiyuan","name":"\u6765\u6e90","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u5ba2\u6237\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"mobile","name":"\u8054\u7cfb\u624b\u673a","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"email","name":"\u90ae\u7bb1","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"routeline","name":"\u4ea4\u901a\u8def\u7ebf","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"isstat","name":"\u662f\u5426\u6807\u2605","fieldstype":"select","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgys","name":"\u4f9b\u5e94\u5546","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"linkname","name":"\u8054\u7cfb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"htshu","name":"\u5408\u540c\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyz","name":"\u9500\u552e\u603b\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyd","name":"\u5f85\u6536\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_customer_":"name,suoname,type,unitname,tel,mobile,address,isstat,htshu,moneyz,moneyd,caozuo","columns_customer_dist":"name,suoname,type,laiyuan,unitname,isgys,linkname","columns_customer_shate":"name,suoname,type,laiyuan,unitname,isstat,caozuo"};
+	var fieldsarr = [{"name":"\u7533\u8bf7\u4eba","fields":"base_name"},{"name":"\u7533\u8bf7\u4eba\u90e8\u95e8","fields":"base_deptname"},{"name":"\u5355\u53f7","fields":"sericnum"},{"fields":"name","name":"\u5ba2\u6237\u540d\u79f0","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"suoname","name":"\u6240\u5c5e\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"type","name":"\u5ba2\u6237\u7c7b\u578b","fieldstype":"rockcombo","ispx":"1","isalign":"0","islb":"1"},{"fields":"laiyuan","name":"\u6765\u6e90","fieldstype":"rockcombo","ispx":"0","isalign":"0","islb":"0"},{"fields":"unitname","name":"\u5ba2\u6237\u5355\u4f4d","fieldstype":"text","ispx":"0","isalign":"0","islb":"1"},{"fields":"tel","name":"\u8054\u7cfb\u7535\u8bdd","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"mobile","name":"\u8054\u7cfb\u624b\u673a","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"email","name":"\u90ae\u7bb1","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"sheng","name":"\u6240\u5728\u7701","fieldstype":"selectdatafalse","ispx":"0","isalign":"0","islb":"0"},{"fields":"shi","name":"\u6240\u5728\u5e02","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"address","name":"\u5730\u5740","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"routeline","name":"\u4ea4\u901a\u8def\u7ebf","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"shibieid","name":"\u7eb3\u7a0e\u8bc6\u522b\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"openbank","name":"\u5f00\u6237\u884c","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"cardid","name":"\u5f00\u6237\u5e10\u53f7","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"status","name":"\u72b6\u6001","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"isstat","name":"\u6807\u2605","fieldstype":"select","ispx":"1","isalign":"0","islb":"0"},{"fields":"isgys","name":"\u4f9b\u5e94\u5546","fieldstype":"checkbox","ispx":"0","isalign":"0","islb":"0"},{"fields":"linkname","name":"\u8054\u7cfb\u4eba","fieldstype":"text","ispx":"0","isalign":"0","islb":"0"},{"fields":"explain","name":"\u8bf4\u660e","fieldstype":"textarea","ispx":"0","isalign":"0","islb":"0"},{"fields":"htshu","name":"\u5408\u540c\u6570","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyz","name":"\u9500\u552e\u603b\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"moneyd","name":"\u5f85\u6536\u91d1\u989d","fieldstype":"number","ispx":"1","isalign":"0","islb":"1"},{"fields":"isgh","name":"\u653e\u5165\u516c\u6d77","fieldstype":"select","ispx":"0","isalign":"0","islb":"0"},{"fields":"lastdt","name":"\u6700\u540e\u8ddf\u8fdb","fieldstype":"datetime","ispx":"1","isalign":"0","islb":"1"}],fieldsselarr= {"columns_customer_":"name,suoname,type,unitname,mobile,htshu,moneyz,moneyd,lastdt,caozuo","columns_customer_all":"name,suoname,type,unitname,isstat,isgys,htshu,moneyz,moneyd,lastdt,caozuo","columns_customer_dist":"name,suoname,type,laiyuan,unitname,isgys,linkname","columns_customer_ghai":"name,suoname,type,unitname,sheng,shi,status,caozuo","columns_customer_gys":"name,suoname,type,unitname,tel,address,status,linkname,explain,caozuo","columns_customer_shate":"name,suoname,type,laiyuan,unitname,isstat,caozuo"};
 	
 	var c = {
 		reload:function(){
 			a.reload();
 		},
-		//新增编辑窗口
 		clickwin:function(o1,lx){
 			var id=0;
 			if(lx==1)id=a.changeid;
@@ -33,10 +32,9 @@ $(document).ready(function(){
 		search:function(cans){
 			var s=get('key_{rand}').value,zt='';
 			if(get('selstatus_{rand}'))zt=get('selstatus_{rand}').value;
-			var canss = js.apply({key:s,keystatus:zt}, cans);
+			var canss = js.apply({key:s,keystatus:zt,search_value:''}, cans);
 			a.setparams(canss,true);
 		},
-		//高级搜索
 		searchhigh:function(){
 			new highsearchclass({
 				modenum:modenum,
@@ -47,23 +45,47 @@ $(document).ready(function(){
 		},
 		searchhighb:function(d){
 			d.key='';
+			d.search_value='';
 			get('key_{rand}').value='';
 			a.setparams(d,true);
 		},
-		//导出
-		daochu:function(){
-			a.exceldown();
+		searchuname:function(d){
+			js.getuser({
+				type:'deptusercheck',
+				title:'搜索'+d.name,
+				changevalue:this.search_value,
+				callback:function(sna,sid){
+					c.searchunames(d,sna,sid);
+				}
+			});
 		},
-		//对应控制器返回rul
+		search_value:'',
+		searchunames:function(d,sna,sid){
+			get('key_{rand}').value=sna;
+			this.search_value = sid;
+			var cs = {key:'','search_fields':d.fields,'search_value':sid};
+			a.setparams(cs,true);
+		},
+		daochu:function(o1,lx,lx1,e){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':modename,
+				'fieldsarr':fieldsarr,
+				'modenum':modenum,
+				'modenames':modenames,
+				'isflow':isflow,
+				'btnobj':o1
+			});
+		},
 		getacturl:function(act){
 			return js.getajaxurl(act,'mode_customer|input','flow',{'modeid':modeid});
 		},
-		//查看切换
 		changatype:function(o1,lx){
 			$("button[id^='changatype{rand}']").removeClass('active');
 			$('#changatype{rand}_'+lx+'').addClass('active');
 			a.setparams({atype:lx},true);
-			nowtabssettext($(o1).html());
+			var tit = $(o1).html();if(tit.indexOf(modename)<0)tit=modename+'('+tit+')';
+			nowtabssettext(tit);
 		},
 		init:function(){
 			$('#key_{rand}').keyup(function(e){
@@ -75,8 +97,11 @@ $(document).ready(function(){
 			
 		},
 		loaddata:function(d){
+			this.setdownsodata(d.souarr);
 			if(!d.atypearr)return;
 			get('addbtn_{rand}').disabled=(d.isadd!=true);
+			get('daobtn_{rand}').disabled=(d.isdaochu!=true);
+			if(d.isdaochu)$('#daobtn_{rand}').show();
 			if(d.isdaoru)$('#daoruspan_{rand}').show();
 			var d1 = d.atypearr,len=d1.length,i,str='';
 			for(i=0;i<len;i++){
@@ -85,6 +110,17 @@ $(document).ready(function(){
 			$('#changatype{rand}').html(str);
 			$('#changatype{rand}_'+atype+'').addClass('active');
 			js.initbtn(c);
+		},
+		setdownsodata:function(darr){
+			var ddata = [{name:'高级搜索',lx:0}],dsd,i;
+			if(darr)for(i=0;i<darr.length;i++){
+				dsd = darr[i];
+				dsd.lx=3;
+				ddata.push(dsd);
+			}
+			if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
+			ddata.push({name:'打印',lx:1});
+			this.soudownobj.setData(ddata);
 		},
 		setcolumns:function(fid, cnas){
 			var d = false,i,ad=bootparams.columns,len=ad.length,oi=-1;
@@ -108,7 +144,7 @@ $(document).ready(function(){
 			var num = 'columns_'+modenum+'_'+pnum+'',d=[],d1,d2={},i,len=fieldsarr.length,bok;
 			var nstr= fieldsselarr[num];if(!nstr)nstr='';
 			if(nstr)nstr=','+nstr+',';
-			if(nstr=='' && isflow==1){
+			if(nstr=='' && isflow>0){
 				d.push({text:'申请人',dataIndex:'base_name',sortable:true});
 				d.push({text:'申请人部门',dataIndex:'base_deptname',sortable:true});
 			}
@@ -128,7 +164,7 @@ $(document).ready(function(){
 					d.push(d2);
 				}
 			}
-			if(isflow==1)d.push({text:'状态',dataIndex:'statustext'});
+			if(isflow>0)d.push({text:'状态',dataIndex:'statustext'});
 			if(nstr=='' || nstr.indexOf(',caozuo,')>=0)d.push({text:'',dataIndex:'caozuo',callback:'opegs{rand}'});
 			if(!bots){
 				bootparams.columns=d;
@@ -168,14 +204,13 @@ $(document).ready(function(){
 				}
 			});
 		}
-	};	
+	};
 	
-	//表格参数设定
 	var bootparams = {
 		fanye:true,modenum:modenum,modename:modename,statuschange:false,tablename:jm.base64decode('Y3VzdG9tZXI:'),
 		url:c.storeurl(),storeafteraction:'storeaftershow',storebeforeaction:'storebeforeshow',
 		params:{atype:atype},
-		columns:[{text:"客户名称",dataIndex:"name"},{text:"所属人",dataIndex:"suoname",sortable:true},{text:"客户类型",dataIndex:"type",sortable:true},{text:"客户单位",dataIndex:"unitname"},{text:"是否标★",dataIndex:"isstat",sortable:true},{text:"合同数",dataIndex:"htshu",sortable:true},{text:"销售总额",dataIndex:"moneyz",sortable:true},{text:"待收金额",dataIndex:"moneyd",sortable:true},{
+		columns:[{text:"客户名称",dataIndex:"name"},{text:"所属人",dataIndex:"suoname"},{text:"客户类型",dataIndex:"type",sortable:true},{text:"客户单位",dataIndex:"unitname"},{text:"合同数",dataIndex:"htshu",sortable:true},{text:"销售总额",dataIndex:"moneyz",sortable:true},{text:"待收金额",dataIndex:"moneyd",sortable:true},{text:"最后跟进",dataIndex:"lastdt",sortable:true},{
 			text:'',dataIndex:'caozuo',callback:'opegs{rand}'
 		}],
 		itemdblclick:function(){
@@ -194,14 +229,14 @@ $(document).ready(function(){
 
 var chengsuid = '';
 if(atype!='my')$('#daoruspan_{rand}').remove();
-if(pnum==''){
+if(pnum=='' || pnum=='all'){
 	bootparams.checked = true;
 
 	c.move=function(){
 		var s= a.getchecked();
 		if(s==''){js.msg('msg','没有选择记录');return;}
 		chengsuid=s;
-		js.confirm('是否客户转移给其他人，并客户下的合同和待收付款单和销售机会同时转移？', function(jg){
+		js.confirm('是否客户转移给其他人，并客户下的合同和待收付款单和销售机会和销售单同时转移？', function(jg){
 			if(jg=='yes')c.moveto();
 		});
 	}
@@ -221,49 +256,57 @@ if(pnum==''){
 		setTimeout(function(){js.getuser(cans);},10);
 	}
 	$('#tdright_{rand}').append('&nbsp; '+c.getbtnstr('客户转移','move'));
-}else{
-	$('#tdleft_{rand}').hide();
-	if(pnum=='dist'){
-		bootparams.checked = true;
-		c.distss=function(o1,lx){
-			var s = a.getchecked();
-			if(s==''){js.msg('msg','没有选中行');return;}
-			if(lx==0){
-				js.confirm('确定要将选中标为未分配吗？',function(jg){
-					if(jg=='yes')c.distssok(s, '','', 0);
-				});
-				return;
-			}
-			var cans = {
-				type:'user',
-				title:'选中分配给...',
-				callback:function(sna,sid){
-					if(sna=='')return;
-					setTimeout(function(){
-						js.confirm('确定要将选中记录分配给：['+sna+']吗？',function(jg){
-							if(jg=='yes')c.distssok(s, sna,sid,1);
-						});
-					},10);
-				}
-			};
-			js.getuser(cans);
-		}
-		c.distssok=function(s, sna,sid, lx){
-			js.ajax(js.getajaxurl('distcust',modenum,'main'),{sid:s,sname:sna,snid:sid,lx:lx},function(s){
-				a.reload();
-			},'post','','处理中...,处理成功');
-		}
-		$('#tdright_{rand}').prepend(c.getbtnstr('标为未分配','distss,0')+'&nbsp;');
-		$('#tdright_{rand}').prepend(c.getbtnstr('选中分配给','distss,1')+'&nbsp;&nbsp;');
-	}
 }
 
-$('#tdright_{rand}').prepend(c.getbtnstr('重新统计金额','retotal')+'&nbsp;');
+if(pnum!='gys' && pnum!='')$('#tdleft_{rand}').hide();
+if(pnum=='dist'){
+	bootparams.checked = true;
+	c.distss=function(o1,lx){
+		var s = a.getchecked();
+		if(s==''){js.msg('msg','没有选中行');return;}
+		if(lx==0){
+			js.confirm('确定要将选中标为未分配吗？',function(jg){
+				if(jg=='yes')c.distssok(s, '','', 0);
+			});
+			return;
+		}
+		var cans = {
+			type:'user',
+			title:'选中分配给...',
+			callback:function(sna,sid){
+				if(sna=='')return;
+				setTimeout(function(){
+					js.confirm('确定要将选中记录分配给：['+sna+']吗？',function(jg){
+						if(jg=='yes')c.distssok(s, sna,sid,1);
+					});
+				},10);
+			}
+		};
+		js.getuser(cans);
+	}
+	c.distssok=function(s, sna,sid, lx){
+		js.ajax(js.getajaxurl('distcust',modenum,'main'),{sid:s,sname:sna,snid:sid,lx:lx},function(s){
+			a.reload();
+		},'post','','处理中...,处理成功');
+	}
+	$('#tdright_{rand}').prepend(c.getbtnstr('标为未分配','distss,0')+'&nbsp;');
+	$('#tdright_{rand}').prepend(c.getbtnstr('选中分配给','distss,1')+'&nbsp;&nbsp;');
+}
 
-c.retotal=function(){
-	js.ajax(js.getajaxurl('retotal',modenum,'main'),{},function(s){
-		a.reload();
-	},'get',false,'统计中...,统计完成')
+if(pnum!='gys' && pnum!='ghai'){
+	$('#tdright_{rand}').prepend(c.getbtnstr('重新统计金额','retotal')+'&nbsp;');
+
+	c.retotal=function(){
+		js.ajax(js.getajaxurl('retotal',modenum,'main'),{},function(s){
+			a.reload();
+		},'get',false,'统计中...,统计完成')
+	}
+}
+if(pnum=='gys'){	
+	modename = '供应商管理';
+	c.clickwin=function(o1,lx){
+		openinput(modename,modenum,'0&def_isgys=1','opegs{rand}');
+	}
 }
 
 //[自定义区域end]
@@ -271,18 +314,18 @@ c.retotal=function(){
 	js.initbtn(c);
 	var a = $('#viewcustomer_{rand}').bootstable(bootparams);
 	c.init();
-	var ddata = [{name:'高级搜索',lx:0}];
-	if(admintype==1)ddata.push({name:'自定义列显示',lx:2});
-	ddata.push({name:'打印',lx:1});
-	$('#downbtn_{rand}').rockmenu({
+	c.soudownobj = $('#downbtn_{rand}').rockmenu({
 		width:120,top:35,donghua:false,
-		data:ddata,
+		data:[{name:'高级搜索',lx:0}],
 		itemsclick:function(d, i){
 			if(d.lx==0)c.searchhigh();
 			if(d.lx==1)c.printlist();
 			if(d.lx==2)c.setfieldslist();
+			if(d.lx==3)c.searchuname(d);
 		}
 	});
+	
+	
 });
 </script>
 <!--SCRIPTend-->
@@ -296,14 +339,14 @@ c.retotal=function(){
 		</td>
 		
 		<td style="padding-left:10px">
-			<div style="width:85px" class="btn-group">
-			<button class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px"><i class="icon-angle-down"></i></button> 
+			<div style="white-space:nowrap">
+			<button style="border-right:0;border-top-right-radius:0;border-bottom-right-radius:0" class="btn btn-default" click="searchbtn" type="button">搜索</button><button class="btn btn-default" id="downbtn_{rand}" type="button" style="padding-left:8px;padding-right:8px;border-top-left-radius:0;border-bottom-left-radius:0"><i class="icon-angle-down"></i></button> 
 			</div>
 		</td>
 		<td  width="90%" style="padding-left:10px"><div id="changatype{rand}" class="btn-group"></div></td>
 	
 		<td align="right" id="tdright_{rand}" nowrap>
-			<span style="display:none" id="daoruspan_{rand}"><button class="btn btn-default" click="daoru,1" type="button">导入</button>&nbsp;&nbsp;&nbsp;</span><button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<span style="display:none" id="daoruspan_{rand}"><button class="btn btn-default" click="daoru,1" type="button">导入</button>&nbsp;&nbsp;&nbsp;</span><button class="btn btn-default" style="display:none" id="daobtn_{rand}" disabled click="daochu" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

@@ -6,15 +6,21 @@ class mode_userClassAction extends inputAction{
 	
 	
 	protected function savebefore($table, $cans, $id, $addbo){
-		$user = strtolower(trimstr($cans['user']));
+		if(getconfig('systype')=='demo' && $id>0)return '演示请勿编辑';
+		if($id>0){
+			$uto  = m($table)->rows('1=1');
+			$bstr = $this->option->authercheck();
+			if(is_string($bstr) && $uto>=100)return $bstr.$this->jm->base64decode('77yM5pyA5aSa5Y!v5re75YqgMTAw5Liq55So5oi3');
+		}
+		$user = trimstr($cans['user']);
 		$name = trimstr($cans['name']);
-		$num  = trimstr($cans['num']);
-		$email= trimstr($cans['email']);
+		$num  = trimstr(arrvalue($cans,'num'));
+		$email= trimstr(arrvalue($cans,'email'));
 		$pass = $cans['pass'];
 		$check= c('check');
-		$mobile 	= $cans['mobile'];
-		$weixinid 	= $cans['weixinid'];
-		$pingyin 	= $cans['pingyin'];
+		$mobile 	= arrvalue($cans,'mobile');
+		$weixinid 	= arrvalue($cans,'weixinid');
+		$pingyin 	= arrvalue($cans,'pingyin');
 		if(!isempt($pass)){
 			if(strlen($pass)<4)return '密码至少要4位数';
 		}
@@ -36,16 +42,6 @@ class mode_userClassAction extends inputAction{
 
 		if($msg=='')if($db->rows("`user`='$user' and `id`<>'$id'")>0)$msg ='用户名['.$user.']已存在';
 		
-		/*
-			为啥这里注释了？已改成用表单元素管理下的唯一值设置来判断是否有重复。
-		if($msg=='' && $num!='')if($db->rows("`num`='$num' and `id`<>'$id'")>0)$msg ='编号['.$num.']已存在';
-		
-		if($msg=='' && !isempt($mobile))if($db->rows("`mobile`='$mobile' and `id`<>'$id'")>0)$msg ='手机号['.$mobile.']已存在';
-		if($msg=='' && !isempt($email))if($db->rows("`email`='$email' and `id`<>'$id'")>0)$msg ='邮箱['.$email.']已存在';
-		if($msg=='' && !isempt($weixinid))if($db->rows("`weixinid`='$weixinid' and `id`<>'$id'")>0)$msg ='微信号['.$weixinid.']已存在';
-		if($msg=='')if($db->rows("`name`='$name' and `id`<>'$id'")>0)$msg ='姓名['.$name.']已存在';
-		*/
-		
 		$rows = array();
 		if($msg == ''){
 			$did  = $cans['deptid'];
@@ -66,7 +62,8 @@ class mode_userClassAction extends inputAction{
 			if(isempt($pass)){
 				$notsave	= 'pass';
 			}else{
-				$rows['pass'] 	= md5($pass);
+				$rows['pass'] 		= md5($pass);
+				$rows['editpass'] 	= '0';
 			}
 		}
 		$arr = array('msg'=>$msg, 'rows'=>$rows,'notsave'=>$notsave);
@@ -83,9 +80,8 @@ class mode_userClassAction extends inputAction{
 	protected function saveafter($table, $cans, $id, $addbo){
 		
 		m($table)->record(array('superman'=>$cans['name']), "`superid`='$id'");
-		
-		$mygroup = $cans['groupname'];
-		m('sjoin')->addgroupuid($id, $mygroup);
+	
+		if(isset($cans['groupname']))m('sjoin')->addgroupuid($id, $cans['groupname']);
 		
 		return m('admin')->updateinfo('and a.id='.$id.'');
 	}
@@ -102,23 +98,48 @@ class mode_userClassAction extends inputAction{
 		$barr['rows'] = $rows;
 		if($this->loadci==1 && $this->post('atype')=='txlmy'){
 			$this->depta = array();
-			$drows = m('dept')->getdata($rows);
-			$barr['deptdata'] = $this->depttreeshu($drows,'0');
+			$drows 	= m('dept')->getdata($rows);
+			$fids	= '0';
+			if($drows)$fids	 = $drows[0]['pid'];
+			$barr['deptdata'] = $this->depttreeshu($drows, $fids, $fids);
+			$barr['drows'] = $drows;
 		}
 		return $barr;
 	}
+	
+	//更新在线的状态，token10分钟内都是在线
+	protected function storebefore($table)
+	{
+		m('login')->updateallonline();
+	}
+	
 	//组织结构活动得到树形数据
-	private function depttreeshu($rows, $pid)
+	private function depttreeshu($rows, $pid, $fids)
 	{
 		$barr = array();
 		foreach($rows as $k=>$rs){
 			if($rs['pid']==$pid){
-				$rs['children'] = $this->depttreeshu($rows, $rs['id']);
-				$rs['expanded'] = true;
+				$rs['children'] = $this->depttreeshu($rows, $rs['id'], $fids);
+				$rs['expanded'] = $pid==$fids;
 				$barr[] = $rs;
 			}
 		}
 		return $barr;
+	}
+	
+	//修改上级
+	public function editsuperAjax()
+	{
+		$sna	= $this->post('sna');
+		$sid	= $this->post('sid');
+		$xid	= $this->post('xid');
+		m('admin')->update(array(
+			'superid' => $sid,
+			'superman' => $sna,
+		),"`id` in($xid) and id not in($sid)");
+		
+		m('admin')->updateinfo(); //更新
+		return 'ok';
 	}
 }	
 			

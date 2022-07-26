@@ -3,10 +3,10 @@
 $(document).ready(function(){
 	var a = $('#veiw_{rand}').bootstable({
 		tablename:'todo',checked:true,fanye:true,statuschange:false,
-		url:js.getajaxurl('publicstore','{mode}','{dir}'),defaultorder:'`status`,`id` desc',
+		url:js.getajaxurl('publicstore','{mode}','{dir}'),defaultorder:'`id` desc',
 		storeafteraction:'totaldaetods',storebeforeaction:'beforetotaldaetods',
 		columns:[{
-			text:'类型',dataIndex:'title',renderer:function(v,d){
+			text:'类型',dataIndex:'title',sortable:true,renderer:function(v,d){
 				var s = v;
 				if(d.status==1)s='<font color=#aaaaaa>'+v+'</font>';
 				return s;
@@ -21,20 +21,20 @@ $(document).ready(function(){
 				return s;
 			}
 		},{
-			text:'时间',dataIndex:'optdt',renderer:function(v,d){
+			text:'时间',dataIndex:'optdt',sortable:true,renderer:function(v,d){
 				var s = v;
 				if(d.status==1)s='<font color=#aaaaaa>'+v+'</font>';
 				return s;
 			}
 		},{
-			text:'状态',dataIndex:'status',renderer:function(v){
+			text:'状态',dataIndex:'status',sortable:true,renderer:function(v){
 				var s = '<font color=red>未读</font>';
 				if(v==1)s='<font color=#aaaaaa>已读</font>';
 				return s;
 			}
 		}],
 		itemclick:function(d,oi, o1){
-			if(d.status==0)c.yidchuls(d.id, true);
+			//if(d.status==0)c.yidchuls(d.id, true);
 		},
 		load:function(){
 			$('#guestbook_wd').html(''+a.getData('wdtotal'))

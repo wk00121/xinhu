@@ -5,13 +5,9 @@ $(document).ready(function(){
 		tablename:'kqinfo',params:{'atype':'all'},celleditor:true,fanye:true,modedir:'{mode}:{dir}',
 		storeafteraction:'kqinfoaftershow',storebeforeaction:'kqinfobeforeshow',
 		columns:[{
-			text:'',dataIndex:'caozuo'
-		},{
 			text:'部门',dataIndex:'deptname',align:'left'
 		},{
 			text:'姓名',dataIndex:'name'
-		},{
-			text:'操作时间',dataIndex:'optdt',sortable:true
 		},{
 			text:'类型',dataIndex:'kind',sortable:true
 		},{
@@ -30,6 +26,10 @@ $(document).ready(function(){
 			text:'状态',dataIndex:'status'
 		},{
 			text:'操作人',dataIndex:'optname'
+		},{
+			text:'操作时间',dataIndex:'optdt',sortable:true
+		},{
+			text:'',dataIndex:'caozuo'
 		}],
 		itemdblclick:function(d){
 			openxiangs(d.modename,d.modenum,d.id);
@@ -43,11 +43,40 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'month',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		clickwin:function(){
 			openinput('考勤信息','leavehr');
+		},
+		addnianjia:function(){
+			var dt = get('dt1_{rand}').value;
+			if(isempt(dt)){js.msg('msg','请先选择日期从');return;}
+			js.msg('wait','处理中...');
+			js.ajax(js.getajaxurl('addnianjia','{mode}','{dir}'),{dt:dt},function(s){
+				js.msg('success', s);
+				a.reload();
+			});
+		},
+		updateenddt:function(bo){
+			js.confirm('更新截止日期是当加班设置有效期或年假设置有效期就需要更新，未在规定截止时间内使用就清0', function(jg){
+				if(jg=='yes')c.updateenddts();
+			});
+		},
+		updateenddts:function(){
+			js.msg('wait','处理中...');
+			js.ajax(js.getajaxurl('updateenddt','{mode}','{dir}'),false,function(s){
+				js.msg('success', s);
+				a.reload();
+			});
+		},
+		daoru:function(){
+			managelistleavehr = a;
+			addtabs({num:'daoruleavehr',url:'flow,input,daoru,modenum=leavehr',icons:'plus',name:'考勤信息'});
 		}
 	};
 	
@@ -77,10 +106,19 @@ $(document).ready(function(){
 	<td  style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
+	<td  style="padding-left:10px">
+		<button class="btn btn-default" click="addnianjia" type="button">一键添加年假</button>
+	</td>
+	<td  style="padding-left:10px">
+		<button class="btn btn-default" click="updateenddt" type="button">更新截止日期</button>
+	</td>
 	
-	<td width="80%"></td>
+	<td width="80%">
+	
+	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+		<button class="btn btn-default" click="daoru" type="button">导入</button>&nbsp;
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>

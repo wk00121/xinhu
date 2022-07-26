@@ -44,11 +44,28 @@ $(document).ready(function(){
 		clickdt:function(o1, lx){
 			$(o1).rockdatepicker({initshow:true,view:'date',inputid:'dt'+lx+'_{rand}'});
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
+		},
+		xiashu:function(o1){
+			if(atype=='my'){
+				o1.value='我的记录';
+				atype = 'down';
+				nowtabssettext('下属定位记录');
+			}else{
+				o1.value='下属记录';
+				atype = 'my';
+				nowtabssettext('我的定位记录');
+			}
+			a.setparams({atype:atype}, true);
 		}
 	};
 	js.initbtn(c);
+	if(atype=='my')$('#down_{rand}').show();
 });
 </script>
 <div>
@@ -77,15 +94,15 @@ $(document).ready(function(){
 	<td  style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">搜索</button>
 	</td>
-	<td  style="padding-left:5px">
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button>
+	<td style="padding-left:10px">
+		<input class="btn btn-default" click="xiashu" id="down_{rand}" style="display:none" value="下属记录" type="button">
 	</td>
 	<td width="80%"></td>
 	<td align="right" nowrap>
-		
+		<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 </tr></table>
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">定位打卡并不能使用做考勤打卡，目前只是用于外勤定位打卡使用。</div>
+<div class="tishi">定位记录并不能使用做考勤打卡，目前只是用于外勤定位打卡使用。</div>

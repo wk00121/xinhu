@@ -28,11 +28,11 @@ class finaClassModel extends Model
 		$carr = $barr = array();
 		
 		//借款
-		$hkto = $this->db->getall("select uid,sum(money)money from `[Q]fininfom` where `uid` in($uids) and `type`=2 and `status`=1");
+		$hkto = $this->db->getall("select uid,sum(money)money from `[Q]fininfom` where `uid` in($uids) and `type`=2 and `status`=1 group by `uid`");
 		foreach($hkto as $k=>$rs)$carr[$rs['uid']] = $rs['money'];
 		
 		//还的
-		$hkto = $this->db->getall("select uid,sum(money)money from `[Q]fininfom` where `uid` in($uids) and `type`=3 and `status`=1");
+		$hkto = $this->db->getall("select uid,sum(money)money from `[Q]fininfom` where `uid` in($uids) and `type`=3 and `status`=1 group by `uid`");
 		foreach($hkto as $k=>$rs)$barr[$rs['uid']] = $rs['money'];
 		
 		
@@ -53,4 +53,56 @@ class finaClassModel extends Model
 		
 		return $rows;
 	}
+	
+	
+	
+	
+	
+	
+	//获取当前账套
+	public function getzhangtao($lx=0)
+	{
+		$dt = $this->rock->date;
+		$where= m('admin')->getcompanywhere(3);
+		if($lx==0)$where.=" and `startdt`<='$dt' and `enddt`>='$dt'";
+		$rows = m('finzhang')->getall("status=1 ".$where."",'*','sort, startdt desc');
+		$arr  = array();
+		foreach($rows as $k=>$rs){
+			$arr[] = array(
+				'value' => $rs['id'],
+				'name' => $rs['name'],
+				'subname' => $rs['startdt'].'→'.$rs['enddt'],
+			);
+		}
+		return $arr;
+	}
+	//获取财务帐号
+	public function getaccount()
+	{
+		$where= m('admin')->getcompanywhere(3);
+		$rows = m('finount')->getall("status=1 ".$where."",'*','sort');
+		$arr  = array();
+		foreach($rows as $k=>$rs){
+			$arr[] = array(
+				'value' => $rs['id'],
+				'name' => $rs['name'],
+			);
+		}
+		return $arr;
+	}
+	//更新财务帐号金额
+	public function updatemoney($accid='')
+	{
+		$where= '';
+		if(!isempt($accid))$where=' and `accountid`='.$accid.'';
+		$rows = $this->db->getall('SELECT accountid,SUM(money)money FROM `[Q]finjibook` where `status`=1 '.$where.' group by accountid');
+		$db = m('finount');
+		$ids= '0';
+		foreach($rows as $k=>$rs){
+			$db->update('`money`='.$rs['money'].'', $rs['accountid']);
+			$ids.=','.$rs['accountid'].'';
+		}
+		if(isempt($accid))$db->update('`money`=0', '`id` not in('.$ids.')');
+	}
+
 }

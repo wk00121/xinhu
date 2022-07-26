@@ -258,4 +258,56 @@ class dateChajian extends Chajian
 		$type);
 		return $str;
 	}
+	
+	
+	/**
+	*	计算周期$rate:d1,d2,$dt开始时间
+	*	返回日期，根据日期判断是不是今天
+	*/
+	public function daterate($rate, $dt, $nowdt='')
+	{
+		if(isempt($rate) || isempt($dt))return false;//没有周期
+		$dt 	= substr($dt,0, 10);//日期的类型
+		if($nowdt=='')$nowdt 	= $this->rock->date;
+		$nowdt	= substr($nowdt, 0, 10);
+		$jg 	= str_replace(array('m','d','w','y'),array('','','',''),$rate);
+		if($jg=='')$jg='1';
+		$jg = (int)$jg;
+		$lx = substr($rate, 0, 1);
+		
+		if($lx=='d'){
+			$jge = $this->datediff('d', $dt, $nowdt);
+			if($jge % $jg==0 || $jge==0){
+				return $nowdt;
+			}
+		}
+		
+		//每月
+		if($lx=='m'){
+			$jge = $this->datediff('m', $dt, $nowdt);
+			if($jge % $jg==0 || $jge==0){
+				$ndt = date('Y-m-'.substr($dt, 8).'');
+				if($ndt==$nowdt)return $nowdt;
+			}
+		}
+		
+		//每年
+		if($lx=='y'){
+			$jge = $this->datediff('y', $dt, $nowdt);
+			if($jge % $jg==0 || $jge==0){
+				$ndt = date('Y-'.substr($dt, 5).'');
+				if($ndt==$nowdt)return $nowdt;
+			}
+		}
+		
+		//每周
+		if($lx=='w'){
+			$w 		= (int)date('w', strtotime($nowdt));if($w==0)$w=7;//星期7
+			if($w==$jg){
+				return $nowdt;
+			}
+		}
+		
+		return false;
+	}
 }                                    

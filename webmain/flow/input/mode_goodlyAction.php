@@ -31,7 +31,7 @@ class mode_goodlyClassAction extends inputAction{
 	
 	public function getgoodsdata()
 	{
-		return m('goods')->getgoodsdata();
+		return m('goods')->getgoodsdata(1);
 	}
 }	
 			

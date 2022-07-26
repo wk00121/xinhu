@@ -2,6 +2,14 @@
 class flow_userinfoClassModel extends flowModel
 {
 	public  $uidfields = 'id';
+	protected  $flowviewufieds = 'id';
+	protected  $flowcompanyidfieds = 'companyid';
+	
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'部门/用户...','fields'=>'id');
+		return $arr;
+	}
 	
 	public function initModel()
 	{
@@ -35,6 +43,20 @@ class flow_userinfoClassModel extends flowModel
 
 		return $barr;
 	}
+	
+	private function getdwname($rs)
+	{
+		$dwid1 = arrvalue($rs,'companyid','0');
+		$dwid  = arrvalue($rs,'dwid','0');
+		$dwid .= ','.$dwid1.'';
+		$temp_dwid = '';
+		if(!isempt($dwid)){
+			$dwarr = m('company')->getall('`id` in('.$dwid.')');
+			foreach($dwarr as $k1=>$rs1)$temp_dwid.=','.$rs1['name'].'';
+			if($temp_dwid!='')$temp_dwid = substr($temp_dwid, 1);
+		}
+		return $temp_dwid;
+	}
 
 	public function flowrsreplace($rs, $lx=0)
 	{
@@ -54,8 +76,26 @@ class flow_userinfoClassModel extends flowModel
 		
 		$rs['birtype']		= $this->birtypearr[$rs['birtype']];
 		
-		if(isset($rs['companyid']) && $lx==1)$rs['companyid'] = m('company')->getmou('name',"`id`='".$rs['companyid']."'");
+		if($lx==1){
+			$rs['companyid'] = $this->getdwname($rs);
+		}
 		
+		if(getconfig('systype')=='demo')$rs['mobile']='';
+		
+		//导出处理
+		if($this->daochubo){
+			//if(isset($rs['mobile']))$rs['mobile'] = '&nbsp;'.$rs['mobile'];
+			//if(isset($rs['idnum']))$rs['idnum'] = '&nbsp;'.$rs['idnum'];
+			//if(isset($rs['banknum']))$rs['banknum'] = '&nbsp;'.$rs['banknum'];
+		}
+	
+		return $rs;
+	}
+	
+	//编辑时候替换
+	protected function flowrsreplaceedit($rs)
+	{
+		if(getconfig('systype')=='demo')$rs['mobile']	 = '';
 		return $rs;
 	}
 	
@@ -66,12 +106,13 @@ class flow_userinfoClassModel extends flowModel
 	
 	protected function flowbillwhere($uid, $lx)
 	{
-	
+		$fields = 'a.id,a.name,a.deptname,a.ranking,a.state,a.tel,a.sex,a.mobile,a.workdate,a.jiguan,a.minzu,a.xueli,a.email,a.syenddt,a.quitdt,a.positivedt,a.birtype,a.birthday,a.num,b.name as companyid';
+		if($this->daochubo)$fields='a.*,b.name as companyid';//导出的
 		return array(
 			'ztfields'	=> 'state',
 			'order'		=> 'a.id',
 			'table'		=> '`[Q]userinfo` a left join `[Q]company` b on a.companyid=b.id',
-			'fields'	=> 'a.id,a.name,a.deptname,a.ranking,a.state,a.tel,a.sex,a.mobile,a.workdate,a.jiguan,a.minzu,a.xueli,a.email,a.syenddt,a.quitdt,a.positivedt,a.birtype,a.birthday,a.num,b.name as companyid',
+			'fields'	=> $fields,
 			'asqom'		=> 'a.',
 			'orlikefields' => 'b.name'
 		);
@@ -86,9 +127,98 @@ class flow_userinfoClassModel extends flowModel
 		$cala   = $this->calendar->toCalday($this->rock->date);
 		$nongli	= $cala['cal'];
 		$rows 	= $this->db->getall("select a.`birthday`,b.`id`,a.`birtype`,b.`name` from `[Q]".$this->mtable."` a left join `[Q]admin` b on a.`id`=b.`id` where b.`status`=1 and a.`state`<>5 and ((a.`birthday` like '%".$dt."' and a.`birtype`=0) or (a.`birthday` like '%".$nongli."' and a.`birtype`=1) )");
+		
+		//是否生日短信提醒
+		$smsnum	= $this->option->getval('smsbirthday');
+		$dxobj	= c('xinhuapi');
+		$dt 	= date('Y年m月d日');
 		foreach($rows as $k=>$rs){
-			$cont = '今天是'.date('Y年m月d日').',农历'.$cala['month'].''.$cala['day'].'，是你的生日，我们在这里祝你生日快乐。';
+			
+			$dtnong	= ''.$cala['month'].''.$cala['day'].'';
+			$cont = '今天是'.$dt.',农历'.$dtnong.'，是你的生日，我们在这里祝你生日快乐。';
 			$this->push($rs['id'],'', $cont, '生日祝福');
+			
+			if(!isempt($smsnum)){
+				$smarr	= explode(',', $smsnum);
+				$tpl	= $smarr[0];
+				$qmv	= arrvalue($smarr, 1, ''); //签名
+				
+				$dxobj->sendsms($rs['id'], $qmv, $tpl, array(
+					'name' 	=> $rs['name'],
+					'dt'  	=> $dt,
+					'dtnong'=> $dtnong
+				));
+			}
 		}
+		
+	}
+	
+	
+	//导入数据的测试显示
+	public function flowdaorutestdata()
+	{
+		return array(
+			'name' 		=> '张三',
+			'state'		=> '正式',
+			'mobile' 	=> '15812345678',
+			'ranking' 	=> '程序员',
+			'idnum' 	=> '1001111111',
+			'housedizhi'=> '福建',
+			'nowdizhi' 	=> '福建',
+			'hunyin' 	=> '未婚',
+			'birthday' 	=> '2017-01-17',
+			'xueli' 	=> '博士后',
+			'minzu' 	=> '汉族',
+			'email' 	=> 'zhangsan@rockoa.com',
+			'workdate' 	=> '2017-01-17',
+			'syenddt' 	=> '2017-03-17',
+			'positivedt'=> '2017-04-01',
+			'jiguan' 	=> '福建',
+		);
+	}
+	
+	//导入之前判断
+	public function flowdaorubefore($rows)
+	{
+		$inarr	= array();
+		$dba  	= m('admin');
+		//根据手机号关联用户
+		foreach($rows as $k=>$rs){
+			
+			$arr 	= $rs;
+			$mobile = $rs['mobile'];
+			$state 	= $rs['state'];
+			$zt 	= 0; //默认人员状态
+			$urs 	= $this->adminmodel->getone("`mobile`='$mobile'");
+			if(!$urs)return '行'.($k+1).'的手机号('.$mobile.')找不对应用户，请先添加用户';
+			$arr['id'] 			= $urs['id'];
+			$arr['ranking'] 	= $urs['ranking'];
+			$arr['deptname'] 	= $urs['deptname'];
+			
+			foreach($this->statearrs as $k1=>$rs1){
+				if($rs1['name']==$state){
+					$zt = $rs1['id'];
+					break;
+				}
+			}
+			$arr['state'] 		= $zt;
+			
+			//更新入职日期
+			$workdate = arrvalue($arr, 'workdate');
+			if(!isempt($workdate)){
+				$dba->update("`workdate`='$workdate'", $arr['id']);
+			}
+			
+			$inarr[] = $arr;
+		}
+		
+		return $inarr;
+	}
+	
+	//导入之后
+	public function flowdaoruafter()
+	{
+		
+		$this->adminmodel->updateinfo();
 	}
 }

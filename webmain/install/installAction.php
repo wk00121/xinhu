@@ -18,10 +18,10 @@ class installClassAction extends ActionNot{
         foreach($dir_arr as $key=>$val){
             if($val == '.' || $val == '..'){
 			}else{               
-                unlink($dir.'/'.$val);
+                @unlink($dir.'/'.$val);
             }
         }
-		rmdir($dir);
+		@rmdir($dir);
     }   
 	
 	public function delinstallAjax()
@@ -43,7 +43,7 @@ class installClassAction extends ActionNot{
 		$user 		= $this->post('user');
 		$pass 		= $this->post('pass');
 		$base 		= $this->post('base');
-		$perfix 	= $this->post('perfix');
+		$perfix 	= strtolower($this->post('perfix','xinhu_'));
 		$engine 	= $this->post('engine','MyISAM');
 		$title 		= '信呼协同办公系统';
 		$qom 		= 'xinhu_';
@@ -109,7 +109,7 @@ class installClassAction extends ActionNot{
 if(!defined('HOST'))die('not access');
 //系统配置文件		
 return array(
-	'url'		=> '$url',		//系统URL
+	'url'		=> '',		//系统URL
 	'localurl'	=> '',			//本地系统URL，用于服务器上浏览地址
 	'title'		=> '$title',	//系统默认标题
 	'apptitle'	=> '信呼OA',			//APP上或PC客户端上的标题
@@ -128,6 +128,7 @@ return array(
 	'updir'		=> 'upload',	//默认上传目录
 	'sqllog'	=> false,		//是否记录sql日志保存upload/sqllog下
 	'asynsend'	=> false,		//是否异步发送提醒消息，为true需开启服务端
+	'editpass'	=> '1',			//用户登录修改密码：0不用修改，1强制用户必须修改
 	'install'	=> true			//已安装，不要去掉啊
 );";
 		$this->rock->createtxt($paths, $txt);

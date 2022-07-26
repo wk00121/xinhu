@@ -12,30 +12,28 @@
 <script type="text/javascript" src="js/jswx.js"></script>
 <script type="text/javascript" src="js/base64-min.js"></script>
 <script type="text/javascript" src="web/res/js/jquery-rockupload.js"></script>
-<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp&libraries=convertor,geometry"></script>
+<script charset="utf-8" src="https://map.qq.com/api/js?v=2.exp&libraries=convertor,geometry&key=<?=$da['qqmapkey']?>"></script>
+<script type="text/javascript" src="js/dingwei.js"></script>
 <style>
 
 </style>
 <script>
+//考勤信息
 var kqrs = <?=json_encode($kqrs);?>,kqors = <?=json_encode($kqors);?>,kqallrs=[],isgzh = <?=$isgzh?>;
-js.servernow = '<?=$rock->now?>';
+js.servernow = '<?=$rock->now?>',openfrom='<?=$openfrom?>';
 var infoWin,marker,circle;
 var label='',accuracy=0,latitude='',longitude='',kqjuli=-1,addbo = true;
-apiready = function(){
-	initbodyss()
-}
+
 function initbody(){
-	if(js.request('ftype')!='app')initbodyss();
+	initbodyss();
 	initupload();
 }
+
 function initbodyss(){
 	js.getsplit();
-	if(isgzh==1){
-		js.jssdkwxgzh();
-	}else{
-		js.jssdkwixin();
-	}
+	js.dw.init(isgzh); //定位开始
 	showtimessabc();
+	
 	var lata = js.getoption('latlongedu','24.504332,118.141136,12').split(',');
 	if(!lata[2])lata[2]=12;
 	scale 	= parseFloat(lata[2]);
@@ -67,36 +65,35 @@ function initbodyss(){
 			}
 		}
 	}
-	geocoder = new qq.maps.Geocoder({
-        complete : function(result){
-			js.msg();
-			addbo	 = true;
-			scale	 = map.getZoom();
-			js.setoption('latlongedu',''+latitude+','+longitude+','+scale+'');
-			clearTimeout(dwtimeer);
-			dwbool		= false;
-			var center 	= result.detail.location;
-            map.setCenter(center);
-			var address = result.detail.address;
-			var dzarr 	= result.detail.addressComponents;
-			address 	= ''+dzarr.province+''+dzarr.city+''+dzarr.district+''+dzarr.street+'';
-			if(dzarr.streetnumber)address+=dzarr.streetnumber;
-			label 		= address+'';
-			if(accuracy>0)address+='(精确'+accuracy+'米)';
-			showinfo(center ,accuracy, '定位成功<br>地址：'+address+'');
-			
-			var i,kqrsa,enddt,juli;
-			for(i=0;i<kqallrs.length;i++){
-				kqrsa = kqallrs[i];
-				enddt = new qq.maps.LatLng(parseFloat(kqrsa.location_x), parseFloat(kqrsa.location_y));
-				juli  = parseInt(qq.maps.geometry.spherical.computeDistanceBetween(center, enddt));
-				if(juli<0)juli = 0-juli;
-				if(kqrsa['iswgd']=='1')juli=0; //无固定位置的
-				kqallrs[i]['kqjuli'] = juli;
-				kqjuli = juli;
-			}
-        }
-    });
+}
+
+function dingweidak(){
+	js.dw.start();
+}
+
+//定位成功后回调
+js.dw.ondwcall = function(res){
+	latitude 	= res.latitude;
+	longitude 	= res.longitude;
+	accuracy 	= res.accuracy;
+	var center 	= res.center;
+	addbo	 	= true;
+	scale	 	= map.getZoom();
+	js.setoption('latlongedu',''+latitude+','+longitude+','+scale+'');
+	map.setCenter(res.center);
+	label		= res.address;
+	showinfo(center ,accuracy, '定位成功<br>地址：'+res.addressinfo+'');
+	
+	var i,kqrsa,enddt,juli;
+	for(i=0;i<kqallrs.length;i++){
+		kqrsa = kqallrs[i];
+		enddt = new qq.maps.LatLng(parseFloat(kqrsa.location_x), parseFloat(kqrsa.location_y));
+		juli  = parseInt(qq.maps.geometry.spherical.computeDistanceBetween(center, enddt));
+		if(juli<0)juli = 0-juli;
+		if(kqrsa['iswgd']=='1')juli=0; //无固定位置的
+		kqallrs[i]['kqjuli'] = juli;
+		kqjuli = juli;
+	}
 }
 
 function showtimessabc(){
@@ -105,10 +102,6 @@ function showtimessabc(){
 	setTimeout('showtimessabc()',1000);
 }
 
-
-js.jssdkcall  = function(bo){
-	dingweidak();
-}
 function showinfo(center ,fw, str){
 	if(!infoWin)infoWin = new qq.maps.InfoWindow({
 		map: map
@@ -128,122 +121,7 @@ function showinfo(center ,fw, str){
 	circle.setCenter(center);
 	circle.setRadius(parseFloat(fw));
 }
-var dwbool=false,dwtimeer;
-function dingweidak(){
-	if(dwbool)return;
-	dwbool = true;
-	chaoshi();
-	if(js.jssdkstate != 1){
-		htmldingw();
-		return;
-	}
-	var msg = '微信定位中...';
-	if(js.isqywx)msg='企业微信定位中...';
-	js.msg('wait',msg);
-	wx.getLocation({
-		type: 'gcj02',
-		success: function (res){
-			js.setmsg('');
-			clearTimeout(dwtimeer);
-			latitude 	= res.latitude;
-			longitude 	= res.longitude;
-			scale		= map.getZoom();
-			accuracy 	= parseFloat(res.accuracy);
-			js.msg('wait','定位成功，获取位置信息...');
-			var center 	= new qq.maps.LatLng(latitude, longitude);
-			geocoder.getAddress(center);
-		},
-		error:function(){
-			js.msg('msg','微信定位失败，请重试');
-			js.jssdkstate = 2;
-			clearTimeout(dwtimeer);
-		}
-	});
-}
-function chaoshi(){
-	clearTimeout(dwtimeer);
-	dwtimeer = setTimeout(function(){
-		js.msg('msg','定位超时，请重新定位');
-		js.jssdkstate = 2;
-		dwbool=false;
-	},20*1000);
-}
-function htmldingw(){
-	if(appobj1('startLocation','appbacklocation')){
-		js.msg('wait','原生app定位中...');
-		return;//原生定位成功
-	}
-	if(api.appName){
-		baidingwei();//百度定位
-		return;
-	}
-	
-	if(!navigator.geolocation){
-		js.msg('msg','不支持浏览器定位');
-		clearTimeout(dwtimeer);
-	}else{
-		js.msg('wait','浏览器定位中...');
-		navigator.geolocation.getCurrentPosition(showPosition,showError,{
-			enableHighAccuracy: true,
-			timeout: 19000,
-			maximumAge: 3000
-		});
-	}
-}
-appbacklocation=function(res){
-	js.setmsg('');
-	clearTimeout(dwtimeer);
-	latitude 	= res.latitude;
-	longitude 	= res.longitude;
-	scale		= map.getZoom();
-	accuracy 	= parseFloat(res.accuracy);
-	js.msg('wait','定位成功，获取位置信息...');
-	var center 	= new qq.maps.LatLng(latitude, longitude);
-	geocoder.getAddress(center);
-}
-function showError(error){
-	clearTimeout(dwtimeer);dwbool=false;
-	js.setmsg('');
-	var msg='无法定位';
-	switch(error.code){
-    case error.PERMISSION_DENIED:
-		msg="用户拒绝对获取地理位置的请求。"
-		break;
-    case error.POSITION_UNAVAILABLE:
-		msg="位置信息是不可用的。"
-		break;
-    case error.TIMEOUT:
-		msg="请求用户地理位置超时。"
-		break;
-    case error.UNKNOWN_ERROR:
-		msg="未知错误。"
-		break;
-    }
-	var url = '<?=URLY?>view_wxgzh.html';
-	js.wx.alert('浏览器无法定位？请看<a href="'+url+'">[帮助设置]</a>',function(){
-		js.location(url);
-	});
-	js.msg('msg', msg);
-}
-function showPosition(position){
-	js.msg('');
-	clearTimeout(dwtimeer);
-	var res 	= position.coords;
-	latitude 	= res.latitude;
-	longitude 	= res.longitude;
-	scale		= map.getZoom();
-	accuracy 	= parseFloat(res.accuracy);
-	js.msg('wait','定位成功，获取位置信息...');
-	var center = new qq.maps.LatLng(parseFloat(latitude), parseFloat(longitude));
-	translate(center, 1);
-}
-function translate(center,type){
-	qq.maps.convertor.translate(center,type,function(res){
-		latitude 	= res[0].lat;
-		longitude 	= res[0].lng;
-		geocoder.getAddress(res[0]);
-	});	
-}
+
 //保存
 var adddkjlcs = {},upfileid='';
 function adddkjl(lx,ss,sm, uobo){
@@ -263,6 +141,7 @@ function adddkjl(lx,ss,sm, uobo){
 		js.msg('success',''+ss+'成功:'+ret.now+'');
 		$('#dwdiv').after('<div>刚'+ss+'.'+ret.now.substr(10)+'('+label+')</div>');
 		addbo = false;
+		if(lx==1)get('notify_sound_audio').play();
 	},'none');
 }
 function adddkjlok(ids){
@@ -270,35 +149,14 @@ function adddkjlok(ids){
 	adddkjl(adddkjlcs.lx,adddkjlcs.ss,adddkjlcs.sm,true);
 }
 function adddkjlsss(){
-	if(dwbool){js.wx.alert('正在定位，稍后在添加');return;}
+	if(js.dw.dwbool){js.wx.alert('正在定位，稍后在添加');return;}
 	if(latitude==''){js.wx.alert('定位没有成功，不能添加');return;}
 	if(!addbo){js.wx.alert('已保存过了，请重新定位后在保存');return;}
 	js.wx.prompt('保存定位','请输入说明(选填)：',function(text){
 		adddkjl(0,'保存', text);
 	});
 }
-function baidingwei(){
-	var baiduLocation = api.require('baiduLocation');
-	js.msg('wait','定位中...');
-	baiduLocation.startLocation({
-		accuracy: '500m',
-		filter: 1,
-		autoStop: true
-	},function(ret, err) {
-		if (ret.status) {
-			latitude 	= ret.latitude;
-			longitude 	= ret.longitude;
-			scale		= map.getZoom();
-			accuracy 	= 0;
-			var center 	= new qq.maps.LatLng(latitude, longitude);
-			translate(center, 3);
-		}else {
-			js.msg('msg','定位失败');
-			js.jssdkstate = 2;
-			clearTimeout(dwtimeer);
-		}
-	});
-}
+
 var dwarr = <?=json_encode($dwarr)?>;
 function showdw(id){
 	var d = dwarr[id];
@@ -318,7 +176,7 @@ function showdw(id){
 }
 function addkaoqin(){
 	if(!kqrs){js.wx.alert('没有设置定位考勤位置');return;}
-	if(dwbool){js.wx.alert('正在定位，稍后在添加');return;}
+	if(js.dw.dwbool){js.wx.alert('正在定位，稍后在添加');return;}
 	if(latitude=='' || kqjuli==-1){js.wx.alert('定位没有成功，不能添加');return;}
 	
 	var i,kqrsa,slju,sljus,iskqbo=false;
@@ -405,7 +263,7 @@ function showimgs(o1){
 	
 	<div style="display:none">
 	<form name="form_cameraInput">
-	<input type="file" capture="camera" onchange="changfile(this)" accept="image/*" id="cameraInput" /></form>
+	<input type="file" <?php if($rock->iswebbro())echo 'capture="camera"';?> onchange="changfile(this)" accept="image/*" id="cameraInput" /></form>
 	</div>
 	<div style="padding:10px">
 	<table width="100%"><tr>
@@ -431,6 +289,7 @@ function showimgs(o1){
 		}
 		?>
 	</div>
+	<audio id="notify_sound_audio" hidden="true" style="display:none" src="web/res/sound/dkcg.mp3"></audio>
 	<div class="blank10"></div>
 </div>
 <script type="text/javascript" src="web/res/js/jquery-imgview.js"></script>

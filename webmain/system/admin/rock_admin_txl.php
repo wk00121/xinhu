@@ -15,7 +15,7 @@ $(document).ready(function(){
 	
 	var a = $('#admin_{rand}').bootstable({
 		modenum:'user',sort:'sort',dir:'asc',fanye:true,params:{atype:'txlmy'},url:publicmodeurl('user'),
-		storeafteraction:'storeafter',checked:false,
+		storeafteraction:'storeafter',storebeforeaction:'storebefore',checked:false,
 		columns:[{
 			text:'头像',dataIndex:'face',notexcel:true,renderer:function(v,d){
 				if(isempt(v))v='images/noface.png';
@@ -24,7 +24,7 @@ $(document).ready(function(){
 		},{
 			text:'姓名',dataIndex:'name',sortable:true
 		},{
-			text:'部门',dataIndex:'deptname',align:'left'
+			text:'部门',dataIndex:'deptallname',align:'left'
 		},{
 			text:'职位',dataIndex:'ranking',sortable:true
 		},{

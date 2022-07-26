@@ -5,29 +5,32 @@ $(document).ready(function(){
 
 	var a = $('#view_{rand}').bootstable({
 		tablename:'goods',celleditor:true,fanye:true,modenum:'goods',autoLoad:false,
-		url:publicstore('{mode}','{dir}'),storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		url:publicstore('{mode}','{dir}'),params:{atype:'all'},modename:'物品',storebeforeaction:'beforeshow',storeafteraction:'aftershow',
+		checked:true,
 		columns:[{
+			text:'编号',dataIndex:'num'
+		},{
 			text:'名称',dataIndex:'name',align:'left'
 		},{
 			text:'分类',dataIndex:'typeid',align:'left'
 		},{
-			text:'单价',dataIndex:'price',sortable:true
-		},{
-			text:'单位',dataIndex:'unit'
+			text:'单价',dataIndex:'price',sortable:true,editor:true
 		},{
 			text:'规格',dataIndex:'guige'
 		},{
 			text:'型号',dataIndex:'xinghao'
 		},{
-			text:'库存',dataIndex:'stock',sortable:true
+			text:'总库存',dataIndex:'stock',sortable:true
 		},{
-			text:'ID',dataIndex:'id'	
+			text:'单位',dataIndex:'unit',sortable:true
+		},{
+			text:'',dataIndex:'caozuo'
 		}],
 		itemclick:function(){
 			btn(false);
 		},
 		itemdblclick:function(d){
-			openxiang('goods',d.id);
+			openxiangs('物品 '+d.name,'goods',d.id);
 		}
 	});
 	
@@ -63,10 +66,23 @@ $(document).ready(function(){
 				a.reload();
 			},'get','','刷新中...,刷新完成');
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'物品列表',
+				'modenum':'goods',
+				'btnobj':o1
+			});
 		},
-		
+		prinwem:function(){
+			var sid = a.getchecked();
+			if(sid==''){
+				js.msg('msg','没有选中记录');
+				return;
+			}
+			var url = '?a=printewm&m=goods&d=main&sid='+sid+'';
+			window.open(url);
+		},
 		
 		
 		mobj:a,
@@ -80,8 +96,8 @@ $(document).ready(function(){
 	var c = new optionclass(c);
 	
 	function btn(bo){
-		get('del_{rand}').disabled = bo;
-		get('edit_{rand}').disabled = bo;
+		//get('del_{rand}').disabled = bo;
+		//get('edit_{rand}').disabled = bo;
 	}
 	
 	js.initbtn(c);
@@ -104,9 +120,7 @@ $(document).ready(function(){
 	<td nowrap>
 		<button class="btn btn-primary" click="clickwin,0" type="button"><i class="icon-plus"></i> 新增</button>
 	</td>
-	<td  style="padding-left:10px">
-		<button class="btn btn-default" click="piliang" type="button">导入</button>
-	</td>
+	
 	<td style="padding-left:10px">
 	<input class="form-control" style="width:150px" id="key_{rand}"   placeholder="物品名">
 	</td>
@@ -120,12 +134,15 @@ $(document).ready(function(){
 		</div>
 	</td>
 	<td  style="padding-right:10px">
-		<button class="btn btn-default" click="daochu" type="button">导出</button>
+		<button class="btn btn-default" click="piliang" type="button">导入</button>
+	</td>
+	<td  style="padding-right:10px">
+		<button class="btn btn-default" click="daochu" type="button">导出 <i class="icon-angle-down"></i></button>
 	</td>
 	<td align="right" nowrap>
-		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button> &nbsp; 
-		<button class="btn btn-danger" id="del_{rand}" click="del" disabled type="button"><i class="icon-trash"></i> 删除</button> &nbsp; 
-		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>
+		<button class="btn btn-default"  click="prinwem" type="button">打印二维码</button>&nbsp;
+		<button class="btn btn-default" click="relaodkc" type="button">刷新库存</button>
+		
 	</td>
 </tr></table>
 </div>

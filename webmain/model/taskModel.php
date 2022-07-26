@@ -4,7 +4,7 @@ class taskClassModel extends Model
 	/**
 	*	读取计划任务运行列表
 	*/
-	public function getrunlist($dt='', $lx=0)
+	public function getrunlist($dt='', $lx=0, $ntime=0)
 	{
 		if($dt=='')$dt = $this->rock->date;
 		$fields = '`id`,`url`,`type`,`time`';
@@ -13,7 +13,8 @@ class taskClassModel extends Model
 		$runa	= array();
 		$sdts	= strtotime($dt);
 		$edts	= strtotime($dt.' 23:59:59');
-		$ntime 	= time();
+		if($ntime==0)$ntime = time();
+		$ntime	= $ntime-20;//稍微减一下防止出现跳过的
 		$brows	= array();
 		$dtobj 	= c('date');
 		$w 		= (int)date('w', $sdts);if($w==0)$w=7;//星期7
@@ -24,7 +25,8 @@ class taskClassModel extends Model
 			$len = count($ate);
 			$rs['adminid'] 	= 1;
 			$rs['atype'] 	= 'runurl';
-			$rs['url'] 		= $this->showgeurl($rs['url'],$rs['id']);
+			$rs['urllu'] 	= $rs['url'];
+			$rs['url'] 		= $this->showgeurl($rs['url'],$rs['id'], $lx);
 			for($i=0;$i<$len;$i++){
 				$rs['type'] = $ate[$i];
 				$rs['time'] = $ati[$i];
@@ -97,29 +99,33 @@ class taskClassModel extends Model
 		return $brun;
 	}
 	
-	private function gettaskurl()
+	//$lx=2必须使用本地地址
+	private function gettaskurl($lx=0)
 	{
 		$turl	= getconfig('taskurl');
-		if($turl=='')$turl	= getconfig('localurl', URL);
+		if($turl=='' || $lx==2)$turl	= getconfig('localurl', URL);
 		return $turl;
 	}
 	
-	/*
-	private function getyunurl($id)
+	//判断设置本地地址是否可以使用
+	public function pdlocal($urla='')
 	{
-		$turl	= $this->gettaskurl();
-		$url 	= ''.$turl.'task.php?m=runt&a=run&mid='.$id.'';
-		return $url;
-	}*/
+		if($urla=='')$urla= $this->gettaskurl();
+		$url = $urla.'task.php?m=day|runt&a=getitle';
+		if($urla != URL){
+			if(c('curl')->getcurl($url) != TITLE)return returnerror('设置的本地地址“'.$urla.'”不能使用，请到[系统→系统工具→系统设置]下重新设置');
+		}
+		return returnsuccess();
+	}
 	
-	//获取运行url
-	private function showgeurl($url, $id, $bos=false)
+	//获取运行url,$lx=2必须使用本地地址
+	private function showgeurl($url, $id, $lx=0)
 	{
 		if(contain($url, 'http://') || contain($url, 'https://')){
 			
 		}else{
 			$aurl 	= explode(',', $url);
-			$turl	= $this->gettaskurl();
+			$turl	= $this->gettaskurl($lx);
 			$yurl 	= 'task.php?m='.$aurl[0].'|runt&a='.arrvalue($aurl, 1, 'run').'&runid='.$id.'';
 			$url 	= ''.$turl.''.$yurl.'';
 		}
@@ -194,55 +200,127 @@ class taskClassModel extends Model
 		return $stime;
 	}
 	
-	public function starttask()
+	private function tasklistpath($lx=0)
 	{
-		$turl	= $this->gettaskurl();
-		$url 	= ''.$turl.'task.php?m=runt&a=getlist';
-		$barr 	= m('reim')->pushserver('starttask', array(
-			'url' => $url
-		));
-		return $barr;
+		$str = ''.UPDIR.'/logs/tasklist.json';
+		if($lx==1)return $str;
+		return ''.ROOT_PATH.'/'.$str.'';
 	}
 	
-	//创建json数组
-	public function createjson()
+	/**
+	*	清空
+	*/
+	public function cleartask()
 	{
-		$barr 	= $this->getrunlist($this->rock->date);
-		$this->rock->createtxt(''.UPDIR.'/'.date('Y-m').'/tasklist.json', json_encode($barr));
+		@unlink($this->tasklistpath());
+	}
+	
+	//读取下一个5分钟时间
+	private function getnextfz()
+	{
+		$time 	= time();
+		$ni 	= date('i', $time);
+		$tar 	= array(0,5,10,15,20,25,30,35,40,45,50,55,60);
+		$gi 	= 0;
+		for($i=0;$i<count($tar)-1;$i++){
+			$i1 = $tar[$i];
+			$i2 = $tar[$i+1];
+			if($ni>=$i1 && $ni<$i2){
+				$gi = $i2;
+				break;
+			}
+		}
+		if($gi==60){
+			$date = date('Y-m-d H:00:00', $time+600);
+		}else{
+			$date = date('Y-m-d H:'.$gi.':00', $time);
+		}
+		return strtotime($date);
+	}
+	
+	//开启发送运行任务
+	public function sendstarttask()
+	{
+		$turl	= $this->gettaskurl();
+		$option = m('option');
+		$this->reimtype	= $option->getval('reimservertype');
+		//node版本
+		if($this->reimtype=='1'){
+			$url 	= ''.$turl.'task.php?m=runt&a=task';
+			$runtime= $this->getnextfz();
+			$reim   = m('reim');
+			if(!isempt(getconfig('phppath')) && contain($reim->serverpushurl, '127.0.0.1')){
+				$url= 'runt,task';
+			}
+			$recID  = $option->getval('reimrecidsystem','rockxinhu');
+			$keynum = 'service_'.$recID.'';
+			$len 	= (int)$option->getval($keynum,'0');
+			if($len<=0){
+				$len 	= strlen($url)+rand(1000,9999);
+				$option->setval($keynum, $len);
+			}
+			$barr	= c('rockqueue')->push($url, array('rtype'=>'queue','runtime'=>$runtime), $runtime, $len);
+		}else{
+			$url 	= ''.$turl.'task.php?m=runt&a=getlist';
+			$barr 	= m('reim')->pushserver('starttask', array(
+				'url' => $url
+			));
+		}
 		return $barr;
 	}
 	
 	/**
-	*	cli 运行没分钟运行的，运行curl的
+	*	开启计划任务(自己服务端)
 	*/
-	public function runjsonlist()
+	public function starttask()
+	{
+		$barr = $this->sendstarttask();
+		if($this->reimtype=='1'){
+			$recID = m('option')->getval('reimrecidsystem','rockxinhu');
+			c('rockqueue')->pushtype('starturl',''.$this->gettaskurl().'task.php?m=runt&a=taskget', array(
+				'recid' => $recID
+			));
+		}
+		$this->cleartask();
+		return $barr;
+	}
+	
+	//创建json数组
+	public function createjson($time)
+	{
+		$barr 	= $this->getrunlist($this->rock->date, 2, $time);
+		$this->rock->createtxt($this->tasklistpath(1), json_encode($barr));
+		return $barr;
+	}
+	
+	/**
+	*	cli 运行每5分钟运行的，运行curl的
+	*/
+	public function runjsonlist($time)
 	{
 		$barr	= array();
-		$fstr	= @file_get_contents(''.UPDIR.'/'.date('Y-m').'/tasklist.json');
-		$time 	= time();
-		$time1 	= strtotime(date('Y-m-d'));
-		if($time-$time1<180)$fstr = '';//每天自动重启生成json
+		$fstr	= '';
+		$fpath	= $this->tasklistpath();
+		$dt 	= date('Y-m-d', $time);
+		if(file_exists($fpath)){
+			$lastdt = date('Y-m-d H:i:s',filemtime($fpath));//最后修改的时间
+			$editdt = date('Y-m-d H:i:s',filectime($fpath));//上次修改时间
+			if(contain($lastdt, $dt) && contain($editdt, $dt))$fstr	= @file_get_contents($fpath);
+		}
 		if(isempt($fstr)){
-			$barr = $this->createjson();
+			$barr = $this->createjson($time);
 			m('option')->setval('systaskrun', $this->rock->now);//记录运行时间
 		}else{
 			$barr = json_decode($fstr, true);
 		}
-		$oi 	= $cg = $sb = 0;
-		$ntime 	= strtotime(date('Y-m-d H:i:00'));
-		$curl 	= c('curl');
+		$ntime 	= strtotime(date('Y-m-d H:i:00', $time));
+		$yunarr = array();
 		foreach($barr as $k=>$rs){
 			if($rs['runtime']==$ntime){
-				$oi++;
-				$cont = $curl->getcurl($rs['url']);
-				if($cont=='success'){
-					$cg++;
-				}else{
-					$sb++;
-				}
+				$yunarr[] = $rs;
 			}
 		}
-		return 'runtask('.$oi.'),success('.$cg.'),fail('.$sb.')';
+		return $yunarr;
 	}
 	
 	//获取运行列表

@@ -2,10 +2,12 @@
 class whereClassModel extends Model
 {
 	private $moders	= array();
+	private $ursarr	= array();
 	
 	public function initModel()
 	{
 		$this->settable('flow_where');
+		$this->admindbs	= m('admin');
 	}
 	
 	/**
@@ -13,27 +15,45 @@ class whereClassModel extends Model
 	*/
 	public function getstrwhere($str, $uid=0, $fid='')
 	{
+		if(isempt($str))return '';
 		if($uid==0)$uid = $this->adminid;
-		$dbs		= m('admin');
+		$dbs		= $this->admindbs;
+
+		if(isset($this->ursarr[$uid])){
+			$urs	= $this->ursarr[$uid];
+		}else{
+			$urs 	= $dbs->getone($uid);
+			$this->ursarr[$uid] = $urs;
+		}
+		
+		$companyid	= arrvalue($urs, 'companyid','0'); //对应单位ID
+		$deptid		= arrvalue($urs, 'deptid','0'); //部门ID
+		if(ISMORECOM){
+			$comid	= arrvalue($urs, 'comid','0');
+			if($comid>'0')$companyid = $comid;
+		}
+		
 		$sw1		= $this->rock->dbinstr('superid',$uid);
 		$super		= "select `id` from `[Q]admin` where $sw1";//我的直属下属
 		$allsuper	= "select `id` from `[Q]admin` where instr(`superpath`,'[$uid]')>0"; //我所有下属的下属
+		$companys	= "select `id` from `[Q]admin` where `companyid`=".$companyid.""; //对应单位下的
 		
-		$urs 		= $dbs->getone($uid, '`deptid`,`name`,`ranking`,`user`');
 		
 		//加上a.
 		$str  = str_replace('[A]`uid`','`uid`', $str);
 		$str  = str_replace('[A]uid','`uid`', $str);
 		$barr = $this->rock->matcharr($str,2);
-		$itsha= array('status','uid','optid','optname','applydt','createdt');
+		$itsha= array('status','uid','optid','optname','applydt','createdt','createid');
+		$thar = array();
 		foreach($barr as $bsuid){
-			if(in_array($bsuid, $itsha)){
+			if(in_array($bsuid, $itsha) && !in_array($bsuid, $thar)){
+				$thar[] = $bsuid;
 				$str  = str_replace('`'.$bsuid.'`','{asqom}`'.$bsuid.'`', $str);
 			}
 		}
 		
 		$str 		= m('base')->strreplace($str, $uid);
-		$str 		= str_replace(array('{super}','{allsuper}'), array($super,$allsuper), $str);
+		$str 		= str_replace(array('{super}','{allsuper}','{company}'), array($super,$allsuper,$companys), $str);
 		
 		//未读替换
 		if(contain($str,'{unread}')){
@@ -68,7 +88,6 @@ class whereClassModel extends Model
 			$rstr= c('date')->getweeklast($this->rock->date);
 			$str = str_replace('{weeklast}', $rstr, $str);
 		}
-		
 		$barr = $this->rock->matcharr($str);
 		foreach($barr as $match){
 			$rstr = $type = '';
@@ -98,9 +117,17 @@ class whereClassModel extends Model
 			}
 			//我的同级部门人员：{uid,dept}
 			if($type=='dept'){
-				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.arrvalue($urs,'deptid','0').')';
+				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where `deptid`='.$deptid.' or '.$this->rock->dbinstr('deptids',$deptid).')';
 			}
-			$str = str_replace('{'.$match.'}', $rstr, $str);
+			//我的同级部门人员(含子部门)：{uid,deptall}
+			if($type=='deptall'){
+				$rstr= '{asqom}`'.$fie.'` in(select `id` from `[Q]admin` where instr(`deptpath`,\'['.$deptid.']\')>0)';
+			}
+			//所属单位：{uid,company}
+			if($type=='company'){
+				$rstr= '{asqom}`'.$fie.'` in('.$companys.')';
+			}
+			$str = str_replace('{'.$match.'}', '( '.$rstr.' )', $str); //加上括号
 		}
 		return $str;
 	}
@@ -181,7 +208,7 @@ class whereClassModel extends Model
 	{
 		if($uid==0)$uid = $this->adminid;
 		$where 	= m('admin')->getjoinstr('syrid', $uid, 1);
-		$where	= '`status`=1 and `setid`='.$modeid.' and `num` is not null and `islb`=1 and ('.$where.')';
+		$where	= '`status`=1 and `setid`='.$modeid.' and `num` is not null and `islb`=1 ';//and ('.$where.')
 		if(isempt($pnum)){
 			$where .=" and ifnull(`pnum`,'')=''";
 		}else{

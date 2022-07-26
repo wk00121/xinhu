@@ -31,7 +31,7 @@ class checkChajian extends Chajian{
 	{
 		if(isempt($str))return false;
 		if(!is_numeric($str) || strlen($str)!=11)return false;
-		if(!preg_match("/1[34587]{1}\d{9}$/", $str))return false;
+		if(!preg_match("/1[3458769]{1}\d{9}$/", $str))return false;
 		return true;
 	}
 	
@@ -61,7 +61,9 @@ class checkChajian extends Chajian{
 		return $encode;
 	}
 	
-	//是否为数字
+	/**
+	*	是否为数字
+	*/
 	public function isnumber($str)
 	{
 		if(isempt($str))return false;
@@ -74,5 +76,39 @@ class checkChajian extends Chajian{
 	public function isinnumber($str)
 	{
 		return preg_match("/[0-9]/", $str);
+	}
+	
+	/**
+	*	是否为日期
+	*/
+	public function isdate($str)
+	{
+		return preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/", $str);
+	}
+	
+	/**
+	*	是否为月份
+	*/
+	public function ismonth($str)
+	{
+		return preg_match("/^([0-9]{4})-([0-9]{2})$/", $str);
+	}
+	
+	/**
+	*	过滤字母,只留数字
+	*/
+	public function onlynumber($str)
+	{
+		return preg_replace('/[a-zA-Z]/','', $str);
+	}
+	
+	/**
+	*	替换空格
+	*/
+	public function replacekg($str)
+	{
+		$str 	= preg_replace('/\s*/', '', $str);
+		$qian	= array(" ","　","\t","\n","\r");
+		return str_replace($qian, '', $str); 
 	}
 }

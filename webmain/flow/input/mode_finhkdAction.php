@@ -8,6 +8,11 @@ class mode_finhkdClassAction extends inputAction{
 		$money  = floatval($arr['money']);
 		$to 	= m('fina')->totaljie($uid, $id);
 		if($money > $to)return '还款金额超过需还金额';
+		
+		$rows['type'] = '3';//一定要是3，不能去掉
+		return array(
+			'rows'=>$rows
+		);
 	}
 	
 	

@@ -20,7 +20,14 @@ $(document).ready(function(){
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true
 		},{
-			text:'有流程',dataIndex:'isflow',type:'checkbox',sortable:true
+			text:'流程模式',dataIndex:'isflow',sortable:true,renderer:function(v){
+				var s = '&nbsp;';
+				if(v=='1')s='顺序流程';
+				if(v=='2')s='顺序前置';
+				if(v=='3')s='自由流程';
+				if(v=='4')s='选择流程';
+				return s;
+			}
 		},{
 			text:'PC端提醒',dataIndex:'pctx',type:'checkbox',editor:true,sortable:true
 		},{
@@ -35,6 +42,10 @@ $(document).ready(function(){
 			text:'录入',dataIndex:'islu',type:'checkbox',editor:true,sortable:true
 		},{
 			text:'同步更新',dataIndex:'isup',type:'checkbox',editor:true,sortable:true
+		},{
+			text:'开评论',dataIndex:'ispl',type:'checkbox',editor:true,sortable:true
+		},{
+			text:'提醒设置',dataIndex:'istxset',type:'checkbox',editor:true,sortable:true
 		},{
 			text:'编号规则',dataIndex:'sericnum'
 		},{
@@ -51,7 +62,9 @@ $(document).ready(function(){
 		}
 	});
 	function btn(bo, d){
+		if(ISDEMO)return;
 		get('edit_{rand}').disabled = bo;
+		get('copy_{rand}').disabled = bo;
 		get('downbtn_{rand}').disabled = bo;
 		get('biaoge_{rand}').disabled = bo;
 		get('biaoges_{rand}').disabled = bo;
@@ -78,6 +91,22 @@ $(document).ready(function(){
 			js.ajax(js.getajaxurl('allcreate','{mode}','{dir}'),{},function(s){
 				js.msg('success', s);
 			},'get',false,'生成中...');
+		},
+		copy:function(){
+			if(a.changeid==0)return;
+			js.prompt('输入新模块编号','将会从模块['+a.changedata.name+']复制主表子表和表单元素字段的！', function(jg,txt){
+				if(jg=='yes' && txt)c.copys(txt);
+			});
+		},
+		copys:function(txt){
+			if(a.changeid==0)return;
+			js.ajax(js.getajaxurl('copymode','{mode}','{dir}'),{id:a.changeid,name:txt},function(s){
+				if(s=='ok'){
+					a.reload();
+				}else{
+					js.msg('msg',s);
+				}
+			},'post',false,'复制中...,复制成功：还是要做其他很多事的，具体请到官网看模块开发视频。');
 		},
 		reload:function(){
 			a.reload();
@@ -139,6 +168,32 @@ $(document).ready(function(){
 			if(!table)return;
 			var name=''+qianss+''+table+'';
 			addtabs({num:'tablefields'+name+'',url:'system,table,fields,table='+name+'',name:'['+name+']字段管理'});
+		},
+		copyss:function(){
+			js.msg('msg','由于关联过多，无法复制');return;
+			js.prompt('输入新模块编号','输入模块编号和主表表名,只能用英文，不能用数字中文，随意写系统将出错：', function(jg,txt){
+				if(jg=='yes'){
+					c.copysss(txt);
+				}
+			});
+		},
+		copysss:function(txt){
+			js.ajax(js.getajaxurl('copymode','{mode}','{dir}'),{id:a.changeid,nmode:txt},function(s){
+				if(s=='ok'){
+					a.reload();
+				}else{
+					js.msg('msg',s);
+				}
+			},'post',false,'复制...,清空成功');
+		},
+		tongbu:function(){
+			var num=a.changedata.num;
+			js.prompt('从官网中拉取模块同步','输入要同步的模块编号如(gong)：将会覆盖你模块设置。', function(jg,txt){
+				if(jg=='yes' && txt)c.tongbuss(txt);
+			},num);
+		},
+		tongbuss:function(nk){
+			js.loading('拉取同步中...');
 		}
 	};
 	js.initbtn(c);
@@ -172,10 +227,10 @@ $(document).ready(function(){
 		<button class="btn btn-default" click="pipei" type="button">重新匹配流程</button>&nbsp; 
 		<button class="btn btn-default" id="biaoge_{rand}" disabled click="biaoge,1" type="button"><i class="icon-table"></i> 主表管理</button>&nbsp; 
 		<button class="btn btn-default" id="biaoges_{rand}" disabled click="biaoges,1" type="button"><i class="icon-table"></i> 子表管理</button>&nbsp; 
-		<button class="btn btn-default" click="allcreate" type="button">一键生成所有列表页</button>
+		<button class="btn btn-default" click="allcreate" type="button">生成所有列表页</button>
 	</td>
 	<td align="left"  style="padding:0px 10px;">
-		<div class="input-group" style="width:160px">
+		<div class="input-group" style="width:130px">
 			<input class="form-control" id="key_{rand}" placeholder="搜模块">
 			<span class="input-group-btn">
 				<button class="btn btn-default" click="search" type="button"><i class="icon-search"></i></button>
@@ -186,7 +241,7 @@ $(document).ready(function(){
 		
 	</td>
 	<td align="right" nowrap>
-		
+		<button class="btn btn-default" id="copy_{rand}" click="copy,1" disabled type="button">复制</button>&nbsp; 
 		<button class="btn btn-info" id="edit_{rand}" click="clickwin,1" disabled type="button"><i class="icon-edit"></i> 编辑 </button>&nbsp; 
 		<button class="btn btn-danger" click="del" disabled id="del_{rand}" type="button"><i class="icon-trash"></i> 删除</button>
 	</td>
@@ -196,4 +251,4 @@ $(document).ready(function(){
 </div>
 <div class="blank10"></div>
 <div id="view_{rand}"></div>
-<div class="tishi">提示：对应表请使用数据库管理工具管理，如phpMyadmin,Navicat等，模块列表页面会生成到webmian/flow/page下<div>
+<div class="tishi">提示：对应表请使用数据库管理工具管理，如phpMyadmin,Navicat等，模块列表页面会生成到webmain/flow/page下<div>

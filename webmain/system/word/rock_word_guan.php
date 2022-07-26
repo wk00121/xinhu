@@ -83,7 +83,8 @@ $(document).ready(function(){
 			if(js.isimg(d.fileext)){
 				$.imgview({url:d.filepath,downbool:false});
 			}else{
-				openxiangs(d.filename,'?m=public&a=fileviewer&id='+d.id+'&wintype=max');
+				var urls = '?m=public&a=fileviewer&id='+d.id+'&wintype=max';
+				openxiangs(d.filename, urls);
 			}
 		}
 	}

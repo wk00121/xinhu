@@ -9,7 +9,7 @@ $(document).ready(function(){
 		get('del_{rand}').disabled = bo;
 	}
 	
-	var changearr={'boturn':'提交时','boedit':'编辑时','bochang':'字段改变时','bodel':'删除时','bozuofei':'作废时','botong':'步骤处理通过时','bobutong':'步骤处理不通过时','bofinish':'处理完成时','bozhui':'追加说明时','bozhuan':'转办时','botask':'计划任务'};
+	var changearr={'boturn':'提交时','boedit':'编辑时','bochang':'字段改变时','bodel':'删除时','bozuofei':'作废时','botong':'步骤处理通过时','bobutong':'步骤处理不通过时','bofinish':'处理完成时','bozhui':'追加说明时','bozhuan':'转办时','botask':'计划任务','boping':'评论时','bohuiz':'回执确认时'};
 	
 	var a = $('#view_{rand}').bootstable({
 		tablename:'flow_todo',celleditor:true,modedir:'{mode}:{dir}',
@@ -17,7 +17,7 @@ $(document).ready(function(){
 		columns:[{
 			text:'模块',dataIndex:'modename'
 		},{
-			text:'名称',dataIndex:'name',editor:true
+			text:'通知标题',dataIndex:'name',editor:true
 		},{
 			text:'触发条件',dataIndex:'whereidstr'
 		},{
@@ -35,11 +35,11 @@ $(document).ready(function(){
 			}
 		},{
 			text:'编号',dataIndex:'num',editor:true
-		},{
+		}/*,{
 			text:'变化字段',dataIndex:'changefields'
 		},{
 			text:'处理步骤Id',dataIndex:'changecourse'
-		},{
+		}*/,{
 			text:'说明',dataIndex:'explain',editor:true
 		},{
 			text:'状态',dataIndex:'status',type:'checkbox',editor:true,sortable:true
@@ -48,6 +48,7 @@ $(document).ready(function(){
 				var s='&nbsp;';
 				if(d.toturn=='1')s+='提交人;';
 				if(d.tocourse=='1')s+='流程所有参与人;';
+				if(d.tosuper=='1')s+='直属上级;';
 				if(!isempt(v))s+=''+v+';';
 				return s;
 			}

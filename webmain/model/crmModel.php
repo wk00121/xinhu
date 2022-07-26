@@ -11,16 +11,23 @@ class crmClassModel extends Model
 	{
 		if(isempt($id))$id = 0;
 		$s		= $this->rock->dbinstr('shateid', $uid);
-		$rows 	= $this->getrows("`status`=1 and ((`uid`='$uid') or (`id`=$id) or (".$s."))",'id as value,name,id','`name`');
+		$rows 	= $this->getrows("`status`=1 and ((`uid`='$uid') or (`id`=$id) or (".$s."))",'id as value,name,id,unitname as subname','`name`');
 		return $rows;
 	}
 	
+	//读取所有客户
+	public function custdata()
+	{
+		$where  = m('admin')->getcompanywhere(3);
+		$rows 	= $this->getrows("`status`=1 ".$where."",'id as value,name,id,unitname as subname','`optdt` desc');
+		return $rows;
+	}
 	
 	
 	//读取我的销售机会
 	public function getmysale($uid, $id=0)
 	{
-		$where 	= '`uid`='.$uid.' and `state`=1 and (`htid`=0 or `id`='.$id.')';
+		$where 	= '`uid`='.$uid.' and `state` in(0,1) and (`htid`=0 or `htid`='.$id.')';
 		$rows 	= m('custsale')->getrows($where, 'id,custid,custname,money,laiyuan');
 		return $rows;
 	}
@@ -69,9 +76,14 @@ class crmClassModel extends Model
 		return $moneys;
 	}
 	
+	
+	/**
+	*	对应人统计金额
+	*/
 	public function moneytotal($uid, $month)
 	{
-		$sql 	= "SELECT uid,type,ispay,sum(money)money,count(1)stotal FROM `[Q]custfina` where `createid`='$uid' and `dt` like '$month%' GROUP BY type,ispay";
+		$uid 	= (int)$uid;
+		$sql 	= "SELECT uid,type,ispay,sum(money)money,count(1)stotal FROM `[Q]custfina` where `uid`='$uid' and `dt` like '$month%' GROUP BY type,ispay";
 		$farr	= explode(',', 'shou_moneyd,shou_moneyz,shou_moneys,shou_moneyn,shou_shu,fu_moneyd,fu_moneyz,fu_moneys,fu_moneyn,fu_shu');
 		foreach($farr as $f)$$f= 0;
 		$rows 	= $this->db->getall($sql);
@@ -98,7 +110,7 @@ class crmClassModel extends Model
 			}
 		}
 		//当月已收付
-		$sql = "SELECT type,sum(money)money FROM `[Q]custfina` where `createid`='$uid' and ispay=1 and paydt like '$month%' GROUP BY type";
+		$sql = "SELECT type,sum(money)money FROM `[Q]custfina` where `uid`='$uid' and `ispay`=1 and `paydt` like '$month%' GROUP BY type";
 		$rows 	= $this->db->getall($sql);
 		foreach($rows as $k=>$rs){
 			if($rs['type']==0)$shou_moneyn = $rs['money']+0;
@@ -112,7 +124,7 @@ class crmClassModel extends Model
 	//客户转移
 	public function movetouser($uid, $sid, $toid)
 	{
-		$rows 	= $this->getrows("`id` in($sid) and `uid`='$this->adminid'",'id,name');
+		$rows 	= $this->getrows("`id` in($sid)",'id,uid,name');
 		$toname = m('admin')->getmou('name',"`id`='$toid'");
 		if(isempt($toname))return false;
 		
@@ -120,14 +132,19 @@ class crmClassModel extends Model
 			$id  = $rs['id'];
 			$uarr			= array();
 			$uarr['uid'] 	= $toid;
-			$uarr['optname']= $toname;
+			$uarr['optname'] 	= $toname;
+			$nowid = (int)$rs['uid'];
+			if($nowid==0)$nowid = $uid;
 			
 			$this->update($uarr, $id);
 			
-			m('custract')->update($uarr, "`uid`='$uid' and `custid`='$id'");
-			m('custsale')->update($uarr, "`uid`='$uid' and `custid`='$id'");
+			m('custract')->update($uarr, "`uid`='$nowid' and `custid`='$id'"); 
+			m('custsale')->update($uarr, "`uid`='$nowid' and `custid`='$id'"); //销售机会
+			m('goodm')->update($uarr, "`uid`='$nowid' and `custid`='$id' and `type`=2"); //销售的
+			
 			$uarr['ismove']=1;
-			m('custfina')->update($uarr, "`uid`='$uid' and `custid`='$id'");
+			m('custfina')->update($uarr, "`uid`='$nowid' and `custid`='$id'");
+			
 		}
 	}
 	
@@ -188,5 +205,52 @@ class crmClassModel extends Model
 				'htnum' => $rs['num'],
 			), $rs['id']);
 		}
+	}
+	
+	/**
+	*	跟进名称读取客户档案
+	*/
+	public function getcustomer($name)
+	{
+		if(isempt($name))return false;
+		$rs = $this->getone("(`name`='$name' or `unitname`='$name')");
+		return $rs;
+	}
+	
+	
+	/**
+	*	销售单是收款状态
+	*/
+	public function xiaozhuantai($rs, $lx=0, $csid=0)
+	{
+		$str = '';
+		$wshou1 = 0;
+		if($rs['status']=='5')return ($lx==0)?'作废了':0;
+		
+		if($rs['custractid']=='0'){
+			$finrows = $this->db->getall('select * from `[Q]custfina` where `htid`=-'.$rs['id'].' and `id`<>'.$csid.'');
+			$shou	 = 0;
+			$shou1	 = 0;//已创建金额
+			$ispay	 = '0';
+			foreach($finrows as $k1=>$rs1){
+				if($rs1['ispay']=='1')$shou+=floatval($rs1['money']);
+				$shou1+=floatval($rs1['money']);
+			}
+			$wshou	  = floatval($rs['money'])-$shou;
+			$wshou1	  = floatval($rs['money'])-$shou1;
+			if($wshou<0)$wshou = 0; 
+			if($wshou1<=0){
+				$wshou1 = 0;//未创建
+				$ispay	= '1';
+			}
+			if($wshou==0){
+				$str = '<font color=green>已全部收款</font>';
+			}else{
+				$str = '待收<font color=#ff6600>'.$wshou.'</font>';
+			}
+			if($ispay!=$rs['ispay'])$this->db->update('[Q]goodm','`ispay`='.$ispay.'', '`id`='.$rs['id'].'');
+		}
+		if($lx==1)return $wshou1;
+		return $str;
 	}
 }

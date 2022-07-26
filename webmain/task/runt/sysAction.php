@@ -9,7 +9,7 @@ class sysClassAction extends runtAction
 			'title' 	=> '数据库备份',
 			'cont' 		=> '数据库在['.$this->now.']备份了。',
 		);
-		echo 'success';
+		return 'success';
 	}
 	public function upgtxAction()
 	{
@@ -37,17 +37,53 @@ class sysClassAction extends runtAction
 				'cont' 		=> $str.'请到[系统→系统工具→系统升级]下处理',
 			);
 		}
-		echo 'success';
+		return 'success';
 	}
 	
 	
 	//数据更新,更新用户的
+	//命令就是：php task.php sys,dataup -runid=6
 	public function dataupAction()
 	{
-		m('admin')->updateinfo();
+		m('admin')->updateinfo(); //更新人员
+		m('imgroup')->updategall(); //更新会话组
 		$reim 	= m('reim');
 		if($reim->installwx(0))m('weixin:user')->getuserlist();
 		if($reim->installwx(1))m('weixinqy:user')->getuserlist();
-		echo 'success';
+		return 'success';
+	}
+	
+	/**
+	*	清理数据
+	*/
+	public function clearAction()
+	{
+		$date1 	= date('Y-m-d', time()-30*24*3600); //30天前
+		$date2 	= date('Y-m-d', time()-6*30*24*3600); //半年前
+		$date3 	= date('Y-m-d', time()-3*30*24*3600); //3个月
+		$month3 	= date('Y-m', time()-3*30*24*3600); //3个月
+		$kqclear	= (int)$this->option->getval('kqcleartime','0');
+		$alltabls 	= $this->db->getalltable();
+		if($kqclear>0){
+			$date4 = date('Y-m-d', time()-$kqclear*30*24*3600);
+			if(in_array(''.PREFIX.'kqdkjl', $alltabls))
+				m('kqdkjl')->delete("`dkdt`<='$date4 23:59:9'"); //打卡记录
+		}
+		m('log')->delete("`optdt`<'$date3 23:59:59'"); // 日志3个月
+		
+		m('logintoken')->delete("`moddt`<'$date1 23:59:59'"); // token1个月
+		
+		if(in_array(''.PREFIX.'kqjcmd', $alltabls))
+			m('kqjcmd')->delete("`optdt`<'$date1 23:59:59'");  //考勤机命令
+		
+		if(in_array(''.PREFIX.'kqanay', $alltabls))
+			m('kqanay')->delete("`dt`<'$date3'"); //考勤分析
+		
+		if(in_array(''.PREFIX.'dailyfx', $alltabls))
+			m('dailyfx')->delete("`month`<'$month3'"); //日志分析
+		
+		//更多清理自己添加
+		
+		return 'success';
 	}
 }

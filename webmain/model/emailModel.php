@@ -13,8 +13,11 @@ class emailClassModel extends Model
 	*	$to_uid 发送给。。。
 	*	$rows	内容
 	*/
-	public function sendmail($title, $body, $to_uid, $rows=array(), $zjsend=0)
+	public function sendmail($title, $body, $to_uid, $rows=array(), $zjsend=0, $oparm=array())
 	{
+		if(!function_exists('socket_get_status') || !function_exists('fsockopen'))return '没有开启socket扩展无法使用';
+		if(!function_exists('openssl_sign'))return '没有开启openssl扩展无法使用';
+		
 		$setrs		= m('option')->getpidarr(-1);
 		if(!$setrs)return '未设置发送邮件';
 		
@@ -50,7 +53,7 @@ class emailClassModel extends Model
 		$msg 	= 'ok';
 		
 		if(!getconfig('asynsend') || $zjsend==1){
-			$bo 	= $this->sendddddd(array(
+			$sarrs	= array(
 				'emailpass' 	=> $emailpass,
 				'serversmtp' 	=> $serversmtp,
 				'serverport' 	=> $serverport,
@@ -61,7 +64,9 @@ class emailClassModel extends Model
 				'recename' 		=> $to_mn,
 				'title' 		=> $title,
 				'body' 			=> $body,
-			), true);
+			);
+			foreach($oparm as $k1=>$v1)$sarrs[$k1] = $v1;
+			$bo 	= $this->sendddddd($sarrs, true);
 			if(!$bo)$msg = $this->errorinfo;
 		}else{
 			//异步发送邮件
@@ -244,6 +249,7 @@ class emailClassModel extends Model
 			$uarr['optname'] 	= $this->adminname;
 			$uarr['status'] 	= 0;
 			$sid 	= m('email_cont')->insert($uarr);
+			
 			m('reim')->asynurl('asynrun','sendemail', array(
 				'id' 	=> $sid,
 				'stype' => 1

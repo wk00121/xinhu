@@ -1,16 +1,33 @@
 <?php
 class deptClassAction extends Action
 {
-	
+	public function defaultAction()
+	{
+		
+	}
 	
 	public function dataAjax()
 	{
+		$carr		= m('admin')->getcompanyinfo(0,5);
+		$this->allid= $carr['companyallid'];
+		
 		$this->rows	= array();
 		$this->getdept(0, 1);
-		
+		$errmsg = '';
+		if(ISMORECOM){
+			foreach($this->rows as $k1=>$rs1){
+				if($rs1['companyname']=='' && $rs1['level']==2){
+					$this->rows[$k1]['trbgcolor']='red';
+					$errmsg = '1';
+				}
+			}
+			if($errmsg=='1')$errmsg='红色行必须选择所属单位，请编辑';
+		}
 		echo json_encode(array(
 			'totalCount'=> 0,
-			'rows'		=> $this->rows
+			'rows'		=> $this->rows,
+			'carr'		=> $carr,
+			'errmsg'	=> $errmsg
 		));
 	}
 	
@@ -19,12 +36,21 @@ class deptClassAction extends Action
 		$db		= m('dept');
 		$menu	= $db->getall("`pid`='$pid' order by `sort`",'*');
 		foreach($menu as $k=>$rs){
+			$comid 			= $rs['companyid'];
+			
+			//开启单位模式只能看到自己单位下的组织结构
+			if(!in_array($comid, $this->allid) && $this->adminid>1 && getconfig('companymode'))continue;
+			
+			$companyname	= '';
+			if($comid>0 && getconfig('companymode'))$companyname = m('company')->getmou('name', $comid);
+			$rs['companyname'] = $companyname;
 			$sid			= $rs['id'];
 			$rs['level']	= $oi;
 			$rs['stotal']	= $db->rows("`pid`='$sid'");
 			$this->rows[] = $rs;
 			
 			$this->getdept($sid, $oi+1);
+			
 		}
 	}
 	
@@ -111,12 +137,14 @@ class deptClassAction extends Action
 	
 	public function deptuserjsonAjax()
 	{
-		$udarr 		= m('dept')->getdeptuserdata();
+		$udarr 		= m('dept')->getdeptuserdata(1);
 		$userarr 	= $udarr['uarr'];
 		$deptarr 	= $udarr['darr'];
+		$grouparr 	= $udarr['garr'];
 		
 		$arr['deptjson']	= json_encode($deptarr);
 		$arr['userjson']	= json_encode($userarr);
+		$arr['groupjson']	= json_encode($grouparr);
 		$this->showreturn($arr);
 	}
 }

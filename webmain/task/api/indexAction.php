@@ -35,6 +35,10 @@ class indexClassAction extends apiAction
 		$arr['agentarr']	= $agent['rows'];
 		$arr['agentstotal']	= $agent['stotal'];
 		$arr['maxupsize']	= c('upfile')->getmaxzhao();//最大上传大小M
+		$arr['appversion']	= $this->get('appversion');
+		$arr['xinhuver']	= VERSION;
+		$arr['wsconfig']	= $dbs->getreims();
+		
 		$this->showreturn($arr);
 	}
 	
@@ -88,5 +92,46 @@ class indexClassAction extends apiAction
 		$apptx = (int)$this->post('apptx');
 		m('admin')->update("`apptx`='$apptx'", $this->adminid);
 		$this->showreturn('');
+	}
+	
+	
+	public function checkewmAction()
+	{
+		$randkey = $this->get('randkey');
+		$lx 	 = (int)$this->get('lx');
+		$val 	 = $this->adminid;
+		$lxarr 	 = array('已取消','已确认');
+		if($lx==0)$val='-1';
+		$this->option->setval($randkey, $val);
+		$this->showreturn($lxarr[$lx]);
+	}
+	
+	/**
+	*	切换公司
+	*/
+	public function changecompanyAction()
+	{
+		$id = (int)$this->get('id');
+		$db = m('admin');
+		$db->update('comid='.$id.'', '`id`='.$this->adminid.'');
+		$db->getcompanyinfo();
+		return returnsuccess();
+	}
+	public function getcompanyAction()
+	{
+		$carr = m('admin')->getcompanyinfo($this->adminid);
+		$this->showreturn($carr);
+	}
+	
+	/**
+	*	华为设置客户端token
+	*/
+	public function updateTokenIpAction()
+	{
+		$hwtoken = $this->get('hwtoken');
+		if(!isempt($hwtoken)){
+			m('login')->update("`ip`='$hwtoken'", "`token`='$this->admintoken'");
+		}
+		return returnsuccess();
 	}
 }

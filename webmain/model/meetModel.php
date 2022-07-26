@@ -35,6 +35,7 @@ class meetClassModel extends Model
 					'title' 	=> '['.$rs['hyname'].']'.$rs['title'].'',
 					'titles' 	=> $rs['title'],
 					'joinname' 	=> $rs['joinname'],
+					'optname' 	=> $rs['optname'],
 					'state' 	=> $state,
 					'status' 	=> $nzt,
 					'startdt' 	=> $dt,
@@ -69,10 +70,22 @@ class meetClassModel extends Model
 	public function isapplymsg($startdt, $enddt, $hyname, $id=0)
 	{
 		$msg 		= '';
-		$where 		= "id <> '$id' and `hyname`='$hyname' and type=0 and ((`startdt`<'$startdt' and `enddt`>'$startdt') or (`startdt`<'$enddt' and `enddt`>'$enddt') or (`startdt`>'$startdt' and `enddt`<'$enddt') or (`startdt`='$startdt' and `enddt`='$enddt')) and `state` in(0,1)";
-		if($this->rows($where)>0){
-			$msg = '该会议室的时间段已经申请过了';
+		$rows 		= $this->getall("id <> '$id' and `type`=0 and `state` in(0,1)");
+		$gdrow		= m('flow')->initflow('meet')->createmeet(0, substr($startdt,0,10) ,true);//从固定会议中读取
+		foreach($gdrow as $k1=>$rs1)$rows[]=$rs1;
+		
+		foreach($rows as $k=>$rs){
+			if($rs['hyname'] != $hyname)continue;
+			$sdt = $rs['startdt'];
+			$edt = $rs['enddt'];
+			if(
+			($sdt<=$startdt && $edt>$startdt)
+			|| ($sdt<$enddt && $edt>=$enddt)
+			|| ($sdt>$startdt && $edt<$enddt)
+			|| ($sdt==$startdt && $edt==$enddt) 
+			)$msg = '该会议室的时间段已被申请过了，主题“'.$rs['title'].'”';
 		}
 		return $msg;
 	}
+	
 }

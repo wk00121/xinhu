@@ -1,6 +1,9 @@
 <?php
 class flow_emailmClassModel extends flowModel
 {
+	
+	private $readunarr = array();//未读人员
+	
 	//判断是否有读取权限
 	protected function flowisreadqx()
 	{
@@ -29,11 +32,23 @@ class flow_emailmClassModel extends flowModel
 		$dbs->update('`zt`=1', $where);
 		//判断我是否可以回复
 		$ishuifu = 0;
+		$readunarr = array();
 		if($this->rs['isturn']==1){
 			$tos = $dbs->rows($where.' and `type` in(0,1)');
 			if($tos>0)$ishuifu = 1;
+			
+			//读取未读人员
+			$uids  = '';
+			$uarrs = $dbs->getall('`mid`='.$this->id.' and `zt`=0 and `type` in(0,1) and `isdel`=0');
+			foreach($uarrs as $k=>$rs)$uids.=','.$rs['uid'].'';
+			if($uids!='')$readunarr = $this->adminmodel->getuserinfo(substr($uids,1));
+
 		}
-		return array('ishuifu' => $ishuifu);
+		
+		$arr['ishuifu']		= $ishuifu;
+		$arr['readunarr']	= $readunarr;
+	
+		return $arr;
 	}
 	
 	private function dtssss($dt)
@@ -54,7 +69,7 @@ class flow_emailmClassModel extends flowModel
 	/**
 	*	读取原来邮件内容
 	*/
-	private function getoldcont($hid, $bo=true)
+	public function getoldcont($hid, $bo=true)
 	{
 		$hid = (int)$hid;
 		if($hid==0)return '';
@@ -106,7 +121,7 @@ class flow_emailmClassModel extends flowModel
 			$where 		= $dbs->gettowhere($uid, 4);
 		}
 		
-		if(!isempt($key))$where.=" and (a.`title` like '%$key%' or a.`recename` like '%$key%')";
+		if(!isempt($key))$where.=" and (a.`title` like '%$key%' or a.`recename` like '%$key%' or a.`sendname` like '%$key%')";
 		if(!isempt($dt))$where.=" and a.`senddt` like '$dt%'";
 		
 		return array(

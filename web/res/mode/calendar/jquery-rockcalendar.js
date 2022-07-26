@@ -59,9 +59,10 @@
 		this.init = function(){
 			var id   = obj.attr('id');
 			this.mid = id;
-			var s	= '';
+			var s	= '',bo1r='0';
+			if(can.bordercolor!='')bo1r='1';
 			s+='<div id="calmain_div'+this.mid+'" style="height:'+can.height+'px" class="jquery-calendar">';
-			s+='<table width="100%" border="0" style="border-collapse:collapse" height="100%" cellspacing="0"  cellpadding="0">';
+			s+='<table width="100%" border="'+bo1r+'" style="border-collapse:collapse;border-color:'+can.bordercolor+'" height="100%" cellspacing="0"  cellpadding="0">';
 			s+='<tr>';
 			for(var i=0;i<7;i++){
 				s+='<td class="thtext" style="background-color:'+can.headerbgcolor+'" align="center">'+this.week[i]+'</td>';
@@ -191,7 +192,7 @@
 				}
 				if(i1%7==0)col1='#ff6600';
 				if((i1-1)%7==0)col1='#ff6600';
-				this.obj[i1].innerHTML=this.getSpanAcc(j1,s2,col1,col2,day, i1);
+				this.obj[i1].innerHTML=this.getSpanAcc(j1,s2,col1,col2,day, i1, false);
 				
 				//是不是休息的
 				var xiuval = '';
@@ -224,7 +225,7 @@
 				
 				var lun	= lunar.iconv(lY,lm,lx);
 				var s2	= lun[2];
-				this.obj[i].innerHTML=this.getSpanAcc(lx,s2,'#cccccc','#cccccc', day,i);	
+				this.obj[i].innerHTML=this.getSpanAcc(lx,s2,'#cccccc','#cccccc', day,i, true);	
 				this.obj[i].style.backgroundColor='';
 				
 				//是不是休息的
@@ -250,7 +251,7 @@
 				var day	= ''+lY+'-'+this.sa(lm)+'-'+this.sa(lxu)+'';
 				var lun	= lunar.iconv(lY,lm,lxu);
 				var s2	= lun[2];
-				this.obj[i].innerHTML=this.getSpanAcc(lxu,s2,'#cccccc','#cccccc', day,i);	
+				this.obj[i].innerHTML=this.getSpanAcc(lxu,s2,'#cccccc','#cccccc', day,i, true);	
 				this.obj[i].style.backgroundColor='';
 				
 				//是不是休息的
@@ -299,6 +300,7 @@
 			var d 	= parseFloat($(o1).attr('temp'));
 			var dc	= d-this.w;
 			var da	= $(this.obj[d]).find('span[dt]:eq(0)').html();
+			if(!da)return;
 				da 	= da.split(',');
 			this.nd	= parseFloat(da[0]);
 			if(dc<=0){
@@ -315,7 +317,7 @@
 			this.changetoday(dc);
 		};
 
-		this.getSpanAcc=function(s1,s2,col1,col2, day, oi)
+		this.getSpanAcc=function(s1,s2,col1,col2, day, oi, lbo)
 		{
 			if(s2.indexOf('国际')==0 || s2.indexOf('世界')==0)col2='#419900';
 			var s = '<div><font color='+col1+'>'+s1+'</font><font style="font-size:11px" color='+col2+'>,'+s2+'</font></div>';
@@ -323,6 +325,7 @@
 			if(sq)s = sq;
 				  s+= '<span style="display:none" dt="'+s1+'">'+s1+','+day+'</span>';
 			this.dayobj[oi]={day:day,d:s1}; 
+			if(!can.overShow && lbo)return '';
 			return s;
 		};
 		this.getFistdt	= function(){
@@ -415,6 +418,8 @@
 			height:400,selbgcolor:'#D3FFF6',month:'',
 			fillot:true,renderer:function(){return ''},align:'left',valign:'top',
 			changemonth:function(){},boofan:true,onclick:function(){},jierixiuxi:'',jierishangban:'',headerbgcolor:'',
+			bordercolor:'',
+			overShow:true,
 			changemonthbefore:function(){}
 		};
 		var can		= $.extend({}, defaultVal, options);

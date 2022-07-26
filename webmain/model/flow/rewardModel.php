@@ -13,6 +13,14 @@ class flow_rewardClassModel extends flowModel
 		}
 	}
 	
+	public function flowsearchfields()
+	{
+		$arr[] = array('name'=>'申请人...','fields'=>'uid');
+		$arr[] = array('name'=>'奖惩对象...','fields'=>'objectid');
+		return $arr;
+	}
+	
+	
 	public function flowrsreplace($rs){
 		$type 		= $rs['type'];
 		$rs['type'] = $this->typearr[$type];

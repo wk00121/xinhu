@@ -1,29 +1,39 @@
 <?php if(!defined('HOST'))die('not access');?>
 <script >
 $(document).ready(function(){
-	var gid = 0;
+	var gid = 0,companyinfoall=[];
 	var a = $('#veiw_{rand}').bootstable({
 		tablename:'group',celleditor:true,url:publicstore('{mode}','{dir}'),storeafteraction:'groupafter',
-		modenum:'group',
+		modenum:'group',sort:'sort',dir:'asc',
 		columns:[{
 			text:'组名',dataIndex:'name',editor:true
 		},{
-			text:'排序号',dataIndex:'sort',editor:true
+			text:'排序号',dataIndex:'sort',editor:true,sortable:true
+		},{
+			text:'所属单位',dataIndex:'companyname'
 		},{
 			text:'人员数',dataIndex:'utotal'
 		},{
 			text:'ID',dataIndex:'id'	
 		}],
-		itemclick:function(){
-			btn(false);
+		itemclick:function(d){
+			var bo=false;
+			if(companymode && adminid>1 && d.companyid=='0')bo=true;
+			btn(bo);
 		},
 		itemdblclick:function(ad,oi,e){
 			$('#downshow_{rand}').html('组<b>['+ad.name+']</b>下的人员');
 			gid=ad.id;
 			at.setparams({gid:gid},true);
+		},
+		load:function(d1){
+			companyinfoall = d1.carr.companyinfoall;
+		},
+		beforeload:function(){
+			btn(true);
 		}
 	});
-	
+	var alluserid = '';
 	var at = $('#veiwuser_{rand}').bootstable({
 		tablename:'admin',sort:'sort',dir:'asc',
 		url:publicstore('{mode}','{dir}'),
@@ -35,12 +45,22 @@ $(document).ready(function(){
 		},{
 			text:'部门',dataIndex:'deptname',sortable:true
 		},{
+			text:'职位',dataIndex:'ranking'
+		},{
 			text:'操作',dataIndex:'opt',renderer:function(v,d){
 				return '<a href="javascript:" onclick="return deluserr{rand}('+d.id+')"><i class="icon-trash"> 删</a>';
 			}
 		}],
-		load:function(){
+		load:function(da){
 			get('add_{rand}').disabled=false;
+			alluserid = '';
+			for(var i=0;i<da.rows.length;i++){
+				alluserid+=','+da.rows[i].id+'';
+			}
+			if(alluserid!='')alluserid = alluserid.substr(1);
+		},
+		beforeload:function(){
+			alluserid = '';
 		}
 	});
 	
@@ -49,17 +69,28 @@ $(document).ready(function(){
 			a.del({check:function(lx){if(lx=='yes')btn(true)}});
 		},
 		clickwin:function(o1,lx){
+			var items = [{
+				labelText:'组名',name:'name',required:true
+			},{
+				labelText:'序号',name:'sort',type:'number',value:'0'
+			}],les='';
+			if(companymode){
+				var store = [];
+				if(adminid==1)store.push({'id':'0','name':'全部单位'});
+				for(var i=0;i<companyinfoall.length;i++)store.push(companyinfoall[i]);
+				items.push({
+					labelText:'所属单位',name:'companyid',type:'select',value:'0',valuefields:'id',displayfields:'name',store:store
+				});
+				les=',companyid';
+			}
+			
 			var h = $.bootsform({
 				title:'组',height:400,width:400,
 				tablename:'group',isedit:lx,
 				url:js.getajaxurl('publicsave','group','system'),
 				params:{int_filestype:'sort',add_otherfields:'indate={now}'},
-				submitfields:'name,sort',
-				items:[{
-					labelText:'组名',name:'name',required:true
-				},{
-					labelText:'序号',name:'sort',type:'number',value:'0'
-				}],
+				submitfields:'name,sort'+les+'',
+				items:items,
 				success:function(){
 					a.reload();
 				}
@@ -77,6 +108,7 @@ $(document).ready(function(){
 			var cans = {
 				type:'usercheck',
 				title:'选择人员',
+				changerangeno:alluserid,
 				callback:function(sna,sid){
 					c.savedist(sid);
 				}
@@ -123,7 +155,7 @@ $(document).ready(function(){
 
 <table width="100%">
 <tr valign="top">
-<td width="40%">
+<td width="45%">
 	
 	
 	<div>
@@ -140,7 +172,7 @@ $(document).ready(function(){
 	</div>
 	<div class="blank10"></div>
 	<div id="veiw_{rand}"></div>
-	<div class="tishi">先双击对应组查看人员，在添加组下人员</div>
+	<div class="tishi">在组的ID列下双击，查看组下的人员，在添加组下人员</div>
 </td>
 <td width="10"></td>
 <td>

@@ -234,4 +234,57 @@ class jmChajian extends Chajian{
 		$getstr 	= mcrypt_decrypt(MCRYPT_DES, $key, $str, MCRYPT_MODE_ECB);
 		return trim($getstr);
 	}
+	
+	/**
+	*	字符串加密处理
+	*/
+	public function strlook($data,$key='')
+	{
+		if(isempt($data))return '';
+		if($key=='')$key	= md5($this->jmsstr);
+		$x		= 0;
+		$len	= strlen($data);
+		$l		= strlen($key);
+		$char 	= $str = '';
+		for ($i = 0; $i < $len; $i++){
+			if ($x == $l) {
+				$x = 0;
+			}
+			$char .= $key[$x];
+			$x++;
+		}
+		for ($i = 0; $i < $len; $i++){
+			$str .= chr(ord($data[$i]) + (ord($char[$i])) % 256);
+		}
+		return $this->base64encode($str);
+	}
+	
+	/**
+	*	字符串解密
+	*/
+	public function strunlook($data,$key='')
+	{
+		if(isempt($data))return '';
+		if($key=='')$key	= md5($this->jmsstr);
+		$x 		= 0;
+		$data 	= $this->base64decode($data);
+		$len 	= strlen($data);
+		$l 		= strlen($key);
+		$char 	= $str = '';
+		for ($i = 0; $i < $len; $i++){
+			if ($x == $l) {
+				$x = 0;
+			}
+			$char .= substr($key, $x, 1);
+			$x++;
+		}
+		for ($i = 0; $i < $len; $i++){
+			if (ord(substr($data, $i, 1)) < ord(substr($char, $i, 1))){
+				$str .= chr((ord(substr($data, $i, 1)) + 256) - ord(substr($char, $i, 1)));
+			}else{
+				$str .= chr(ord(substr($data, $i, 1)) - ord(substr($char, $i, 1)));
+			}
+		}
+		return $str;
+	}
 }

@@ -29,7 +29,7 @@ $(document).ready(function(){
 		},{
 			text:"分数",dataIndex:"fenshu",sortable:true
 		},{
-			text:'',dataIndex:'optsw',renderer:function(v,d, oi){
+			text:'',dataIndex:'optsw',notexcel:true,renderer:function(v,d, oi){
 				var s = '&nbsp;';
 				if(d.state=='1' && d.iskszt=='0' && d.uid==adminid)s='<a onclick="openks{rand}('+oi+')" href="javascript:;">去考试</font>';
 				return s;
@@ -60,8 +60,12 @@ $(document).ready(function(){
 				a.reload();
 			},'post',false, '处理中...,处理成功');
 		},
-		daochu:function(){
-			a.exceldown();
+		daochu:function(o1){
+			publicdaochuobj({
+				'objtable':a,
+				'modename':'',
+				'btnobj':o1
+			});
 		},
 		search:function(){
 			var s=get('key_{rand}').value;
@@ -86,7 +90,7 @@ $(document).ready(function(){
 	
 		<td align="right"  nowrap>
 			 <button id="showbtn{rand}" class="btn btn-default" click="chongkx" type="button">重新标识可培训</button>&nbsp;&nbsp; 
-			<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+			<button class="btn btn-default" click="daochu,1" type="button">导出 <i class="icon-angle-down"></i></button> 
 		</td>
 	</tr>
 	</table>

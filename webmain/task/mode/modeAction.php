@@ -1,7 +1,7 @@
 <?php
 class modeClassAction extends ActionNot
 {
-	public function initAction()
+	public function init123Action()
 	{
 		$aid 	= (int)$this->get('adminid');
 		$token 	= $this->get('token');
@@ -10,6 +10,11 @@ class modeClassAction extends ActionNot
 			$this->mweblogin(1);
 		}
 		$this->getlogin(1);
+	}
+	
+	public function initAction()
+	{
+		$this->mweblogin(0);
 	}
 
 	public function defaultAction()
@@ -43,9 +48,6 @@ class modeClassAction extends ActionNot
 		if(!file_exists($spagepath)){
 			$spagepath = '';
 		}
-		$isheader = 0;
-		if($this->web != 'wxbro' && $this->web != 'xinhu' && $this->web != 'ding' && $this->get('show')=='we')$isheader=1;
-		$this->assign('isheader', $isheader);
 		$this->smartydata['spagepath']		= $spagepath;
 		$this->smartydata['pagetitle']		= $pagetitle;
 		
@@ -54,6 +56,11 @@ class modeClassAction extends ActionNot
 			$inputjspath = '';
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
+		$this->assign('inputobj', c('input'));
+		
+		$jswxsdk = '0';
+		if($this->rock->web=='wxbro' && !isempt($this->option->getval('weixinqy_corpid')))$jswxsdk='1';
+		$this->assign('jswxsdk', $jswxsdk);
 	}
 	
 	//pc端页面详情
@@ -67,7 +74,6 @@ class modeClassAction extends ActionNot
 		$stype 			= $this->get('stype');
 		
 		$arr 	 		= m('flow')->getdatalog($num, $mid, 0);
-		
 		$pagetitle 		= $arr['title'];
 		$this->title 	= $arr['title'];
 		if($pagetitle=='')$pagetitle = $arr['modename'];
@@ -91,6 +97,9 @@ class modeClassAction extends ActionNot
 			$inputjspath = '';
 		}
 		$this->smartydata['inputjspath']	= $inputjspath;
+		$this->smartydata['xiangwidth']		= $this->option->getval('xiangwidth', 700);
+		$this->smartydata['issetprint']		= file_exists(''.P.'/flow/page/view_'.$num.'_2.html');
+		$this->assign('inputobj', c('input'));
 	}
 	
 	//下载
@@ -102,8 +111,41 @@ class modeClassAction extends ActionNot
 	}
 	
 	
-	
-	
+	//打印的
+	public function tAction()
+	{
+		$num = $this->get('modenum');
+		if($num=='')$num=$this->get('num');
+		
+		$mid 	 = (int)$this->get('mid');
+		if($num=='' || $mid==0)exit('无效请求');
+		$stype 			= $this->get('stype');
+		
+		$path 			 = ''.P.'/flow/page/view_'.$num.'_2.html';
+		if(!file_exists($path))return '没有设置打印模版';
+		
+		$arr 	 		= m('flow')->initflow($num, $mid)->getdatalog(0, 2);
+		$pagetitle 		= $arr['title'];
+		$this->title 	= $arr['title'];
+		if($pagetitle=='')$pagetitle = $arr['modename'];
+		$this->smartydata['arr'] = $arr;
+		
+		$spagepath 	= P.'/flow/page/viewpage_'.$num.'_2.html';
+		if(!file_exists($spagepath))$spagepath 	= P.'/flow/page/viewpage_'.$num.'.html';
+		if(!file_exists($spagepath)){
+			$spagepath = '';
+		}
+		$this->smartydata['spagepath']		= $spagepath;
+		$this->smartydata['pagetitle']		= $pagetitle;
+		$this->assign('stype', $stype);
+		if($stype=='word'){
+			m('file')->fileheader($arr['modename'].'.doc');
+		}
+		
+		
+		$this->smartydata['xiangwidth']		= $this->option->getval('xiangwidth', 700);
+		
+	}
 	
 	
 	

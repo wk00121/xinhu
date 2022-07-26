@@ -1,6 +1,42 @@
 <?php
 class gerenClassAction extends Action
 {
+	public function getinitAjax()
+	{
+		$uid = $this->adminid;
+		$carr= m('admin')->getcompanyinfo($uid);
+		
+		return array(
+			'gerentodo' => $this->option->getval('gerennotodo_'.$uid.''),
+			'qmimgstr' 	=> $this->option->getval('qmimgstr_'.$uid.''),
+			'carr' 		=> $carr,
+		);
+	}
+	
+	public function cogsaveAjax()
+	{
+		$uid = $this->adminid;
+		$this->option->setval('gerennotodo_'.$uid.'', $this->get('gerentodo','0'));
+	}
+	
+	//保存图片
+	public function qmimgsaveAjax()
+	{
+		$uid = $this->adminid;
+		$str = '';
+		$qmimgstr = $this->post('qmimgstr');
+		if(!isempt($qmimgstr)){
+			if(contain($qmimgstr,'.')){
+				$str = $qmimgstr;
+			}else{
+				$qma = explode(',', $qmimgstr);
+				$str = ''.UPDIR.'/'.date('Y-m').'/'.$uid.'qming_'.rand(1000,9999).'.png';
+				$this->rock->createtxt($str, base64_decode($qma[1]));
+			}
+		}
+		$this->option->setval('qmimgstr_'.$uid.'', $str);
+	}
+	
 	public function filebefore($table)
 	{
 		$key	= $this->post('key');
@@ -8,19 +44,39 @@ class gerenClassAction extends Action
 		$where	 = 'and optid='.$this->adminid.'';
 		if($atype=='all'){
 			$where='';
+			if($this->adminid>1)$where=m('admin')->getcompanywhere(3);
 		}
 		if($key!=''){
 			$where.=" and (`optname` like '%$key%' or `filename` like '%$key%' or `mtype`='$key')";
 		}
 		return array(
 			'where' => $where,
-			'fields' => '`id`,fileext,filename,filesizecn,filepath,adddt,optname,downci,ip,web,mtype,mid',
+			//'fields' => '`id`,fileext,filename,filesizecn,thumbpath,filepath,adddt,optname,downci,ip,web,mtype,mid',
+		);
+	}
+	public function fileafter($table, $rows)
+	{
+		$fobj = m('file');
+		foreach($rows as $k=>&$rs){
+			$rs['thumbpath'] = $fobj->getthumbpath($rs);
+			$fpath = $rs['filepath'];
+			
+			$status= 1;
+			if(substr($fpath,0,4)=='http'){
+				$status = 2;
+			}else{
+				if(isempt($rs['filenum']) && !file_exists($fpath))$status=0;
+			}
+			$rs['status'] = $status;
+		}
+		return array(
+			'rows' => $rows
 		);
 	}
 	
 	public function delfileAjax()
 	{
-		$id = $this->post('id','0');
+		$id = c('check')->onlynumber($this->post('id','0'));
 		m('file')->delfile($id);
 		backmsg();
 	}
@@ -61,7 +117,7 @@ class gerenClassAction extends Action
 			}
 		}
 		if($msg == ''){
-			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."'", "`id`='$id'"))$msg	= $this->db->error();
+			if(!$this->db->record($this->T('admin'), "`pass`='".md5($pasword)."',`editpass`=`editpass`+1", "`id`='$id'"))$msg	= $this->db->error();
 		}
 		if($msg=='')$msg='success';
 		echo $msg;
@@ -119,5 +175,20 @@ class gerenClassAction extends Action
 			$oi++;
 		}
 		backmsg('','成功导入'.$oi.'条数据');
+	}
+	
+	public function filelogs_before($table)
+	{
+		$where = '';
+		$fileid = (int)$this->post('fileid','0');
+		$where = "and `fileid`='$fileid'";
+		return $where;
+	}
+	
+	public function delfilelogsAjax()
+	{
+		$id = (int)$this->post('id','0');
+		m('files')->delete($id);
+		backmsg();
 	}
 }

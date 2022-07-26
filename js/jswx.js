@@ -37,11 +37,12 @@ js.wx.prompt=function(tit,msg,fun,nr){
 	this.alert(msg,func,tit, 1);
 }
 js.apiurl = function(m,a,cans){
-	var url=''+apiurl+'api.php?m='+m+'&a='+a+'&adminid='+adminid+'';
+	var url=''+apiurl+'api.php?m='+m+'&a='+a+'';
 	var cfrom='mweb';
-	url+='&device='+device+'';
+	if(adminid)url+='&adminid='+adminid+'';
+	if(device)url+='&device='+device+'';
 	url+='&cfrom='+cfrom+'';
-	url+='&token='+token+'';
+	if(token)url+='&token='+token+'';
 	if(!cans)cans={};
 	for(var i in cans)url+='&'+i+'='+cans[i]+'';
 	return url;
@@ -64,12 +65,12 @@ js.ajax  = function(m,a,d,funs, mod,checs, erfs, glx){
 	var tsnr = '努力处理中...';
 	if(mod=='wait')js.msg(mod, tsnr);
 	if(mod=='mode')js.wx.load(tsnr);
-	function errsoers(ts){
+	function errsoers(ts, ds){
 		js.wx.unload();
 		js.setmsg(ts);
 		js.msg('msg',ts);
 		js.ajaxbool = false;
-		erfs(ts);
+		erfs(ts, ds);
 	}
 	var type=(!d)?'get':'post';if(glx)type=glx;
 	var ajaxcan={
@@ -79,11 +80,13 @@ js.ajax  = function(m,a,d,funs, mod,checs, erfs, glx){
 			js.wx.unload();
 			clearTimeout(js.ajax_time);
 			if(ret.code==199){
-				js.location('?d=we&m=login&backurl='+jm.base64encode(location.href)+'');
+				js.wx.alert(ret.msg, function(){
+					js.location('?d=we&m=login&backurl='+jm.base64encode(location.href)+'');
+				});
 				return;
 			}
 			if(ret.code!=200){
-				errsoers(ret.msg);
+				errsoers(ret.msg, ret);
 			}else{
 				js.setmsg('');
 				js.msg('none');
@@ -106,9 +109,10 @@ js.wx.load=function(txt){
 	if(txt=='none')return;
 	if(!txt)txt='加载中...';
 	var s='';
+	var t = winHb()-150;
 	s+='<div id="loadingToastsss" class="weui_loading_toast">'+
     '<div class="weui_mask_transparent"></div>'+
-    '<div class="weui_toast">'+
+    '<div class="weui_toast" style="top:'+(t*0.5)+'px">'+
     '    <div class="weui_loading">'+
     '        <div class="weui_loading_leaf weui_loading_leaf_0"></div>'+
     '        <div class="weui_loading_leaf weui_loading_leaf_1"></div>'+
@@ -131,14 +135,21 @@ js.wx.load=function(txt){
 js.wx.unload=function(){
 	$('#loadingToastsss').remove();
 }
+js.loading=function(txt){
+	this.wx.load(txt);
+}
+js.unloading=function(){
+	this.wx.unload();
+}
 js.wx.msgok=function(txt,fun,ms){
 	$('#toastssss').remove();
 	clearTimeout(this.msgtime);
 	if(txt=='none')return;
 	if(!ms)ms=3;
+	var t = winHb()-150;
 	var s='<div id="toastssss">';
 	s+='<div class="weui_mask_transparent"></div>';
-	s+=	'<div class="weui_toast">';
+	s+=	'<div class="weui_toast" style="top:'+(t*0.5)+'px">';
 	s+=		'<i class="weui_icon_toast"></i>';
 	s+=		'<p class="weui_toast_content">'+txt+'</p>';
 	s+=	'</div>';
@@ -228,14 +239,14 @@ js.jssdkcall  = function(bo){
 js.jssdkstate = 0;
 js.jssdkwixin = function(qxlist,afe){
 	if(!js.iswxbo())return js.jssdkcall(false);
-	var wxurl = 'http://res.wx.qq.com/open/js/jweixin-1.1.0.js';
-	if(js.isqywx)wxurl = 'https://res.wx.qq.com/wwopen/js/jsapi/jweixin-1.0.0.js';
+	//if(js.isqywx)var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.1.0.js';
+	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.2.0.js';
 	if(!afe)$.getScript(wxurl, function(){
 		js.jssdkwixin(qxlist, true);
 	});
 	if(!afe)return;
 	var surl= location.href;
-	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','previewImage'];
+	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','getLocalImgData','previewImage'];
 	js.ajax('weixin','getsign',{url:jm.base64encode(surl),agentid:js.request('agentid')},function(ret){
 		if(!ret.appId)return js.jssdkcall(false);
 		wx.config({
@@ -261,13 +272,13 @@ js.jssdkwixin = function(qxlist,afe){
 */
 js.jssdkwxgzh = function(qxlist,afe){
 	if(!js.iswxbo())return js.jssdkcall(false);
-	var wxurl = 'http://res.wx.qq.com/open/js/jweixin-1.2.0.js';
+	var wxurl = 'https://res.wx.qq.com/open/js/jweixin-1.2.0.js';
 	if(!afe)$.getScript(wxurl, function(){
 		js.jssdkwxgzh(qxlist, true);
 	});
 	if(!afe)return;
 	var surl= location.href;
-	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','previewImage'];
+	if(!qxlist)qxlist= ['openLocation','getLocation','chooseImage','getLocalImgData','previewImage'];
 	js.ajax('wxgzh','getsign',{url:jm.base64encode(surl)},function(ret){
 		if(!ret.appId)return js.jssdkcall(false);
 		wx.config({

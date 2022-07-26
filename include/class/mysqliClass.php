@@ -59,7 +59,7 @@ class mysqliClass extends mysql{
 		
 	public function error()
 	{
-		return $this->conn->error;
+		return 'mysqliError:'.$this->conn->error;
 	}
 	
 	public function close()

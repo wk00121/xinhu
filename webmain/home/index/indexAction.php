@@ -6,7 +6,9 @@ class indexClassAction extends Action{
 		$myext	= $this->getsession('adminallmenuid');
 		$where	= '';
 		if($myext != '-1'){	
-			$where	= ' and `id` in('.str_replace(array('[',']'), array('',''), $myext).')';
+			$caids  = str_replace(array('[',']'), array('',''), $myext);
+			if(isempt($caids))$caids='0';
+			$where	= ' and `id` in('.$caids.')';
 		}
 		$mrows = m('menu')->getrows("`ishs`=1 and `status`=1 $where ", "`id`,`num`,`name`,`url`,`color`,`icons`",'`sort`');
 		return $mrows;
@@ -18,6 +20,9 @@ class indexClassAction extends Action{
 		$optdta	= $this->get('optdt');
 		$optdt 	= $this->now;
 		$uid 	= $this->adminid;
+		$urs	= m('admin')->getone("`id`='$uid' and `status`=1");
+		if(!$urs)exit('用户不存在');
+		
 		$arr['optdt']	= $optdt;
 		$todo			= m('todo')->rows("uid='$uid' and `status`=0 and `tododt`<='$optdt'");
 		$arr['todo']	= $todo;
@@ -57,6 +62,11 @@ class indexClassAction extends Action{
 		$itemsarr		= m('homeitems')->getitemsdata($this->get('nums'));
 		foreach($itemsarr as $k=>$v)$arr[$k] = $v;
 		
+		$arr['notodo']	= $this->option->getval('gerennotodo_'.$uid.'');
+		
+		$arr['editpass']= m('admin')->iseditpass($uid);
+		$arr['miaoshu'] = (int)$this->option->getval('syshometime', '200');
+		$arr['tanwidth']= $this->option->getval('tanwidth', '900x800');
 		
 		return $arr;
 	}
@@ -74,7 +84,8 @@ class indexClassAction extends Action{
 	public function getqrcodeAjax()
 	{
 		header("Content-type:image/png");
-		$url = ''.URL.'?m=login&d=we&token='.$this->admintoken.'&user='.$this->jm->base64encode($this->adminuser).'';
+		$urls= $this->rock->getouturl();
+		$url = ''.$urls.'?m=login&d=we&token='.$this->admintoken.'&user='.$this->jm->base64encode($this->adminuser).'';
 		$img = c('qrcode')->show($url);
 		echo $img;
 	}

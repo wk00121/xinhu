@@ -52,7 +52,13 @@ function serversend(a){
 			<div class="div02">
 			<?php
 			echo $da['title'];
-			if($arr['type']=='user')echo '('.$arr['unitname'].'.'.$arr['ranking'].')';
+			if($arr['type']=='user'){
+				echo '('.$arr['unitname'].'.'.$arr['ranking'].')';
+			}else{
+				$did = $arr['deptid'];
+				if($did=='1')echo ' <span class="reimlabel">全员</span>';
+				if($did>'1')echo ' <span class="reimlabel1">部门</span>';
+			}
 			?>
 			</div>
 			<?php if($arr['type']=='group' && $arr['innei']>0 && isempt($arr['deptid'])){?>

@@ -14,7 +14,7 @@ class flowcourseClassModel extends Model
 	public function initCourse($setid, $fields='')
 	{
 		$this->courserows = array();
-		if($fields=='')$fields = '`id`,`name`,`checktype`,`checktypename`,`whereid`,`status`,`mid`,`pid`,`recename`,`explain`,`optdt`,`nid`';
+		if($fields=='')$fields = '`id`,`name`,`checktype`,`checktypename`,`whereid`,`where`,`status`,`mid`,`pid`,`recename`,`explain`,`optdt`,`nid`';
 		$rows 	= $this->getall("`setid`='$setid'",$fields,'`pid`,`sort`');
 		$isinit = false;
 		$time 	= '2017-08-10 00:00:00';
@@ -56,6 +56,13 @@ class flowcourseClassModel extends Model
 					if(!isempt($fzsm))$fzsm.=',';
 					$fzsm.= $wherena;
 				}
+			}
+			if(!isempt($rs['explain'])){
+				if(!isempt($fzsm))$fzsm.=',';
+				$fzsm.= '说明('.$rs['explain'].')';
+			}else if(!isempt($rs['where'])){
+				if(!isempt($fzsm))$fzsm.=',';
+				$fzsm.= '审核条件('.$this->rock->jm->base64decode($rs['where']).')';
 			}
 			$this->courserows[$k]['fzsm'] = $fzsm;
 		}

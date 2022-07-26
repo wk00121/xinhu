@@ -78,6 +78,13 @@ class yingyongClassAction extends Action
 		}
 	}
 	
+	public function yingyongbefore($table)
+	{
+		return array(
+			'order' => '`valid` desc,`sort` asc'
+		);
+	}
+	
 	public function yingyongafter($table, $rows)
 	{
 		foreach($rows as $k=>$rs){

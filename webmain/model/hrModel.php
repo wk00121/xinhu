@@ -71,6 +71,6 @@ class hrClassModel extends Model
 				}	
 			}
 		}
-		if($uids != '0')$mdb->updateinfo("and `id` in($uids)");
+		if($uids != '0')$mdb->updateinfo("and a.`id` in($uids)");
 	}
 }

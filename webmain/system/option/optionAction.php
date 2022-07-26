@@ -34,6 +34,7 @@ class optionClassAction extends Action
 	{
 		$num 	= $this->get('num');
 		if($num=='')exit('error;');
+		if(!contain($num, 'gerenvcard_') && ISMORECOM && $cnum=m('admin')->getcompanynum())$num.='_'.$cnum.'';//多单位时个人通讯不用加单位编号
 		$pid 	= $this->option->getnumtoid($num,''.$num.'选项', false);
 		$rows 	= $this->option->gettreedata($pid);
 		$rows	= array(

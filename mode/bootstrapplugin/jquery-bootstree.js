@@ -1,5 +1,9 @@
 /**
-	bootstree
+*	bootstable 表格树形插件
+*	caratename：雨中磐石(rainrock)
+*	caratetime：2014-04-06 21:40:00
+*	email:admin@rockoa.com
+*	homepage:www.rockoa.com
 */
 
 (function ($) {
@@ -38,7 +42,7 @@
 			this.changedata = false;
 			if(!can.hideHeaders){
 				s+='<div>';
-				s+='<ul style="border-bottom:1px #dedede solid;border-top-width:0px">';
+				s+='<ul style="border-bottom:1px #dedede solid;border-top-width:0px;margin:0">';
 				if(can.checked)s+='<li style="width:40px;text-align:center"><input id="seltablecheck_'+rand+'" type="checkbox"></li>';
 				for(i=0;i<len;i++){
 					hs = '';
@@ -116,7 +120,7 @@
 				this._zoi++;
 				ov	= d[i];
 				this._zoiarr[this._zoi] = ov;
-				s+='<ul oi="'+this._zoi+'" dataid="'+ov.id+'">';
+				s+='<ul oi="'+this._zoi+'" style="margin:0" dataid="'+ov.id+'">';
 				if(can.checked){
 					s+='<li style="width:40px;text-align:center"><input name="treecheck_'+rand+'" value="'+this._zoi+'" type="checkbox"></li>';
 				}
@@ -185,7 +189,7 @@
 			this.bool = true;
 			var parm = can.params;
 			$.ajax({
-				type:'POST',url:can.url,
+				type:can.method,url:can.url,
 				data:parm,
 				success:function(da){
 					if(!get('treebody_'+rand+''))return;
@@ -251,7 +255,7 @@
 	
 	$.fn.bootstree	= function(options){
 		var defaultVal = {
-			data:[],rand:'',columns:[],hideHeaders:false,selectColor:'#DFF0D8',
+			data:[],rand:'',columns:[],hideHeaders:false,selectColor:'#DFF0D8',method:'GET',
 			itemdblclick:function(){},checked:false,autoLoad:true,url:'',params:{},
 			itemclick:function(da, index, e){},load:function(){}
 		};

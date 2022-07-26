@@ -1,4 +1,4 @@
-﻿/**
+/**
 *	REIM即时通信主js
 *	caratename：雨中磐石(rainrock)
 *	caratetime：2017-07-20 21:40:00
@@ -61,9 +61,12 @@ var reim = {
 		$(window).blur(function(){windowfocus=false});
 		//数秒
 		setInterval('reim.timeload()', 1000);
+		
+		document.ondragover=function(e){e.preventDefault();};
+		document.ondrop=function(e){e.preventDefault();};
 	},
 	openrecord:function(){
-		var url = '?homeurl=cmVpbSxyZWNvcmQsYXR5cGU9bXk:&homename=5oiR55qE5Lya6K!d6K6w5b2V';
+		var url = '?homeurl=cmVpbSxyZWNvcmQsYXR5cGU9bXk:&homename=5oiR55qE5Lya6K!d6K6w5b2V&menuid=MjI3';
 		js.open(url,1000,550,'chatrecord');
 	},
 	timeload:function(){
@@ -73,6 +76,8 @@ var reim = {
 			this.timeloads = 0;
 			this.reload();
 		}
+		
+		if(this.timeloads==5)this.getonline();
 		
 		//如果服务端断开，用ajax连接
 		if(this.timeloads % 10==0){
@@ -91,6 +96,10 @@ var reim = {
 		if(lx=='notify')this.shownotify(a);
 		if(lx=='openchat')this.openchat(a.id,a.type);
 		if(lx=='getlogin')return {uid:adminid,uname:adminname,face:adminface};
+		if(lx=='getipmac')return nwjs.getipmac();
+		if(lx=='office')nwjs.editoffice(a.paramsstr);
+		if(lx=='upfile')return nwjs.filetobase64(a.path);
+		if(lx=='gpath')return nwjs.getpath();
 	},
 	shownotify:function(d1){
 		var d = js.apply({icon:'images/logo.png','title':'系统提醒',url:''}, d1);
@@ -196,7 +205,7 @@ var reim = {
 		}
 		var wsurl = jm.base64decode(a.wsurl),receid = a.recid;
 		this.showconfigarr = a;
-		if(isempt(wsurl) || wsurl.indexOf('ws:')!=0){
+		if(isempt(wsurl) || wsurl.indexOf('ws')!=0){
 			this.serverstatus(3);
 			return false;
 		}
@@ -256,7 +265,7 @@ var reim = {
 		var s = '<font color="green">已连接</font>';s='';
 		if(lx==0)s='<font color="red">未连接</font>'
 		if(lx==2)s='<font color="#ff6600">在别处连接</font>'
-		if(lx==3)s='<font color="blue">没服务端</font>'
+		if(lx==3)s='<font color="blue">没服务端</font>';
 		$('#reim_statusserver').html(s);
 	},
 	relianshotime:function(oi){
@@ -275,6 +284,12 @@ var reim = {
 		websocketobj.send(a);
 		return true;
 	},
+	
+	//获取在线人员
+	getonline:function(){
+		this.serversend({'atype':'getonline'});
+	},
+	
 	//加载数据
 	loadhistory:function(){
 		this.loaddata('history');
@@ -311,6 +326,7 @@ var reim = {
 			reim.initbackd(ret);
 		});
 	},
+	firstpid:0,
 	initbackd:function(ret){
 		if(!ret.userjson)return;
 		this.lastloaddt		= ret.loaddt;
@@ -319,6 +335,7 @@ var reim = {
 		this.maindata.garr  = js.decode(ret.groupjson);
 		this.maindata.aarr  = js.decode(ret.agentjson);
 		this.maindata.harr 	= js.decode(ret.historyjson);
+		this.firstpid		= this.maindata.darr[0].pid;
 		this.myip 			= ret.ip;
 		this.showuser(this.maindata.uarr);
 		this.adminmyrs 		= this.userarr[adminid];
@@ -331,6 +348,7 @@ var reim = {
 		
 		this.shownowci = 0;
 		this.showconfig(ret.config);
+		if(ret.editpass==0)this.editpass('请先修改密码后在使用','none');
 	},
 	loaddata:function(type){
 		this.ajax(this.apiurl('indexreim','ldata'),{type:type}, function(ret){
@@ -347,45 +365,83 @@ var reim = {
 			this.showhistorys(a[i]);
 		}
 	},
-	showhistorys:function(d,pad){
+	showhistorys:function(d,pad, lex){
 		if(!d)return;
-		var s,ty,o=$('#historylist'),d1,st,attr,stst,cont;
+		var s,ty,o=$('#historylist'),d1,st,attr,stst,cont,cls,nastr;
 		ty	= d.type;
 		if(ty=='user')d1=this.userarr[d.receid];
 		if(ty=='group')d1=this.grouparr[d.receid];
+		if(d1){
+			d.name = d1.name;
+			d.face = d1.face;
+		}else if(!lex && ty=='user'){
+			this.ajax(this.apiurl('indexreim','loadinfo'),{type:ty,receid:d.receid}, function(ret){
+				if(!ret){
+					console.error('无法读取到'+ty+','+d.receid+'的信息');
+				}else{
+					reim.showuser(ret);
+					reim.showhistorys(d, pad, true);
+				}
+			});
+			return;
+		}
 		var num = ''+ty+'_'+d.receid+'';
 		$('#history_'+num+'').remove();
 		var stotal = 0;
-		if(d1){
-			cont 	= jm.base64decode(d.cont);
-			var ops = d.optdt.substr(11,5);
-			if(d.optdt.indexOf(this.date)!=0)ops=d.optdt.substr(5,5);
-			attr = 'oncontextmenu="return reim.historyright(this,event);" tsaid="'+d.receid+'" tsaype="'+d.type+'" ';
-			st	 = d.stotal;if(st=='0')st='';
-			stotal+=parseFloat(d.stotal);
-			stst = '';
-			if(d.type=='user'){
-				stst='uid="'+d.receid+'"';
-				if(d.online==0)stst+=' class="offline"';
-			}
-			s	= '<div '+attr+' class="lists" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
-			s+='<table cellpadding="0" border="0" width="100%"><tr>';
-			s+='<td style="padding-right:8px"><div '+stst+' style="height:34px;overflow:hidden"><img src="'+d1.face+'"></div></td>';
-			s+='<td align="left" width="100%"><div class="name">'+d1.name+'</div><div class="huicont">'+cont+'</div></td>';
-			s+='<td align="center" nowrap><span id="chatstotal_'+num+'" class="badge red">'+d.stotal+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
-			s+='</tr></table>';
-			s+='</div>';
-			if(!pad){o.append(s);}else{o.prepend(s)}
+		cont 	= jm.base64decode(d.cont);
+		var ops = d.optdt.substr(11,5);
+		if(d.optdt.indexOf(this.date)!=0)ops=d.optdt.substr(5,5);
+		attr = 'oncontextmenu="return reim.historyright(this,event);" tsaid="'+d.receid+'" tsaype="'+d.type+'" ';
+		st	 = d.stotal;if(st=='0')st='';
+		stotal+=parseFloat(d.stotal);
+		stst = '';
+		cls  = '';
+		nastr= d.name;
+		if(d.type=='user'){
+			stst='uid="'+d.receid+'"';
+			if(d1.online=='0')cls=' offline';
 		}
+		if(d.type=='group' && d1){
+			if(d1.deptid=='1')nastr+=' <span class="reimlabel">全员</span>';
+			if(d1.deptid>'1')nastr+=' <span class="reimlabel1">部门</span>';
+		}
+		s	= '<div '+attr+' '+stst+' class="lists'+cls+'" rtype="hist" id="history_'+num+'" onclick="reim.openchat('+d.receid+',\''+ty+'\')">';
+		s+='<table cellpadding="0" border="0" width="100%"><tr>';
+		s+='<td style="padding-right:8px"><div style="height:34px;overflow:hidden"><img src="'+d.face+'"></div></td>';
+		s+='<td align="left" width="100%"><div class="name">'+nastr+'</div><div class="huicont">'+cont+'</div></td>';
+		s+='<td align="center" nowrap><span id="chatstotal_'+num+'" class="badge red">'+d.stotal+'</span><br><span style="color:#cccccc;font-size:10px">'+ops+'</span></td>';
+		s+='</tr></table>';
+		s+='</div>';
+		if(!pad){o.append(s);}else{o.prepend(s)}
 		$('#historylist_tems').hide();
 		this.showbadge('chat');
+	},
+	
+	//在线离线设置
+	setonline:function(online){
+		$('div[uid]').addClass('offline');
+		var onlies = online.split(','),i,uid;
+		for(i=0;i<onlies.length;i++){
+			uid=onlies[i];
+			this.setonlines(uid, 1);
+		}
+	},
+	setonlines:function(uid, on){
+		var d = this.userarr[uid];
+		if(on==1){
+			$('div[uid='+uid+']').removeClass('offline');
+		}else{
+			$('div[uid='+uid+']').addClass('offline');
+		}
+		this.userarr[uid].online = on;
+		this.maindata.uarr[d.i].online = on;
 	},
 	
 	historyright:function(o1,e){
 		var rt = $(o1).attr('rtype');
 		if(isempt(rt))return false;
 		this.rightdivobj = o1;
-		var d=[{name:'打开会话',lx:0}];
+		var d=[{name:'打开',lx:0}];
 		if(rt.indexOf('agent')>-1){
 			d.push({name:'打开窗口',lx:1});
 		}
@@ -414,13 +470,23 @@ var reim = {
 	//打开聊天界面
 	openchat:function(id,type){
 		this.showbadge('chat',''+type+'_'+id+'', 0);
-		openchat(id,type);
+		if(type=='agent'){
+			this.openagent(id);
+		}else{
+			openchat(id,type);
+		}
+		this.setyd(type,id);
 	},
 	opengroup:function(id){
 		this.openchat(id, 'group');
 	},
 	openuser:function(id){
 		this.openchat(id, 'user');
+	},
+	
+	//会话标识已读
+	setyd:function(type,id){
+		this.ajax(this.apiurl('reim','yiduall'),{type:type,gid:id},false);
 	},
 	
 	//切换聊天主界面隐藏显示
@@ -446,7 +512,7 @@ var reim = {
 		o1.className = 'active';
 		$('#reim_headercenter').find("div[tabdiv]").hide();
 		$('#reim_headercenter').find("div[tabdiv='"+oi+"']").show();
-		if(oi=='1')this.showdept(0,0);
+		if(oi=='1')this.showdept(this.firstpid,0);
 	},
 	//加载群会话列表
 	loadgroup:function(){
@@ -461,7 +527,10 @@ var reim = {
 		o.html('');
 		for(i=0;i<len;i++){
 			d 	= a[i];
-			s	= '<div style="padding-left:10px" id="group_'+d.id+'" onclick="reim.opengroup('+d.id+')"><img src="'+d.face+'" align="absmiddle">'+d.name+'</div>';
+			s	= '<div style="padding-left:10px" id="group_'+d.id+'" onclick="reim.opengroup('+d.id+')"><img src="'+d.face+'" align="absmiddle">'+d.name+'';
+			if(d.deptid=='1')s+=' <span class="reimlabel">全员</span>';
+			if(d.deptid>'1')s+=' <span class="reimlabel1">部门</span>';
+			s	+='</div>';
 			this.grouparr[d.id] = d;
 			o.append(s);
 		}
@@ -470,15 +539,16 @@ var reim = {
 	//显示组织结构
 	showdept:function(pid, xu){
 		var i=0,len,s='',a,wfj,cls;
-		var o = $('#showdept_'+pid+'');
+		var sv= '#showdept_'+pid+'';if(xu==0)sv='#showdept_0';
+		var o = $(sv);
 		var tx= o.text();
-		if(tx){if(pid!=0){o.toggle();}return;}
+		if(tx){if(xu!=0){o.toggle();}return;}
 		
 		len=this.maindata.uarr.length;
 		for(i=0;i<len;i++){
 			a=this.maindata.uarr[i];
-			if(pid==a.deptid){
-				cls='online';if(a.online==1)cls='online';
+			if(pid==a.deptid || a.deptidss.indexOf(','+pid+',')>-1){
+				cls='offline';if(a.online==1)cls='';
 				s='<div uid="'+a.id+'" class="'+cls+'" style="padding-left:'+(xu*20+10)+'px" onclick="reim.openuserzl('+a.id+')">';
 				s+='	<img src="'+a.face+'" align="absmiddle"> '+a.name+' <font color="#888888">('+a.ranking+')<font>';
 				s+='</div>';
@@ -497,7 +567,7 @@ var reim = {
 				s+='</div>';
 				s+='<span id="showdept_'+a.id+'"></span>';
 				o.append(s);
-				if(pid==0)this.showdept(a.id, xu+1);
+				if(xu==0)this.showdept(a.id, xu+1);
 			}
 		}
 		
@@ -509,6 +579,8 @@ var reim = {
 		for(i=0;i<len;i++){
 			d 	= a[i];
 			d.i = i;
+			d.online=0;
+			this.maindata.uarr[i] = d;
 			this.userarr[d.id] = d;
 		}
 	},
@@ -534,6 +606,7 @@ var reim = {
 		});
 		if(id==adminid){
 			this.upfaceobj=$.rockupload({inputfile:'upfacess',uptype:'image',
+				urlparams:{noasyn:'yes'},
 				onsuccess:function(f,str){
 					var a=js.decode(str);
 					if(!a.id)return;
@@ -570,7 +643,7 @@ var reim = {
 		var col = 3,wd = 100/col;
 		for(ty in typearr){
 			len = typearr[ty].length;
-			s='<div class="reim_agent_types">'+ty+'('+len+')</div><table class="reim_agent_grid" width="100%"><tr>';
+			s='<div class="reim_agent_types">'+ty+'</div><table class="reim_agent_grid" width="100%"><tr>';
 			oi	= 0;
 			for(i=0;i<len;i++){
 				oi++;atr='';
@@ -632,6 +705,8 @@ var reim = {
 			}
 			w = 320;
 		}
+		var jg = (url.indexOf('?')>-1)?'&':'?';
+		url+=''+jg+'openfrom=reim';
 		//考勤打卡
 		if(d.num=='kqdaka'){
 			this.opendaka();return;
@@ -646,14 +721,25 @@ var reim = {
 	},
 	
 	//显示到会话列表上
-	addhistory:function(lx,id,sot,cont,opt,sne){
+	addhistory:function(lx,id,sot,cont,opt,sne,name,face){
 		if(!sne)sne='';
 		if(sne)sne=jm.base64encode(sne+':');
 		if(lx!='group')sne='';
 		var d={type:lx,receid:id,stotal:sot,cont:sne+cont,optdt:opt};
+		if(name)d.name = name;
+		if(face)d.face = face;
 		this.showhistorys(d, true);
 	},
-	
+	editpass:function(bt,cse){
+		if(!bt)bt='修改密码';
+		if(!cse)cse='';
+		js.tanbody('winiframe',bt,260,300,{
+			html:'<div style="height:250px;overflow:hidden"><iframe src="" name="openinputiframe" width="100%" height="100%" frameborder="0"></iframe></div>',
+			bbar:'none',
+			closed:cse
+		});
+		openinputiframe.location.href='?m=index&d=we&a=editpass&hideheader=true&ofrom=reim';
+	},
 	//别的地方登录
 	otherlogins:function(){
 		this.otherlogin = true;
@@ -663,17 +749,31 @@ var reim = {
 	},
 	
 	//服务端接收到推送消息
-	receivemesb:function(d){
+	receivemesb:function(d, lob){
 		var lx=d.type,sendid=d.adminid,num,face,ops=false,msg='',ot,ots,garr,tits,gid;
 		if(!sendid)sendid = d.sendid;
 		if(lx=='offoline'){
 			this.otherlogins();
 			return;
 		}
+		if(lx=='getonline'){
+			this.setonline(d.online);
+			return;
+		}
 		var a 	= this.userarr[sendid];
 		if(a){
 			d.sendname=a.name;
 			d.face = a.face;
+		}else if(!lob){
+			this.ajax(this.apiurl('indexreim','loadinfo'),{type:'user',receid:sendid}, function(ret){
+				if(!ret){
+					console.error('无法读取到'+sendid+'的信息');
+				}else{
+					reim.showuser(ret);
+					reim.receivemesb(d, true);
+				}
+			});
+			return;
 		}
 		gid = d.gid;
 		if(lx == 'user' || lx == 'group'){
@@ -689,13 +789,14 @@ var reim = {
 				}
 				face= garr.face;
 			}
-			
+			this.setonlines(sendid,1);//说明是在线的
+			var title = document.title+'消息';
 			if(ops){
 				ops.focus();
 			}else{
 				if(lx == 'user'){
 					msg = '人员['+d.sendname+']，发来一条信息';
-					notifyobj.showpopup(msg,{icon:d.face,sendid:sendid,title:'REIM消息',rand:num,click:function(b){
+					notifyobj.showpopup(msg,{icon:d.face,sendid:sendid,title:title,rand:num,click:function(b){
 						reim.openuser(b.sendid);
 						return true;
 					}});
@@ -704,7 +805,7 @@ var reim = {
 					if(!d.gname)d.gname = d.name;
 					msg = '人员['+d.sendname+']，发来一条信息，来自['+d.gname+']';
 					if(d.form=='ajax')d.sendname='';
-					notifyobj.showpopup(msg,{icon:garr.face,gid:gid,title:'REIM消息',rand:num,click:function(b){
+					notifyobj.showpopup(msg,{icon:garr.face,gid:gid,title:title,rand:num,click:function(b){
 						reim.opengroup(b.gid);
 						return true;
 					}});
@@ -722,6 +823,7 @@ var reim = {
 		//应用的通知提醒
 		if(lx == 'agent'){
 			garr = this.agentarr[gid];
+			num	 = 'agent_'+gid+'';
 			if(!garr){
 				this.loadagent();
 				garr={face:'images/logo.png',pid:0};
@@ -738,7 +840,12 @@ var reim = {
 					return false;
 				}
 			}});
+			
+			ot 		= $('#chatstotal_'+num+'');ots=ot.text();if(ots=='')ots='0';
+			if(!ops)ots = parseFloat(ots)+1;
+			this.addhistory(lx,gid,ots,d.cont,d.optdt,'', tits, garr.face);
 		}
+	
 		if(lx == 'loadgroup'){
 			this.loadgroup();
 		}

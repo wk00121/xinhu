@@ -8,10 +8,22 @@ class flow_custractClassModel extends flowModel
 		$this->statearr		= c('array')->strtoarray('待生效|blue,生效中|green,已过期|#888888');
 		$this->dtobj		= c('date');
 		$this->crmobj		= m('crm');
+		$this->goodmobj		= m('goodm');
+		
+		$this->wherejoin['custfina'] = 'htid';
 	}
-
 	
-	public function flowrsreplace($rs){
+	//作废或删除时
+	protected function flowzuofeibill($sm)
+	{
+		m('goodm')->update('`custractid`=0', "`custractid`='".$this->id."'");//销售单取消关联合同
+		
+		
+		
+		$xiaoid = (int)arrvalue($this->rs,'xiaoid','0');
+	}
+	
+	public function flowrsreplace($rs, $lx=0){
 		$type 		= $rs['type'];
 		$rs['type'] = $this->typearr[$type];
 		$statetext	= '';
@@ -40,6 +52,18 @@ class flow_custractClassModel extends flowModel
 		}else{
 			$dsmoney		= '待'.$ts.'<font color=#ff6600>'.$moneys.'</font>';
 		}
+		if(isset($rs['xiaoid']) && $rs['xiaoid']>0){
+			$xiaors = $this->goodmobj->getone("`id`='".$rs['xiaoid']."' and `status`<>5");
+			if($xiaors){
+				if($lx==1){
+					$dsmoney.='，销售单：<a href="'.$this->getxiangurl('custxiao',$rs['xiaoid'],'auto').'">'.$xiaors['num'].'</a>';
+				}else{
+					$dsmoney.='，销售单:<br>'.$xiaors['num'].'';
+				}
+			}else{
+				$this->update('`xiaoid`=0', $rs['id']);
+			}
+		}
 		$rs['moneys']		= $dsmoney;
 		$rs['htstatus']		= $htstatus;
 		return $rs;
@@ -58,7 +82,7 @@ class flow_custractClassModel extends flowModel
 		return array(
 			'where' => $where,
 			'order' => '`optdt` desc',
-			'orlikefields' => 'custname'
+			//'orlikefields' => 'custname'
 		);
 	}
 	
@@ -80,7 +104,7 @@ class flow_custractClassModel extends flowModel
 				$arr['optname'] = $this->adminname;
 				$arr['createname']= $this->adminname;
 				$arr['createid']  = $this->adminid;
-				$arr['optid'] 	= $this->adminid;
+				//$arr['optid'] 	= $this->adminid;
 				$arr['type'] 	= $this->rs['type'];
 				$arr['explain'] = $arrs['sm'];
 				$arr['money'] 	= $money;

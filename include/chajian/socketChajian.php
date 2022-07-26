@@ -30,9 +30,39 @@ class socketChajian extends Chajian
 		if($type=='ppt' || $type=='pptx')$flx='ppt';
 		$topah 	= ''.ROOT_PATH.'/mode/pdfjs/topdf/'.$flx.'.js';
 		if(!file_exists($topah))return '没有安装转化插件';
-		$url  	= m('base')->getasynurl('asynrun', 'topdfok', array('id'=>$fid));;
+		$url  	= m('base')->getasynurl('asynrun', 'topdfok', array('id'=>$fid,'type'=>'pdf'));
+		$url 	= URL;
 		$path 	= ''.ROOT_PATH.'/mode/pdfjs/topdf/start.bat "'.$topah.'" "'.ROOT_PATH.'/'.$path.'" "'.$url.'"';
 		$bo 	= $this->udpsend($path);
 		return $bo;
+	}
+	
+	/**
+	*	用udp推送
+	*/
+	public function udppush($str, $host='', $port=0)
+	{
+		$msg 	=  $bstr = '';
+		if(!function_exists('stream_socket_client'))$msg= '没有开启Socket组件';
+		if($msg==''){
+			$handle = stream_socket_client("udp://{$host}:{$port}", $errno, $errstr);
+			if(!$handle){  
+				$msg = "ERROR: {$errno} - {$errstr}"; 
+			}
+			if($msg==''){
+				fwrite($handle, $str);  
+				//$bstr = fread($handle, 1024); //去掉这个，不然容易阻塞
+				fclose($handle);
+			}
+		}
+		$barr['code'] = 0;
+		$barr['success'] = true;
+		$barr['msg']  = 'ok';
+		$barr['data'] = $bstr;
+		if($msg!=''){
+			$barr['code'] = 2;
+			$barr['msg']  = $msg;
+		}	
+		return $barr;
 	}
 }

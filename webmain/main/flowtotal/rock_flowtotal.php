@@ -32,7 +32,7 @@ $(document).ready(function(){
 	});
 	
 	var c={
-		search:function(){
+		search:function(o1,lx){
 			var d = {
 				'modeid' : get('mode_{rand}').value,
 				'total_fields' : get('fields_{rand}').value,
@@ -43,7 +43,21 @@ $(document).ready(function(){
 			if(d.total_fields==''){js.msg('msg','请选择统计字段');return;}
 			if(d.total_type==''){js.msg('msg','请选择统计类型');return;}
 			if(d.atype==''){js.msg('msg','请选择统计条件,统计条件在[流程模块条件]下添加');return;}
+			if(lx==1)return d;
 			a.setparams(d,true);
+		},
+		createdzd:function(o1){
+			var d1 = this.search(o1,1);
+			if(typeof(d1)!='object')return;
+			var o1 = get('fields_{rand}'),o2=get('type_{rand}');
+			var ss = o1.options[o1.selectedIndex].text;
+			d1.title = '按'+ss+'的'+o2.options[o2.selectedIndex].text+'';
+			var url = 'main,flowtotal,view';
+			var str1= '';
+			for(var i1 in d1)str1+=','+i1+':"'+d1[i1]+'"';
+			str1 = jm.base64encode('{'+str1.substr(1)+'}');
+			url+=',paramsstr='+str1+'';
+			addtabs({url:url,name:d1.title,num:'tongjiji'+js.getrand()+'',icons:'bar-chart'});
 		},
 		loadcharts:function(){
 			var rows = a.getData('rows'),i,len=rows.length,v;
@@ -168,6 +182,9 @@ $(document).ready(function(){
 	</td>
 	<td  style="padding-left:10px">
 		<button class="btn btn-default" click="search" type="button">来统计</button>
+	</td>
+	<td  style="padding-left:10px">
+		<button class="btn btn-default" click="createdzd" type="button">生成菜单URL</button>
 	</td>
 	<td width="90%">
 		

@@ -3,7 +3,10 @@ class mode_finjkdClassAction extends inputAction{
 	
 
 	protected function savebefore($table, $arr, $id, $addbo){
-		
+		$rows['type'] = '2';//一定要是2，不能去掉
+		return array(
+			'rows'=>$rows
+		);
 	}
 
 	protected function saveafter($table, $arr, $id, $addbo){
@@ -32,7 +35,11 @@ class mode_finjkdClassAction extends inputAction{
 			$str   = m('fina')->getjkdwhere();
 			$where.=" and `id` in($str)";
 		}
-		if($atype=='my')$where='and id='.$this->adminid.'';
+		if($atype=='my'){
+			$where='and id='.$this->adminid.'';
+		}else{
+			$where.= m('admin')->getcompanywhere(5);
+		}
 		
 		$fields = 'id,name,deptname,ranking,workdate,state';
 		return array('where'=>$where,'fields'=>$fields,'order'=>'`id`');

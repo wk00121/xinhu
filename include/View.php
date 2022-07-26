@@ -39,16 +39,17 @@ if(file_exists($actfile)){
 	if($ajaxbool == 'true')$actname	= ''.$a.'Ajax';
 	if(method_exists($xhrock, $actname)){
 		$xhrock->beforeAction();
-		$actbstr  = $xhrock->$actname();
+		$actbstr = $xhrock->$actname();
+		$xhrock->bodyMessage = $actbstr;
 		if(is_string($actbstr)){echo $actbstr;$xhrock->display=false;}
 		if(is_array($actbstr)){echo json_encode($actbstr);$xhrock->display=false;}
 	}else{
 		$methodbool = false;
-		if($ajaxbool == 'false')echo ''.$actname.' not found';
+		if($ajaxbool == 'false')echo ''.$actname.' not found;';
 	}
 	$xhrock->afterAction();
 }else{
-	echo ''.$actfile.' not found';
+	echo 'actionfile not exists;';
 	$xhrock		= new Action();
 }
 
@@ -73,7 +74,7 @@ if($xhrock->display && ($ajaxbool == 'html' || $ajaxbool == 'false')){
 		if(!$methodbool){
 			$errormsg	= 'in ('.$m.') not found Method('.$a.');';
 		}else{
-			$errormsg	= ''.$mpathname.' not exists;';
+			$errormsg	= ''.$tplname.' not exists;';
 		}
 		echo $errormsg;
 	}else{

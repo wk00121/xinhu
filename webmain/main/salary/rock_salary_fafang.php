@@ -4,9 +4,9 @@ $(document).ready(function(){
 	{params}
 	var modenum = 'hrsalary';
 	var a = $('#view_{rand}').bootstable({
-		tablename:modenum,params:{'atype':'faf'},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:true,storeafteraction:'xinzlfafter',
+		tablename:modenum,params:{'atype':'faf'},fanye:true,modenum:modenum,modedir:'{mode}:{dir}',statuschange:false,checked:true,storeafteraction:'xinziafafter',
 		columns:[{
-			text:'部门',dataIndex:'udeptname',sortable:true
+			text:'部门',dataIndex:'deptallname',sortable:true
 		},{
 			text:'人员',dataIndex:'uname',sortable:true
 		},{
@@ -33,6 +33,12 @@ $(document).ready(function(){
 		},
 		beforeload:function(){
 			btn(true);
+		},
+		itemdblclick:function(){
+			c.view();
+		},
+		load:function(d){
+			get('daochu{rand}').disabled= (!d.isdaochu);
 		}
 	});
 	
@@ -123,7 +129,7 @@ $(document).ready(function(){
 	</td>
 	<td align="right" nowrap>
 		<button class="btn btn-default" id="xiang_{rand}" click="view" disabled type="button">详情</button> &nbsp; 
-		<button class="btn btn-default" click="daochu,1" type="button">导出</button> 
+		<button class="btn btn-default" click="daochu,1" disabled id="daochu{rand}" type="button">导出</button> 
 	</td>
 	</tr>
 	</table>

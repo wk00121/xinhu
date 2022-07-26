@@ -39,6 +39,7 @@ class weixinClassAction extends apiAction{
 		$imgpath			= m('file')->getmou('filepath', $fileid);
 		$now 				= $this->rock->now;
 		$uid				= $this->adminid;
+		$comid				= m('admin')->getcompanyid($uid);
 		$type 				= (int)$this->post('type');
 		$arr['location_x']	= $this->post('location_x');
 		$arr['location_y']	= $this->post('location_y');
@@ -48,6 +49,7 @@ class weixinClassAction extends apiAction{
 		$arr['explain']		= $this->getvals('sm');
 		$arr['optdt']		= $now;
 		$arr['uid']			= $uid;
+		$arr['comid']		= $comid;
 		$arr['imgpath']		= $imgpath;
 		m('location')->insert($arr);
 		if($type==1){
@@ -59,9 +61,11 @@ class weixinClassAction extends apiAction{
 				'optdt'	=> $now,
 				'imgpath'	=> $imgpath,
 				'address'	=> $arr['label'],
+				'comid'		=> $comid,
 				'lat'=> $arr['location_x'],
 				'lng'=> $arr['location_y'],
 				'accuracy'=> $arr['precision'],
+				'explain'=> $arr['explain'],
 				'ip'	=> $ip,
 				'type'	=> 2
 			));
@@ -69,5 +73,17 @@ class weixinClassAction extends apiAction{
 			m('kaoqin')->kqanay($uid, $dt);
 		}
 		$this->showreturn(array('now'=>$now));
+	}
+	
+	/**
+	*	获取媒体文件
+	*/
+	public function getmediaAction()
+	{
+		$media_id = $this->post('media_id');
+		$type 	  = $this->post('type');
+		$barr 	  = m('weixinqy:media')->downmedia($media_id, $type);
+		if($barr['errcode']!=0)return returnerror($barr['msg']);
+		return returnsuccess($barr);
 	}
 }
